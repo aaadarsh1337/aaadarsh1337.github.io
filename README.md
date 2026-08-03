@@ -11,7 +11,9 @@ This is my personal portfolio website, built with a nerdy terminal aesthetic and
 - JavaScript (Vanilla, with GitHub API)
 
 ## ✨ Features
-- **File browser**: Click any repo to browse its files and view source code directly on the site.
+- **File browser**: Click any repo to browse its files.
+- **Markdown preview**: Markdown files are displayed directly in the modal.
+- **Other files**: Show a "View on GitHub" link for non-markdown files.
 - **Exclude repos**: Hidden portfolio repo and others you specify.
 - **Flexible sorting**: Sort by last updated, name, stars, or custom order.
 - **Clean, responsive, hacker-themed**.

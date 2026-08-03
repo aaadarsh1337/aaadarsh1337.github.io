@@ -47,7 +47,7 @@ files = {
             <div id="modalFileList">Loading files...</div>
             <div id="modalFileContent" style="display:none;">
                 <button id="modalBackBtn" class="back-btn">← Back to files</button>
-                <pre id="modalFileCode" class="modal-code"></pre>
+                <div id="modalFileDisplay"></div>
             </div>
         </div>
         <div class="modal-actions">
@@ -370,7 +370,7 @@ footer {
     const modalClose = document.getElementById('modalClose');
     const modalFileList = document.getElementById('modalFileList');
     const modalFileContent = document.getElementById('modalFileContent');
-    const modalFileCode = document.getElementById('modalFileCode');
+    const modalFileDisplay = document.getElementById('modalFileDisplay');
     const modalBackBtn = document.getElementById('modalBackBtn');
 
     let currentRepo = null;
@@ -385,7 +385,7 @@ footer {
     modalClose.addEventListener('click', closeModal);
     modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
 
-    // Back button functionality
+    // Back button: re-show file list and reload current directory
     modalBackBtn.addEventListener('click', () => {
         modalFileContent.style.display = 'none';
         modalFileList.style.display = 'block';
@@ -446,6 +446,7 @@ footer {
             repoGrid.innerHTML = '<p style="color:#ff6b6b;grid-column:1/-1;text-align:center;">⚠️ Failed to load repos.</p>';
         });
 
+    // Open modal and load root contents
     async function openModal(repo) {
         currentRepo = repo;
         currentPath = '';
@@ -461,6 +462,7 @@ footer {
         await loadContents(repo.name, '');
     }
 
+    // Load directory contents
     async function loadContents(repoName, path) {
         currentPath = path;
         try {
@@ -514,19 +516,44 @@ footer {
         }
     }
 
+    // View file: only markdown is displayed; others get a "view on GitHub" link.
     async function viewFile(repoName, fileItem) {
+        const fileName = fileItem.name;
+        const isMarkdown = fileName.endsWith('.md') || fileName.endsWith('.markdown');
+
         modalFileList.style.display = 'none';
         modalFileContent.style.display = 'block';
-        modalFileCode.textContent = 'Loading file content...';
-        try {
-            const rawUrl = `https://raw.githubusercontent.com/${username}/${repoName}/${fileItem.path}`;
-            const res = await fetch(rawUrl);
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            const text = await res.text();
-            modalFileCode.textContent = text;
-        } catch (e) {
-            console.error(e);
-            modalFileCode.textContent = '⚠️ Could not fetch file content. It might be binary or too large.';
+        modalFileDisplay.innerHTML = '';
+
+        if (isMarkdown) {
+            // Fetch and display markdown content
+            modalFileDisplay.innerHTML = '<p style="color:#555;">Loading markdown...</p>';
+            try {
+                const rawUrl = `https://raw.githubusercontent.com/${username}/${repoName}/${fileItem.path}`;
+                const res = await fetch(rawUrl);
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const text = await res.text();
+                // Simple plain text display (you can later add a markdown renderer)
+                const pre = document.createElement('pre');
+                pre.className = 'modal-code';
+                pre.textContent = text;
+                modalFileDisplay.innerHTML = '';
+                modalFileDisplay.appendChild(pre);
+            } catch (e) {
+                modalFileDisplay.innerHTML = `<p style="color:#ff6b6b;">⚠️ Could not load markdown. <a href="https://github.com/${username}/${repoName}/blob/main/${fileItem.path}" target="_blank" style="color:#00ff41;">View on GitHub</a></p>`;
+            }
+        } else {
+            // Non-markdown: show a message with a direct link
+            modalFileDisplay.innerHTML = `
+                <p style="color:#b3b3b3; padding:1rem 0;">
+                    📄 <strong>${fileName}</strong> — preview not available for this file type.
+                </p>
+                <p>
+                    <a href="https://github.com/${username}/${repoName}/blob/main/${fileItem.path}" target="_blank" style="color:#00ff41; border:1px solid #1f8b4c; padding:0.3rem 1rem; border-radius:20px; text-decoration:none;">
+                        View on GitHub →
+                    </a>
+                </p>
+            `;
         }
     }
 });''',
@@ -544,7 +571,9 @@ This is my personal portfolio website, built with a nerdy terminal aesthetic and
 - JavaScript (Vanilla, with GitHub API)
 
 ## ✨ Features
-- **File browser**: Click any repo to browse its files and view source code directly on the site.
+- **File browser**: Click any repo to browse its files.
+- **Markdown preview**: Markdown files are displayed directly in the modal.
+- **Other files**: Show a "View on GitHub" link for non-markdown files.
 - **Exclude repos**: Hidden portfolio repo and others you specify.
 - **Flexible sorting**: Sort by last updated, name, stars, or custom order.
 - **Clean, responsive, hacker-themed**.
