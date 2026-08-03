@@ -9,10 +9,7 @@
 </head>
 <body>
 <div class="container">
-    <!-- Simple nerdy header (no ASCII art) -->
-    <div class="nerd-header">
-        <span>$</span> ./aaadarsh1337 <span>_</span>
-    </div>
+    <div class="nerd-header"><span>$</span> ./aaadarsh1337 <span>_</span></div>
     <header>
         <h1 id="username">aaadarsh1337</h1>
         <p class="tagline"><!-- ✏️ EDIT -->Cybersecurity Enthusiast · CTF Player · Code tinkerer</p>
@@ -20,9 +17,8 @@
         <div class="social-links">
             <!-- ✏️ EDIT these URLs -->
             <a href="https://github.com/aaadarsh1337" target="_blank">GitHub</a>
-            <a href="#" target="_blank">Twitter</a>
-            <a href="#" target="_blank">LinkedIn</a>
-            <a href="#" target="_blank">Blog</a>
+            <a href="#" target="_blank">TryHackMe</a>
+            <a href="#" target="_blank">PicoCTF</a>
         </div>
     </header>
     <section class="repos-section">
@@ -34,7 +30,7 @@
     </footer>
 </div>
 
-<!-- ===== MODAL ===== -->
+<!-- MODAL -->
 <div id="repoModal" class="modal-overlay">
     <div class="modal">
         <button class="modal-close" id="modalClose">&times;</button>
@@ -44,7 +40,13 @@
             <span id="modalLang">Language: N/A</span>
             <span id="modalStars">★ 0</span>
         </div>
-        <div id="modalReadme" class="modal-readme">Loading README...</div>
+        <div id="modalFileBrowser" class="modal-file-browser">
+            <div id="modalFileList">Loading files...</div>
+            <div id="modalFileContent" style="display:none;">
+                <button id="modalBackBtn" class="back-btn">← Back to files</button>
+                <pre id="modalFileCode" class="modal-code"></pre>
+            </div>
+        </div>
         <div class="modal-actions">
             <a id="modalGitHubLink" href="#" target="_blank">View on GitHub →</a>
         </div>

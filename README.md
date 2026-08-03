@@ -8,18 +8,19 @@ This is my personal portfolio website, built with a nerdy terminal aesthetic and
 ## 🛠️ Tech Stack
 - HTML5
 - CSS3 (Custom, dark theme)
-- JavaScript (Vanilla, with GitHub API integration)
+- JavaScript (Vanilla, with GitHub API)
 
 ## ✨ Features
-- Dynamically loads all my public repositories from GitHub (excluding the portfolio repo).
-- Click any repo card to view details + README in a modal (no redirect).
-- Clean, responsive, and fast.
-- "Hacker" / terminal-inspired design.
+- **File browser**: Click any repo to browse its files and view source code directly on the site.
+- **Exclude repos**: Hidden portfolio repo and others you specify.
+- **Flexible sorting**: Sort by last updated, name, stars, or custom order.
+- **Clean, responsive, hacker-themed**.
+- **Social links**: GitHub, TryHackMe, PicoCTF.
 
-## 📝 How to Edit
-1.  **Personal Info**: Open `index.html` and look for `<!-- ✏️ EDIT -->` comments.
-2.  **Styling**: Tweak colors and fonts in `style.css`.
-3.  **Excluded repos**: Edit the `EXCLUDED_REPOS` array in `script.js`.
+## 📝 How to Customize
+- Edit `index.html` (look for `<!-- ✏️ EDIT -->`).
+- In `script.js`, adjust `EXCLUDED_REPOS`, `SORT_ORDER`, and `CUSTOM_ORDER`.
+- Tweak colors in `style.css` (main green: `#00ff41`).
 
 ---
-Built with 🖤 and way too much caffeine.
+Built with 🖤 and too much caffeine.
