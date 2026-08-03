@@ -8,6 +8,8 @@ files = {
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>aaadarsh1337 | Portfolio</title>
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+    <!-- Markdown parser -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -348,14 +350,61 @@ footer {
 }
 .modal::-webkit-scrollbar { width: 6px; }
 .modal::-webkit-scrollbar-track { background: #111; }
-.modal::-webkit-scrollbar-thumb { background: #1f8b4c; border-radius: 4px; }''',
+.modal::-webkit-scrollbar-thumb { background: #1f8b4c; border-radius: 4px; }
+
+/* Markdown rendered content */
+.markdown-body {
+    color: #b3b3b3;
+    font-family: 'Space Mono', monospace;
+    background: #0a0a0a;
+    padding: 0.5rem;
+    border-radius: 4px;
+    max-height: 350px;
+    overflow-y: auto;
+    font-size: 0.9rem;
+}
+.markdown-body h1, .markdown-body h2, .markdown-body h3 {
+    color: #00ff41;
+    margin: 0.5rem 0;
+}
+.markdown-body h1 { font-size: 1.5rem; }
+.markdown-body h2 { font-size: 1.2rem; }
+.markdown-body h3 { font-size: 1rem; }
+.markdown-body p { margin: 0.5rem 0; }
+.markdown-body ul, .markdown-body ol { padding-left: 1.5rem; }
+.markdown-body code {
+    background: #1a1a1a;
+    padding: 0.1rem 0.3rem;
+    border-radius: 4px;
+    color: #33ff77;
+}
+.markdown-body pre {
+    background: #050505;
+    padding: 0.5rem;
+    border-radius: 4px;
+    overflow-x: auto;
+}
+.markdown-body pre code {
+    background: none;
+    color: #b3b3b3;
+}
+.markdown-body a {
+    color: #00ff41;
+    text-decoration: underline;
+}
+.markdown-body img { max-width: 100%; }
+.markdown-body blockquote {
+    border-left: 3px solid #1f8b4c;
+    padding-left: 1rem;
+    color: #777;
+}''',
 
     "script.js": '''document.addEventListener('DOMContentLoaded', () => {
     const username = 'aaadarsh1337';
     const repoGrid = document.getElementById('repo-grid');
 
     // ===== CONFIGURATION =====
-    const EXCLUDED_REPOS = ['aaadarsh1337.github.io'];
+    const EXCLUDED_REPOS = ['aaadarsh1337.github.io', 'portfolio'];
     const SORT_ORDER = 'updated';
     const CUSTOM_ORDER = ['TryHackMe', 'certificates', 'oldCTFscripts'];
     // =========================
@@ -381,11 +430,11 @@ footer {
         modalFileContent.style.display = 'none';
         modalFileList.style.display = 'block';
         currentPath = '';
+        currentRepo = null;
     };
     modalClose.addEventListener('click', closeModal);
     modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
 
-    // Back button: re-show file list and reload current directory
     modalBackBtn.addEventListener('click', () => {
         modalFileContent.style.display = 'none';
         modalFileList.style.display = 'block';
@@ -446,7 +495,6 @@ footer {
             repoGrid.innerHTML = '<p style="color:#ff6b6b;grid-column:1/-1;text-align:center;">⚠️ Failed to load repos.</p>';
         });
 
-    // Open modal and load root contents
     async function openModal(repo) {
         currentRepo = repo;
         currentPath = '';
@@ -462,7 +510,6 @@ footer {
         await loadContents(repo.name, '');
     }
 
-    // Load directory contents
     async function loadContents(repoName, path) {
         currentPath = path;
         try {
@@ -516,7 +563,6 @@ footer {
         }
     }
 
-    // View file: only markdown is displayed; others get a "view on GitHub" link.
     async function viewFile(repoName, fileItem) {
         const fileName = fileItem.name;
         const isMarkdown = fileName.endsWith('.md') || fileName.endsWith('.markdown');
@@ -526,32 +572,30 @@ footer {
         modalFileDisplay.innerHTML = '';
 
         if (isMarkdown) {
-            // Fetch and display markdown content
             modalFileDisplay.innerHTML = '<p style="color:#555;">Loading markdown...</p>';
             try {
                 const rawUrl = `https://raw.githubusercontent.com/${username}/${repoName}/${fileItem.path}`;
                 const res = await fetch(rawUrl);
                 if (!res.ok) throw new Error(`HTTP ${res.status}`);
                 const text = await res.text();
-                // Simple plain text display (you can later add a markdown renderer)
-                const pre = document.createElement('pre');
-                pre.className = 'modal-code';
-                pre.textContent = text;
+                // Render markdown using marked
+                const html = marked.parse(text);
+                const div = document.createElement('div');
+                div.className = 'markdown-body';
+                div.innerHTML = html;
                 modalFileDisplay.innerHTML = '';
-                modalFileDisplay.appendChild(pre);
+                modalFileDisplay.appendChild(div);
             } catch (e) {
-                modalFileDisplay.innerHTML = `<p style="color:#ff6b6b;">⚠️ Could not load markdown. <a href="https://github.com/${username}/${repoName}/blob/main/${fileItem.path}" target="_blank" style="color:#00ff41;">View on GitHub</a></p>`;
+                console.error(e);
+                modalFileDisplay.innerHTML = `<p style="color:#ff6b6b;">⚠️ Could not load markdown.</p>`;
             }
         } else {
-            // Non-markdown: show a message with a direct link
             modalFileDisplay.innerHTML = `
                 <p style="color:#b3b3b3; padding:1rem 0;">
                     📄 <strong>${fileName}</strong> — preview not available for this file type.
                 </p>
-                <p>
-                    <a href="https://github.com/${username}/${repoName}/blob/main/${fileItem.path}" target="_blank" style="color:#00ff41; border:1px solid #1f8b4c; padding:0.3rem 1rem; border-radius:20px; text-decoration:none;">
-                        View on GitHub →
-                    </a>
+                <p style="color:#555; font-size:0.85rem;">
+                    Use the button below to view the file on GitHub.
                 </p>
             `;
         }
@@ -569,11 +613,12 @@ This is my personal portfolio website, built with a nerdy terminal aesthetic and
 - HTML5
 - CSS3 (Custom, dark theme)
 - JavaScript (Vanilla, with GitHub API)
+- [marked.js](https://marked.js.org/) for Markdown rendering.
 
 ## ✨ Features
-- **File browser**: Click any repo to browse its files.
-- **Markdown preview**: Markdown files are displayed directly in the modal.
-- **Other files**: Show a "View on GitHub" link for non-markdown files.
+- **File browser**: Click any repo to browse its files and folders.
+- **Markdown preview**: Markdown files are rendered as HTML directly in the modal.
+- **Other files**: Show a friendly message – click the bottom button to view on GitHub.
 - **Exclude repos**: Hidden portfolio repo and others you specify.
 - **Flexible sorting**: Sort by last updated, name, stars, or custom order.
 - **Clean, responsive, hacker-themed**.

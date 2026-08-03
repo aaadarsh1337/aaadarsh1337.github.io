@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const repoGrid = document.getElementById('repo-grid');
 
     // ===== CONFIGURATION =====
-    const EXCLUDED_REPOS = ['aaadarsh1337.github.io'];
+    const EXCLUDED_REPOS = ['aaadarsh1337.github.io', 'portfolio'];
     const SORT_ORDER = 'updated';
     const CUSTOM_ORDER = ['TryHackMe', 'certificates', 'oldCTFscripts'];
     // =========================
@@ -29,11 +29,11 @@ document.addEventListener('DOMContentLoaded', () => {
         modalFileContent.style.display = 'none';
         modalFileList.style.display = 'block';
         currentPath = '';
+        currentRepo = null;
     };
     modalClose.addEventListener('click', closeModal);
     modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
 
-    // Back button: re-show file list and reload current directory
     modalBackBtn.addEventListener('click', () => {
         modalFileContent.style.display = 'none';
         modalFileList.style.display = 'block';
@@ -94,7 +94,6 @@ document.addEventListener('DOMContentLoaded', () => {
             repoGrid.innerHTML = '<p style="color:#ff6b6b;grid-column:1/-1;text-align:center;">⚠️ Failed to load repos.</p>';
         });
 
-    // Open modal and load root contents
     async function openModal(repo) {
         currentRepo = repo;
         currentPath = '';
@@ -110,7 +109,6 @@ document.addEventListener('DOMContentLoaded', () => {
         await loadContents(repo.name, '');
     }
 
-    // Load directory contents
     async function loadContents(repoName, path) {
         currentPath = path;
         try {
@@ -164,7 +162,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // View file: only markdown is displayed; others get a "view on GitHub" link.
     async function viewFile(repoName, fileItem) {
         const fileName = fileItem.name;
         const isMarkdown = fileName.endsWith('.md') || fileName.endsWith('.markdown');
@@ -174,32 +171,30 @@ document.addEventListener('DOMContentLoaded', () => {
         modalFileDisplay.innerHTML = '';
 
         if (isMarkdown) {
-            // Fetch and display markdown content
             modalFileDisplay.innerHTML = '<p style="color:#555;">Loading markdown...</p>';
             try {
                 const rawUrl = `https://raw.githubusercontent.com/${username}/${repoName}/${fileItem.path}`;
                 const res = await fetch(rawUrl);
                 if (!res.ok) throw new Error(`HTTP ${res.status}`);
                 const text = await res.text();
-                // Simple plain text display (you can later add a markdown renderer)
-                const pre = document.createElement('pre');
-                pre.className = 'modal-code';
-                pre.textContent = text;
+                // Render markdown using marked
+                const html = marked.parse(text);
+                const div = document.createElement('div');
+                div.className = 'markdown-body';
+                div.innerHTML = html;
                 modalFileDisplay.innerHTML = '';
-                modalFileDisplay.appendChild(pre);
+                modalFileDisplay.appendChild(div);
             } catch (e) {
-                modalFileDisplay.innerHTML = `<p style="color:#ff6b6b;">⚠️ Could not load markdown. <a href="https://github.com/${username}/${repoName}/blob/main/${fileItem.path}" target="_blank" style="color:#00ff41;">View on GitHub</a></p>`;
+                console.error(e);
+                modalFileDisplay.innerHTML = `<p style="color:#ff6b6b;">⚠️ Could not load markdown.</p>`;
             }
         } else {
-            // Non-markdown: show a message with a direct link
             modalFileDisplay.innerHTML = `
                 <p style="color:#b3b3b3; padding:1rem 0;">
                     📄 <strong>${fileName}</strong> — preview not available for this file type.
                 </p>
-                <p>
-                    <a href="https://github.com/${username}/${repoName}/blob/main/${fileItem.path}" target="_blank" style="color:#00ff41; border:1px solid #1f8b4c; padding:0.3rem 1rem; border-radius:20px; text-decoration:none;">
-                        View on GitHub →
-                    </a>
+                <p style="color:#555; font-size:0.85rem;">
+                    Use the button below to view the file on GitHub.
                 </p>
             `;
         }

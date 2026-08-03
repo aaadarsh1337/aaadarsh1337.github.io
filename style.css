@@ -287,3 +287,50 @@ footer {
 .modal::-webkit-scrollbar { width: 6px; }
 .modal::-webkit-scrollbar-track { background: #111; }
 .modal::-webkit-scrollbar-thumb { background: #1f8b4c; border-radius: 4px; }
+
+/* Markdown rendered content */
+.markdown-body {
+    color: #b3b3b3;
+    font-family: 'Space Mono', monospace;
+    background: #0a0a0a;
+    padding: 0.5rem;
+    border-radius: 4px;
+    max-height: 350px;
+    overflow-y: auto;
+    font-size: 0.9rem;
+}
+.markdown-body h1, .markdown-body h2, .markdown-body h3 {
+    color: #00ff41;
+    margin: 0.5rem 0;
+}
+.markdown-body h1 { font-size: 1.5rem; }
+.markdown-body h2 { font-size: 1.2rem; }
+.markdown-body h3 { font-size: 1rem; }
+.markdown-body p { margin: 0.5rem 0; }
+.markdown-body ul, .markdown-body ol { padding-left: 1.5rem; }
+.markdown-body code {
+    background: #1a1a1a;
+    padding: 0.1rem 0.3rem;
+    border-radius: 4px;
+    color: #33ff77;
+}
+.markdown-body pre {
+    background: #050505;
+    padding: 0.5rem;
+    border-radius: 4px;
+    overflow-x: auto;
+}
+.markdown-body pre code {
+    background: none;
+    color: #b3b3b3;
+}
+.markdown-body a {
+    color: #00ff41;
+    text-decoration: underline;
+}
+.markdown-body img { max-width: 100%; }
+.markdown-body blockquote {
+    border-left: 3px solid #1f8b4c;
+    padding-left: 1rem;
+    color: #777;
+}
