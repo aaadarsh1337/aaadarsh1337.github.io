@@ -12,7 +12,7 @@ files = {
 </head>
 <body>
 <div class="container">
-    <div class="nerd-header"><span>$</span> ./aaadarsh1337 <span>_</span></div>
+    <div class="nerd-header"><span>$</span> ./portfolio <span>_</span></div>
     <header>
         <h1 id="username">aaadarsh1337</h1>
         <p class="tagline"><!-- ✏️ EDIT -->Cybersecurity Enthusiast · CTF Player · Code tinkerer</p>
@@ -355,14 +355,9 @@ footer {
     const repoGrid = document.getElementById('repo-grid');
 
     // ===== CONFIGURATION =====
-    // 1. Repos to hide (exact names)
-    const EXCLUDED_REPOS = ['aaadarsh1337.github.io']; // add any others
-
-    // 2. Sort order: 'updated' | 'name' | 'stars' | 'custom'
-    const SORT_ORDER = 'updated'; 
-    // If 'custom', define the order here (top to bottom):
+    const EXCLUDED_REPOS = ['aaadarsh1337.github.io'];
+    const SORT_ORDER = 'updated';
     const CUSTOM_ORDER = ['TryHackMe', 'certificates', 'oldCTFscripts'];
-
     // =========================
 
     // Modal elements
@@ -390,18 +385,23 @@ footer {
     modalClose.addEventListener('click', closeModal);
     modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
 
+    // Back button functionality
+    modalBackBtn.addEventListener('click', () => {
+        modalFileContent.style.display = 'none';
+        modalFileList.style.display = 'block';
+        if (currentRepo) loadContents(currentRepo.name, currentPath);
+    });
+
     // Fetch repos
     fetch(`https://api.github.com/users/${username}/repos?sort=updated&per_page=50`)
         .then(r => { if (!r.ok) throw new Error(`API error ${r.status}`); return r.json(); })
         .then(repos => {
-            // Filter out excluded repos
             repos = repos.filter(repo => !EXCLUDED_REPOS.includes(repo.name));
             if (!repos || repos.length === 0) {
                 repoGrid.innerHTML = '<p style="color:#555;grid-column:1/-1;text-align:center;">No public repos found.</p>';
                 return;
             }
 
-            // Sort
             if (SORT_ORDER === 'name') repos.sort((a,b) => a.name.localeCompare(b.name));
             else if (SORT_ORDER === 'stars') repos.sort((a,b) => b.stargazers_count - a.stargazers_count);
             else if (SORT_ORDER === 'custom') {
@@ -409,7 +409,6 @@ footer {
                 CUSTOM_ORDER.forEach((name, idx) => orderMap[name] = idx);
                 repos.sort((a,b) => (orderMap[a.name] ?? Infinity) - (orderMap[b.name] ?? Infinity));
             }
-            // default 'updated' is already sorted by API (most recent first)
 
             repoGrid.innerHTML = '';
             repos.forEach(repo => {
@@ -447,7 +446,6 @@ footer {
             repoGrid.innerHTML = '<p style="color:#ff6b6b;grid-column:1/-1;text-align:center;">⚠️ Failed to load repos.</p>';
         });
 
-    // ===== Open Modal and browse files =====
     async function openModal(repo) {
         currentRepo = repo;
         currentPath = '';
@@ -460,7 +458,6 @@ footer {
         modalFileList.style.display = 'block';
         modalFileList.innerHTML = 'Loading files...';
         modal.classList.add('active');
-
         await loadContents(repo.name, '');
     }
 
@@ -469,7 +466,14 @@ footer {
         try {
             const url = `https://api.github.com/repos/${username}/${repoName}/contents/${path}`;
             const res = await fetch(url);
-            if (!res.ok) throw new Error('Cannot load contents');
+            if (!res.ok) {
+                if (res.status === 404) {
+                    modalFileList.innerHTML = '📭 This repository is empty.';
+                } else {
+                    modalFileList.innerHTML = `⚠️ Error ${res.status}: ${res.statusText}`;
+                }
+                return;
+            }
             const items = await res.json();
 
             modalFileList.innerHTML = '';
@@ -485,7 +489,6 @@ footer {
                 modalFileList.appendChild(parent);
             }
 
-            // Sort: folders first, then files
             const sorted = items.sort((a,b) => {
                 if (a.type === 'dir' && b.type !== 'dir') return -1;
                 if (a.type !== 'dir' && b.type === 'dir') return 1;
@@ -506,8 +509,8 @@ footer {
                 modalFileList.appendChild(el);
             }
         } catch (e) {
-            modalFileList.innerHTML = '⚠️ Could not load files.';
             console.error(e);
+            modalFileList.innerHTML = '⚠️ Could not load files. Check console for details.';
         }
     }
 
@@ -518,17 +521,12 @@ footer {
         try {
             const rawUrl = `https://raw.githubusercontent.com/${username}/${repoName}/${fileItem.path}`;
             const res = await fetch(rawUrl);
-            if (!res.ok) throw new Error('Cannot fetch file');
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
             const text = await res.text();
             modalFileCode.textContent = text;
-            modalBackBtn.onclick = () => {
-                modalFileContent.style.display = 'none';
-                modalFileList.style.display = 'block';
-                loadContents(repoName, currentPath);
-            };
         } catch (e) {
-            modalFileCode.textContent = '⚠️ Could not load file content.';
             console.error(e);
+            modalFileCode.textContent = '⚠️ Could not fetch file content. It might be binary or too large.';
         }
     }
 });''',
