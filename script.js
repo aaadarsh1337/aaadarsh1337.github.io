@@ -4,8 +4,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ===== CONFIGURATION =====
     const EXCLUDED_REPOS = ['aaadarsh1337.github.io', 'portfolio'];
-    const SORT_ORDER = 'updated';
-    const CUSTOM_ORDER = ['TryHackMe', 'certificates', 'oldCTFscripts'];
+    const SORT_ORDER = 'custom';
+    const CUSTOM_ORDER = ['picoCTF', 'TryHackMe', 'CustomTools', 'oldCTFscripts', 'unorganisedCTFnotes-old', 'CourseNotes-cybersec', 'certificates', 'PyBrowser'];
     // =========================
 
     // Modal elements
