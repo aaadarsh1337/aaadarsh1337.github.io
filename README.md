@@ -11,14 +11,15 @@ This is my personal portfolio website, built with a nerdy terminal aesthetic and
 - JavaScript (Vanilla, with GitHub API integration)
 
 ## ✨ Features
-- Dynamically loads all my public repositories from GitHub.
+- Dynamically loads all my public repositories from GitHub (excluding the portfolio repo).
+- Click any repo card to view details + README in a modal (no redirect).
 - Clean, responsive, and fast.
 - "Hacker" / terminal-inspired design.
 
 ## 📝 How to Edit
-1.  **Personal Info**: Open `index.html` and look for `<!-- ✏️ EDIT THIS: ... -->` comments.
+1.  **Personal Info**: Open `index.html` and look for `<!-- ✏️ EDIT -->` comments.
 2.  **Styling**: Tweak colors and fonts in `style.css`.
-3.  **Repos**: The list updates automatically via the GitHub API.
+3.  **Excluded repos**: Edit the `EXCLUDED_REPOS` array in `script.js`.
 
 ---
 Built with 🖤 and way too much caffeine.

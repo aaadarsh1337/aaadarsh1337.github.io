@@ -9,14 +9,10 @@
 </head>
 <body>
 <div class="container">
-    <pre class="ascii-art">
-   ___    _      _                       _     _   _     
-  / _ \  /_\    /_\   _ __   __ _ _ __ | |_  | \ | |___ 
- / /_\/ //_\\  //_\\ | '_ \ / _` | '_ \| __| |  \| / __|
-/ /_\\/  _  \ /  _  \| |_) | (_| | | | | |_  | |\  \__ \
-\____/\_/ \_/ \_/ \_/| .__/ \__,_|_| |_|\__| |_| \_|___/
-                     |_|                                 
-    </pre>
+    <!-- Simple nerdy header (no ASCII art) -->
+    <div class="nerd-header">
+        <span>$</span> ./aaadarsh1337 <span>_</span>
+    </div>
     <header>
         <h1 id="username">aaadarsh1337</h1>
         <p class="tagline"><!-- ✏️ EDIT -->Cybersecurity Enthusiast · CTF Player · Code tinkerer</p>
@@ -37,6 +33,24 @@
         <p><span class="cursor-blink">█</span> <!-- ✏️ EDIT -->© 2026 aaadarsh1337 · Built with <span style="color:#00ff41;">&lt;/&gt;</span> and caffeine</p>
     </footer>
 </div>
+
+<!-- ===== MODAL ===== -->
+<div id="repoModal" class="modal-overlay">
+    <div class="modal">
+        <button class="modal-close" id="modalClose">&times;</button>
+        <h2 id="modalTitle">Repo Name</h2>
+        <p class="modal-desc" id="modalDesc">Description</p>
+        <div class="modal-meta">
+            <span id="modalLang">Language: N/A</span>
+            <span id="modalStars">★ 0</span>
+        </div>
+        <div id="modalReadme" class="modal-readme">Loading README...</div>
+        <div class="modal-actions">
+            <a id="modalGitHubLink" href="#" target="_blank">View on GitHub →</a>
+        </div>
+    </div>
+</div>
+
 <script src="script.js"></script>
 </body>
 </html>
