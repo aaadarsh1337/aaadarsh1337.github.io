@@ -8,8 +8,6 @@ files = {
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>aaadarsh1337 | Portfolio</title>
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
-    <!-- Markdown parser -->
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -317,18 +315,6 @@ footer {
     font-family: inherit;
 }
 .back-btn:hover { background: #00ff41; color: #0a0a0a; }
-.modal-code {
-    white-space: pre-wrap;
-    word-break: break-word;
-    font-size: 0.8rem;
-    line-height: 1.5;
-    color: #b3b3b3;
-    padding: 0.5rem;
-    background: #050505;
-    border-radius: 4px;
-    max-height: 350px;
-    overflow-y: auto;
-}
 .modal-actions {
     margin-top: 1.2rem;
     display: flex;
@@ -352,51 +338,18 @@ footer {
 .modal::-webkit-scrollbar-track { background: #111; }
 .modal::-webkit-scrollbar-thumb { background: #1f8b4c; border-radius: 4px; }
 
-/* Markdown rendered content */
-.markdown-body {
-    color: #b3b3b3;
-    font-family: 'Space Mono', monospace;
-    background: #0a0a0a;
-    padding: 0.5rem;
-    border-radius: 4px;
-    max-height: 350px;
-    overflow-y: auto;
-    font-size: 0.9rem;
+/* Simple file display */
+.file-display-box {
+    padding: 1rem 0;
 }
-.markdown-body h1, .markdown-body h2, .markdown-body h3 {
+.file-display-box .file-name {
     color: #00ff41;
-    margin: 0.5rem 0;
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
 }
-.markdown-body h1 { font-size: 1.5rem; }
-.markdown-body h2 { font-size: 1.2rem; }
-.markdown-body h3 { font-size: 1rem; }
-.markdown-body p { margin: 0.5rem 0; }
-.markdown-body ul, .markdown-body ol { padding-left: 1.5rem; }
-.markdown-body code {
-    background: #1a1a1a;
-    padding: 0.1rem 0.3rem;
-    border-radius: 4px;
-    color: #33ff77;
-}
-.markdown-body pre {
-    background: #050505;
-    padding: 0.5rem;
-    border-radius: 4px;
-    overflow-x: auto;
-}
-.markdown-body pre code {
-    background: none;
+.file-display-box .file-message {
     color: #b3b3b3;
-}
-.markdown-body a {
-    color: #00ff41;
-    text-decoration: underline;
-}
-.markdown-body img { max-width: 100%; }
-.markdown-body blockquote {
-    border-left: 3px solid #1f8b4c;
-    padding-left: 1rem;
-    color: #777;
+    margin-bottom: 1rem;
 }''',
 
     "script.js": '''document.addEventListener('DOMContentLoaded', () => {
@@ -438,6 +391,11 @@ footer {
     modalBackBtn.addEventListener('click', () => {
         modalFileContent.style.display = 'none';
         modalFileList.style.display = 'block';
+        // Reset the bottom button to repo link
+        if (currentRepo) {
+            modalGitHubLink.href = currentRepo.html_url;
+            modalGitHubLink.textContent = 'View on GitHub →';
+        }
         if (currentRepo) loadContents(currentRepo.name, currentPath);
     });
 
@@ -503,6 +461,7 @@ footer {
         modalLang.textContent = `Language: ${repo.language || 'N/A'}`;
         modalStars.textContent = `★ ${repo.stargazers_count || 0}`;
         modalGitHubLink.href = repo.html_url;
+        modalGitHubLink.textContent = 'View on GitHub →';
         modalFileContent.style.display = 'none';
         modalFileList.style.display = 'block';
         modalFileList.innerHTML = 'Loading files...';
@@ -563,42 +522,20 @@ footer {
         }
     }
 
-    async function viewFile(repoName, fileItem) {
-        const fileName = fileItem.name;
-        const isMarkdown = fileName.endsWith('.md') || fileName.endsWith('.markdown');
-
+    function viewFile(repoName, fileItem) {
+        // Show file info and single button to view on GitHub
         modalFileList.style.display = 'none';
         modalFileContent.style.display = 'block';
-        modalFileDisplay.innerHTML = '';
-
-        if (isMarkdown) {
-            modalFileDisplay.innerHTML = '<p style="color:#555;">Loading markdown...</p>';
-            try {
-                const rawUrl = `https://raw.githubusercontent.com/${username}/${repoName}/${fileItem.path}`;
-                const res = await fetch(rawUrl);
-                if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                const text = await res.text();
-                // Render markdown using marked
-                const html = marked.parse(text);
-                const div = document.createElement('div');
-                div.className = 'markdown-body';
-                div.innerHTML = html;
-                modalFileDisplay.innerHTML = '';
-                modalFileDisplay.appendChild(div);
-            } catch (e) {
-                console.error(e);
-                modalFileDisplay.innerHTML = `<p style="color:#ff6b6b;">⚠️ Could not load markdown.</p>`;
-            }
-        } else {
-            modalFileDisplay.innerHTML = `
-                <p style="color:#b3b3b3; padding:1rem 0;">
-                    📄 <strong>${fileName}</strong> — preview not available for this file type.
-                </p>
-                <p style="color:#555; font-size:0.85rem;">
-                    Use the button below to view the file on GitHub.
-                </p>
-            `;
-        }
+        modalFileDisplay.innerHTML = `
+            <div class="file-display-box">
+                <div class="file-name">📄 ${fileItem.name}</div>
+                <div class="file-message">Click the button below to view this file on GitHub.</div>
+            </div>
+        `;
+        // Change the bottom button to point to the file on GitHub
+        const fileUrl = `https://github.com/${username}/${repoName}/blob/main/${fileItem.path}`;
+        modalGitHubLink.href = fileUrl;
+        modalGitHubLink.textContent = 'View on GitHub →';
     }
 });''',
 
@@ -613,12 +550,10 @@ This is my personal portfolio website, built with a nerdy terminal aesthetic and
 - HTML5
 - CSS3 (Custom, dark theme)
 - JavaScript (Vanilla, with GitHub API)
-- [marked.js](https://marked.js.org/) for Markdown rendering.
 
 ## ✨ Features
 - **File browser**: Click any repo to browse its files and folders.
-- **Markdown preview**: Markdown files are rendered as HTML directly in the modal.
-- **Other files**: Show a friendly message – click the bottom button to view on GitHub.
+- **View files on GitHub**: Clicking a file shows a single "View on GitHub" button that opens the file directly on GitHub.
 - **Exclude repos**: Hidden portfolio repo and others you specify.
 - **Flexible sorting**: Sort by last updated, name, stars, or custom order.
 - **Clean, responsive, hacker-themed**.

@@ -37,6 +37,11 @@ document.addEventListener('DOMContentLoaded', () => {
     modalBackBtn.addEventListener('click', () => {
         modalFileContent.style.display = 'none';
         modalFileList.style.display = 'block';
+        // Reset the bottom button to repo link
+        if (currentRepo) {
+            modalGitHubLink.href = currentRepo.html_url;
+            modalGitHubLink.textContent = 'View on GitHub →';
+        }
         if (currentRepo) loadContents(currentRepo.name, currentPath);
     });
 
@@ -102,6 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
         modalLang.textContent = `Language: ${repo.language || 'N/A'}`;
         modalStars.textContent = `★ ${repo.stargazers_count || 0}`;
         modalGitHubLink.href = repo.html_url;
+        modalGitHubLink.textContent = 'View on GitHub →';
         modalFileContent.style.display = 'none';
         modalFileList.style.display = 'block';
         modalFileList.innerHTML = 'Loading files...';
@@ -162,41 +168,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    async function viewFile(repoName, fileItem) {
-        const fileName = fileItem.name;
-        const isMarkdown = fileName.endsWith('.md') || fileName.endsWith('.markdown');
-
+    function viewFile(repoName, fileItem) {
+        // Show file info and single button to view on GitHub
         modalFileList.style.display = 'none';
         modalFileContent.style.display = 'block';
-        modalFileDisplay.innerHTML = '';
-
-        if (isMarkdown) {
-            modalFileDisplay.innerHTML = '<p style="color:#555;">Loading markdown...</p>';
-            try {
-                const rawUrl = `https://raw.githubusercontent.com/${username}/${repoName}/${fileItem.path}`;
-                const res = await fetch(rawUrl);
-                if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                const text = await res.text();
-                // Render markdown using marked
-                const html = marked.parse(text);
-                const div = document.createElement('div');
-                div.className = 'markdown-body';
-                div.innerHTML = html;
-                modalFileDisplay.innerHTML = '';
-                modalFileDisplay.appendChild(div);
-            } catch (e) {
-                console.error(e);
-                modalFileDisplay.innerHTML = `<p style="color:#ff6b6b;">⚠️ Could not load markdown.</p>`;
-            }
-        } else {
-            modalFileDisplay.innerHTML = `
-                <p style="color:#b3b3b3; padding:1rem 0;">
-                    📄 <strong>${fileName}</strong> — preview not available for this file type.
-                </p>
-                <p style="color:#555; font-size:0.85rem;">
-                    Use the button below to view the file on GitHub.
-                </p>
-            `;
-        }
+        modalFileDisplay.innerHTML = `
+            <div class="file-display-box">
+                <div class="file-name">📄 ${fileItem.name}</div>
+                <div class="file-message">Click the button below to view this file on GitHub.</div>
+            </div>
+        `;
+        // Change the bottom button to point to the file on GitHub
+        const fileUrl = `https://github.com/${username}/${repoName}/blob/main/${fileItem.path}`;
+        modalGitHubLink.href = fileUrl;
+        modalGitHubLink.textContent = 'View on GitHub →';
     }
 });
