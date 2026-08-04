@@ -1,58 +1,187 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>aaadarsh1337 | Portfolio</title>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="style.css" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Portfolio</title>
+<meta name="description" content="Cybersecurity portfolio and live GitHub repository index." />
+
+<!-- Fonts: IBM Plex (structure) + JetBrains Mono (nerd/code) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<!-- Markdown rendering -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.0/marked.min.js"></script>
+<!-- Syntax highlighting -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+<link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
-<div class="container">
-    <div class="nerd-header"><span>$</span> ./portfolio <span>_</span></div>
-    <header>
-    <h1 id="username">aaadarsh1337 | Hasher2009 | jackthereaper1337 </h1>
-        <p class="tagline"><!-- ✏️ EDIT -->Cybersecurity Enthusiast · CTF Player · Code tinkerer</p>
-        <p class="bio"><!-- ✏️ EDIT -->Passionate about penetration testing, reverse engineering, and building custom security tools. I document my journey through code and notes.</p>
-        <div class="social-links">
-            <!-- ✏️ EDIT these URLs -->
-            <a href="https://github.com/aaadarsh1337" target="_blank">GitHub</a>
-            <a href="https://tryhackme.com/p/aaadarsh1337" target="_blank">TryHackMe</a>
-            <a href="https://learn.cylabacademy.org/users/jackthereaper1337" target="_blank">PicoCTF</a>
-        </div>
-    </header>
-    <section class="repos-section">
-        <h2>>_ Repositories</h2>
-        <div id="repo-grid" class="repo-grid"><p style="color:#555;grid-column:1/-1;text-align:center;">⏳ Loading repositories...</p></div>
-    </section>
-    <footer>
-        <p><span class="cursor-blink">█</span> <!-- ✏️ EDIT -->© 2026 aaadarsh1337 · Built with <span style="color:#00ff41;">&lt;/&gt;</span> and caffeine</p>
-    </footer>
-</div>
 
-<!-- MODAL -->
-<div id="repoModal" class="modal-overlay">
-    <div class="modal">
-        <button class="modal-close" id="modalClose">&times;</button>
-        <h2 id="modalTitle">Repo Name</h2>
-        <p class="modal-desc" id="modalDesc">Description</p>
-        <div class="modal-meta">
-            <span id="modalLang">Language: N/A</span>
-            <span id="modalStars">★ 0</span>
-        </div>
-        <div id="modalFileBrowser" class="modal-file-browser">
-            <div id="modalFileList">Loading files...</div>
-            <div id="modalFileContent" style="display:none;">
-                <button id="modalBackBtn" class="back-btn">← Back to files</button>
-                <div id="modalFileDisplay"></div>
-            </div>
-        </div>
-        <div class="modal-actions">
-            <a id="modalGitHubLink" href="#" target="_blank">View on GitHub →</a>
-        </div>
+<!-- Fixed grid backdrop -->
+<div class="blueprint-grid" aria-hidden="true"></div>
+
+<!-- Corner brand / nav panel -->
+<header class="titleblock" id="titleblock">
+  <button class="titleblock__toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="titleblock__grid">
+    <div class="tb-cell tb-cell--name">
+      <span class="tb-label">NAME</span>
+      <span class="tb-value" id="tbName">—</span>
     </div>
+    <div class="tb-cell tb-cell--handle">
+      <span class="tb-label">HANDLE</span>
+      <span class="tb-value" id="tbHandle">—</span>
+    </div>
+    <div class="tb-cell tb-cell--focus">
+      <span class="tb-label">FOCUS</span>
+      <span class="tb-value" id="tbFocus">—</span>
+    </div>
+    <div class="tb-cell tb-cell--loc">
+      <span class="tb-label">LOC</span>
+      <span class="tb-value" id="tbLoc">—</span>
+    </div>
+  </div>
+  <nav class="titleblock__nav" id="siteNav">
+    <a href="#about" data-nav="about">01 About</a>
+    <a href="#skillset" data-nav="skillset">02 Skillset</a>
+    <a href="#repositories" data-nav="repositories">03 Repositories</a>
+    <a href="#certificates" data-nav="certificates">04 Certificates</a>
+    <a href="#contact" data-nav="contact">05 Contact</a>
+  </nav>
+</header>
+
+<main>
+
+  <!-- FIG 01 — ABOUT / HERO -->
+  <section class="sheet" id="about" data-fig="01">
+    <div class="sheet__inner">
+      <p class="fig-label">FIG. 01 — ABOUT</p>
+      <div class="hero">
+        <div class="hero__portrait">
+          <img id="avatarImg" src="assets/avatar.jpg" alt="Portrait" />
+          <div class="hero__portrait-frame" aria-hidden="true"></div>
+        </div>
+        <div class="hero__text">
+          <h1 id="heroName">ADARSH PILLAI</h1>
+          <p class="hero__tagline" id="heroTagline">Attack to Defend</p>
+          <div class="hero__handles" id="heroHandles"></div>
+          <div class="hero__meta">
+            <span id="heroLocation">— Location —</span>
+            <span class="dim">·</span>
+            <span id="heroFocus">— Current focus —</span>
+          </div>
+          <div class="hero__bio" id="heroBio"></div>
+          <div class="hero__actions">
+            <a class="btn btn--primary" id="resumeBtn" href="#" target="_blank" rel="noopener">Download résumé ↗</a>
+            <a class="btn btn--ghost" href="#contact">Get in touch →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="dim-rule" aria-hidden="true"></div>
+
+  <!-- FIG 02 — SKILLSET -->
+  <section class="sheet" id="skillset" data-fig="02">
+    <div class="sheet__inner">
+      <p class="fig-label">FIG. 02 — SKILLSET</p>
+      <h2 class="sheet__title">What I work with</h2>
+      <p class="sheet__hint">Select a category to expand it.</p>
+      <div class="relay-row" id="skillButtons"></div>
+      <div class="chip-panel" id="skillChips"></div>
+    </div>
+  </section>
+
+  <div class="dim-rule" aria-hidden="true"></div>
+
+  <!-- FIG 03 — REPOSITORIES -->
+  <section class="sheet" id="repositories" data-fig="03">
+    <div class="sheet__inner">
+      <p class="fig-label">FIG. 03 — REPOSITORIES</p>
+      <h2 class="sheet__title">Live from GitHub</h2>
+      <p class="sheet__hint" id="repoStatus">&gt; fetching repository index_</p>
+      <div class="repo-grid" id="repoGrid"></div>
+    </div>
+  </section>
+
+  <div class="dim-rule" aria-hidden="true"></div>
+
+  <!-- FIG 04 — CERTIFICATES -->
+  <section class="sheet" id="certificates" data-fig="04">
+    <div class="sheet__inner">
+      <p class="fig-label">FIG. 04 — CERTIFICATES</p>
+      <h2 class="sheet__title">Certificate library [Can be found on GitHub]</h2>
+      <div class="cert-grid" id="certGrid"></div>
+    </div>
+  </section>
+
+  <div class="dim-rule" aria-hidden="true"></div>
+
+  <!-- FIG 05 — CONTACT -->
+  <section class="sheet" id="contact" data-fig="05">
+    <div class="sheet__inner">
+      <p class="fig-label">FIG. 05 — CONTACT</p>
+      <h2 class="sheet__title">Get in touch</h2>
+      <p class="sheet__hint">Find me on these platforms.</p>
+      <div class="contact-list" id="contactList"></div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <p class="footer-note">Built as a static site · data loads live from the GitHub API</p>
+  </footer>
+
+</main>
+
+<!-- File reader modal -->
+<div class="filesheet" id="fileSheet" aria-hidden="true">
+  <div class="filesheet__backdrop" id="fileSheetBackdrop"></div>
+  <div class="filesheet__panel" role="dialog" aria-modal="true" aria-label="File viewer">
+    <div class="filesheet__header">
+      <div class="filesheet__breadcrumb">
+        <span class="tb-label">REPO</span><span id="fsRepo">—</span>
+        <span class="tb-label">PATH</span><span id="fsPath">—</span>
+      </div>
+      <button class="filesheet__close" id="fsClose" aria-label="Close">×</button>
+    </div>
+    <div class="filesheet__body" id="fsBody">
+      <p class="dim">Loading file_</p>
+    </div>
+    <div class="filesheet__footer">
+      <span class="dim" id="fsMeta"></span>
+      <a id="fsGithubLink" class="btn btn--ghost btn--small" href="#" target="_blank" rel="noopener">Open on GitHub ↗</a>
+    </div>
+  </div>
 </div>
 
-<script src="script.js"></script>
+<!-- Repo browser modal (file tree) -->
+<div class="filesheet" id="treeSheet" aria-hidden="true">
+  <div class="filesheet__backdrop" id="treeSheetBackdrop"></div>
+  <div class="filesheet__panel" role="dialog" aria-modal="true" aria-label="Repository files">
+    <div class="filesheet__header">
+      <div class="filesheet__breadcrumb">
+        <span class="tb-label">REPO</span><span id="tsRepo">—</span>
+      </div>
+      <button class="filesheet__close" id="tsClose" aria-label="Close">×</button>
+    </div>
+    <div class="filesheet__body" id="tsBody">
+      <p class="dim">Loading file tree_</p>
+    </div>
+    <div class="filesheet__footer">
+      <span class="dim">Files open inline · unreadable types redirect to GitHub</span>
+      <a id="tsGithubLink" class="btn btn--ghost btn--small" href="#" target="_blank" rel="noopener">View repo on GitHub ↗</a>
+    </div>
+  </div>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/main.js"></script>
 </body>
 </html>
