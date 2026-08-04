@@ -150,9 +150,9 @@
       card.innerHTML = `
         <img src="${escapeHtml(c.image || "assets/cert-placeholder.svg")}" alt="" />
         <div>
-          <h3>${escapeHtml(c.name)}</h3>
+          <h3>${escapeHtml(c.name)}</a></h3>
           <div class="cert-meta">${escapeHtml(c.issuer || "")}${c.date ? " · " + escapeHtml(c.date) : ""}</div>
-          ${c.credentialUrl ? `<a href="${escapeHtml(c.credentialUrl)}" target="_blank" rel="noopener">View credential ↗</a>` : ""}
+          ${c.credentialUrl ? `<a href="${escapeHtml(c.credentialUrl)}" target="_blank" rel="noopener">View certificate ↗</a>` : ""}
         </div>
       `;
       grid.appendChild(card);

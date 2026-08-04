@@ -72,14 +72,14 @@ window.PORTFOLIO_CONFIG = {
       name: "ADVENT OF CYBER 3",
       issuer: "TryHackMe",
       date: "2021",
-      credentialUrl: "https://github.com/aaadarsh1337/certificates/AOC3.png",                          // verification link (optional)
+      credentialUrl: "https://github.com/aaadarsh1337/aaadarsh1337.github.io/blob/main/assets/AOC3.png",                          // verification link (optional)
       image: "assets/AOC3.png"        // drop a real badge into assets/ and point here
     },
     {
       name: "PRACTICAL ETHICAL HACKING",
       issuer: "TCM Security & Udemy",
       date: "2021",
-      credentialUrl: "https://github.com/aaadarsh1337/certificates/course.jpg",                          // verification link (optional)
+      credentialUrl: "https://github.com/aaadarsh1337/aaadarsh1337.github.io/blob/main/assets/course.jpg",                          // verification link (optional)
       image: "assets/course.jpg"        // drop a real badge into assets/ and point here
     }
   ],
