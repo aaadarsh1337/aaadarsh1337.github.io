@@ -75,7 +75,7 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 600; margin: 0 0 0.45em; co
   background: var(--bg-panel);
   border: 1px solid var(--line);
   box-shadow: 3px 3px 0 rgba(0,0,0,0.35);
-  max-width: 280px;
+  width: 250px;
   font-family: var(--mono);
 }
 .titleblock__toggle {
@@ -86,12 +86,12 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 600; margin: 0 0 0.45em; co
   grid-template-columns: 1fr 1fr;
 }
 .tb-cell {
-  padding: 10px 12px;
+  padding: 9px 11px;
   border-bottom: 1px solid var(--line);
   border-right: 1px solid var(--line);
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 2px;
   min-width: 0;
 }
 .tb-cell--handle,
@@ -128,124 +128,80 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 600; margin: 0 0 0.45em; co
   text-decoration: none;
 }
 
-@media (max-width: 760px) {
-  .titleblock {
-    left: 12px;
-    right: 12px;
-    top: 12px;
-    max-width: none;
-  }
-  .titleblock__toggle {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 4px;
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    width: 32px;
-    height: 32px;
-    background: none;
-    border: 1px solid var(--line);
-    cursor: pointer;
-    z-index: 2;
-  }
-  .titleblock__toggle span {
-    height: 2px;
-    background: var(--cyan);
-    margin: 0 6px;
-  }
-  .titleblock__nav {
-    display: none;
-  }
-  .titleblock__nav.open {
-    display: flex;
-  }
-}
-
 /* ---------- Layout / sheets ---------- */
 main {
   position: relative;
   z-index: 1;
-  padding-top: 170px;
-  padding-bottom: 48px;
-}
-@media (max-width: 760px) {
-  main { padding-top: 150px; }
+  padding: 40px 40px 56px 300px;
 }
 
 .sheet {
-  padding: 56px 28px 36px;
+  padding: 56px 0 40px;
 }
 .sheet__inner {
-  max-width: 920px;
+  max-width: 980px;          /* wider reading column */
   margin: 0 auto;
 }
 
 .fig-label {
   font-family: var(--mono);
-  font-size: 12px;
+  font-size: 13px;
   letter-spacing: 0.16em;
   color: var(--amber);
-  margin: 0 0 22px;
+  margin: 0 0 20px;
   text-transform: uppercase;
 }
 
 .sheet__title {
-  font-size: 28px;
-  margin-bottom: 8px;
+  font-size: 32px;           /* bigger headings */
+  margin-bottom: 10px;
 }
 .sheet__hint {
   color: var(--text-dim);
   font-family: var(--mono);
-  font-size: 13px;
+  font-size: 14px;
   margin: 0 0 28px;
 }
 
 .dim-rule {
-  max-width: 920px;
-  margin: 8px auto;
+  max-width: 980px;
+  margin: 12px auto;
   height: 1px;
   background: repeating-linear-gradient(90deg, var(--line) 0 6px, transparent 6px 12px);
   position: relative;
   z-index: 1;
 }
 
-.dim { color: var(--text-dim); font-family: var(--mono); }
-
-/* fade-in on scroll */
-.sheet,
 .site-footer {
-  opacity: 0;
-  transform: translateY(16px);
-  transition: opacity 0.55s ease, transform 0.55s ease;
+  max-width: 980px;
+  margin: 48px auto 32px;
+  padding: 0;
+  position: relative;
+  z-index: 1;
 }
-.sheet.in-view,
-.site-footer.in-view {
-  opacity: 1;
-  transform: none;
-}
-
 /* ---------- Hero / About ---------- */
 .hero {
   display: flex;
-  gap: 44px;
+  gap: 48px;
   align-items: flex-start;
 }
+
 .hero__portrait {
   position: relative;
-  width: 150px;
-  height: 150px;
+  width: 180px;          /* fixed size — stops the blow-up */
+  height: 180px;
   flex-shrink: 0;
 }
+
 .hero__portrait img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: cover;     /* crops the art nicely into the square */
   display: block;
   border: 1px solid var(--line);
   background: var(--bg-panel);
 }
+
 .hero__portrait-frame {
   position: absolute;
   top: -7px;
@@ -255,16 +211,24 @@ main {
   border: 1px dashed var(--line-bright);
   pointer-events: none;
 }
-.hero__text h1 {
-  font-size: 34px;
-  line-height: 1.2;
+
+.hero__text {
+  flex: 1;
+  min-width: 0;          /* lets text wrap instead of overflowing */
 }
+
+.hero__text h1 {
+  font-size: 40px;
+  line-height: 1.15;
+}
+
 .hero__tagline {
   color: var(--cyan);
   font-family: var(--mono);
-  font-size: 14px;
-  margin: 0 0 12px;
+  font-size: 15px;
+  margin: 0 0 14px;
 }
+
 .hero__handles {
   font-family: var(--mono);
   font-size: 12px;
@@ -274,49 +238,187 @@ main {
   flex-wrap: wrap;
   gap: 8px;
 }
+
 .hero__handles .handle-chip {
   border: 1px solid var(--line);
-  padding: 3px 10px;
+  padding: 4px 10px;
   background: rgba(111, 203, 235, 0.04);
+  text-decoration: none;
+  display: inline-flex;
+  gap: 6px;
+  align-items: baseline;
+  transition: border-color 0.15s ease, background 0.15s ease;
 }
+
+.hero__handles .handle-chip:hover {
+  border-color: var(--cyan);
+  background: rgba(111, 203, 235, 0.08);
+  text-decoration: none;
+}
+
 .hero__handles .handle-chip .platform {
   color: var(--text-dim);
 }
+
 .hero__handles .handle-chip .name {
   color: var(--text-muted);
 }
+
 .hero__meta {
   font-family: var(--mono);
-  font-size: 12px;
+  font-size: 13px;
   color: var(--text-muted);
-  margin-bottom: 18px;
+  margin-bottom: 20px;
 }
-.hero__meta .dim {
-  margin: 0 8px;
-}
+
 .hero__bio p {
-  margin: 0 0 14px;
+  margin: 0 0 16px;
   color: var(--text-muted);
-  max-width: 58ch;
-  font-size: 15px;
+  max-width: 62ch;
+  font-size: 16px;
+  line-height: 1.7;
 }
+
 .hero__actions {
   display: flex;
   gap: 12px;
-  margin-top: 22px;
+  margin-top: 24px;
   flex-wrap: wrap;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 760px) {
+  .hero {
+    flex-direction: column;
+    gap: 28px;
+  }
+  .hero__portrait {
+    width: 140px;
+    height: 140px;
+  }
+  .hero__text h1 {
+    font-size: 30px;
+  }
+}
+
+/* ---------- Cards & grids a bit roomier ---------- */
+.repo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+.repo-card {
+  padding: 20px;
+}
+.repo-card h3 {
+  font-size: 16px;
+}
+.repo-card p.desc {
+  font-size: 14px;
+  min-height: 42px;
+}
+
+.cert-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
+}
+.cert-card {
+  padding: 20px;
+  min-height: 100px;         /* helps short cert sections get scrollspy attention */
+}
+.cert-card h3 {
+  font-size: 15px;
+}
+
+.contact-list {
+  font-size: 15px;
+  max-width: 560px;
+}
+.contact-list .row {
+  padding: 16px 0;
+}
+.contact-list .row span.k {
+  min-width: 120px;
+}
+
+.btn {
+  font-size: 14px;
+  padding: 12px 18px;
+}
+
+.relay-btn {
+  font-size: 14px;
+  padding: 12px 16px;
+}
+.chip {
+  font-size: 13px;
+  padding: 8px 14px;
+}
+
+/* ---------- Mobile (unchanged behaviour, tuned sizes) ---------- */
+@media (max-width: 760px) {
+  .titleblock {
+    top: 0;
+    left: 0;
+    right: 0;
+    width: auto;
+    border: none;
+    border-bottom: 1px solid var(--line);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+  }
+  .titleblock__toggle {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 34px;
+    height: 34px;
+    background: var(--bg-panel);
+    border: 1px solid var(--line);
+    cursor: pointer;
+    z-index: 2;
+  }
+  .titleblock__toggle span {
+    height: 2px;
+    background: var(--cyan);
+    margin: 0 7px;
+  }
+  .tb-cell--focus,
+  .tb-cell--loc {
+    display: none;
+  }
+  .titleblock__nav {
+    display: none;
+  }
+  .titleblock__nav.open {
+    display: flex;
+  }
+  .titleblock:has(.titleblock__nav.open) .tb-cell--focus,
+  .titleblock:has(.titleblock__nav.open) .tb-cell--loc {
+    display: flex;
+  }
+
+  main {
+    padding: 110px 18px 40px;
+  }
+  .sheet {
+    padding: 40px 0 28px;
+  }
+  .sheet__title {
+    font-size: 26px;
+  }
   .hero {
     flex-direction: column;
     gap: 28px;
   }
   .hero__text h1 {
-    font-size: 28px;
+    font-size: 30px;
   }
-  .sheet {
-    padding: 40px 18px 28px;
+  .hero__bio p {
+    font-size: 15px;
   }
 }
 
@@ -355,58 +457,109 @@ main {
   font-size: 12px;
 }
 
-/* ---------- Skillset ---------- */
-.relay-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 26px;
-}
-.relay-btn {
-  font-family: var(--mono);
-  font-size: 13px;
-  background: var(--bg-panel);
-  border: 1px solid var(--line);
-  color: var(--text-muted);
-  padding: 11px 16px;
-  cursor: pointer;
-  position: relative;
-  transition: all 0.15s ease;
-}
-.relay-btn::before { content: '[ '; color: var(--text-dim); }
-.relay-btn::after  { content: ' ]'; color: var(--text-dim); }
-.relay-btn:hover {
-  color: var(--text);
-  border-color: var(--line-bright);
-}
-.relay-btn.active {
-  color: var(--bg);
-  background: var(--cyan);
-  border-color: var(--cyan);
-}
-.relay-btn.active::before,
-.relay-btn.active::after {
-  color: var(--bg);
+/* ---------- Skillset (category cards) ---------- */
+.skill-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
 }
 
-.chip-panel {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  min-height: 44px;
-}
-.chip {
-  font-family: var(--mono);
-  font-size: 12px;
-  padding: 7px 13px;
+.skill-card {
+  background: var(--bg-panel);
   border: 1px solid var(--line);
-  color: var(--text);
-  background: rgba(111, 203, 235, 0.05);
-  animation: chipIn 0.35s ease both;
+  padding: 20px 22px;
+  position: relative;
 }
-@keyframes chipIn {
-  from { opacity: 0; transform: translateY(4px); }
-  to   { opacity: 1; transform: none; }
+
+.skill-card::before,
+.skill-card::after {
+  content: '';
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  border-color: var(--line-bright);
+}
+.skill-card::before {
+  top: -1px;
+  left: -1px;
+  border-top: 2px solid var(--line-bright);
+  border-left: 2px solid var(--line-bright);
+}
+.skill-card::after {
+  bottom: -1px;
+  right: -1px;
+  border-bottom: 2px solid var(--line-bright);
+  border-right: 2px solid var(--line-bright);
+}
+
+.skill-card__title {
+  font-family: var(--mono);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--cyan);
+  margin: 0 0 14px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.skill-card__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.skill-card__list li {
+  font-size: 15px;
+  color: var(--text);
+  line-height: 1.4;
+  padding-left: 14px;
+  position: relative;
+}
+
+.skill-card__list li::before {
+  content: '▸';
+  position: absolute;
+  left: 0;
+  color: var(--amber);
+  font-size: 12px;
+  top: 2px;
+}
+
+/* Mobile: single column */
+@media (max-width: 760px) {
+  .sheet__inner,
+  .dim-rule,
+  .site-footer {
+        max-width: none;
+        margin-left: 0;
+        margin-right: 0;
+  }
+
+  .skill-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+  .skill-card {
+    padding: 18px 16px;
+  }
+  .skill-card__title {
+    font-size: 13px;
+    margin-bottom: 12px;
+  }
+  .skill-card__list li {
+    font-size: 14px;
+  }
+}
+
+/* Slightly wider screens can keep 2 cols; very wide still 2 for readability */
+@media (min-width: 1100px) {
+  .skill-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
 }
 
 /* ---------- Repo grid ---------- */
@@ -540,15 +693,15 @@ main {
 
 /* ---------- Footer ---------- */
 .site-footer {
-  max-width: 920px;
+  max-width: 980px;
   margin: 48px auto 32px;
-  padding: 0 28px;
+  padding: 0;
   position: relative;
   z-index: 1;
 }
 .footer-note {
   font-family: var(--mono);
-  font-size: 12px;
+  font-size: 13px;
   color: var(--text-dim);
   margin: 0;
   padding-top: 20px;

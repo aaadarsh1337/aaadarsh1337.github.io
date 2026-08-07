@@ -104,39 +104,29 @@
 
   // ---------------- Skillset ----------------
   function renderSkills() {
-    const btnRow = document.getElementById("skillButtons");
-    const chipPanel = document.getElementById("skillChips");
-    btnRow.innerHTML = "";
-    chipPanel.innerHTML = "";
+    const grid = document.getElementById("skillGrid");
+    if (!grid) return;
+    grid.innerHTML = "";
 
-    (CFG.skills || []).forEach((group, idx) => {
-      const btn = document.createElement("button");
-      btn.className = "relay-btn";
-      btn.textContent = group.category;
-      btn.setAttribute("aria-pressed", "false");
-      btn.addEventListener("click", () => {
-        const isActive = btn.classList.contains("active");
-        btnRow.querySelectorAll(".relay-btn").forEach((b) => {
-          b.classList.remove("active");
-          b.setAttribute("aria-pressed", "false");
-        });
-        if (isActive) {
-          chipPanel.innerHTML = "";
-          return;
-        }
-        btn.classList.add("active");
-        btn.setAttribute("aria-pressed", "true");
-        chipPanel.innerHTML = "";
-        group.items.forEach((item, i) => {
-          const chip = document.createElement("span");
-          chip.className = "chip";
-          chip.style.animationDelay = (i * 0.04) + "s";
-          chip.textContent = item;
-          chipPanel.appendChild(chip);
-        });
+    (CFG.skills || []).forEach((group) => {
+      const card = document.createElement("div");
+      card.className = "skill-card";
+
+      const title = document.createElement("h3");
+      title.className = "skill-card__title";
+      title.textContent = group.category;
+      card.appendChild(title);
+
+      const list = document.createElement("ul");
+      list.className = "skill-card__list";
+      (group.items || []).forEach((item) => {
+        const li = document.createElement("li");
+        li.textContent = item;
+        list.appendChild(li);
       });
-      btnRow.appendChild(btn);
-      if (idx === 0) btn.click(); // expand first category by default
+      card.appendChild(list);
+
+      grid.appendChild(card);
     });
   }
 
@@ -413,7 +403,6 @@
       toggle.setAttribute("aria-expanded", open ? "true" : "false");
     });
 
-    // close mobile nav when a link is clicked
     nav.querySelectorAll("a").forEach((a) => {
       a.addEventListener("click", () => {
         nav.classList.remove("open");
@@ -424,20 +413,28 @@
     const sections = Array.from(document.querySelectorAll(".sheet[data-fig]"));
     const navLinks = Array.from(nav.querySelectorAll("a"));
 
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add("in-view");
-          const id = entry.target.id;
-          navLinks.forEach((a) => a.classList.toggle("active", a.dataset.nav === id));
-        }
-      });
-    }, { threshold: 0.3 });
-    sections.forEach((s) => io.observe(s));
+    // More reliable scrollspy — works even for short sections like Certificates
+    function updateActive() {
+      const marker = window.scrollY + window.innerHeight * 0.28;
+      let current = sections[0];
+      for (const s of sections) {
+        if (s.offsetTop <= marker) current = s;
+      }
+      const id = current.id;
+      navLinks.forEach((a) => a.classList.toggle("active", a.dataset.nav === id));
+      current.classList.add("in-view");
+    }
 
+    window.addEventListener("scroll", updateActive, { passive: true });
+    updateActive();
+
+    // Still fade sections in as they appear
     const footIo = new IntersectionObserver((entries) => {
-      entries.forEach((e) => { if (e.isIntersecting) e.target.classList.add("in-view"); });
-    }, { threshold: 0.1 });
+      entries.forEach((e) => {
+        if (e.isIntersecting) e.target.classList.add("in-view");
+      });
+    }, { threshold: 0.12 });
+    sections.forEach((s) => footIo.observe(s));
     const foot = document.querySelector(".site-footer");
     if (foot) footIo.observe(foot);
   }

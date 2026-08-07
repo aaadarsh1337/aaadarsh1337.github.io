@@ -16,7 +16,7 @@ window.PORTFOLIO_CONFIG = {
     // Repo names to always show first, in the exact order you list them.
     // Everything not listed here follows by most-recently-updated.
     // Example: pinnedRepos: ["my-best-project", "ctf-writeups", "pentest-notes"]
-    pinnedRepos: ["picoCTF", "CourseNotes-cybersec", "CustomTools", "certificates" ]
+    pinnedRepos: ["picoCTF_rawNotes", "CourseNotes-cybersec", "CustomTools_cybersec", "cybersec_certificates" ]
   },
 
   // --- Identity -----------------------------------------------------
@@ -40,7 +40,7 @@ window.PORTFOLIO_CONFIG = {
       "Most of what I do is hands-on: I break down problems, explore how systems behave, and document what I learn along the way—whether it’s through clean code, notes, or practical experiments. My goal is to keep leveling up by tackling real challenges, studying the “why” behind the behavior, and continuously improving my workflow.",
       "On this portfolio, you’ll find projects and repositories focused on security tooling, CTF write-ups, and cybersec learning notes, plus the small experiments that help me get better every step of the way."
     ],
-    resumeUrl: ""   // EDIT ME: link to a hosted PDF resume. Leave blank and the button hides itself.
+    resumeUrl: "https://github.com"   // EDIT ME: link to a hosted PDF resume. Leave blank and the button hides itself.
   },
 
   // --- Skillset (button-based reveal) --------------------------------
