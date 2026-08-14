@@ -139,14 +139,23 @@
     });
   }
 
-  function filteredList() {
-    const q = searchQuery.trim().toLowerCase();
-    return allChallenges.filter(function (c) {
-      if (activeFilter !== "all" && c.event !== activeFilter) return false;
-      if (!q) return true;
-      return (c.event + " " + c.name + " " + c.path).toLowerCase().indexOf(q) !== -1;
-    });
-  }
+  function normalize(str) {
+      return String(str)
+        .toLowerCase()
+        .replace(/[_\-]+/g, " ")   // underscores & hyphens â†’ space
+        .replace(/\s+/g, " ")      // collapse spaces
+        .trim();
+    }
+
+    function filteredList() {
+      const q = normalize(searchQuery);
+      return allChallenges.filter(function (c) {
+        if (activeFilter !== "all" && c.event !== activeFilter) return false;
+        if (!q) return true;
+        const hay = normalize(c.event + " " + c.name + " " + c.path);
+        return hay.indexOf(q) !== -1;
+      });
+    }
 
   function renderGrid() {
     const container = document.getElementById("writeupSections");
