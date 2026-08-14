@@ -69,18 +69,25 @@ window.PORTFOLIO_CONFIG = {
   // Duplicate the object below for each certificate. Order = display order.
   certificates: [
     {
+      name: "HACKER HOLIDAYS",
+      issuer: "TryHackMe",
+      date: "2026",
+      credentialUrl: "https://tryhackme-certificates.s3-eu-west-1.amazonaws.com/THM-THCFDTXKFZ.pdf",                          // verification link (optional)
+      image: "assets/certificate.png"        // drop a real badge into assets/ and point here
+    },
+    {
       name: "ADVENT OF CYBER 3",
       issuer: "TryHackMe",
       date: "2021",
-      credentialUrl: "https://github.com/aaadarsh1337/aaadarsh1337.github.io/blob/main/assets/AOC3.png",                          // verification link (optional)
-      image: "assets/AOC3.png"        // drop a real badge into assets/ and point here
+      credentialUrl: "https://tryhackme-certificates.s3-eu-west-1.amazonaws.com/THM-KMESEDNQTS.pdf",                          // verification link (optional)
+      image: "assets/certificate.png"        // drop a real badge into assets/ and point here
     },
     {
       name: "PRACTICAL ETHICAL HACKING",
       issuer: "TCM Security & Udemy",
       date: "2021",
-      credentialUrl: "https://github.com/aaadarsh1337/aaadarsh1337.github.io/blob/main/assets/course.jpg",                          // verification link (optional)
-      image: "assets/course.jpg"        // drop a real badge into assets/ and point here
+      credentialUrl: "https://www.udemy.com/certificate/UC-17b88a43-ad89-4b6a-a73a-ce3f22cdc753/",                          // verification link (optional)
+      image: "assets/certificate.png"        // drop a real badge into assets/ and point here
     }
   ],
 
