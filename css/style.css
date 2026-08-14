@@ -359,23 +359,23 @@ main {
   font-family: var(--mono);
   font-size: 13px;
   padding: 11px 16px;
-  border: 1px solid var(--amber);
-  background: rgba(242, 166, 90, 0.1);
-  color: var(--amber);
+  border: 1px solid var(--cyan);
+  background: rgba(111, 203, 235, 0.1);
+  color: var(--cyan);
   text-decoration: none;
   transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
 }
 
 .btn--writeups:hover {
   transform: translateY(-2px);
-  background: rgba(242, 166, 90, 0.18);
-  border-color: #f5b878;
-  color: #f5b878;
+  background: rgba(111, 203, 235, 0.1);
+  border-color: #8fd9f0;
+  color: #8fd9f0;
   text-decoration: none;
 }
 .btn-writeups__tag {
-  background: var(--amber);
-  color: #1a1206;
+  background: var(--cyan);
+  color: #0A1128;
   font-weight: 600;
   font-size: 11px;
   padding: 3px 7px;

@@ -95,8 +95,8 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 600; margin: 0 0 0.4em; col
 }
 .topbar__brand:hover { text-decoration: none; }
 .brand-mark {
-  background: var(--amber);
-  color: #1a1206;
+  background: var(--cyan);
+  color: #0A1128;
   font-weight: 600;
   font-size: 12px;
   padding: 4px 8px;

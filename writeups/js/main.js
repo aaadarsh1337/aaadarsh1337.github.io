@@ -293,7 +293,9 @@
         btn.type = "button";
         btn.className = "file-item " + (readable ? "readable" : "unreadable");
         btn.style.paddingLeft = indent + "px";
-        const kind = readable ? (isMd(f.name) ? "md" : "text") : "github \u2197";
+        const kind = !readable
+          ? "github \u2197"
+          : (isMd(f.name) ? "md" : (ext(f.name) || "text"));
         btn.innerHTML =
           '<span class="name">' + escapeHtml(f.name) + "</span>" +
           '<span class="kind">' + kind + "</span>";
