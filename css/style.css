@@ -350,6 +350,38 @@ main {
   font-size: 14px;
   padding: 12px 16px;
 }
+
+.btn--writeups {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 4px 0 18px;
+  font-family: var(--mono);
+  font-size: 13px;
+  padding: 11px 16px;
+  border: 1px solid var(--amber);
+  background: rgba(242, 166, 90, 0.1);
+  color: var(--amber);
+  text-decoration: none;
+  transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+}
+
+.btn--writeups:hover {
+  transform: translateY(-2px);
+  background: rgba(242, 166, 90, 0.18);
+  border-color: #f5b878;
+  color: #f5b878;
+  text-decoration: none;
+}
+.btn-writeups__tag {
+  background: var(--amber);
+  color: #1a1206;
+  font-weight: 600;
+  font-size: 11px;
+  padding: 3px 7px;
+  letter-spacing: 0.06em;
+}
+
 .chip {
   font-size: 13px;
   padding: 8px 14px;

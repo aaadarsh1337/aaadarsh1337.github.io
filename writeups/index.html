@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CTF Writeups</title>
+<meta name="description" content="CTF writeups, challenge notes, and security learning logs." />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.0/marked.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<div class="blueprint-grid" aria-hidden="true"></div>
+
+<header class="topbar">
+  <div class="topbar__inner">
+    <a class="topbar__brand" href="#" id="brandHome">
+      <span class="brand-mark">CTF</span>
+      <span class="brand-text">Writeups</span>
+    </a>
+    <div class="topbar__spacer"></div>
+    <div class="topbar__actions">
+      <a class="btn btn--ghost btn--small" id="portfolioLink" href="#">&#8592; Portfolio</a>
+      <a class="btn btn--ghost btn--small" id="githubRepoLink" href="#" target="_blank" rel="noopener">Repo &#8599;</a>
+    </div>
+    <button class="topbar__toggle" id="navToggle" aria-label="Menu" type="button">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<main>
+
+  <section class="view view--index" id="viewIndex">
+    <div class="page">
+      <header class="page-hero">
+        <p class="fig-label">CTF WRITEUPS</p>
+        <h1 id="pageTitle">Challenge notes &amp; writeups</h1>
+        <p class="page-sub" id="pageSub">Live from GitHub &middot; markdown renders here &middot; extras open on GitHub</p>
+        <div class="search-row">
+          <input type="search" id="searchInput" placeholder="Filter by name, event, tag..." autocomplete="off" />
+          <span class="search-meta" id="searchMeta"></span>
+        </div>
+      </header>
+
+      <div class="status-line" id="statusLine">&gt; loading writeups_</div>
+
+      <!-- Jump to section -->
+      <nav class="section-jump" id="sectionJump" hidden>
+        <p class="tb-label">JUMP TO</p>
+        <div class="section-jump__links" id="sectionJumpLinks"></div>
+      </nav>
+
+      <div id="writeupSections"></div>
+    </div>
+  </section>
+
+  <section class="view view--reader" id="viewReader" hidden>
+    <div class="reader-layout">
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar__head">
+          <button class="btn btn--ghost btn--small" id="backBtn" type="button">&#8592; All writeups</button>
+        </div>
+        <div class="sidebar__challenge">
+          <p class="tb-label">CHALLENGE</p>
+          <h2 id="sideTitle">â€”</h2>
+          <p class="side-path" id="sidePath">â€”</p>
+        </div>
+        <div class="sidebar__files">
+          <p class="tb-label">FILES</p>
+          <div class="file-list" id="fileList"></div>
+        </div>
+        <div class="sidebar__foot">
+          <a class="btn btn--ghost btn--small" id="sideGithub" href="#" target="_blank" rel="noopener">Open folder on GitHub &#8599;</a>
+        </div>
+      </aside>
+
+      <article class="reader" id="reader">
+        <div class="reader__toolbar">
+          <div class="reader__crumb">
+            <span class="tb-label">READING</span>
+            <span id="readerFile">â€”</span>
+          </div>
+          <a class="btn btn--ghost btn--small" id="readerGithub" href="#" target="_blank" rel="noopener">Source &#8599;</a>
+        </div>
+        <div class="reader__body" id="readerBody">
+          <p class="dim">Select a writeup...</p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <p class="footer-note">Writeups load live from GitHub &middot; non-markdown files open on GitHub</p>
+</footer>
+
+<script src="js/config.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
