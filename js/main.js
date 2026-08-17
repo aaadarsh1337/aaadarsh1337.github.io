@@ -205,7 +205,12 @@
       grid.innerHTML = "";
       repos.forEach((repo) => grid.appendChild(renderRepoCard(repo)));
     } catch (err) {
-      status.textContent = "Couldn't reach the GitHub API right now (rate limit or network). Try refreshing shortly, or visit the profile directly.";
+      const username = CFG.github.username;
+      status.innerHTML =
+        'GitHub API isn\'t reachable right now (rate limit or network). ' +
+        'You can still view the repos on GitHub: ' +
+        '<a href="https://github.com/' + username + '?tab=repositories" target="_blank" rel="noopener">github.com/' +
+        username + ' ↗</a>';
       console.error(err);
     }
   }

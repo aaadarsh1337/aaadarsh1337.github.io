@@ -464,8 +464,11 @@
         if (match) openChallenge(match);
       }
     } catch (err) {
-      status.textContent =
-        "Could not load the repo (rate limit, private repo, or wrong name/branch). Check config.js.";
+      status.innerHTML =
+        'GitHub API isn\'t reachable right now (rate limit or network). ' +
+        'You can still browse the writeups on GitHub: ' +
+        '<a href="https://github.com/' + USER + '/' + REPO +
+        '" target="_blank" rel="noopener">github.com/' + USER + '/' + REPO + ' ↗</a>';
       console.error(err);
     }
   }
