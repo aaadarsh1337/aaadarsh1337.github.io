@@ -759,18 +759,23 @@ main {
 .filesheet__panel {
   position: relative;
   z-index: 1;
-  max-width: 900px;
-  width: 92%;
-  margin: 5vh auto;
-  max-height: 88vh;
+
+  /* Increase the reader size */
+  max-width: 1100px;
+  width: 96%;
+
+  margin: 3vh auto;
+  max-height: 94vh;
+
   display: flex;
   flex-direction: column;
   background: var(--bg-panel-raised);
   border: 1px solid var(--line-bright);
-  box-shadow: 6px 6px 0 rgba(0,0,0,0.4);
+  box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.4);
   animation: sheetUnfold 0.28s ease both;
   transform-origin: top center;
 }
+
 @keyframes sheetUnfold {
   from { opacity: 0; transform: scaleY(0.96) translateY(-8px); }
   to   { opacity: 1; transform: none; }
@@ -820,14 +825,27 @@ main {
 .filesheet__body pre {
   background: #0d1530;
   padding: 16px;
-  overflow: auto;
+
+  /* Enable wrapping */
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+
+  overflow-x: hidden;
+
   font-family: var(--mono);
-  font-size: 13px;
+  font-size: 14px;
   border: 1px solid var(--line);
-  line-height: 1.5;
+  line-height: 1.55;
 }
+
 .filesheet__body code.hljs { background: transparent; }
-.filesheet__body .md-render { max-width: 70ch; }
+
+.filesheet__body .md-render {
+  max-width: 90ch;
+  overflow-wrap: anywhere;
+}
+
 .filesheet__body .md-render :is(h1,h2,h3) {
   font-family: var(--serif);
   color: var(--text);
@@ -853,6 +871,38 @@ main {
   font-size: 12px;
   gap: 12px;
   flex-wrap: wrap;
+}
+.filesheet__body {
+  width: 100%;
+  max-width: none;
+  box-sizing: border-box;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.filesheet__body pre {
+  width: 100%;
+  max-width: none;
+  box-sizing: border-box;
+
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  overflow-x: hidden;
+}
+
+.filesheet__body .md-render {
+  width: 100%;
+  max-width: none;
+  box-sizing: border-box;
+}
+.filesheet__body pre {
+  font-size: 16.5px;
+  line-height: 1.6;
+}
+.filesheet__body .md-render {
+  font-size: 16.5px;
+  line-height: 1.65;
 }
 
 .tree-list {
@@ -904,4 +954,21 @@ main {
 .redirect-card p {
   color: var(--text-muted);
   margin-bottom: 20px;
+}
+@media (max-width: 600px) {
+  .filesheet__panel {
+    width: 98%;
+    max-height: 96vh;
+    margin: 2vh auto;
+  }
+
+  .filesheet__body {
+    padding: 10px;
+  }
+
+  .filesheet__body pre {
+    padding: 12px;
+    font-size: 12px;
+    line-height: 1.45;
+  }
 }
