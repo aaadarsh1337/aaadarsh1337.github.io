@@ -33,7 +33,8 @@ window.PORTFOLIO_CONFIG = {
     handles: [
       { platform: "GitHub",   handle: "aaadarsh1337",        url: "https://github.com/aaadarsh1337" },
       { platform: "PicoCTF",  handle: "jackthereaper1337",   url: "https://learn.cylabacademy.org/users/jackthereaper1337" },
-      { platform: "TryHackMe", handle: "aaadarsh1337",       url: "https://tryhackme.com/p/aaadarsh1337" }
+      { platform: "TryHackMe", handle: "aaadarsh1337",       url: "https://tryhackme.com/p/aaadarsh1337" },
+      { platform: "LinkedIn", handle: "aaadarsh1337",        url: "https://linkedin.com/in/aaadarsh1337" }
     ],
     bio: [
       "I’m aaadarsh1337 | jackthereaper1337 | Hasher2009, a cybersecurity enthusiast and CTF player who loves turning ideas into working tools. I’m especially interested in penetration testing, reverse engineering, and building custom security utilities—from quick scripts for CTF challenges to more structured tools for learning and automation.",
@@ -97,7 +98,7 @@ window.PORTFOLIO_CONFIG = {
     github: "https://github.com/aaadarsh1337",
     tryhackme: "https://tryhackme.com/p/aaadarsh1337",
     picoctf: "https://learn.cylabacademy.org/users/jackthereaper1337",
-    linkedin: "",                    // leave blank to hide
+    linkedin: "https://linkedin.com/in/aaadarsh1337",                    // leave blank to hide
     extraLinks: []                   // e.g. [{ label: "Twitter / X", url: "https://..." }]
   }
 
