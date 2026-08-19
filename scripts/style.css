@@ -679,8 +679,13 @@ main { position: relative; z-index: 1; }
 /* File list in sidebar */
 .sidebar__files {
   flex: 1;
+  position: sticky;
+  top: 0;
+  left: 0;
+  height: 100vh;
   min-height: 0;
   overflow: auto;
+  overflow-y: auto;
 }
 .file-list {
   display: flex;

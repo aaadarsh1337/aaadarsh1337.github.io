@@ -97,10 +97,10 @@ def md_to_html(text: str) -> str:
     return markdown.markdown(
         text,
         extensions=[
-            FencedCodeExtension(),
+            "fenced_code",
+            "codehilite",
             TableExtension(),
             TocExtension(permalink=False),
-            "codehilite",
             "nl2br",
             "sane_lists",
         ],
@@ -204,9 +204,6 @@ PAGE_SHELL = """<!DOCTYPE html>
 {body}
 </main>
 
-<footer class="site-footer">
-  <p class="footer-note">All files available on GitHub</p>
-</footer>
 </body>
 </html>
 """
