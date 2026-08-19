@@ -3,12 +3,13 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Binary_Heaven · tryhackme</title>
-<meta name="description" content="CTF writeup: Binary_Heaven (tryhackme)" />
+<title>binary_heaven Â· tryhackme â€” CTF Writeups</title>
+<meta name="description" content="CTF writeup: binary_heaven (tryhackme)" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../../css/style.css" />
+<link rel="stylesheet" href="../../css/pygments.css" />
 </head>
 <body>
 <div class="blueprint-grid" aria-hidden="true"></div>
@@ -36,16 +37,16 @@
     </div>
     <div class="sidebar__challenge">
       <p class="tb-label">CHALLENGE</p>
-      <h2>Binary_Heaven</h2>
+      <h2>binary_heaven</h2>
       <p class="side-path">tryhackme</p>
     </div>
     <div class="sidebar__files">
       <p class="tb-label">FILES</p>
-      <div class="file-list"><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/tryhackme/Binary_Heaven/angel_A" target="_blank" rel="noopener"><span class="name">angel_A</span><span class="kind">github</span></a><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/tryhackme/Binary_Heaven/angel_B" target="_blank" rel="noopener"><span class="name">angel_B</span><span class="kind">github</span></a><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/tryhackme/Binary_Heaven/binexgod.png" target="_blank" rel="noopener"><span class="name">binexgod.png</span><span class="kind">github</span></a><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/tryhackme/Binary_Heaven/credentials_1614324056485.zip" target="_blank" rel="noopener"><span class="name">credentials_1614324056485.zip</span><span class="kind">github</span></a><a class="file-item readable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/tryhackme/Binary_Heaven/decodeA.py" target="_blank" rel="noopener"><span class="name">decodeA.py</span><span class="kind">py</span></a><a class="file-item readable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/tryhackme/Binary_Heaven/exploit.py" target="_blank" rel="noopener"><span class="name">exploit.py</span><span class="kind">py</span></a><a class="file-item readable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/tryhackme/Binary_Heaven/notes.md" target="_blank" rel="noopener"><span class="name">notes.md</span><span class="kind">md</span></a><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/tryhackme/Binary_Heaven/pwn_me" target="_blank" rel="noopener"><span class="name">pwn_me</span><span class="kind">github</span></a><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/tryhackme/Binary_Heaven/root.png" target="_blank" rel="noopener"><span class="name">root.png</span><span class="kind">github</span></a><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/tryhackme/Binary_Heaven/userpass.png" target="_blank" rel="noopener"><span class="name">userpass.png</span><span class="kind">github</span></a></div>
+      <div class="file-list"><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/tryhackme/binary_heaven/angel_A" target="_blank" rel="noopener"><span class="name">angel_A</span><span class="kind">github</span></a><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/tryhackme/binary_heaven/angel_B" target="_blank" rel="noopener"><span class="name">angel_B</span><span class="kind">github</span></a><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/tryhackme/binary_heaven/binexgod.png" target="_blank" rel="noopener"><span class="name">binexgod.png</span><span class="kind">github</span></a><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/tryhackme/binary_heaven/credentials_1614324056485.zip" target="_blank" rel="noopener"><span class="name">credentials_1614324056485.zip</span><span class="kind">github</span></a><a class="file-item readable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/tryhackme/binary_heaven/decodeA.py" target="_blank" rel="noopener"><span class="name">decodeA.py</span><span class="kind">py</span></a><a class="file-item readable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/tryhackme/binary_heaven/exploit.py" target="_blank" rel="noopener"><span class="name">exploit.py</span><span class="kind">py</span></a><a class="file-item readable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/tryhackme/binary_heaven/notes.md" target="_blank" rel="noopener"><span class="name">notes.md</span><span class="kind">md</span></a><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/tryhackme/binary_heaven/pwn_me" target="_blank" rel="noopener"><span class="name">pwn_me</span><span class="kind">github</span></a><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/tryhackme/binary_heaven/root.png" target="_blank" rel="noopener"><span class="name">root.png</span><span class="kind">github</span></a><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/tryhackme/binary_heaven/userpass.png" target="_blank" rel="noopener"><span class="name">userpass.png</span><span class="kind">github</span></a></div>
     </div>
     <div class="sidebar__foot">
-      <a class="btn btn--ghost btn--small sidebar-gh-btn" href="https://github.com/aaadarsh1337/ctf-writeups/tree/main/tryhackme/Binary_Heaven" target="_blank" rel="noopener">Open folder &#8599;</a>
-      <a class="btn btn--ghost btn--small sidebar-gh-btn" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/tryhackme/Binary_Heaven/notes.md" target="_blank" rel="noopener">View markdown &#8599;</a>
+      <a class="btn btn--ghost btn--small sidebar-gh-btn" href="https://github.com/aaadarsh1337/ctf-writeups/tree/main/tryhackme/binary_heaven" target="_blank" rel="noopener">Open folder &#8599;</a>
+      <a class="btn btn--ghost btn--small sidebar-gh-btn" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/tryhackme/binary_heaven/notes.md" target="_blank" rel="noopener">View markdown &#8599;</a>
     </div>
   </aside>
   <article class="reader">
@@ -54,10 +55,12 @@
         <span class="tb-label">READING</span>
         <span>notes.md</span>
       </div>
-      <a class="btn btn--ghost btn--small" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/tryhackme/Binary_Heaven/notes.md" target="_blank" rel="noopener">Source &#8599;</a>
+      <a class="btn btn--ghost btn--small" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/tryhackme/binary_heaven/notes.md" target="_blank" rel="noopener">Source &#8599;</a>
     </div>
     <div class="reader__body">
       <div class="md-render">
+<h1 id="binary-heaven">Binary Heaven</h1>
+<h2 id="room-link-httpstryhackmecomroombinaryheaven">Room link: https://tryhackme.com/room/binaryheaven</h2>
 <p>Hello Hackers! Welcome back to another writeup<br>
 Today we will be looking at <code>Binary_Heaven</code> from TryHackMe<br>
 So let's hop on without wasting much time</p>
@@ -109,25 +112,25 @@ When we run it, we see an address for <code>system</code></p>
 <p><code>THM{b1n3xg0d_pwn3d}</code></p>
 <p>Finally, lets move on to the final binary to get the root flag</p>
 <p>I ran the <code>secret_of_heaven</code> file, which just crashed the system for some reason? Let's ignore that. Our focus should be on the <code>vuln.c</code> and <code>vuln</code> files</p>
-<pre class="codehilite"><code class="language-c">#include &lt;stdlib.h&gt;
-#include &lt;unistd.h&gt;
-#include &lt;string.h&gt;
-#include &lt;sys/types.h&gt;
-#include &lt;stdio.h&gt;
+<div class="highlight"><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdlib.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;unistd.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;string.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;sys/types.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
 
-int main(int argc, char **argv, char **envp)
-{
-  gid_t gid;
-  uid_t uid;
-  gid = getegid();
-  uid = geteuid();
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">**</span><span class="n">argv</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">**</span><span class="n">envp</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="kt">gid_t</span><span class="w"> </span><span class="n">gid</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">uid_t</span><span class="w"> </span><span class="n">uid</span><span class="p">;</span>
+<span class="w">  </span><span class="n">gid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">getegid</span><span class="p">();</span>
+<span class="w">  </span><span class="n">uid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">geteuid</span><span class="p">();</span>
 
-  setresgid(gid, gid, gid);
-  setresuid(uid, uid, uid);
+<span class="w">  </span><span class="n">setresgid</span><span class="p">(</span><span class="n">gid</span><span class="p">,</span><span class="w"> </span><span class="n">gid</span><span class="p">,</span><span class="w"> </span><span class="n">gid</span><span class="p">);</span>
+<span class="w">  </span><span class="n">setresuid</span><span class="p">(</span><span class="n">uid</span><span class="p">,</span><span class="w"> </span><span class="n">uid</span><span class="p">,</span><span class="w"> </span><span class="n">uid</span><span class="p">);</span>
 
-  system(&quot;/usr/bin/env echo Get out of heaven lol&quot;);
-}
-</code></pre>
+<span class="w">  </span><span class="n">system</span><span class="p">(</span><span class="s">&quot;/usr/bin/env echo Get out of heaven lol&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
 
 <p>Here, the vuln binary is run by root. When we analyze the code, we see something interesting.<br>
 env is called via the absolute path <strong>BUT</strong> echo isn't<br>

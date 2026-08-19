@@ -94,18 +94,65 @@ def find_writeups(source: Path):
 
 
 def md_to_html(text: str) -> str:
+    # fenced_code + codehilite: use language tags like ```python
+    # guess_lang=True helps when the fence has no language
     return markdown.markdown(
         text,
         extensions=[
             "fenced_code",
             "codehilite",
-            TableExtension(),
-            TocExtension(permalink=False),
+            "tables",
+            "toc",
             "nl2br",
             "sane_lists",
         ],
+        extension_configs={
+            "codehilite": {
+                "guess_lang": True,
+                "noclasses": False,       # use CSS classes
+                "pygments_style": "monokai",
+                "css_class": "highlight",
+            },
+            "toc": {"permalink": False},
+        },
         output_format="html5",
     )
+
+
+def write_pygments_css(dest_css: Path) -> None:
+    """Write a monokai stylesheet for highlighted code blocks."""
+    try:
+        from pygments.formatters import HtmlFormatter
+        css = HtmlFormatter(style="monokai").get_style_defs(".highlight")
+        # Make it sit well on the dark blueprint background
+        extra = """
+.highlight {
+  background: #0d1530 !important;
+  border: 1px solid #3E5E8C;
+  padding: 14px 16px;
+  overflow-x: auto;
+  margin: 0 0 1.3em;
+}
+.highlight pre {
+  background: transparent !important;
+  border: none !important;
+  margin: 0;
+  padding: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.highlight code {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  font-family: "JetBrains Mono", "SF Mono", ui-monospace, monospace;
+  font-size: 13.5px;
+  line-height: 1.6;
+}
+"""
+        dest_css.write_text(css + "\n" + extra, encoding="utf-8")
+    except Exception as e:
+        print(f"  warning: could not write pygments css ({e})")
 
 
 def copy_assets(folder: Path, dest: Path):
@@ -176,12 +223,13 @@ PAGE_SHELL = """<!DOCTYPE html>
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>{title}</title>
+<title>{title} â€” CTF Writeups</title>
 <meta name="description" content="{description}" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{css_prefix}css/style.css" />
+<link rel="stylesheet" href="{css_prefix}css/pygments.css" />
 </head>
 <body>
 <div class="blueprint-grid" aria-hidden="true"></div>
@@ -307,6 +355,8 @@ def build(source: Path, out: Path, portfolio_url: str, github_user: str, github_
     if not css_src.exists():
         raise SystemExit("style.css missing next to build_writeups.py")
     shutil.copy2(css_src, out / "css" / "style.css")
+    write_pygments_css(out / "css" / "pygments.css")
+    print("  wrote  css/pygments.css")
 
     writeups = find_writeups(source)
     gh_base = f"https://github.com/{github_user}/{github_repo}"
@@ -345,7 +395,7 @@ def build(source: Path, out: Path, portfolio_url: str, github_user: str, github_
             file_list=file_list_html,
         )
         page = PAGE_SHELL.format(
-            title=html.escape(f"{w['name']} · {w['event']}"),
+            title=html.escape(f"{w['name']} Â· {w['event']}"),
             description=html.escape(f"CTF writeup: {w['name']} ({w['event']})"),
             css_prefix=css_prefix,
             home_href=home_href,

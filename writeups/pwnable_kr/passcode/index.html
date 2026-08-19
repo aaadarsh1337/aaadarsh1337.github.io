@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>passcode Â· pwnable_kr â€” CTF Writeups</title>
+<meta name="description" content="CTF writeup: passcode (pwnable_kr)" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../css/style.css" />
+<link rel="stylesheet" href="../../css/pygments.css" />
+</head>
+<body>
+<div class="blueprint-grid" aria-hidden="true"></div>
+
+<header class="topbar">
+  <div class="topbar__inner">
+    <a class="topbar__brand" href="../../index.html">
+      <span class="brand-mark">CTF</span>
+      <span class="brand-text">Writeups</span>
+    </a>
+    <div class="topbar__spacer"></div>
+    <div class="topbar__actions">
+      <a class="btn btn--ghost btn--small" href="https://aaadarsh1337.github.io/">&#8592; Portfolio</a>
+      <a class="btn btn--ghost btn--small" href="https://github.com/aaadarsh1337/ctf-writeups" target="_blank" rel="noopener">Repo &#8599;</a>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<div class="reader-layout reader-layout--static">
+  <aside class="sidebar">
+    <div class="sidebar__head">
+      <a class="btn btn--ghost btn--small" href="../../index.html">&#8592; All writeups</a>
+    </div>
+    <div class="sidebar__challenge">
+      <p class="tb-label">CHALLENGE</p>
+      <h2>passcode</h2>
+      <p class="side-path">pwnable_kr</p>
+    </div>
+    <div class="sidebar__files">
+      <p class="tb-label">FILES</p>
+      <div class="file-list"><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/pwnable_kr/passcode/GOT.png" target="_blank" rel="noopener"><span class="name">GOT.png</span><span class="kind">github</span></a><a class="file-item readable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/pwnable_kr/passcode/claude_summary.md" target="_blank" rel="noopener"><span class="name">claude_summary.md</span><span class="kind">md</span></a><a class="file-item readable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/pwnable_kr/passcode/exploit.py" target="_blank" rel="noopener"><span class="name">exploit.py</span><span class="kind">py</span></a><a class="file-item readable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/pwnable_kr/passcode/notes.md" target="_blank" rel="noopener"><span class="name">notes.md</span><span class="kind">md</span></a><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/pwnable_kr/passcode/files/passcode" target="_blank" rel="noopener"><span class="name">files/passcode</span><span class="kind">github</span></a><a class="file-item readable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/pwnable_kr/passcode/files/passcode.c" target="_blank" rel="noopener"><span class="name">files/passcode.c</span><span class="kind">c</span></a><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/pwnable_kr/passcode/files/readme" target="_blank" rel="noopener"><span class="name">files/readme</span><span class="kind">github</span></a></div>
+    </div>
+    <div class="sidebar__foot">
+      <a class="btn btn--ghost btn--small sidebar-gh-btn" href="https://github.com/aaadarsh1337/ctf-writeups/tree/main/pwnable_kr/passcode" target="_blank" rel="noopener">Open folder &#8599;</a>
+      <a class="btn btn--ghost btn--small sidebar-gh-btn" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/pwnable_kr/passcode/notes.md" target="_blank" rel="noopener">View markdown &#8599;</a>
+    </div>
+  </aside>
+  <article class="reader">
+    <div class="reader__toolbar">
+      <div class="reader__crumb">
+        <span class="tb-label">READING</span>
+        <span>notes.md</span>
+      </div>
+      <a class="btn btn--ghost btn--small" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/pwnable_kr/passcode/notes.md" target="_blank" rel="noopener">Source &#8599;</a>
+    </div>
+    <div class="reader__body">
+      <div class="md-render">
+<h1 id="passcode">passcode</h1>
+<h2 id="challenge-httpspwnablekrplayphp">Challenge: https://pwnable.kr/play.php</h2>
+<p>Hello Hackers!</p>
+<p>Welcome back to another writeup on a pwnable.kr challenge<br>
+Today we will be looking at <code>passcode</code></p>
+<p>The hint:</p>
+<p>Mommy told me to make a passcode based login system.<br>
+My first trial C implementation compiled without any error!<br>
+Well, there were some compiler warnings, but who cares about that?</p>
+<p>--&gt; 'Compiler warnings' looks interesting</p>
+<p>Let us read the source code</p>
+<p>From the source code, we find:</p>
+<p><code>ha! mommy told me that 32bit is vulnerable to bruteforcing :)</code></p>
+<p>That is interesting. Maybe it has to do something with bruteforcing</p>
+<p>The file looks simple enough with checks of passcode1 = 338150 and passcode2 = 13371337<br>
+But when we try to run the binary and use these creds, we get a segmentation fault. </p>
+<p>Lets try to compile the binary ourself to see what warnings were encountered</p>
+<p>Well we cant, because the original code is a lil different. We get error while trying to complile</p>
+<p>Lets analyze the binary using BinaryNinja</p>
+<p>Another flaw we notice is that passcode1 and 2 expect pointer but get int (%d in scanf)<br>
+--&gt; in scanf("%d", smtg), the smtg is the destinaion address. Hence we need to pass &amp;passcode1 </p>
+<p>After some research, we find that fflush(stdin) is the problem </p>
+<p>What happens is that we enter out passcode1<br>
+Then when it flushes, it doesnt know which destination to put it in because the given destination is not even an address<br>
+So if we just execute the flagread instead of fflush(), we can retrieve the flag</p>
+<p>Lets analyze the functions and addresses using <code>pwndbg</code></p>
+<div class="highlight"><pre><span></span><code><span class="err">0</span><span class="nf">x08049000</span><span class="w">  </span><span class="no">_init</span>
+<span class="err">0</span><span class="nf">x08049040</span><span class="w">  </span><span class="no">__libc_start_main@plt</span>
+<span class="err">0</span><span class="nf">x08049050</span><span class="w">  </span><span class="no">printf@plt</span>
+<span class="err">0</span><span class="nf">x08049060</span><span class="w">  </span><span class="no">fflush@plt</span>
+<span class="err">0</span><span class="nf">x08049070</span><span class="w">  </span><span class="no">__stack_chk_fail@plt</span>
+<span class="err">0</span><span class="nf">x08049080</span><span class="w">  </span><span class="no">getegid@plt</span>
+<span class="err">0</span><span class="nf">x08049090</span><span class="w">  </span><span class="no">puts@plt</span>
+<span class="err">0</span><span class="nf">x080490a0</span><span class="w">  </span><span class="no">system@plt</span>
+<span class="err">0</span><span class="nf">x080490b0</span><span class="w">  </span><span class="no">exit@plt</span>
+<span class="err">0</span><span class="nf">x080490c0</span><span class="w">  </span><span class="no">setregid@plt</span>
+<span class="err">0</span><span class="nf">x080490d0</span><span class="w">  </span><span class="no">__isoc99_scanf@plt</span>
+<span class="err">0</span><span class="nf">x080490e0</span><span class="w">  </span><span class="no">_start</span>
+<span class="err">0</span><span class="nf">x08049120</span><span class="w">  </span><span class="no">_dl_relocate_static_pie</span>
+<span class="err">0</span><span class="nf">x08049130</span><span class="w">  </span><span class="no">__x86.get_pc_thunk.bx</span>
+<span class="err">0</span><span class="nf">x08049140</span><span class="w">  </span><span class="no">deregister_tm_clones</span>
+<span class="err">0</span><span class="nf">x08049180</span><span class="w">  </span><span class="no">register_tm_clones</span>
+<span class="err">0</span><span class="nf">x080491c0</span><span class="w">  </span><span class="no">__do_global_dtors_aux</span>
+<span class="err">0</span><span class="nf">x080491f0</span><span class="w">  </span><span class="no">frame_dummy</span>
+<span class="err">0</span><span class="nf">x080491f6</span><span class="w">  </span><span class="no">login</span>
+<span class="err">0</span><span class="nf">x080492f2</span><span class="w">  </span><span class="no">welcome</span>
+<span class="err">0</span><span class="nf">x08049364</span><span class="w">  </span><span class="no">main</span>
+<span class="err">0</span><span class="nf">x080493c0</span><span class="w">  </span><span class="no">__stack_chk_fail_local</span>
+<span class="err">0</span><span class="nf">x080493d8</span><span class="w">  </span><span class="no">_fini</span>
+</code></pre></div>
+
+<p>When we use cyclic pattern as name, we find that SEGMENTATION FAULT occurs at 0x61616179 at 'yaaa'</p>
+<p><code>cyclic -l yaaa
+Finding cyclic pattern of 4 bytes: b'yaaa' (hex: 0x79616161)
+Found at offset 96</code></p>
+<p>Hence we found the  offset to be 96</p>
+<p>So we can use the GOT address of fflush and the address that gives us the flag<br>
+And if we craft our exploit carefully we should be able to pwn this</p>
+<p>--&gt; NOTE: to dump GOT, use: <code>objdump -R passcode -M intel</code></p>
+<p>Writing exploit.py (attached)</p>
+<p>We retrieve the flag!</p>
+<p><code>s0rry_mom_I_just_ign0red_c0mp1ler_w4rning</code></p>
+<p>Another challenge down. We learnt about the implications caused by scanf, fflush() and also about GOT addresses.</p>
+<p>See you with another writeup soon, till then</p>
+<p>Happy Hacking!</p>
+      </div>
+    </div>
+  </article>
+</div>
+
+</main>
+
+</body>
+</html>
