@@ -58,98 +58,69 @@
     </div>
     <div class="reader__body">
       <div class="md-render">
-<div class="codehilite" style="background: #272822"><pre style="line-height: 125%;"><span></span><code>Hello Hackers!
+<p>Hello Hackers!</p>
+<p>Welcome back to another writeup on a pwnable.kr challenge<br>
+Today we will be looking at <code>passcode</code></p>
+<p>The hint:</p>
+<p>Mommy told me to make a passcode based login system.<br>
+My first trial C implementation compiled without any error!<br>
+Well, there were some compiler warnings, but who cares about that?</p>
+<p>--&gt; 'Compiler warnings' looks interesting</p>
+<p>Let us read the source code</p>
+<p>From the source code, we find:</p>
+<p><code>ha! mommy told me that 32bit is vulnerable to bruteforcing :)</code></p>
+<p>That is interesting. Maybe it has to do something with bruteforcing</p>
+<p>The file looks simple enough with checks of passcode1 = 338150 and passcode2 = 13371337<br>
+But when we try to run the binary and use these creds, we get a segmentation fault. </p>
+<p>Lets try to compile the binary ourself to see what warnings were encountered</p>
+<p>Well we cant, because the original code is a lil different. We get error while trying to complile</p>
+<p>Lets analyze the binary using BinaryNinja</p>
+<p>Another flaw we notice is that passcode1 and 2 expect pointer but get int (%d in scanf)<br>
+--&gt; in scanf("%d", smtg), the smtg is the destinaion address. Hence we need to pass &amp;passcode1 </p>
+<p>After some research, we find that fflush(stdin) is the problem </p>
+<p>What happens is that we enter out passcode1<br>
+Then when it flushes, it doesnt know which destination to put it in because the given destination is not even an address<br>
+So if we just execute the flagread instead of fflush(), we can retrieve the flag</p>
+<p>Lets analyze the functions and addresses using <code>pwndbg</code></p>
+<pre class="codehilite"><code class="language-asm">0x08049000  _init
+0x08049040  __libc_start_main@plt
+0x08049050  printf@plt
+0x08049060  fflush@plt
+0x08049070  __stack_chk_fail@plt
+0x08049080  getegid@plt
+0x08049090  puts@plt
+0x080490a0  system@plt
+0x080490b0  exit@plt
+0x080490c0  setregid@plt
+0x080490d0  __isoc99_scanf@plt
+0x080490e0  _start
+0x08049120  _dl_relocate_static_pie
+0x08049130  __x86.get_pc_thunk.bx
+0x08049140  deregister_tm_clones
+0x08049180  register_tm_clones
+0x080491c0  __do_global_dtors_aux
+0x080491f0  frame_dummy
+0x080491f6  login
+0x080492f2  welcome
+0x08049364  main
+0x080493c0  __stack_chk_fail_local
+0x080493d8  _fini
+</code></pre>
 
-Welcome back to another writeup on a pwnable.kr challenge
-Today we will be looking at <span style="color: #E6DB74">`passcode`</span>
-
-The hint:
-
-Mommy told me to make a passcode based login system.
-My first trial C implementation compiled without any error!
-Well, there were some compiler warnings, but who cares about that?
-
---&gt; &#39;Compiler warnings&#39; looks interesting
-
-Let us read the source code
-
-From the source code, we find:
-
-<span style="color: #E6DB74">`ha! mommy told me that 32bit is vulnerable to bruteforcing :)`</span>
-
-That is interesting. Maybe it has to do something with bruteforcing
-
-The file looks simple enough with checks of passcode1 = 338150 and passcode2 = 13371337
-But when we try to run the binary and use these creds, we get a segmentation fault. 
-
-Lets try to compile the binary ourself to see what warnings were encountered
-
-Well we cant, because the original code is a lil different. We get error while trying to complile
-
-Lets analyze the binary using BinaryNinja
-
-Another flaw we notice is that passcode1 and 2 expect pointer but get int (%d in scanf)
---&gt; in scanf(&quot;%d&quot;, smtg), the smtg is the destinaion address. Hence we need to pass &amp;passcode1 
-
-After some research, we find that fflush(stdin) is the problem 
-
-What happens is that we enter out passcode1
-Then when it flushes, it doesnt know which destination to put it in because the given destination is not even an address
-So if we just execute the flagread instead of fflush(), we can retrieve the flag
-
-Lets analyze the functions and addresses using <span style="color: #E6DB74">`pwndbg`</span>
-</code></pre></div>
-
-<div class="codehilite" style="background: #272822"><pre style="line-height: 125%;"><span></span><code><span style="color: #ED007E; background-color: #1E0010">0</span><span style="color: #A6E22E">x08049000</span><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">_init</span>
-<span style="color: #ED007E; background-color: #1E0010">0</span><span style="color: #A6E22E">x08049040</span><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">__libc_start_main@plt</span>
-<span style="color: #ED007E; background-color: #1E0010">0</span><span style="color: #A6E22E">x08049050</span><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">printf@plt</span>
-<span style="color: #ED007E; background-color: #1E0010">0</span><span style="color: #A6E22E">x08049060</span><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">fflush@plt</span>
-<span style="color: #ED007E; background-color: #1E0010">0</span><span style="color: #A6E22E">x08049070</span><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">__stack_chk_fail@plt</span>
-<span style="color: #ED007E; background-color: #1E0010">0</span><span style="color: #A6E22E">x08049080</span><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">getegid@plt</span>
-<span style="color: #ED007E; background-color: #1E0010">0</span><span style="color: #A6E22E">x08049090</span><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">puts@plt</span>
-<span style="color: #ED007E; background-color: #1E0010">0</span><span style="color: #A6E22E">x080490a0</span><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">system@plt</span>
-<span style="color: #ED007E; background-color: #1E0010">0</span><span style="color: #A6E22E">x080490b0</span><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">exit@plt</span>
-<span style="color: #ED007E; background-color: #1E0010">0</span><span style="color: #A6E22E">x080490c0</span><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">setregid@plt</span>
-<span style="color: #ED007E; background-color: #1E0010">0</span><span style="color: #A6E22E">x080490d0</span><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">__isoc99_scanf@plt</span>
-<span style="color: #ED007E; background-color: #1E0010">0</span><span style="color: #A6E22E">x080490e0</span><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">_start</span>
-<span style="color: #ED007E; background-color: #1E0010">0</span><span style="color: #A6E22E">x08049120</span><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">_dl_relocate_static_pie</span>
-<span style="color: #ED007E; background-color: #1E0010">0</span><span style="color: #A6E22E">x08049130</span><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">__x86.get_pc_thunk.bx</span>
-<span style="color: #ED007E; background-color: #1E0010">0</span><span style="color: #A6E22E">x08049140</span><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">deregister_tm_clones</span>
-<span style="color: #ED007E; background-color: #1E0010">0</span><span style="color: #A6E22E">x08049180</span><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">register_tm_clones</span>
-<span style="color: #ED007E; background-color: #1E0010">0</span><span style="color: #A6E22E">x080491c0</span><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">__do_global_dtors_aux</span>
-<span style="color: #ED007E; background-color: #1E0010">0</span><span style="color: #A6E22E">x080491f0</span><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">frame_dummy</span>
-<span style="color: #ED007E; background-color: #1E0010">0</span><span style="color: #A6E22E">x080491f6</span><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">login</span>
-<span style="color: #ED007E; background-color: #1E0010">0</span><span style="color: #A6E22E">x080492f2</span><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">welcome</span>
-<span style="color: #ED007E; background-color: #1E0010">0</span><span style="color: #A6E22E">x08049364</span><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">main</span>
-<span style="color: #ED007E; background-color: #1E0010">0</span><span style="color: #A6E22E">x080493c0</span><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">__stack_chk_fail_local</span>
-<span style="color: #ED007E; background-color: #1E0010">0</span><span style="color: #A6E22E">x080493d8</span><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">_fini</span>
-</code></pre></div>
-
-<div class="codehilite" style="background: #272822"><pre style="line-height: 125%;"><span></span><code>When we use cyclic pattern as name, we find that SEGMENTATION FAULT occurs at 0x61616179 at &#39;yaaa&#39;
-
-`cyclic -l yaaa
-Finding cyclic pattern of 4 bytes: b&#39;yaaa&#39; (hex: 0x79616161)
-Found at offset 96`
-
-Hence we found the  offset to be 96
-
-So we can use the GOT address of fflush and the address that gives us the flag
-And if we craft our exploit carefully we should be able to pwn this
-
---&gt; NOTE: to dump GOT, use: <span style="color: #E6DB74">`objdump -R passcode -M intel`</span>
-
-Writing exploit.py (attached)
-
-We retrieve the flag!
-
-<span style="color: #E6DB74">`s0rry_mom_I_just_ign0red_c0mp1ler_w4rning`</span>
-
-Another challenge down. We learnt about the implications caused by scanf, fflush() and also about GOT addresses.
-
-See you with another writeup soon, till then
-
-Happy Hacking!
-</code></pre></div>
+<p>When we use cyclic pattern as name, we find that SEGMENTATION FAULT occurs at 0x61616179 at 'yaaa'</p>
+<p><code>cyclic -l yaaa
+Finding cyclic pattern of 4 bytes: b'yaaa' (hex: 0x79616161)
+Found at offset 96</code></p>
+<p>Hence we found the  offset to be 96</p>
+<p>So we can use the GOT address of fflush and the address that gives us the flag<br>
+And if we craft our exploit carefully we should be able to pwn this</p>
+<p>--&gt; NOTE: to dump GOT, use: <code>objdump -R passcode -M intel</code></p>
+<p>Writing exploit.py (attached)</p>
+<p>We retrieve the flag!</p>
+<p><code>s0rry_mom_I_just_ign0red_c0mp1ler_w4rning</code></p>
+<p>Another challenge down. We learnt about the implications caused by scanf, fflush() and also about GOT addresses.</p>
+<p>See you with another writeup soon, till then</p>
+<p>Happy Hacking!</p>
       </div>
     </div>
   </article>

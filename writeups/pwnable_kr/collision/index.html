@@ -58,38 +58,24 @@
     </div>
     <div class="reader__body">
       <div class="md-render">
-<div class="codehilite" style="background: #272822"><pre style="line-height: 125%;"><span></span><code>Hello Hackers!
-Welcome back to another writeup 
-Today we will be doing <span style="color: #E6DB74">`collision`</span> from pwnable.kr
-
-Downloading all the files locally, 
-
-Reading the source code, there is a comparison
-
-The return value of <span style="color: #E6DB74">`check_password()`</span> must be equal to hashcode, ie, <span style="color: #E6DB74">`0x21DD09EC`</span>
-
-From gdb, breaking at check_password() and setting eax = 568134124 (int of hashcode), we get 
-
-Analyzing the funcction, we realise that our 20 byte input is being divided into 5 parts of 4 bytes each.
-Sum of these should be equal to 568134124
-
-Therefore, divide 568134124 by 5
-
-We get <span style="color: #E6DB74">`113626824`</span>
-And remainder is 4
-
-Therefore, the first four chunks will become 113626824 and the last will be 568134124-113626824*4 = 113626828
-
-Taking hex values, 
-
-0x6c5cec8 *4 + 0x6c5cecc
-
-Passing values using pwntools, writing exploit
-
-We obtain the flag from the remote host
-
-<span style="color: #E6DB74">`Two_hash_collision_Nicely`</span>
-</code></pre></div>
+<p>Hello Hackers!<br>
+Welcome back to another writeup <br>
+Today we will be doing <code>collision</code> from pwnable.kr</p>
+<p>Downloading all the files locally, </p>
+<p>Reading the source code, there is a comparison</p>
+<p>The return value of <code>check_password()</code> must be equal to hashcode, ie, <code>0x21DD09EC</code></p>
+<p>From gdb, breaking at check_password() and setting eax = 568134124 (int of hashcode), we get </p>
+<p>Analyzing the funcction, we realise that our 20 byte input is being divided into 5 parts of 4 bytes each.<br>
+Sum of these should be equal to 568134124</p>
+<p>Therefore, divide 568134124 by 5</p>
+<p>We get <code>113626824</code><br>
+And remainder is 4</p>
+<p>Therefore, the first four chunks will become 113626824 and the last will be 568134124-113626824*4 = 113626828</p>
+<p>Taking hex values, </p>
+<p>0x6c5cec8 *4 + 0x6c5cecc</p>
+<p>Passing values using pwntools, writing exploit</p>
+<p>We obtain the flag from the remote host</p>
+<p><code>Two_hash_collision_Nicely</code></p>
       </div>
     </div>
   </article>

@@ -58,145 +58,96 @@
     </div>
     <div class="reader__body">
       <div class="md-render">
-<div class="codehilite" style="background: #272822"><pre style="line-height: 125%;"><span></span><code>Hello Hackers! Welcome back to another writeup
-Today we will be looking at <span style="color: #E6DB74">`Binary_Heaven`</span> from TryHackMe
-So let&#39;s hop on without wasting much time
+<p>Hello Hackers! Welcome back to another writeup<br>
+Today we will be looking at <code>Binary_Heaven</code> from TryHackMe<br>
+So let's hop on without wasting much time</p>
+<p>When we download the task files and extract them, we get two binaries<br>
+1. angel_A<br>
+2. angel_B</p>
+<p>Let's see what these do</p>
+<h3 id="angel_a">angel_A</h3>
+<p>Running strings on the binary, we get link to a youtube video<br>
+Duh, got rickrolled :)</p>
+<p>Apart from that, we can see that a username comparison is taking place<br>
+From BinaryNinja, we find a widechar <code>username</code> = <code>kym~humr</code></p>
+<p>But this is not the correct username. <br>
+Reading through the main function, </p>
+<p>We can see a simple XOR operation followed by arithmetic that compares the input value to the username<br>
+We can simply decode this using python</p>
+<p><code>exploit.py</code> created and attached to decode the username</p>
+<p>--&gt; guardian</p>
+<p>Submitting the answer, it is correct!</p>
+<p>Now moving on to the next binary</p>
+<h3 id="angel_b">angel_B</h3>
+<p>Running the binary, it asks for a magic word</p>
+<p>Well, i was stuck for a while. Because the binary seemed very complicated. But i found a simple solution<br>
+I do not know if this was the intended way to find this out, but running <code>binwalk</code> on the binary reveals:</p>
+<p><code>830665        0xCACC9         Unix path: /dev/stderr/dev/stdout0123456789_30517578125: frame.sp=GOTRACEBACKGOg0esGrrr!IdeographicMedefaidrinNandinagariNew_Tai_LueOld_Per</code></p>
+<p>From here, we see an interesting phrase, <code>GOg0esGrrr!</code></p>
+<p>Trying the password, SUCCESS!!</p>
+<p><img alt="Success" src="userpass.png"></p>
+<p>We see</p>
+<p><code>Right password! Now GO ahead and SSH into heaven</code></p>
+<p>Lets try to SSH using guardian:GOg0esGrrr!</p>
+<p>Guardian flag retrieved!</p>
+<p><code>THM{crack3d_th3_gu4rd1an}</code></p>
+<p>Now we see our next binary in the home folder<br>
+It is <code>SUID</code>, ie, running a shell from it will give us privesc</p>
+<p>Lets copy it to our local machine and analyze</p>
+<p>It is a 32 bit executable<br>
+When we run it, we see an address for <code>system</code></p>
+<p>Also, inputting a large number of chars reveals that Buffer Overflow is present</p>
+<p>Lets find the offset using <code>cyclic</code> and <code>pwndbg</code></p>
+<p>--&gt; Offset found at 32</p>
+<p>But since <code>NX</code> is enabled in our executable, we can't run shellcode<br>
+--&gt; Hence we need to use ROP attack</p>
+<p>libc is used in the binary, so we can try a <code>ret2libc</code> attack</p>
+<h3 id="methodology-we-can-access-various-functions-using-libc-since-the-system-address-is-leaked-we-can-find-the-libc-base-address-using-that-we-can-then-locate-binsh-and-pass-it-as-an-argument-for-system-thus-a-shell-will-be-spawned">METHODOLOGY: We can access various functions using libc. Since the system address is leaked, we can find the libc base address. Using that, we can then locate /bin/sh and pass it as an argument for system. Thus, a shell will be spawned.</h3>
+<p>Writing an exploit in python using pwntools, (attached)</p>
+<p>Just like that, we spawn a shell as binexgod</p>
+<p><img alt="binexgod_flag" src="binexgod.png"></p>
+<p><code>THM{b1n3xg0d_pwn3d}</code></p>
+<p>Finally, lets move on to the final binary to get the root flag</p>
+<p>I ran the <code>secret_of_heaven</code> file, which just crashed the system for some reason? Let's ignore that. Our focus should be on the <code>vuln.c</code> and <code>vuln</code> files</p>
+<pre class="codehilite"><code class="language-c">#include &lt;stdlib.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;string.h&gt;
+#include &lt;sys/types.h&gt;
+#include &lt;stdio.h&gt;
 
-When we download the task files and extract them, we get two binaries
-<span style="color: #66D9EF">1.</span> angel_A
-<span style="color: #66D9EF">2.</span> angel_B
+int main(int argc, char **argv, char **envp)
+{
+  gid_t gid;
+  uid_t uid;
+  gid = getegid();
+  uid = geteuid();
 
-Let&#39;s see what these do
+  setresgid(gid, gid, gid);
+  setresuid(uid, uid, uid);
 
-<span style="color: #959077">### angel_A</span>
+  system(&quot;/usr/bin/env echo Get out of heaven lol&quot;);
+}
+</code></pre>
 
-Running strings on the binary, we get link to a youtube video
-Duh, got rickrolled :)
-
-Apart from that, we can see that a username comparison is taking place
-From BinaryNinja, we find a widechar <span style="color: #E6DB74">`username`</span> = <span style="color: #E6DB74">`kym~humr`</span>
-
-But this is not the correct username. 
-Reading through the main function, 
-
-We can see a simple XOR operation followed by arithmetic that compares the input value to the username
-We can simply decode this using python
-
-<span style="color: #E6DB74">`exploit.py`</span> created and attached to decode the username
-
---&gt; guardian
-
-Submitting the answer, it is correct!
-
-Now moving on to the next binary
-
-<span style="color: #959077">### angel_B</span>
-
-Running the binary, it asks for a magic word
-
-Well, i was stuck for a while. Because the binary seemed very complicated. But i found a simple solution
-I do not know if this was the intended way to find this out, but running <span style="color: #E6DB74">`binwalk`</span> on the binary reveals:
-
-<span style="color: #E6DB74">`830665        0xCACC9         Unix path: /dev/stderr/dev/stdout0123456789_30517578125: frame.sp=GOTRACEBACKGOg0esGrrr!IdeographicMedefaidrinNandinagariNew_Tai_LueOld_Per`</span>
-
-From here, we see an interesting phrase, <span style="color: #E6DB74">`GOg0esGrrr!`</span>
-
-Trying the password, SUCCESS!!
-
-![<span style="color: #FF4689">Success</span>](<span style="color: #A6E22E">userpass.png</span>)
-
-We see
-
-<span style="color: #E6DB74">`Right password! Now GO ahead and SSH into heaven`</span>
-
-Lets try to SSH using guardian:GOg0esGrrr!
-
-Guardian flag retrieved!
-
-<span style="color: #E6DB74">`THM{crack3d_th3_gu4rd1an}`</span>
-
-Now we see our next binary in the home folder
-It is <span style="color: #E6DB74">`SUID`</span>, ie, running a shell from it will give us privesc
-
-Lets copy it to our local machine and analyze
-
-It is a 32 bit executable
-When we run it, we see an address for <span style="color: #E6DB74">`system`</span>
-
-Also, inputting a large number of chars reveals that Buffer Overflow is present
-
-Lets find the offset using <span style="color: #E6DB74">`cyclic`</span> and <span style="color: #E6DB74">`pwndbg`</span>
-
---&gt; Offset found at 32
-
-But since <span style="color: #E6DB74">`NX`</span> is enabled in our executable, we can&#39;t run shellcode
---&gt; Hence we need to use ROP attack
-
-libc is used in the binary, so we can try a <span style="color: #E6DB74">`ret2libc`</span> attack
-
-<span style="color: #959077">### METHODOLOGY: We can access various functions using libc. Since the system address is leaked, we can find the libc base address. Using that, we can then locate /bin/sh and pass it as an argument for system. Thus, a shell will be spawned.</span>
-
-Writing an exploit in python using pwntools, (attached)
-
-Just like that, we spawn a shell as binexgod
-
-![<span style="color: #FF4689">binexgod_flag</span>](<span style="color: #A6E22E">binexgod.png</span>)
-
-<span style="color: #E6DB74">`THM{b1n3xg0d_pwn3d}`</span>
-
-Finally, lets move on to the final binary to get the root flag
-
-I ran the <span style="color: #E6DB74">`secret_of_heaven`</span> file, which just crashed the system for some reason? Let&#39;s ignore that. Our focus should be on the <span style="color: #E6DB74">`vuln.c`</span> and <span style="color: #E6DB74">`vuln`</span> files
-</code></pre></div>
-
-<div class="codehilite" style="background: #272822"><pre style="line-height: 125%;"><span></span><code><span style="color: #959077">#include</span><span style="color: #F8F8F2"> </span><span style="color: #959077">&lt;stdlib.h&gt;</span>
-<span style="color: #959077">#include</span><span style="color: #F8F8F2"> </span><span style="color: #959077">&lt;unistd.h&gt;</span>
-<span style="color: #959077">#include</span><span style="color: #F8F8F2"> </span><span style="color: #959077">&lt;string.h&gt;</span>
-<span style="color: #959077">#include</span><span style="color: #F8F8F2"> </span><span style="color: #959077">&lt;sys/types.h&gt;</span>
-<span style="color: #959077">#include</span><span style="color: #F8F8F2"> </span><span style="color: #959077">&lt;stdio.h&gt;</span>
-
-<span style="color: #66D9EF">int</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main</span><span style="color: #F8F8F2">(</span><span style="color: #66D9EF">int</span><span style="color: #F8F8F2"> argc, </span><span style="color: #66D9EF">char</span><span style="color: #F8F8F2"> </span><span style="color: #FF4689">**</span><span style="color: #F8F8F2">argv, </span><span style="color: #66D9EF">char</span><span style="color: #F8F8F2"> </span><span style="color: #FF4689">**</span><span style="color: #F8F8F2">envp)</span>
-<span style="color: #F8F8F2">{</span>
-<span style="color: #F8F8F2">  </span><span style="color: #66D9EF">gid_t</span><span style="color: #F8F8F2"> gid;</span>
-<span style="color: #F8F8F2">  </span><span style="color: #66D9EF">uid_t</span><span style="color: #F8F8F2"> uid;</span>
-<span style="color: #F8F8F2">  gid </span><span style="color: #FF4689">=</span><span style="color: #F8F8F2"> getegid();</span>
-<span style="color: #F8F8F2">  uid </span><span style="color: #FF4689">=</span><span style="color: #F8F8F2"> geteuid();</span>
-
-<span style="color: #F8F8F2">  setresgid(gid, gid, gid);</span>
-<span style="color: #F8F8F2">  setresuid(uid, uid, uid);</span>
-
-<span style="color: #F8F8F2">  system(</span><span style="color: #E6DB74">&quot;/usr/bin/env echo Get out of heaven lol&quot;</span><span style="color: #F8F8F2">);</span>
-<span style="color: #F8F8F2">}</span>
-</code></pre></div>
-
-<div class="codehilite" style="background: #272822"><pre style="line-height: 125%;"><span></span><code>Here, the vuln binary is run by root. When we analyze the code, we see something interesting.
-env is called via the absolute path <span style="color: #F8F8F2; font-weight: bold">**BUT**</span> echo isn&#39;t
-We can create our own echo in the PATH directory that spawns the shell
-
-Lets try
-
-<span style="color: #66D9EF">1.</span> Export path as <span style="color: #E6DB74">`export PATH=/tmp/:$PATH`</span>
-<span style="color: #66D9EF">2.</span> Then in /tmp, we create a file called echo with contents --&gt; <span style="color: #E6DB74">`bash`</span>
-<span style="color: #66D9EF">3.</span> Then <span style="color: #E6DB74">`chmod +x ./echo`</span>
-<span style="color: #66D9EF">4.</span> Now lets try running vuln
-<span style="color: #66D9EF">5.</span> BOOM! Shell spawned
-
-![<span style="color: #FF4689">rootFlag</span>](<span style="color: #A6E22E">root.png</span>)
-
-Final flag is retrieved
-
-<span style="color: #E6DB74">`THM{r00t_of_th3_he4v3n}`</span>
-
-Challenge complete!!
-
-<span style="color: #959077">### We learnt: Reversing basic XOR, finding secrets in binaries, SUID misuse &amp; problems caused by relative path</span>
-
-Overall, a very fun room
-
-I&#39;ll see you with another writeup soon, till then
-
-Happy Hacking!
-</code></pre></div>
+<p>Here, the vuln binary is run by root. When we analyze the code, we see something interesting.<br>
+env is called via the absolute path <strong>BUT</strong> echo isn't<br>
+We can create our own echo in the PATH directory that spawns the shell</p>
+<p>Lets try</p>
+<ol>
+<li>Export path as <code>export PATH=/tmp/:$PATH</code></li>
+<li>Then in /tmp, we create a file called echo with contents --&gt; <code>bash</code></li>
+<li>Then <code>chmod +x ./echo</code></li>
+<li>Now lets try running vuln</li>
+<li>BOOM! Shell spawned</li>
+</ol>
+<p><img alt="rootFlag" src="root.png"></p>
+<p>Final flag is retrieved</p>
+<p><code>THM{r00t_of_th3_he4v3n}</code></p>
+<p>Challenge complete!!</p>
+<h3 id="we-learnt-reversing-basic-xor-finding-secrets-in-binaries-suid-misuse-problems-caused-by-relative-path">We learnt: Reversing basic XOR, finding secrets in binaries, SUID misuse &amp; problems caused by relative path</h3>
+<p>Overall, a very fun room</p>
+<p>I'll see you with another writeup soon, till then</p>
+<p>Happy Hacking!</p>
       </div>
     </div>
   </article>
