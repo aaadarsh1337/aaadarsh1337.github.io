@@ -100,7 +100,7 @@ def md_to_html(text: str) -> str:
             FencedCodeExtension(),
             TableExtension(),
             TocExtension(permalink=False),
-            CodeHiliteExtension(guess_lang=False, noclasses=True, pygments_style="monokai"),
+            CodeHiliteExtension(guess_lang=True, noclasses=True, pygments_style="monokai"),
             "nl2br",
             "sane_lists",
         ],
