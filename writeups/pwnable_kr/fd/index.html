@@ -69,29 +69,29 @@ Since this is the first challenge, I recon it will be very easy</p>
 <ol>
 <li>fd.c</li>
 </ol>
-<div class="codehilite"><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdlib.h&gt;</span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;string.h&gt;</span>
-<span class="kt">char</span><span class="w"> </span><span class="n">buf</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span>
-<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">argv</span><span class="p">[],</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">envp</span><span class="p">[]){</span>
-<span class="w">    </span><span class="k">if</span><span class="p">(</span><span class="n">argc</span><span class="o">&lt;</span><span class="mi">2</span><span class="p">){</span>
-<span class="w">        </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;pass argv[1] a number</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
-<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">fd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">atoi</span><span class="p">(</span><span class="w"> </span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mh">0x1234</span><span class="p">;</span>
-<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">len</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
-<span class="w">    </span><span class="n">len</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">read</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span><span class="w"> </span><span class="n">buf</span><span class="p">,</span><span class="w"> </span><span class="mi">32</span><span class="p">);</span>
-<span class="w">    </span><span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">strcmp</span><span class="p">(</span><span class="s">&quot;LETMEWIN</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">buf</span><span class="p">)){</span>
-<span class="w">        </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;good job :)</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
-<span class="w">        </span><span class="n">setregid</span><span class="p">(</span><span class="n">getegid</span><span class="p">(),</span><span class="w"> </span><span class="n">getegid</span><span class="p">());</span>
-<span class="w">        </span><span class="n">system</span><span class="p">(</span><span class="s">&quot;/bin/cat flag&quot;</span><span class="p">);</span>
-<span class="w">        </span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;learn about Linux file IO</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<pre class="codehilite"><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+char buf[32];
+int main(int argc, char* argv[], char* envp[]){
+    if(argc&lt;2){
+        printf(&quot;pass argv[1] a number\n&quot;);
+        return 0;
+    }
+    int fd = atoi( argv[1] ) - 0x1234;
+    int len = 0;
+    len = read(fd, buf, 32);
+    if(!strcmp(&quot;LETMEWIN\n&quot;, buf)){
+        printf(&quot;good job :)\n&quot;);
+        setregid(getegid(), getegid());
+        system(&quot;/bin/cat flag&quot;);
+        exit(0);
+    }
+    printf(&quot;learn about Linux file IO\n&quot;);
+    return 0;
 
-<span class="p">}</span>
-</code></pre></div>
+}
+</code></pre>
 
 <p>The challenge hints us to learn about file descriptors<br>
 --&gt; In Linux, a file descriptor (FD) is a non-negative integer that serves as a unique per-process handle assigned by the kernel to manage any open input/output stream</p>
@@ -119,89 +119,89 @@ ie, then we can just pass what the condition requires us to in order to obtain t
 <p><code>set disassembly-flavor intel</code><br>
 <code>set follow-fork-mode parent</code>                # for reading the flag, the binary invokes a child process where main() isnt defines --&gt; error<br>
 <code>disassemble main</code></p>
-<div class="codehilite"><pre><span></span><code><span class="w">   </span><span class="err">0</span><span class="nf">x0000120d</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">0</span><span class="err">&gt;</span><span class="p">:</span><span class="w"> </span><span class="no">lea</span><span class="w">    </span><span class="no">ecx</span><span class="p">,[</span><span class="no">esp</span><span class="err">+</span><span class="mi">0x4</span><span class="p">]</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x00001211</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">4</span><span class="err">&gt;</span><span class="p">:</span><span class="w"> </span><span class="no">and</span><span class="w">    </span><span class="no">esp</span><span class="p">,</span><span class="mi">0xfffffff0</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x00001214</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">7</span><span class="err">&gt;</span><span class="p">:</span><span class="w"> </span><span class="no">push</span><span class="w">   </span><span class="no">DWORD</span><span class="w"> </span><span class="no">PTR</span><span class="w"> </span><span class="p">[</span><span class="no">ecx-0x4</span><span class="p">]</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x00001217</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">10</span><span class="err">&gt;</span><span class="p">:</span><span class="w">    </span><span class="no">push</span><span class="w">   </span><span class="no">ebp</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x00001218</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">11</span><span class="err">&gt;</span><span class="p">:</span><span class="w">    </span><span class="no">mov</span><span class="w">    </span><span class="no">ebp</span><span class="p">,</span><span class="no">esp</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x0000121a</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">13</span><span class="err">&gt;</span><span class="p">:</span><span class="w">    </span><span class="no">push</span><span class="w">   </span><span class="no">esi</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x0000121b</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">14</span><span class="err">&gt;</span><span class="p">:</span><span class="w">    </span><span class="no">push</span><span class="w">   </span><span class="no">ebx</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x0000121c</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">15</span><span class="err">&gt;</span><span class="p">:</span><span class="w">    </span><span class="no">push</span><span class="w">   </span><span class="no">ecx</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x0000121d</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">16</span><span class="err">&gt;</span><span class="p">:</span><span class="w">    </span><span class="no">sub</span><span class="w">    </span><span class="no">esp</span><span class="p">,</span><span class="mi">0x1c</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x00001220</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">19</span><span class="err">&gt;</span><span class="p">:</span><span class="w">    </span><span class="no">call</span><span class="w">   </span><span class="mh">0x1110</span> <span class="p">&lt;</span><span class="no">__x86.get_pc_thunk.bx</span><span class="p">&gt;</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x00001225</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">24</span><span class="err">&gt;</span><span class="p">:</span><span class="w">    </span><span class="no">add</span><span class="w">    </span><span class="no">ebx</span><span class="p">,</span><span class="mi">0x2d97</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x0000122b</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">30</span><span class="err">&gt;</span><span class="p">:</span><span class="w">    </span><span class="no">mov</span><span class="w">    </span><span class="no">eax</span><span class="p">,</span><span class="no">ecx</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x0000122d</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">32</span><span class="err">&gt;</span><span class="p">:</span><span class="w">    </span><span class="no">cmp</span><span class="w">    </span><span class="no">DWORD</span><span class="w"> </span><span class="no">PTR</span><span class="w"> </span><span class="p">[</span><span class="no">eax</span><span class="p">],</span><span class="mi">0x1</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x00001230</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">35</span><span class="err">&gt;</span><span class="p">:</span><span class="w">    </span><span class="no">jg</span><span class="w">     </span><span class="mh">0x124e</span> <span class="p">&lt;</span><span class="no">main</span><span class="p">+</span><span class="mi">65</span><span class="p">&gt;</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x00001232</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">37</span><span class="err">&gt;</span><span class="p">:</span><span class="w">    </span><span class="no">sub</span><span class="w">    </span><span class="no">esp</span><span class="p">,</span><span class="mi">0xc</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x00001235</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">40</span><span class="err">&gt;</span><span class="p">:</span><span class="w">    </span><span class="no">lea</span><span class="w">    </span><span class="no">eax</span><span class="p">,[</span><span class="no">ebx-0x1fb4</span><span class="p">]</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x0000123b</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">46</span><span class="err">&gt;</span><span class="p">:</span><span class="w">    </span><span class="no">push</span><span class="w">   </span><span class="no">eax</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x0000123c</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">47</span><span class="err">&gt;</span><span class="p">:</span><span class="w">    </span><span class="no">call</span><span class="w">   </span><span class="mh">0x1080</span> <span class="p">&lt;</span><span class="no">puts@plt</span><span class="p">&gt;</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x00001241</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">52</span><span class="err">&gt;</span><span class="p">:</span><span class="w">    </span><span class="no">add</span><span class="w">    </span><span class="no">esp</span><span class="p">,</span><span class="mi">0x10</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x00001244</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">55</span><span class="err">&gt;</span><span class="p">:</span><span class="w">    </span><span class="no">mov</span><span class="w">    </span><span class="no">eax</span><span class="p">,</span><span class="mi">0x0</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x00001249</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">60</span><span class="err">&gt;</span><span class="p">:</span><span class="w">    </span><span class="no">jmp</span><span class="w">    </span><span class="mh">0x1306</span> <span class="p">&lt;</span><span class="no">main</span><span class="p">+</span><span class="mi">249</span><span class="p">&gt;</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x0000124e</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">65</span><span class="err">&gt;</span><span class="p">:</span><span class="w">    </span><span class="no">mov</span><span class="w">    </span><span class="no">eax</span><span class="p">,</span><span class="no">DWORD</span><span class="w"> </span><span class="no">PTR</span><span class="w"> </span><span class="p">[</span><span class="no">eax</span><span class="err">+</span><span class="mi">0x4</span><span class="p">]</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x00001251</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">68</span><span class="err">&gt;</span><span class="p">:</span><span class="w">    </span><span class="no">add</span><span class="w">    </span><span class="no">eax</span><span class="p">,</span><span class="mi">0x4</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x00001254</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">71</span><span class="err">&gt;</span><span class="p">:</span><span class="w">    </span><span class="no">mov</span><span class="w">    </span><span class="no">eax</span><span class="p">,</span><span class="no">DWORD</span><span class="w"> </span><span class="no">PTR</span><span class="w"> </span><span class="p">[</span><span class="no">eax</span><span class="p">]</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x00001256</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">73</span><span class="err">&gt;</span><span class="p">:</span><span class="w">    </span><span class="no">sub</span><span class="w">    </span><span class="no">esp</span><span class="p">,</span><span class="mi">0xc</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x00001259</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">76</span><span class="err">&gt;</span><span class="p">:</span><span class="w">    </span><span class="no">push</span><span class="w">   </span><span class="no">eax</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x0000125a</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">77</span><span class="err">&gt;</span><span class="p">:</span><span class="w">    </span><span class="no">call</span><span class="w">   </span><span class="mh">0x10c0</span> <span class="p">&lt;</span><span class="no">atoi@plt</span><span class="p">&gt;</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x0000125f</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">82</span><span class="err">&gt;</span><span class="p">:</span><span class="w">    </span><span class="no">add</span><span class="w">    </span><span class="no">esp</span><span class="p">,</span><span class="mi">0x10</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x00001262</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">85</span><span class="err">&gt;</span><span class="p">:</span><span class="w">    </span><span class="no">sub</span><span class="w">    </span><span class="no">eax</span><span class="p">,</span><span class="mi">0x1234</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x00001267</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">90</span><span class="err">&gt;</span><span class="p">:</span><span class="w">    </span><span class="no">mov</span><span class="w">    </span><span class="no">DWORD</span><span class="w"> </span><span class="no">PTR</span><span class="w"> </span><span class="p">[</span><span class="no">ebp-0x1c</span><span class="p">],</span><span class="no">eax</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x0000126a</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">93</span><span class="err">&gt;</span><span class="p">:</span><span class="w">    </span><span class="no">mov</span><span class="w">    </span><span class="no">DWORD</span><span class="w"> </span><span class="no">PTR</span><span class="w"> </span><span class="p">[</span><span class="no">ebp-0x20</span><span class="p">],</span><span class="mi">0x0</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x00001271</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">100</span><span class="err">&gt;</span><span class="p">:</span><span class="w">   </span><span class="no">sub</span><span class="w">    </span><span class="no">esp</span><span class="p">,</span><span class="mi">0x4</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x00001274</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">103</span><span class="err">&gt;</span><span class="p">:</span><span class="w">   </span><span class="no">push</span><span class="w">   </span><span class="mi">0x20</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x00001276</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">105</span><span class="err">&gt;</span><span class="p">:</span><span class="w">   </span><span class="no">lea</span><span class="w">    </span><span class="no">eax</span><span class="p">,[</span><span class="no">ebx</span><span class="err">+</span><span class="mi">0x84</span><span class="p">]</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x0000127c</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">111</span><span class="err">&gt;</span><span class="p">:</span><span class="w">   </span><span class="no">push</span><span class="w">   </span><span class="no">eax</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x0000127d</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">112</span><span class="err">&gt;</span><span class="p">:</span><span class="w">   </span><span class="no">push</span><span class="w">   </span><span class="no">DWORD</span><span class="w"> </span><span class="no">PTR</span><span class="w"> </span><span class="p">[</span><span class="no">ebp-0x1c</span><span class="p">]</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x00001280</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">115</span><span class="err">&gt;</span><span class="p">:</span><span class="w">   </span><span class="no">call</span><span class="w">   </span><span class="mh">0x1060</span> <span class="p">&lt;</span><span class="no">read@plt</span><span class="p">&gt;</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x00001285</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">120</span><span class="err">&gt;</span><span class="p">:</span><span class="w">   </span><span class="no">add</span><span class="w">    </span><span class="no">esp</span><span class="p">,</span><span class="mi">0x10</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x00001288</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">123</span><span class="err">&gt;</span><span class="p">:</span><span class="w">   </span><span class="no">mov</span><span class="w">    </span><span class="no">DWORD</span><span class="w"> </span><span class="no">PTR</span><span class="w"> </span><span class="p">[</span><span class="no">ebp-0x20</span><span class="p">],</span><span class="no">eax</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x0000128b</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">126</span><span class="err">&gt;</span><span class="p">:</span><span class="w">   </span><span class="no">sub</span><span class="w">    </span><span class="no">esp</span><span class="p">,</span><span class="mi">0x8</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x0000128e</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">129</span><span class="err">&gt;</span><span class="p">:</span><span class="w">   </span><span class="no">lea</span><span class="w">    </span><span class="no">eax</span><span class="p">,[</span><span class="no">ebx</span><span class="err">+</span><span class="mi">0x84</span><span class="p">]</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x00001294</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">135</span><span class="err">&gt;</span><span class="p">:</span><span class="w">   </span><span class="no">push</span><span class="w">   </span><span class="no">eax</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x00001295</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">136</span><span class="err">&gt;</span><span class="p">:</span><span class="w">   </span><span class="no">lea</span><span class="w">    </span><span class="no">eax</span><span class="p">,[</span><span class="no">ebx-0x1f9e</span><span class="p">]</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x0000129b</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">142</span><span class="err">&gt;</span><span class="p">:</span><span class="w">   </span><span class="no">push</span><span class="w">   </span><span class="no">eax</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x0000129c</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">143</span><span class="err">&gt;</span><span class="p">:</span><span class="w">   </span><span class="no">call</span><span class="w">   </span><span class="mh">0x1040</span> <span class="p">&lt;</span><span class="no">strcmp@plt</span><span class="p">&gt;</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x000012a1</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">148</span><span class="err">&gt;</span><span class="p">:</span><span class="w">   </span><span class="no">add</span><span class="w">    </span><span class="no">esp</span><span class="p">,</span><span class="mi">0x10</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x000012a4</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">151</span><span class="err">&gt;</span><span class="p">:</span><span class="w">   </span><span class="no">test</span><span class="w">   </span><span class="no">eax</span><span class="p">,</span><span class="no">eax</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x000012a6</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">153</span><span class="err">&gt;</span><span class="p">:</span><span class="w">   </span><span class="no">jne</span><span class="w">    </span><span class="mh">0x12ef</span> <span class="p">&lt;</span><span class="no">main</span><span class="p">+</span><span class="mi">226</span><span class="p">&gt;</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x000012a8</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">155</span><span class="err">&gt;</span><span class="p">:</span><span class="w">   </span><span class="no">sub</span><span class="w">    </span><span class="no">esp</span><span class="p">,</span><span class="mi">0xc</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x000012ab</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">158</span><span class="err">&gt;</span><span class="p">:</span><span class="w">   </span><span class="no">lea</span><span class="w">    </span><span class="no">eax</span><span class="p">,[</span><span class="no">ebx-0x1f94</span><span class="p">]</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x000012b1</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">164</span><span class="err">&gt;</span><span class="p">:</span><span class="w">   </span><span class="no">push</span><span class="w">   </span><span class="no">eax</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x000012b2</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">165</span><span class="err">&gt;</span><span class="p">:</span><span class="w">   </span><span class="no">call</span><span class="w">   </span><span class="mh">0x1080</span> <span class="p">&lt;</span><span class="no">puts@plt</span><span class="p">&gt;</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x000012b7</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">170</span><span class="err">&gt;</span><span class="p">:</span><span class="w">   </span><span class="no">add</span><span class="w">    </span><span class="no">esp</span><span class="p">,</span><span class="mi">0x10</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x000012ba</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">173</span><span class="err">&gt;</span><span class="p">:</span><span class="w">   </span><span class="no">call</span><span class="w">   </span><span class="mh">0x1070</span> <span class="p">&lt;</span><span class="no">getegid@plt</span><span class="p">&gt;</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x000012bf</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">178</span><span class="err">&gt;</span><span class="p">:</span><span class="w">   </span><span class="no">mov</span><span class="w">    </span><span class="no">esi</span><span class="p">,</span><span class="no">eax</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x000012c1</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">180</span><span class="err">&gt;</span><span class="p">:</span><span class="w">   </span><span class="no">call</span><span class="w">   </span><span class="mh">0x1070</span> <span class="p">&lt;</span><span class="no">getegid@plt</span><span class="p">&gt;</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x000012c6</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">185</span><span class="err">&gt;</span><span class="p">:</span><span class="w">   </span><span class="no">sub</span><span class="w">    </span><span class="no">esp</span><span class="p">,</span><span class="mi">0x8</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x000012c9</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">188</span><span class="err">&gt;</span><span class="p">:</span><span class="w">   </span><span class="no">push</span><span class="w">   </span><span class="no">esi</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x000012ca</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">189</span><span class="err">&gt;</span><span class="p">:</span><span class="w">   </span><span class="no">push</span><span class="w">   </span><span class="no">eax</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x000012cb</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">190</span><span class="err">&gt;</span><span class="p">:</span><span class="w">   </span><span class="no">call</span><span class="w">   </span><span class="mh">0x10b0</span> <span class="p">&lt;</span><span class="no">setregid@plt</span><span class="p">&gt;</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x000012d0</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">195</span><span class="err">&gt;</span><span class="p">:</span><span class="w">   </span><span class="no">add</span><span class="w">    </span><span class="no">esp</span><span class="p">,</span><span class="mi">0x10</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x000012d3</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">198</span><span class="err">&gt;</span><span class="p">:</span><span class="w">   </span><span class="no">sub</span><span class="w">    </span><span class="no">esp</span><span class="p">,</span><span class="mi">0xc</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x000012d6</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">201</span><span class="err">&gt;</span><span class="p">:</span><span class="w">   </span><span class="no">lea</span><span class="w">    </span><span class="no">eax</span><span class="p">,[</span><span class="no">ebx-0x1f88</span><span class="p">]</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x000012dc</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">207</span><span class="err">&gt;</span><span class="p">:</span><span class="w">   </span><span class="no">push</span><span class="w">   </span><span class="no">eax</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x000012dd</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">208</span><span class="err">&gt;</span><span class="p">:</span><span class="w">   </span><span class="no">call</span><span class="w">   </span><span class="mh">0x1090</span> <span class="p">&lt;</span><span class="no">system@plt</span><span class="p">&gt;</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x000012e2</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">213</span><span class="err">&gt;</span><span class="p">:</span><span class="w">   </span><span class="no">add</span><span class="w">    </span><span class="no">esp</span><span class="p">,</span><span class="mi">0x10</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x000012e5</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">216</span><span class="err">&gt;</span><span class="p">:</span><span class="w">   </span><span class="no">sub</span><span class="w">    </span><span class="no">esp</span><span class="p">,</span><span class="mi">0xc</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x000012e8</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">219</span><span class="err">&gt;</span><span class="p">:</span><span class="w">   </span><span class="no">push</span><span class="w">   </span><span class="mi">0x0</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x000012ea</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">221</span><span class="err">&gt;</span><span class="p">:</span><span class="w">   </span><span class="no">call</span><span class="w">   </span><span class="mh">0x10a0</span> <span class="p">&lt;</span><span class="no">exit@plt</span><span class="p">&gt;</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x000012ef</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">226</span><span class="err">&gt;</span><span class="p">:</span><span class="w">   </span><span class="no">sub</span><span class="w">    </span><span class="no">esp</span><span class="p">,</span><span class="mi">0xc</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x000012f2</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">229</span><span class="err">&gt;</span><span class="p">:</span><span class="w">   </span><span class="no">lea</span><span class="w">    </span><span class="no">eax</span><span class="p">,[</span><span class="no">ebx-0x1f7a</span><span class="p">]</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x000012f8</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">235</span><span class="err">&gt;</span><span class="p">:</span><span class="w">   </span><span class="no">push</span><span class="w">   </span><span class="no">eax</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x000012f9</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">236</span><span class="err">&gt;</span><span class="p">:</span><span class="w">   </span><span class="no">call</span><span class="w">   </span><span class="mh">0x1080</span> <span class="p">&lt;</span><span class="no">puts@plt</span><span class="p">&gt;</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x000012fe</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">241</span><span class="err">&gt;</span><span class="p">:</span><span class="w">   </span><span class="no">add</span><span class="w">    </span><span class="no">esp</span><span class="p">,</span><span class="mi">0x10</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x00001301</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">244</span><span class="err">&gt;</span><span class="p">:</span><span class="w">   </span><span class="no">mov</span><span class="w">    </span><span class="no">eax</span><span class="p">,</span><span class="mi">0x0</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x00001306</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">249</span><span class="err">&gt;</span><span class="p">:</span><span class="w">   </span><span class="no">lea</span><span class="w">    </span><span class="no">esp</span><span class="p">,[</span><span class="no">ebp-0xc</span><span class="p">]</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x00001309</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">252</span><span class="err">&gt;</span><span class="p">:</span><span class="w">   </span><span class="no">pop</span><span class="w">    </span><span class="no">ecx</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x0000130a</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">253</span><span class="err">&gt;</span><span class="p">:</span><span class="w">   </span><span class="no">pop</span><span class="w">    </span><span class="no">ebx</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x0000130b</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">254</span><span class="err">&gt;</span><span class="p">:</span><span class="w">   </span><span class="no">pop</span><span class="w">    </span><span class="no">esi</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x0000130c</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">255</span><span class="err">&gt;</span><span class="p">:</span><span class="w">   </span><span class="no">pop</span><span class="w">    </span><span class="no">ebp</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x0000130d</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">256</span><span class="err">&gt;</span><span class="p">:</span><span class="w">   </span><span class="no">lea</span><span class="w">    </span><span class="no">esp</span><span class="p">,[</span><span class="no">ecx-0x4</span><span class="p">]</span>
-<span class="w">   </span><span class="err">0</span><span class="nf">x00001310</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">259</span><span class="err">&gt;</span><span class="p">:</span><span class="w">   </span><span class="no">ret</span>
-</code></pre></div>
+<pre class="codehilite"><code class="language-asm">   0x0000120d &lt;+0&gt;: lea    ecx,[esp+0x4]
+   0x00001211 &lt;+4&gt;: and    esp,0xfffffff0
+   0x00001214 &lt;+7&gt;: push   DWORD PTR [ecx-0x4]
+   0x00001217 &lt;+10&gt;:    push   ebp
+   0x00001218 &lt;+11&gt;:    mov    ebp,esp
+   0x0000121a &lt;+13&gt;:    push   esi
+   0x0000121b &lt;+14&gt;:    push   ebx
+   0x0000121c &lt;+15&gt;:    push   ecx
+   0x0000121d &lt;+16&gt;:    sub    esp,0x1c
+   0x00001220 &lt;+19&gt;:    call   0x1110 &lt;__x86.get_pc_thunk.bx&gt;
+   0x00001225 &lt;+24&gt;:    add    ebx,0x2d97
+   0x0000122b &lt;+30&gt;:    mov    eax,ecx
+   0x0000122d &lt;+32&gt;:    cmp    DWORD PTR [eax],0x1
+   0x00001230 &lt;+35&gt;:    jg     0x124e &lt;main+65&gt;
+   0x00001232 &lt;+37&gt;:    sub    esp,0xc
+   0x00001235 &lt;+40&gt;:    lea    eax,[ebx-0x1fb4]
+   0x0000123b &lt;+46&gt;:    push   eax
+   0x0000123c &lt;+47&gt;:    call   0x1080 &lt;puts@plt&gt;
+   0x00001241 &lt;+52&gt;:    add    esp,0x10
+   0x00001244 &lt;+55&gt;:    mov    eax,0x0
+   0x00001249 &lt;+60&gt;:    jmp    0x1306 &lt;main+249&gt;
+   0x0000124e &lt;+65&gt;:    mov    eax,DWORD PTR [eax+0x4]
+   0x00001251 &lt;+68&gt;:    add    eax,0x4
+   0x00001254 &lt;+71&gt;:    mov    eax,DWORD PTR [eax]
+   0x00001256 &lt;+73&gt;:    sub    esp,0xc
+   0x00001259 &lt;+76&gt;:    push   eax
+   0x0000125a &lt;+77&gt;:    call   0x10c0 &lt;atoi@plt&gt;
+   0x0000125f &lt;+82&gt;:    add    esp,0x10
+   0x00001262 &lt;+85&gt;:    sub    eax,0x1234
+   0x00001267 &lt;+90&gt;:    mov    DWORD PTR [ebp-0x1c],eax
+   0x0000126a &lt;+93&gt;:    mov    DWORD PTR [ebp-0x20],0x0
+   0x00001271 &lt;+100&gt;:   sub    esp,0x4
+   0x00001274 &lt;+103&gt;:   push   0x20
+   0x00001276 &lt;+105&gt;:   lea    eax,[ebx+0x84]
+   0x0000127c &lt;+111&gt;:   push   eax
+   0x0000127d &lt;+112&gt;:   push   DWORD PTR [ebp-0x1c]
+   0x00001280 &lt;+115&gt;:   call   0x1060 &lt;read@plt&gt;
+   0x00001285 &lt;+120&gt;:   add    esp,0x10
+   0x00001288 &lt;+123&gt;:   mov    DWORD PTR [ebp-0x20],eax
+   0x0000128b &lt;+126&gt;:   sub    esp,0x8
+   0x0000128e &lt;+129&gt;:   lea    eax,[ebx+0x84]
+   0x00001294 &lt;+135&gt;:   push   eax
+   0x00001295 &lt;+136&gt;:   lea    eax,[ebx-0x1f9e]
+   0x0000129b &lt;+142&gt;:   push   eax
+   0x0000129c &lt;+143&gt;:   call   0x1040 &lt;strcmp@plt&gt;
+   0x000012a1 &lt;+148&gt;:   add    esp,0x10
+   0x000012a4 &lt;+151&gt;:   test   eax,eax
+   0x000012a6 &lt;+153&gt;:   jne    0x12ef &lt;main+226&gt;
+   0x000012a8 &lt;+155&gt;:   sub    esp,0xc
+   0x000012ab &lt;+158&gt;:   lea    eax,[ebx-0x1f94]
+   0x000012b1 &lt;+164&gt;:   push   eax
+   0x000012b2 &lt;+165&gt;:   call   0x1080 &lt;puts@plt&gt;
+   0x000012b7 &lt;+170&gt;:   add    esp,0x10
+   0x000012ba &lt;+173&gt;:   call   0x1070 &lt;getegid@plt&gt;
+   0x000012bf &lt;+178&gt;:   mov    esi,eax
+   0x000012c1 &lt;+180&gt;:   call   0x1070 &lt;getegid@plt&gt;
+   0x000012c6 &lt;+185&gt;:   sub    esp,0x8
+   0x000012c9 &lt;+188&gt;:   push   esi
+   0x000012ca &lt;+189&gt;:   push   eax
+   0x000012cb &lt;+190&gt;:   call   0x10b0 &lt;setregid@plt&gt;
+   0x000012d0 &lt;+195&gt;:   add    esp,0x10
+   0x000012d3 &lt;+198&gt;:   sub    esp,0xc
+   0x000012d6 &lt;+201&gt;:   lea    eax,[ebx-0x1f88]
+   0x000012dc &lt;+207&gt;:   push   eax
+   0x000012dd &lt;+208&gt;:   call   0x1090 &lt;system@plt&gt;
+   0x000012e2 &lt;+213&gt;:   add    esp,0x10
+   0x000012e5 &lt;+216&gt;:   sub    esp,0xc
+   0x000012e8 &lt;+219&gt;:   push   0x0
+   0x000012ea &lt;+221&gt;:   call   0x10a0 &lt;exit@plt&gt;
+   0x000012ef &lt;+226&gt;:   sub    esp,0xc
+   0x000012f2 &lt;+229&gt;:   lea    eax,[ebx-0x1f7a]
+   0x000012f8 &lt;+235&gt;:   push   eax
+   0x000012f9 &lt;+236&gt;:   call   0x1080 &lt;puts@plt&gt;
+   0x000012fe &lt;+241&gt;:   add    esp,0x10
+   0x00001301 &lt;+244&gt;:   mov    eax,0x0
+   0x00001306 &lt;+249&gt;:   lea    esp,[ebp-0xc]
+   0x00001309 &lt;+252&gt;:   pop    ecx
+   0x0000130a &lt;+253&gt;:   pop    ebx
+   0x0000130b &lt;+254&gt;:   pop    esi
+   0x0000130c &lt;+255&gt;:   pop    ebp
+   0x0000130d &lt;+256&gt;:   lea    esp,[ecx-0x4]
+   0x00001310 &lt;+259&gt;:   ret
+</code></pre>
 
 <p>From the above and from the code, we can see exactly where the comparison takes place</p>
 <p><code>0x000012a4 &lt;+151&gt;: test   eax,eax</code></p>
@@ -209,21 +209,21 @@ ie, then we can just pass what the condition requires us to in order to obtain t
 Just trying to set eax=0 before the test to bypass the restrictions</p>
 <h3 id="get-the-address-after-running-the-file-and-breaking-at-main">Get the address after running the file and breaking at main</h3>
 <p><code>0x565562a4 &lt;+151&gt;: test   %eax,%eax</code></p>
-<div class="codehilite"><pre><span></span><code><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span><span class="k">break</span><span class="w"> </span>*0x565562a4
-Breakpoint<span class="w"> </span><span class="m">2</span><span class="w"> </span>at<span class="w"> </span>0x565562a4
-<span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span><span class="k">continue</span>
+<pre class="codehilite"><code class="language-bash">(gdb) break *0x565562a4
+Breakpoint 2 at 0x565562a4
+(gdb) continue
 Continuing.
 
-Breakpoint<span class="w"> </span><span class="m">2</span>,<span class="w"> </span>0x565562a4<span class="w"> </span><span class="k">in</span><span class="w"> </span>main<span class="w"> </span><span class="o">()</span>
-<span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span><span class="nb">set</span><span class="w"> </span><span class="nv">$eax</span><span class="o">=</span><span class="m">0</span>
-</code></pre></div>
+Breakpoint 2, 0x565562a4 in main ()
+(gdb) set $eax=0
+</code></pre>
 
 <p>Fingers crossed.....<br>
 And boom</p>
-<div class="codehilite"><pre><span></span><code><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span><span class="k">continue</span>
+<pre class="codehilite"><code class="language-bash">(gdb) continue
 Continuing.
-good<span class="w"> </span>job<span class="w"> </span>:<span class="o">)</span>
-</code></pre></div>
+good job :)
+</code></pre>
 
 <p>Again, this is not the intended way to do it, the challenge is supposed to teach you about FD<br>
 But this is another vuln<br>

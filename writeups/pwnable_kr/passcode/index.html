@@ -82,30 +82,30 @@ But when we try to run the binary and use these creds, we get a segmentation fau
 Then when it flushes, it doesnt know which destination to put it in because the given destination is not even an address<br>
 So if we just execute the flagread instead of fflush(), we can retrieve the flag</p>
 <p>Lets analyze the functions and addresses using <code>pwndbg</code></p>
-<div class="codehilite"><pre><span></span><code><span class="err">0</span><span class="nf">x08049000</span><span class="w">  </span><span class="no">_init</span>
-<span class="err">0</span><span class="nf">x08049040</span><span class="w">  </span><span class="no">__libc_start_main@plt</span>
-<span class="err">0</span><span class="nf">x08049050</span><span class="w">  </span><span class="no">printf@plt</span>
-<span class="err">0</span><span class="nf">x08049060</span><span class="w">  </span><span class="no">fflush@plt</span>
-<span class="err">0</span><span class="nf">x08049070</span><span class="w">  </span><span class="no">__stack_chk_fail@plt</span>
-<span class="err">0</span><span class="nf">x08049080</span><span class="w">  </span><span class="no">getegid@plt</span>
-<span class="err">0</span><span class="nf">x08049090</span><span class="w">  </span><span class="no">puts@plt</span>
-<span class="err">0</span><span class="nf">x080490a0</span><span class="w">  </span><span class="no">system@plt</span>
-<span class="err">0</span><span class="nf">x080490b0</span><span class="w">  </span><span class="no">exit@plt</span>
-<span class="err">0</span><span class="nf">x080490c0</span><span class="w">  </span><span class="no">setregid@plt</span>
-<span class="err">0</span><span class="nf">x080490d0</span><span class="w">  </span><span class="no">__isoc99_scanf@plt</span>
-<span class="err">0</span><span class="nf">x080490e0</span><span class="w">  </span><span class="no">_start</span>
-<span class="err">0</span><span class="nf">x08049120</span><span class="w">  </span><span class="no">_dl_relocate_static_pie</span>
-<span class="err">0</span><span class="nf">x08049130</span><span class="w">  </span><span class="no">__x86.get_pc_thunk.bx</span>
-<span class="err">0</span><span class="nf">x08049140</span><span class="w">  </span><span class="no">deregister_tm_clones</span>
-<span class="err">0</span><span class="nf">x08049180</span><span class="w">  </span><span class="no">register_tm_clones</span>
-<span class="err">0</span><span class="nf">x080491c0</span><span class="w">  </span><span class="no">__do_global_dtors_aux</span>
-<span class="err">0</span><span class="nf">x080491f0</span><span class="w">  </span><span class="no">frame_dummy</span>
-<span class="err">0</span><span class="nf">x080491f6</span><span class="w">  </span><span class="no">login</span>
-<span class="err">0</span><span class="nf">x080492f2</span><span class="w">  </span><span class="no">welcome</span>
-<span class="err">0</span><span class="nf">x08049364</span><span class="w">  </span><span class="no">main</span>
-<span class="err">0</span><span class="nf">x080493c0</span><span class="w">  </span><span class="no">__stack_chk_fail_local</span>
-<span class="err">0</span><span class="nf">x080493d8</span><span class="w">  </span><span class="no">_fini</span>
-</code></pre></div>
+<pre class="codehilite"><code class="language-asm">0x08049000  _init
+0x08049040  __libc_start_main@plt
+0x08049050  printf@plt
+0x08049060  fflush@plt
+0x08049070  __stack_chk_fail@plt
+0x08049080  getegid@plt
+0x08049090  puts@plt
+0x080490a0  system@plt
+0x080490b0  exit@plt
+0x080490c0  setregid@plt
+0x080490d0  __isoc99_scanf@plt
+0x080490e0  _start
+0x08049120  _dl_relocate_static_pie
+0x08049130  __x86.get_pc_thunk.bx
+0x08049140  deregister_tm_clones
+0x08049180  register_tm_clones
+0x080491c0  __do_global_dtors_aux
+0x080491f0  frame_dummy
+0x080491f6  login
+0x080492f2  welcome
+0x08049364  main
+0x080493c0  __stack_chk_fail_local
+0x080493d8  _fini
+</code></pre>
 
 <p>When we use cyclic pattern as name, we find that SEGMENTATION FAULT occurs at 0x61616179 at 'yaaa'</p>
 <p><code>cyclic -l yaaa
