@@ -58,20 +58,13 @@
     </div>
     <div class="reader__body">
       <div class="md-render">
-<pre class="codehilite"><code class="language-md">Hello Hackers!
-Welcome back to another writeup, today we will be looking at `The Add/On Trap` from picoCTF (Reverse Engineering)
-
-The file provided is a .xpl file and its supposedly a browser extension
-
---&gt; We can unzip that too
-
-We got more files
-
-Upon inspection, we can find fernet is being used
-
-From main.js we find
-</code></pre>
-
+<p>Hello Hackers!<br>
+Welcome back to another writeup, today we will be looking at <code>The Add/On Trap</code> from picoCTF (Reverse Engineering)</p>
+<p>The file provided is a .xpl file and its supposedly a browser extension</p>
+<p>--&gt; We can unzip that too</p>
+<p>We got more files</p>
+<p>Upon inspection, we can find fernet is being used</p>
+<p>From main.js we find</p>
 <pre class="codehilite"><code class="language-js">// Secret key must be 32 url-safe base64-encoded bytes!
 // TODO I must find a solution to remove the key from here, for now I'll leave it there because I need it to encrypt the webhook
 
@@ -81,12 +74,10 @@ function logOnCompleted(details) {
     const webhookUrl='gAAAAABmfRjwFKUB-X3GBBqaN1tZYcPg5oLJVJ5XQHFogEgcRSxSis1e4qwicAKohmjqaD-QG8DIN5ie3uijCVAe3xiYmoEHlxATWUP3DC97R00Cgkw4f3HZKsP5xHewOqVPH8ap9FbE'
 </code></pre>
 
-<pre class="codehilite"><code class="language-md">Hence we got the key and a string to decrypt
-Using https://asecuritysite.com/tokens/ferdecode, 
-We retrieve the flag
-
-`picoCTF{Us3_4dd/0ns_v3ry_c4r3fully1}`
-</code></pre>
+<p>Hence we got the key and a string to decrypt<br>
+Using https://asecuritysite.com/tokens/ferdecode, <br>
+We retrieve the flag</p>
+<p><code>picoCTF{Us3_4dd/0ns_v3ry_c4r3fully1}</code></p>
       </div>
     </div>
   </article>

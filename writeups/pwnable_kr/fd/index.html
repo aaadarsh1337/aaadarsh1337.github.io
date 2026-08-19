@@ -41,40 +41,34 @@
     </div>
     <div class="sidebar__files">
       <p class="tb-label">FILES</p>
-      <div class="file-list"><a class="file-item readable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/pwnable_kr/fd/fd.md" target="_blank" rel="noopener"><span class="name">fd.md</span><span class="kind">md</span></a><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/pwnable_kr/fd/files/fd" target="_blank" rel="noopener"><span class="name">files/fd</span><span class="kind">github</span></a><a class="file-item readable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/pwnable_kr/fd/files/fd.c" target="_blank" rel="noopener"><span class="name">files/fd.c</span><span class="kind">c</span></a><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/pwnable_kr/fd/files/flag.png" target="_blank" rel="noopener"><span class="name">files/flag.png</span><span class="kind">github</span></a></div>
+      <div class="file-list"><a class="file-item readable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/pwnable_kr/fd/notes.md" target="_blank" rel="noopener"><span class="name">notes.md</span><span class="kind">md</span></a><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/pwnable_kr/fd/files/fd" target="_blank" rel="noopener"><span class="name">files/fd</span><span class="kind">github</span></a><a class="file-item readable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/pwnable_kr/fd/files/fd.c" target="_blank" rel="noopener"><span class="name">files/fd.c</span><span class="kind">c</span></a><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/pwnable_kr/fd/files/flag.png" target="_blank" rel="noopener"><span class="name">files/flag.png</span><span class="kind">github</span></a></div>
     </div>
     <div class="sidebar__foot">
       <a class="btn btn--ghost btn--small sidebar-gh-btn" href="https://github.com/aaadarsh1337/ctf-writeups/tree/main/pwnable_kr/fd" target="_blank" rel="noopener">Open folder &#8599;</a>
-      <a class="btn btn--ghost btn--small sidebar-gh-btn" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/pwnable_kr/fd/fd.md" target="_blank" rel="noopener">View markdown &#8599;</a>
+      <a class="btn btn--ghost btn--small sidebar-gh-btn" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/pwnable_kr/fd/notes.md" target="_blank" rel="noopener">View markdown &#8599;</a>
     </div>
   </aside>
   <article class="reader">
     <div class="reader__toolbar">
       <div class="reader__crumb">
         <span class="tb-label">READING</span>
-        <span>fd.md</span>
+        <span>notes.md</span>
       </div>
-      <a class="btn btn--ghost btn--small" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/pwnable_kr/fd/fd.md" target="_blank" rel="noopener">Source &#8599;</a>
+      <a class="btn btn--ghost btn--small" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/pwnable_kr/fd/notes.md" target="_blank" rel="noopener">Source &#8599;</a>
     </div>
     <div class="reader__body">
       <div class="md-render">
-<pre class="codehilite"><code class="language-md"># fd 
-Hello everyone, welcome to this series where i'll be providing writeups for all the challenges on pwnable.kr
-
-Today we will be trying out the first challenge, fd. 
-Since this is the first challenge, I recon it will be very easy
-
-The site instructs us to connect to the machine via SSH
-
-After login, we see our files
-
-Let's move all of it to our local machine 
-
-`scp -P 2222 -r fd@pwnable.kr:/home/fd .`
-
-1. fd.c
-</code></pre>
-
+<h1 id="fd">fd</h1>
+<p>Hello everyone, welcome to this series where i'll be providing writeups for all the challenges on pwnable.kr</p>
+<p>Today we will be trying out the first challenge, fd. <br>
+Since this is the first challenge, I recon it will be very easy</p>
+<p>The site instructs us to connect to the machine via SSH</p>
+<p>After login, we see our files</p>
+<p>Let's move all of it to our local machine </p>
+<p><code>scp -P 2222 -r fd@pwnable.kr:/home/fd .</code></p>
+<ol>
+<li>fd.c</li>
+</ol>
 <pre class="codehilite"><code class="language-c">#include &lt;stdio.h&gt;
 #include &lt;stdlib.h&gt;
 #include &lt;string.h&gt;
@@ -99,52 +93,32 @@ int main(int argc, char* argv[], char* envp[]){
 }
 </code></pre>
 
-<pre class="codehilite"><code class="language-md">The challenge hints us to learn about file descriptors
---&gt; In Linux, a file descriptor (FD) is a non-negative integer that serves as a unique per-process handle assigned by the kernel to manage any open input/output stream
-
-### The fd binary has SUID
-So it runs as root and we can read the file
-
-## Understanding the logic behind the code
-
-`int fd = atoi( argv[1] ) - 0x1234;`
-
-The argument which we pass to the program, it's converted to its int equivalent (atoi) and then 0x1234 is subtracted from it
-
-`len = read(fd, buf, 32);`
-
-What this means: we are reading fd, and we are storing the first 32 bytes into the &quot;buf&quot; which is a user defined 32 byte buffer
-
-`if(!strcmp(&quot;LETMEWIN\n&quot;, buf))`
-
-strcmp compares two strings based off their ascii values. It returns 0 for true
-
-Since we can control the file descriptor here, set it to 0
-WHY: Because 0 is the FD for standard input
-ie, then we can just pass what the condition requires us to in order to obtain the flag
-
-The int value of 0x1234 is 4660
-
-Giving 4660 as arg, the program halts
---&gt; It is waiting for our input
-
-Entering `LETMEWIN` and pressing enter, we get good job
-
-Repeat the process on the target machine to reveal the flag
-</code></pre>
-
+<p>The challenge hints us to learn about file descriptors<br>
+--&gt; In Linux, a file descriptor (FD) is a non-negative integer that serves as a unique per-process handle assigned by the kernel to manage any open input/output stream</p>
+<h3 id="the-fd-binary-has-suid">The fd binary has SUID</h3>
+<p>So it runs as root and we can read the file</p>
+<h2 id="understanding-the-logic-behind-the-code">Understanding the logic behind the code</h2>
+<p><code>int fd = atoi( argv[1] ) - 0x1234;</code></p>
+<p>The argument which we pass to the program, it's converted to its int equivalent (atoi) and then 0x1234 is subtracted from it</p>
+<p><code>len = read(fd, buf, 32);</code></p>
+<p>What this means: we are reading fd, and we are storing the first 32 bytes into the "buf" which is a user defined 32 byte buffer</p>
+<p><code>if(!strcmp("LETMEWIN\n", buf))</code></p>
+<p>strcmp compares two strings based off their ascii values. It returns 0 for true</p>
+<p>Since we can control the file descriptor here, set it to 0<br>
+WHY: Because 0 is the FD for standard input<br>
+ie, then we can just pass what the condition requires us to in order to obtain the flag</p>
+<p>The int value of 0x1234 is 4660</p>
+<p>Giving 4660 as arg, the program halts<br>
+--&gt; It is waiting for our input</p>
+<p>Entering <code>LETMEWIN</code> and pressing enter, we get good job</p>
+<p>Repeat the process on the target machine to reveal the flag</p>
 <hr>
-<pre class="codehilite"><code class="language-md"># ALTERNATE APPROACH (DOES NOT RETRIEVE FLAG)
-
-This is not the way the developers intended this challenge to be solve, but we can basically modify registers to trigger the winning funtion
-
-In gdb, 
-
-`set disassembly-flavor intel`
-`set follow-fork-mode parent`                # for reading the flag, the binary invokes a child process where main() isnt defines --&gt; error
-`disassemble main`
-</code></pre>
-
+<h1 id="alternate-approach-does-not-retrieve-flag">ALTERNATE APPROACH (DOES NOT RETRIEVE FLAG)</h1>
+<p>This is not the way the developers intended this challenge to be solve, but we can basically modify registers to trigger the winning funtion</p>
+<p>In gdb, </p>
+<p><code>set disassembly-flavor intel</code><br>
+<code>set follow-fork-mode parent</code>                # for reading the flag, the binary invokes a child process where main() isnt defines --&gt; error<br>
+<code>disassemble main</code></p>
 <pre class="codehilite"><code class="language-asm">   0x0000120d &lt;+0&gt;: lea    ecx,[esp+0x4]
    0x00001211 &lt;+4&gt;: and    esp,0xfffffff0
    0x00001214 &lt;+7&gt;: push   DWORD PTR [ecx-0x4]
@@ -229,18 +203,12 @@ In gdb,
    0x00001310 &lt;+259&gt;:   ret
 </code></pre>
 
-<pre class="codehilite"><code class="language-md">From the above and from the code, we can see exactly where the comparison takes place
-
-`0x000012a4 &lt;+151&gt;: test   eax,eax`
-
-here, the value of strcmp is being compared to 0 --&gt; Strings match
-Just trying to set eax=0 before the test to bypass the restrictions
-
-### Get the address after running the file and breaking at main
-
-`0x565562a4 &lt;+151&gt;: test   %eax,%eax`
-</code></pre>
-
+<p>From the above and from the code, we can see exactly where the comparison takes place</p>
+<p><code>0x000012a4 &lt;+151&gt;: test   eax,eax</code></p>
+<p>here, the value of strcmp is being compared to 0 --&gt; Strings match<br>
+Just trying to set eax=0 before the test to bypass the restrictions</p>
+<h3 id="get-the-address-after-running-the-file-and-breaking-at-main">Get the address after running the file and breaking at main</h3>
+<p><code>0x565562a4 &lt;+151&gt;: test   %eax,%eax</code></p>
 <pre class="codehilite"><code class="language-bash">(gdb) break *0x565562a4
 Breakpoint 2 at 0x565562a4
 (gdb) continue
@@ -250,21 +218,17 @@ Breakpoint 2, 0x565562a4 in main ()
 (gdb) set $eax=0
 </code></pre>
 
-<pre class="codehilite"><code class="language-md">Fingers crossed.....
-And boom
-</code></pre>
-
+<p>Fingers crossed.....<br>
+And boom</p>
 <pre class="codehilite"><code class="language-bash">(gdb) continue
 Continuing.
 good job :)
 </code></pre>
 
-<pre class="codehilite"><code class="language-md">Again, this is not the intended way to do it, the challenge is supposed to teach you about FD
-But this is another vuln
-But since gdb isnt run as root, flag will say permission denied
-
-Happy Hacking :)
-</code></pre>
+<p>Again, this is not the intended way to do it, the challenge is supposed to teach you about FD<br>
+But this is another vuln<br>
+But since gdb isnt run as root, flag will say permission denied</p>
+<p>Happy Hacking :)</p>
       </div>
     </div>
   </article>

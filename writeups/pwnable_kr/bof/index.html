@@ -58,66 +58,41 @@
     </div>
     <div class="reader__body">
       <div class="md-render">
-<pre class="codehilite"><code class="language-md">Hello Hackers!
-
-Welcome back to another writeup from pwnable.kr
-Today we'll be looking at bof
-
-From the room name and hints, it seems to be of course, buffer overflow
-
-Lets analyze the code
-
-We find that we will get a shell if we execute the function with address `0xcafebabe` but the main function runs it as `0xdeadbeat`
-
-Lets analyze the function
-
-It is a 32 bit executable
-Using cyclic to create
-
-`cyclic -n 4 200`
-
-Using pwndbg
-Lets see what we find
-
-Oops. forgot to `checksec`
-Everything is protected
-
-Trying to manually analyze the file using gdb
-Break at func
-
-When we disassemble the function, we find this
-
-`0x5655623c &lt;+63&gt;:  cmp    DWORD PTR [ebp+0x8],0xcafebabe`
-
-Hence, we can try to set the value of ebp+0x8 to be equivalent to 0xcafebabe
-
-`break 0x5655623c`
-
-Using python we find that ebp+0x8 is `0xffffcb40`
-
-`set {int}0xffffcb40 = 3405691582`
-
-The int is the equivalent of 0xcafebabe
-
-Continuing, we get our shell. 
-
-But this is pretty much pointless. Because on the server, we cant run gdb as root
-Hence we need to find smtg with the input that changes the value of ebp+0x8 to set 3405691582
-
-When i input 400 A, we can see that 200 of them were stored at eax and the rest 200 at ebp
-`x $eax`
-`x $ebp`
-
-Thus, our payload needs 208 A (The whole eax) and then 0xcodebabe
-
-Ahh but we see that ebp still has a lot of A's 
-Doing some math, we can find that sending 52 chars junk and then our addresss, we can get the flag
-
-Writing exploit.py
-We get flag:
-
-`Daddy_I_just_pwned_a_buff3r!`
-</code></pre>
+<p>Hello Hackers!</p>
+<p>Welcome back to another writeup from pwnable.kr<br>
+Today we'll be looking at bof</p>
+<p>From the room name and hints, it seems to be of course, buffer overflow</p>
+<p>Lets analyze the code</p>
+<p>We find that we will get a shell if we execute the function with address <code>0xcafebabe</code> but the main function runs it as <code>0xdeadbeat</code></p>
+<p>Lets analyze the function</p>
+<p>It is a 32 bit executable<br>
+Using cyclic to create</p>
+<p><code>cyclic -n 4 200</code></p>
+<p>Using pwndbg<br>
+Lets see what we find</p>
+<p>Oops. forgot to <code>checksec</code><br>
+Everything is protected</p>
+<p>Trying to manually analyze the file using gdb<br>
+Break at func</p>
+<p>When we disassemble the function, we find this</p>
+<p><code>0x5655623c &lt;+63&gt;:  cmp    DWORD PTR [ebp+0x8],0xcafebabe</code></p>
+<p>Hence, we can try to set the value of ebp+0x8 to be equivalent to 0xcafebabe</p>
+<p><code>break 0x5655623c</code></p>
+<p>Using python we find that ebp+0x8 is <code>0xffffcb40</code></p>
+<p><code>set {int}0xffffcb40 = 3405691582</code></p>
+<p>The int is the equivalent of 0xcafebabe</p>
+<p>Continuing, we get our shell. </p>
+<p>But this is pretty much pointless. Because on the server, we cant run gdb as root<br>
+Hence we need to find smtg with the input that changes the value of ebp+0x8 to set 3405691582</p>
+<p>When i input 400 A, we can see that 200 of them were stored at eax and the rest 200 at ebp<br>
+<code>x $eax</code><br>
+<code>x $ebp</code></p>
+<p>Thus, our payload needs 208 A (The whole eax) and then 0xcodebabe</p>
+<p>Ahh but we see that ebp still has a lot of A's <br>
+Doing some math, we can find that sending 52 chars junk and then our addresss, we can get the flag</p>
+<p>Writing exploit.py<br>
+We get flag:</p>
+<p><code>Daddy_I_just_pwned_a_buff3r!</code></p>
       </div>
     </div>
   </article>
