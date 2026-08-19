@@ -69,9 +69,9 @@ It is a medium challenge and in the category Binary Exploitation</p>
 We have the source and also the service to connect to</p>
 <p>Reading the source code, <br>
 User has to input an address, stored in the variable <code>expected</code></p>
-<div class="highlight"><pre><span></span><code><span class="cp">#define CHUNK_COUNT 6</span>
-<span class="cp">#define CHUNK_SIZE 0x80 </span>
-</code></pre></div>
+<pre class="highlight"><code class="language-c">#define CHUNK_COUNT 6
+#define CHUNK_SIZE 0x80 
+</code></pre>
 
 <p>--&gt; The user input check runs 6 times<br>
 --&gt; Chunk size is set to 0x80</p>
