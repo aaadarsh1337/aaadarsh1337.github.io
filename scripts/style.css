@@ -641,7 +641,6 @@ main { position: relative; z-index: 1; }
 }
 
 @media (max-width: 820px) {
-  .topbar__actions { display: none; }
   .topbar__toggle { display: flex; }
   .topbar__inner.menu-open .topbar__actions {
     display: flex;
@@ -734,23 +733,23 @@ a.file-item.unreadable .kind { color: var(--coral, #E88873); }
   margin: 0;
 }
 
+/* MOBILE: always show Portfolio / Repo — must stay at END of file */
 @media (max-width: 820px) {
-  /* show actions instead of hiding them */
   .topbar__actions {
     display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
     gap: 6px;
     flex-wrap: wrap;
-    justify-content: flex-end;
   }
-  .topbar__actions .btn {
-    padding: 6px 10px;
-    font-size: 11px;
+  .topbar__actions .btn,
+  .topbar__actions a {
+    display: inline-block !important;
+    visibility: visible !important;
+    padding: 6px 10px !important;
+    font-size: 11px !important;
   }
   .topbar__toggle {
     display: none !important;
-  }
-  .topbar__inner {
-    flex-wrap: wrap;
-    gap: 8px;
   }
 }
