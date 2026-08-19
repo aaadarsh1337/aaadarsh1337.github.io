@@ -223,7 +223,7 @@ PAGE_SHELL = """<!DOCTYPE html>
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>{title} â€” CTF Writeups</title>
+<title>{title}</title>
 <meta name="description" content="{description}" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -251,7 +251,6 @@ PAGE_SHELL = """<!DOCTYPE html>
 <main>
 {body}
 </main>
-
 </body>
 </html>
 """
@@ -395,7 +394,7 @@ def build(source: Path, out: Path, portfolio_url: str, github_user: str, github_
             file_list=file_list_html,
         )
         page = PAGE_SHELL.format(
-            title=html.escape(f"{w['name']} Â· {w['event']}"),
+            title=html.escape(f"{w['name']} · {w['event']}"),
             description=html.escape(f"CTF writeup: {w['name']} ({w['event']})"),
             css_prefix=css_prefix,
             home_href=home_href,
