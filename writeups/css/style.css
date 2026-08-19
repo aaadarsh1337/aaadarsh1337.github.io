@@ -56,7 +56,7 @@ body {
 }
 
 a { color: var(--cyan); text-decoration: none; }
-a:hover { text-decoration: underline; }
+a:hover { text-decoration: none; }
 h1, h2, h3 { font-family: var(--serif); font-weight: 600; margin: 0 0 0.4em; color: var(--text); }
 ::selection { background: var(--amber); color: var(--bg); }
 .dim { color: var(--text-dim); font-family: var(--mono); }
