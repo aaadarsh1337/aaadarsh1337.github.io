@@ -1,0 +1,52 @@
+/* File list in sidebar */
+.sidebar__files {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+.file-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-family: var(--mono, monospace);
+  font-size: 12px;
+}
+a.file-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid transparent;
+  color: var(--text-muted, #93A8C7);
+  text-decoration: none;
+  text-align: left;
+}
+a.file-item:hover {
+  background: rgba(111, 203, 235, 0.06);
+  color: var(--text, #E8EEF5);
+  text-decoration: none;
+}
+a.file-item .name { word-break: break-all; }
+a.file-item .kind {
+  font-size: 10px;
+  flex-shrink: 0;
+  color: var(--text-dim, #5A6E8C);
+}
+a.file-item.readable .kind { color: var(--amber, #F2A65A); }
+a.file-item.unreadable .kind { color: var(--coral, #E88873); }
+
+/* Open folder + View markdown spacing */
+.sidebar__foot {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line, #3E5E8C);
+}
+.sidebar-gh-btn {
+  display: block;
+  text-align: center;
+  width: 100%;
+  margin: 0;
+}

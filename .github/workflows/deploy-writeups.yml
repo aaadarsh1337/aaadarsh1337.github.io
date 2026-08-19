@@ -1,0 +1,75 @@
+# Place this file in your PORTFOLIO repo at:
+#   aaadarsh1337.github.io/.github/workflows/deploy-writeups.yml
+#
+# It rebuilds /writeups/ whenever you push to ctf-writeups (or run manually).
+
+name: Build CTF writeups
+
+on:
+  # Manual run from Actions tab
+  workflow_dispatch:
+
+  # Also rebuild when this portfolio repo changes the build script
+  push:
+    paths:
+      - "scripts/build_writeups.py"
+      - "scripts/writeups-style.css"
+      - ".github/workflows/deploy-writeups.yml"
+
+  # Rebuild when ctf-writeups gets new content (requires repo access)
+  repository_dispatch:
+    types: [writeups-updated]
+
+  # Safety net: rebuild daily so you never drift too far
+  schedule:
+    - cron: "0 6 * * *"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout portfolio site
+        uses: actions/checkout@v4
+        with:
+          path: site
+
+      - name: Checkout ctf-writeups
+        uses: actions/checkout@v4
+        with:
+          repository: aaadarsh1337/ctf-writeups
+          path: writeups-src
+          # Public repo: no token needed. If private, use:
+          # token: ${{ secrets.WRITEUPS_FETCH_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install markdown
+
+      - name: Build static writeups
+        run: |
+          python3 site/scripts/build_writeups.py \
+            --source writeups-src \
+            --out site/writeups \
+            --portfolio-url "https://aaadarsh1337.github.io/" \
+            --github-user "aaadarsh1337" \
+            --github-repo "ctf-writeups"
+
+      - name: Commit and push
+        working-directory: site
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add writeups
+          if git diff --staged --quiet; then
+            echo "No changes to writeups."
+            exit 0
+          fi
+          git commit -m "chore: rebuild writeups from ctf-writeups"
+          git push

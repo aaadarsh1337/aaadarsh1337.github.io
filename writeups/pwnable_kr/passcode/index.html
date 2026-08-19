@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>passcode · pwnable_kr</title>
+<meta name="description" content="CTF writeup: passcode (pwnable_kr)" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../css/style.css" />
+</head>
+<body>
+<div class="blueprint-grid" aria-hidden="true"></div>
+
+<header class="topbar">
+  <div class="topbar__inner">
+    <a class="topbar__brand" href="../../index.html">
+      <span class="brand-mark">CTF</span>
+      <span class="brand-text">Writeups</span>
+    </a>
+    <div class="topbar__spacer"></div>
+    <div class="topbar__actions">
+      <a class="btn btn--ghost btn--small" href="https://aaadarsh1337.github.io/">&#8592; Portfolio</a>
+      <a class="btn btn--ghost btn--small" href="https://github.com/aaadarsh1337/ctf-writeups" target="_blank" rel="noopener">Repo &#8599;</a>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<div class="reader-layout reader-layout--static">
+  <aside class="sidebar">
+    <div class="sidebar__head">
+      <a class="btn btn--ghost btn--small" href="../../index.html">&#8592; All writeups</a>
+    </div>
+    <div class="sidebar__challenge">
+      <p class="tb-label">CHALLENGE</p>
+      <h2>passcode</h2>
+      <p class="side-path">pwnable_kr</p>
+    </div>
+    <div class="sidebar__files">
+      <p class="tb-label">FILES</p>
+      <div class="file-list"><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/pwnable_kr/passcode/GOT.png" target="_blank" rel="noopener"><span class="name">GOT.png</span><span class="kind">github</span></a><a class="file-item readable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/pwnable_kr/passcode/claude_summary.md" target="_blank" rel="noopener"><span class="name">claude_summary.md</span><span class="kind">md</span></a><a class="file-item readable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/pwnable_kr/passcode/exploit.py" target="_blank" rel="noopener"><span class="name">exploit.py</span><span class="kind">py</span></a><a class="file-item readable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/pwnable_kr/passcode/notes.md" target="_blank" rel="noopener"><span class="name">notes.md</span><span class="kind">md</span></a><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/pwnable_kr/passcode/files/passcode" target="_blank" rel="noopener"><span class="name">files/passcode</span><span class="kind">github</span></a><a class="file-item readable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/pwnable_kr/passcode/files/passcode.c" target="_blank" rel="noopener"><span class="name">files/passcode.c</span><span class="kind">c</span></a><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/pwnable_kr/passcode/files/readme" target="_blank" rel="noopener"><span class="name">files/readme</span><span class="kind">github</span></a></div>
+    </div>
+    <div class="sidebar__foot">
+      <a class="btn btn--ghost btn--small sidebar-gh-btn" href="https://github.com/aaadarsh1337/ctf-writeups/tree/main/pwnable_kr/passcode" target="_blank" rel="noopener">Open folder &#8599;</a>
+      <a class="btn btn--ghost btn--small sidebar-gh-btn" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/pwnable_kr/passcode/notes.md" target="_blank" rel="noopener">View markdown &#8599;</a>
+    </div>
+  </aside>
+  <article class="reader">
+    <div class="reader__toolbar">
+      <div class="reader__crumb">
+        <span class="tb-label">READING</span>
+        <span>notes.md</span>
+      </div>
+      <a class="btn btn--ghost btn--small" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/pwnable_kr/passcode/notes.md" target="_blank" rel="noopener">Source &#8599;</a>
+    </div>
+    <div class="reader__body">
+      <div class="md-render">
+<div class="codehilite" style="background: #272822"><pre style="line-height: 125%;"><span></span><code>Hello Hackers!
+
+Welcome back to another writeup on a pwnable.kr challenge
+Today we will be looking at <span style="color: #E6DB74">`passcode`</span>
+
+The hint:
+
+Mommy told me to make a passcode based login system.
+My first trial C implementation compiled without any error!
+Well, there were some compiler warnings, but who cares about that?
+
+--&gt; &#39;Compiler warnings&#39; looks interesting
+
+Let us read the source code
+
+From the source code, we find:
+
+<span style="color: #E6DB74">`ha! mommy told me that 32bit is vulnerable to bruteforcing :)`</span>
+
+That is interesting. Maybe it has to do something with bruteforcing
+
+The file looks simple enough with checks of passcode1 = 338150 and passcode2 = 13371337
+But when we try to run the binary and use these creds, we get a segmentation fault. 
+
+Lets try to compile the binary ourself to see what warnings were encountered
+
+Well we cant, because the original code is a lil different. We get error while trying to complile
+
+Lets analyze the binary using BinaryNinja
+
+Another flaw we notice is that passcode1 and 2 expect pointer but get int (%d in scanf)
+--&gt; in scanf(&quot;%d&quot;, smtg), the smtg is the destinaion address. Hence we need to pass &amp;passcode1 
+
+After some research, we find that fflush(stdin) is the problem 
+
+What happens is that we enter out passcode1
+Then when it flushes, it doesnt know which destination to put it in because the given destination is not even an address
+So if we just execute the flagread instead of fflush(), we can retrieve the flag
+
+Lets analyze the functions and addresses using <span style="color: #E6DB74">`pwndbg`</span>
+</code></pre></div>
+
+<div class="codehilite" style="background: #272822"><pre style="line-height: 125%;"><span></span><code><span style="color: #ED007E; background-color: #1E0010">0</span><span style="color: #A6E22E">x08049000</span><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">_init</span>
+<span style="color: #ED007E; background-color: #1E0010">0</span><span style="color: #A6E22E">x08049040</span><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">__libc_start_main@plt</span>
+<span style="color: #ED007E; background-color: #1E0010">0</span><span style="color: #A6E22E">x08049050</span><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">printf@plt</span>
+<span style="color: #ED007E; background-color: #1E0010">0</span><span style="color: #A6E22E">x08049060</span><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">fflush@plt</span>
+<span style="color: #ED007E; background-color: #1E0010">0</span><span style="color: #A6E22E">x08049070</span><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">__stack_chk_fail@plt</span>
+<span style="color: #ED007E; background-color: #1E0010">0</span><span style="color: #A6E22E">x08049080</span><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">getegid@plt</span>
+<span style="color: #ED007E; background-color: #1E0010">0</span><span style="color: #A6E22E">x08049090</span><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">puts@plt</span>
+<span style="color: #ED007E; background-color: #1E0010">0</span><span style="color: #A6E22E">x080490a0</span><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">system@plt</span>
+<span style="color: #ED007E; background-color: #1E0010">0</span><span style="color: #A6E22E">x080490b0</span><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">exit@plt</span>
+<span style="color: #ED007E; background-color: #1E0010">0</span><span style="color: #A6E22E">x080490c0</span><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">setregid@plt</span>
+<span style="color: #ED007E; background-color: #1E0010">0</span><span style="color: #A6E22E">x080490d0</span><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">__isoc99_scanf@plt</span>
+<span style="color: #ED007E; background-color: #1E0010">0</span><span style="color: #A6E22E">x080490e0</span><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">_start</span>
+<span style="color: #ED007E; background-color: #1E0010">0</span><span style="color: #A6E22E">x08049120</span><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">_dl_relocate_static_pie</span>
+<span style="color: #ED007E; background-color: #1E0010">0</span><span style="color: #A6E22E">x08049130</span><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">__x86.get_pc_thunk.bx</span>
+<span style="color: #ED007E; background-color: #1E0010">0</span><span style="color: #A6E22E">x08049140</span><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">deregister_tm_clones</span>
+<span style="color: #ED007E; background-color: #1E0010">0</span><span style="color: #A6E22E">x08049180</span><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">register_tm_clones</span>
+<span style="color: #ED007E; background-color: #1E0010">0</span><span style="color: #A6E22E">x080491c0</span><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">__do_global_dtors_aux</span>
+<span style="color: #ED007E; background-color: #1E0010">0</span><span style="color: #A6E22E">x080491f0</span><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">frame_dummy</span>
+<span style="color: #ED007E; background-color: #1E0010">0</span><span style="color: #A6E22E">x080491f6</span><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">login</span>
+<span style="color: #ED007E; background-color: #1E0010">0</span><span style="color: #A6E22E">x080492f2</span><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">welcome</span>
+<span style="color: #ED007E; background-color: #1E0010">0</span><span style="color: #A6E22E">x08049364</span><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">main</span>
+<span style="color: #ED007E; background-color: #1E0010">0</span><span style="color: #A6E22E">x080493c0</span><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">__stack_chk_fail_local</span>
+<span style="color: #ED007E; background-color: #1E0010">0</span><span style="color: #A6E22E">x080493d8</span><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">_fini</span>
+</code></pre></div>
+
+<div class="codehilite" style="background: #272822"><pre style="line-height: 125%;"><span></span><code>When we use cyclic pattern as name, we find that SEGMENTATION FAULT occurs at 0x61616179 at &#39;yaaa&#39;
+
+`cyclic -l yaaa
+Finding cyclic pattern of 4 bytes: b&#39;yaaa&#39; (hex: 0x79616161)
+Found at offset 96`
+
+Hence we found the  offset to be 96
+
+So we can use the GOT address of fflush and the address that gives us the flag
+And if we craft our exploit carefully we should be able to pwn this
+
+--&gt; NOTE: to dump GOT, use: <span style="color: #E6DB74">`objdump -R passcode -M intel`</span>
+
+Writing exploit.py (attached)
+
+We retrieve the flag!
+
+<span style="color: #E6DB74">`s0rry_mom_I_just_ign0red_c0mp1ler_w4rning`</span>
+
+Another challenge down. We learnt about the implications caused by scanf, fflush() and also about GOT addresses.
+
+See you with another writeup soon, till then
+
+Happy Hacking!
+</code></pre></div>
+      </div>
+    </div>
+  </article>
+</div>
+
+</main>
+
+<footer class="site-footer">
+  <p class="footer-note">All files available on GitHub</p>
+</footer>
+</body>
+</html>

@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Binary_Heaven · TryHackMe</title>
+<meta name="description" content="CTF writeup: Binary_Heaven (TryHackMe)" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../css/style.css" />
+</head>
+<body>
+<div class="blueprint-grid" aria-hidden="true"></div>
+
+<header class="topbar">
+  <div class="topbar__inner">
+    <a class="topbar__brand" href="../../index.html">
+      <span class="brand-mark">CTF</span>
+      <span class="brand-text">Writeups</span>
+    </a>
+    <div class="topbar__spacer"></div>
+    <div class="topbar__actions">
+      <a class="btn btn--ghost btn--small" href="https://aaadarsh1337.github.io/">&#8592; Portfolio</a>
+      <a class="btn btn--ghost btn--small" href="https://github.com/aaadarsh1337/ctf-writeups" target="_blank" rel="noopener">Repo &#8599;</a>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<div class="reader-layout reader-layout--static">
+  <aside class="sidebar">
+    <div class="sidebar__head">
+      <a class="btn btn--ghost btn--small" href="../../index.html">&#8592; All writeups</a>
+    </div>
+    <div class="sidebar__challenge">
+      <p class="tb-label">CHALLENGE</p>
+      <h2>Binary_Heaven</h2>
+      <p class="side-path">TryHackMe</p>
+    </div>
+    <div class="sidebar__files">
+      <p class="tb-label">FILES</p>
+      <div class="file-list"><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/TryHackMe/Binary_Heaven/angel_A" target="_blank" rel="noopener"><span class="name">angel_A</span><span class="kind">github</span></a><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/TryHackMe/Binary_Heaven/angel_B" target="_blank" rel="noopener"><span class="name">angel_B</span><span class="kind">github</span></a><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/TryHackMe/Binary_Heaven/binexgod.png" target="_blank" rel="noopener"><span class="name">binexgod.png</span><span class="kind">github</span></a><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/TryHackMe/Binary_Heaven/credentials_1614324056485.zip" target="_blank" rel="noopener"><span class="name">credentials_1614324056485.zip</span><span class="kind">github</span></a><a class="file-item readable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/TryHackMe/Binary_Heaven/decodeA.py" target="_blank" rel="noopener"><span class="name">decodeA.py</span><span class="kind">py</span></a><a class="file-item readable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/TryHackMe/Binary_Heaven/exploit.py" target="_blank" rel="noopener"><span class="name">exploit.py</span><span class="kind">py</span></a><a class="file-item readable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/TryHackMe/Binary_Heaven/notes.md" target="_blank" rel="noopener"><span class="name">notes.md</span><span class="kind">md</span></a><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/TryHackMe/Binary_Heaven/pwn_me" target="_blank" rel="noopener"><span class="name">pwn_me</span><span class="kind">github</span></a><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/TryHackMe/Binary_Heaven/root.png" target="_blank" rel="noopener"><span class="name">root.png</span><span class="kind">github</span></a><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/TryHackMe/Binary_Heaven/userpass.png" target="_blank" rel="noopener"><span class="name">userpass.png</span><span class="kind">github</span></a></div>
+    </div>
+    <div class="sidebar__foot">
+      <a class="btn btn--ghost btn--small sidebar-gh-btn" href="https://github.com/aaadarsh1337/ctf-writeups/tree/main/TryHackMe/Binary_Heaven" target="_blank" rel="noopener">Open folder &#8599;</a>
+      <a class="btn btn--ghost btn--small sidebar-gh-btn" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/TryHackMe/Binary_Heaven/notes.md" target="_blank" rel="noopener">View markdown &#8599;</a>
+    </div>
+  </aside>
+  <article class="reader">
+    <div class="reader__toolbar">
+      <div class="reader__crumb">
+        <span class="tb-label">READING</span>
+        <span>notes.md</span>
+      </div>
+      <a class="btn btn--ghost btn--small" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/TryHackMe/Binary_Heaven/notes.md" target="_blank" rel="noopener">Source &#8599;</a>
+    </div>
+    <div class="reader__body">
+      <div class="md-render">
+<div class="codehilite" style="background: #272822"><pre style="line-height: 125%;"><span></span><code>Hello Hackers! Welcome back to another writeup
+Today we will be looking at <span style="color: #E6DB74">`Binary_Heaven`</span> from TryHackMe
+So let&#39;s hop on without wasting much time
+
+When we download the task files and extract them, we get two binaries
+<span style="color: #66D9EF">1.</span> angel_A
+<span style="color: #66D9EF">2.</span> angel_B
+
+Let&#39;s see what these do
+
+<span style="color: #959077">### angel_A</span>
+
+Running strings on the binary, we get link to a youtube video
+Duh, got rickrolled :)
+
+Apart from that, we can see that a username comparison is taking place
+From BinaryNinja, we find a widechar <span style="color: #E6DB74">`username`</span> = <span style="color: #E6DB74">`kym~humr`</span>
+
+But this is not the correct username. 
+Reading through the main function, 
+
+We can see a simple XOR operation followed by arithmetic that compares the input value to the username
+We can simply decode this using python
+
+<span style="color: #E6DB74">`exploit.py`</span> created and attached to decode the username
+
+--&gt; guardian
+
+Submitting the answer, it is correct!
+
+Now moving on to the next binary
+
+<span style="color: #959077">### angel_B</span>
+
+Running the binary, it asks for a magic word
+
+Well, i was stuck for a while. Because the binary seemed very complicated. But i found a simple solution
+I do not know if this was the intended way to find this out, but running <span style="color: #E6DB74">`binwalk`</span> on the binary reveals:
+
+<span style="color: #E6DB74">`830665        0xCACC9         Unix path: /dev/stderr/dev/stdout0123456789_30517578125: frame.sp=GOTRACEBACKGOg0esGrrr!IdeographicMedefaidrinNandinagariNew_Tai_LueOld_Per`</span>
+
+From here, we see an interesting phrase, <span style="color: #E6DB74">`GOg0esGrrr!`</span>
+
+Trying the password, SUCCESS!!
+
+![<span style="color: #FF4689">Success</span>](<span style="color: #A6E22E">userpass.png</span>)
+
+We see
+
+<span style="color: #E6DB74">`Right password! Now GO ahead and SSH into heaven`</span>
+
+Lets try to SSH using guardian:GOg0esGrrr!
+
+Guardian flag retrieved!
+
+<span style="color: #E6DB74">`THM{crack3d_th3_gu4rd1an}`</span>
+
+Now we see our next binary in the home folder
+It is <span style="color: #E6DB74">`SUID`</span>, ie, running a shell from it will give us privesc
+
+Lets copy it to our local machine and analyze
+
+It is a 32 bit executable
+When we run it, we see an address for <span style="color: #E6DB74">`system`</span>
+
+Also, inputting a large number of chars reveals that Buffer Overflow is present
+
+Lets find the offset using <span style="color: #E6DB74">`cyclic`</span> and <span style="color: #E6DB74">`pwndbg`</span>
+
+--&gt; Offset found at 32
+
+But since <span style="color: #E6DB74">`NX`</span> is enabled in our executable, we can&#39;t run shellcode
+--&gt; Hence we need to use ROP attack
+
+libc is used in the binary, so we can try a <span style="color: #E6DB74">`ret2libc`</span> attack
+
+<span style="color: #959077">### METHODOLOGY: We can access various functions using libc. Since the system address is leaked, we can find the libc base address. Using that, we can then locate /bin/sh and pass it as an argument for system. Thus, a shell will be spawned.</span>
+
+Writing an exploit in python using pwntools, (attached)
+
+Just like that, we spawn a shell as binexgod
+
+![<span style="color: #FF4689">binexgod_flag</span>](<span style="color: #A6E22E">binexgod.png</span>)
+
+<span style="color: #E6DB74">`THM{b1n3xg0d_pwn3d}`</span>
+
+Finally, lets move on to the final binary to get the root flag
+
+I ran the <span style="color: #E6DB74">`secret_of_heaven`</span> file, which just crashed the system for some reason? Let&#39;s ignore that. Our focus should be on the <span style="color: #E6DB74">`vuln.c`</span> and <span style="color: #E6DB74">`vuln`</span> files
+</code></pre></div>
+
+<div class="codehilite" style="background: #272822"><pre style="line-height: 125%;"><span></span><code><span style="color: #959077">#include</span><span style="color: #F8F8F2"> </span><span style="color: #959077">&lt;stdlib.h&gt;</span>
+<span style="color: #959077">#include</span><span style="color: #F8F8F2"> </span><span style="color: #959077">&lt;unistd.h&gt;</span>
+<span style="color: #959077">#include</span><span style="color: #F8F8F2"> </span><span style="color: #959077">&lt;string.h&gt;</span>
+<span style="color: #959077">#include</span><span style="color: #F8F8F2"> </span><span style="color: #959077">&lt;sys/types.h&gt;</span>
+<span style="color: #959077">#include</span><span style="color: #F8F8F2"> </span><span style="color: #959077">&lt;stdio.h&gt;</span>
+
+<span style="color: #66D9EF">int</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main</span><span style="color: #F8F8F2">(</span><span style="color: #66D9EF">int</span><span style="color: #F8F8F2"> argc, </span><span style="color: #66D9EF">char</span><span style="color: #F8F8F2"> </span><span style="color: #FF4689">**</span><span style="color: #F8F8F2">argv, </span><span style="color: #66D9EF">char</span><span style="color: #F8F8F2"> </span><span style="color: #FF4689">**</span><span style="color: #F8F8F2">envp)</span>
+<span style="color: #F8F8F2">{</span>
+<span style="color: #F8F8F2">  </span><span style="color: #66D9EF">gid_t</span><span style="color: #F8F8F2"> gid;</span>
+<span style="color: #F8F8F2">  </span><span style="color: #66D9EF">uid_t</span><span style="color: #F8F8F2"> uid;</span>
+<span style="color: #F8F8F2">  gid </span><span style="color: #FF4689">=</span><span style="color: #F8F8F2"> getegid();</span>
+<span style="color: #F8F8F2">  uid </span><span style="color: #FF4689">=</span><span style="color: #F8F8F2"> geteuid();</span>
+
+<span style="color: #F8F8F2">  setresgid(gid, gid, gid);</span>
+<span style="color: #F8F8F2">  setresuid(uid, uid, uid);</span>
+
+<span style="color: #F8F8F2">  system(</span><span style="color: #E6DB74">&quot;/usr/bin/env echo Get out of heaven lol&quot;</span><span style="color: #F8F8F2">);</span>
+<span style="color: #F8F8F2">}</span>
+</code></pre></div>
+
+<div class="codehilite" style="background: #272822"><pre style="line-height: 125%;"><span></span><code>Here, the vuln binary is run by root. When we analyze the code, we see something interesting.
+env is called via the absolute path <span style="color: #F8F8F2; font-weight: bold">**BUT**</span> echo isn&#39;t
+We can create our own echo in the PATH directory that spawns the shell
+
+Lets try
+
+<span style="color: #66D9EF">1.</span> Export path as <span style="color: #E6DB74">`export PATH=/tmp/:$PATH`</span>
+<span style="color: #66D9EF">2.</span> Then in /tmp, we create a file called echo with contents --&gt; <span style="color: #E6DB74">`bash`</span>
+<span style="color: #66D9EF">3.</span> Then <span style="color: #E6DB74">`chmod +x ./echo`</span>
+<span style="color: #66D9EF">4.</span> Now lets try running vuln
+<span style="color: #66D9EF">5.</span> BOOM! Shell spawned
+
+![<span style="color: #FF4689">rootFlag</span>](<span style="color: #A6E22E">root.png</span>)
+
+Final flag is retrieved
+
+<span style="color: #E6DB74">`THM{r00t_of_th3_he4v3n}`</span>
+
+Challenge complete!!
+
+<span style="color: #959077">### We learnt: Reversing basic XOR, finding secrets in binaries, SUID misuse &amp; problems caused by relative path</span>
+
+Overall, a very fun room
+
+I&#39;ll see you with another writeup soon, till then
+
+Happy Hacking!
+</code></pre></div>
+      </div>
+    </div>
+  </article>
+</div>
+
+</main>
+
+<footer class="site-footer">
+  <p class="footer-note">All files available on GitHub</p>
+</footer>
+</body>
+</html>

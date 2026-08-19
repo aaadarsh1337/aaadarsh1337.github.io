@@ -2,110 +2,90 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>CTF Writeups</title>
-<meta name="description" content="CTF writeups, challenge notes, and security learning logs." />
-
+<meta name="description" content="CTF writeups and challenge notes" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.0/marked.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-
 <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
-
 <div class="blueprint-grid" aria-hidden="true"></div>
 
 <header class="topbar">
   <div class="topbar__inner">
-    <a class="topbar__brand" href="#" id="brandHome">
+    <a class="topbar__brand" href="index.html">
       <span class="brand-mark">CTF</span>
       <span class="brand-text">Writeups</span>
     </a>
     <div class="topbar__spacer"></div>
     <div class="topbar__actions">
-      <a class="btn btn--ghost btn--small" id="portfolioLink" href="#">&#8592; Portfolio</a>
-      <a class="btn btn--ghost btn--small" id="githubRepoLink" href="#" target="_blank" rel="noopener">Repo &#8599;</a>
+      <a class="btn btn--ghost btn--small" href="https://aaadarsh1337.github.io/">&#8592; Portfolio</a>
+      <a class="btn btn--ghost btn--small" href="https://github.com/aaadarsh1337/ctf-writeups" target="_blank" rel="noopener">Repo &#8599;</a>
     </div>
-    <button class="topbar__toggle" id="navToggle" aria-label="Menu" type="button">
-      <span></span><span></span><span></span>
-    </button>
   </div>
 </header>
 
 <main>
 
-  <section class="view view--index" id="viewIndex">
-    <div class="page">
-      <header class="page-hero">
-        <p class="fig-label">CTF WRITEUPS</p>
-        <h1 id="pageTitle">Challenge notes &amp; writeups</h1>
-        <p class="page-sub" id="pageSub">Live from GitHub &middot; markdown renders here &middot; extras open on GitHub</p>
-        <div class="search-row">
-          <input type="search" id="searchInput" placeholder="Filter by name, event, tag..." autocomplete="off" />
-          <span class="search-meta" id="searchMeta"></span>
-        </div>
-      </header>
-
-      <div class="status-line" id="statusLine">&gt; loading writeups_</div>
-
-      <!-- Jump to section -->
-      <nav class="section-jump" id="sectionJump" hidden>
-        <p class="tb-label">JUMP TO</p>
-        <div class="section-jump__links" id="sectionJumpLinks"></div>
-      </nav>
-
-      <div id="writeupSections"></div>
+<div class="page">
+  <header class="page-hero">
+    <p class="fig-label">CTF WRITEUPS</p>
+    <h1>Challenge notes &amp; writeups</h1>
+    <p class="page-sub">Static pages generated from the writeups repo &middot; markdown stays the source of truth</p>
+    <div class="search-row">
+      <input type="search" id="searchInput" placeholder="Filter by name, event..." autocomplete="off" />
+      <span class="search-meta" id="searchMeta">8 writeups</span>
     </div>
-  </section>
+  </header>
 
-  <section class="view view--reader" id="viewReader" hidden>
-    <div class="reader-layout">
-      <aside class="sidebar" id="sidebar">
-        <div class="sidebar__head">
-          <button class="btn btn--ghost btn--small" id="backBtn" type="button">&#8592; All writeups</button>
-        </div>
-        <div class="sidebar__challenge">
-          <p class="tb-label">CHALLENGE</p>
-          <h2 id="sideTitle">â€”</h2>
-          <p class="side-path" id="sidePath">â€”</p>
-        </div>
-        <div class="sidebar__files">
-          <p class="tb-label">FILES</p>
-          <div class="file-list" id="fileList"></div>
-        </div>
-        <div class="sidebar__foot">
-          <a class="btn btn--ghost btn--small" id="sideGithub" href="#" target="_blank" rel="noopener">Open folder on GitHub &#8599;</a>
-        </div>
-      </aside>
-
-      <article class="reader" id="reader">
-        <div class="reader__toolbar">
-          <div class="reader__crumb">
-            <span class="tb-label">READING</span>
-            <span id="readerFile">â€”</span>
-          </div>
-          <a class="btn btn--ghost btn--small" id="readerGithub" href="#" target="_blank" rel="noopener">Source &#8599;</a>
-        </div>
-        <div class="reader__body" id="readerBody">
-          <p class="dim">Select a writeup...</p>
-        </div>
-      </article>
+  <nav class="section-jump" id="sectionJump">
+    <p class="tb-label">JUMP TO</p>
+    <div class="section-jump__links">
+<a class="section-jump__link" href="#sec-hacker-holidays-thm">Hacker_Holidays_THM (1)</a>
+<a class="section-jump__link" href="#sec-picoctf">picoCTF (2)</a>
+<a class="section-jump__link" href="#sec-pwnable-kr">pwnable_kr (4)</a>
+<a class="section-jump__link" href="#sec-tryhackme">TryHackMe (1)</a>
     </div>
-  </section>
+  </nav>
+
+<section class="writeup-section" id="sec-hacker-holidays-thm"><div class="writeup-section__head"><h2 class="writeup-section__title">Hacker_Holidays_THM</h2><span class="writeup-section__count">1 writeup</span></div><div class="writeup-grid"><a class="writeup-card" href="Hacker_Holidays_THM/The_Brochure/index.html" data-search="Hacker_Holidays_THM The_Brochure Hacker_Holidays_THM/The_Brochure"><h3>The_Brochure</h3><div class="meta"><span class="md-badge">writeup</span></div></a></div></section>
+<section class="writeup-section" id="sec-picoctf"><div class="writeup-section__head"><h2 class="writeup-section__title">picoCTF</h2><span class="writeup-section__count">2 writeups</span></div><div class="writeup-grid"><a class="writeup-card" href="picoCTF/tea-cash/index.html" data-search="picoCTF tea-cash picoCTF/tea-cash"><h3>tea-cash</h3><div class="meta"><span class="md-badge">writeup</span></div></a><a class="writeup-card" href="picoCTF/The_Add_On_Trap/index.html" data-search="picoCTF The_Add_On_Trap picoCTF/The_Add_On_Trap"><h3>The_Add_On_Trap</h3><div class="meta"><span class="md-badge">writeup</span></div></a></div></section>
+<section class="writeup-section" id="sec-pwnable-kr"><div class="writeup-section__head"><h2 class="writeup-section__title">pwnable_kr</h2><span class="writeup-section__count">4 writeups</span></div><div class="writeup-grid"><a class="writeup-card" href="pwnable_kr/bof/index.html" data-search="pwnable_kr bof pwnable_kr/bof"><h3>bof</h3><div class="meta"><span class="md-badge">writeup</span></div></a><a class="writeup-card" href="pwnable_kr/collision/index.html" data-search="pwnable_kr collision pwnable_kr/collision"><h3>collision</h3><div class="meta"><span class="md-badge">writeup</span></div></a><a class="writeup-card" href="pwnable_kr/fd/index.html" data-search="pwnable_kr fd pwnable_kr/fd"><h3>fd</h3><div class="meta"><span class="md-badge">writeup</span></div></a><a class="writeup-card" href="pwnable_kr/passcode/index.html" data-search="pwnable_kr passcode pwnable_kr/passcode"><h3>passcode</h3><div class="meta"><span class="md-badge">writeup</span></div></a></div></section>
+<section class="writeup-section" id="sec-tryhackme"><div class="writeup-section__head"><h2 class="writeup-section__title">TryHackMe</h2><span class="writeup-section__count">1 writeup</span></div><div class="writeup-grid"><a class="writeup-card" href="TryHackMe/Binary_Heaven/index.html" data-search="TryHackMe Binary_Heaven TryHackMe/Binary_Heaven"><h3>Binary_Heaven</h3><div class="meta"><span class="md-badge">writeup</span></div></a></div></section>
+</div>
+<script>
+(function () {
+  var input = document.getElementById("searchInput");
+  if (!input) return;
+  function norm(s) {
+    return (s || "").toLowerCase().replace(/[_\-]+/g, " ").replace(/\s+/g, " ").trim();
+  }
+  input.addEventListener("input", function () {
+    var q = norm(input.value);
+    var total = 0;
+    document.querySelectorAll(".writeup-section").forEach(function (sec) {
+      var visible = 0;
+      sec.querySelectorAll(".writeup-card").forEach(function (card) {
+        var hay = norm(card.getAttribute("data-search") || card.textContent);
+        var show = !q || hay.indexOf(q) !== -1;
+        card.style.display = show ? "" : "none";
+        if (show) visible++;
+      });
+      sec.style.display = visible ? "" : "none";
+      total += visible;
+    });
+    var meta = document.getElementById("searchMeta");
+    if (meta) meta.textContent = total + " writeup" + (total === 1 ? "" : "s");
+  });
+})();
+</script>
 
 </main>
 
 <footer class="site-footer">
-  <p class="footer-note">Writeups load live from GitHub &middot; non-markdown files open on GitHub</p>
+  <p class="footer-note">All files available on GitHub</p>
 </footer>
-
-<script src="js/config.js"></script>
-<script src="js/main.js"></script>
 </body>
 </html>

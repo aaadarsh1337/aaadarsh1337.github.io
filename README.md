@@ -1,126 +1,55 @@
-# Portfolio
+# aaadarsh1337.github.io
 
-A static, self-updating portfolio site. It has no backend — repositories
-are pulled live from the GitHub REST API in the browser, so adding a new
-repo to your GitHub account is enough to make it show up here after a
-refresh. Everything else editable (name, bio, skills, certs, contact info)
-lives in one file: `js/config.js`.
+Personal portfolio of **Adarsh Pillai** - focused on cybersecurity, CTFs, and hands-on security work.
 
-## Structure
+**Live site:** [https://aaadarsh1337.github.io/](https://aaadarsh1337.github.io/)
 
-```
-portfolio/
-├── index.html          Page structure — you shouldn't need to touch this
-├── css/style.css        Visual styling — "blueprint" theme + JetBrains Mono
-├── js/config.js          <-- EDIT THIS for all your content
-├── js/main.js            Rendering + GitHub API logic
-├── assets/
-│   ├── avatar-placeholder.svg   replace with your real photo
-│   └── cert-placeholder.svg     replace with real cert badges, or reuse
-└── README.md            this file
-```
+---
 
-## What to edit (start here)
+## What's here
 
-Open `js/config.js`. Every field marked `EDIT ME` or `PLACEHOLDER` is meant
-to be replaced.
+| Section | What it shows |
+|--------|----------------|
+| **About** | Background, focus areas, links |
+| **Skills** | Tools and domains I work with |
+| **Repositories** | Featured security-related projects |
+| **Certificates** | Credentials with official verification links |
+| **CTF writeups** | Challenge notes published as static pages under `/writeups/` |
 
-### 1. Profile / identity
-- `profile.name` — your real name
-- `profile.handle` — primary handle (shown in the top-left box)
-- `profile.tagline` — short one-liner under your name
-- `profile.location` — city / country
-- `profile.currentFocus` — what you're focused on right now
-- `profile.avatar` — path to your photo (drop a file into `assets/` first)
-- `profile.handles` — array of all your usernames. Add as many as you want:
-  ```js
-  { platform: "GitHub", handle: "aaadarsh1337", url: "https://github.com/aaadarsh1337" }
-  ```
-  Leave `url` as `""` if you don't want that chip to be a link.
-- `profile.bio` — array of paragraphs (strings)
-- `profile.resumeUrl` — link to a hosted PDF. Leave `""` to hide the button.
+Writeups are maintained as Markdown in a separate repo ([`ctf-writeups`](https://github.com/aaadarsh1337/ctf-writeups)) as well and published to this site automatically.
 
-### 2. Skills
-Add / remove whole categories or individual items. Buttons and chips are
-generated automatically from the `skills` array.
+---
 
-### 3. Certificates
-Duplicate one block per certificate:
+## Design
 
-```js
-{
-  name: "TryHackMe Jr Penetration Tester",
-  issuer: "TryHackMe",
-  date: "2025",
-  credentialUrl: "https://...",
-  image: "assets/thm-jr.png"   // drop the image into assets/ first
-}
-```
+Blueprint-inspired layout (dark navy, cyan/amber accents, monospace details).  
+Built as a static site for GitHub Pages - fast, simple, no backend.
 
-Order in the array = order on the page.
+---
 
-### 4. Contact
-Just display links — there is no contact form. Fill in the fields you want
-shown; leave any you don't use as `""` and they stay hidden.
-`extraLinks` is for anything else:
+## On AI assistance
 
-```js
-extraLinks: [
-  { label: "Twitter / X", url: "https://x.com/..." }
-]
-```
+I'm a **cybersecurity student**, not a full-time web developer.  
+Parts of this site's structure, layout, and tooling were built with help from AI assistants so I could ship a clear portfolio without turning it into a web-dev project.
 
-### 5. Reordering GitHub repository cards
-In `github.pinnedRepos`, list repo **names** in the exact order you want
-them to appear at the top. Everything not listed still appears, sorted by
-most-recently-updated.
+**What that means:**
 
-```js
-pinnedRepos: ["my-best-writeup", "ctf-notes", "dashboard-pentest"]
-```
+- AI helped with HTML/CSS/JS structure, static generation, and polish
+- **Content is mine** - writeups, notes, tools, certificates, and project work
+- Security learning and CTF methodology are my own effort
 
-Use `hiddenRepos` to permanently hide repos (e.g. this site itself).
+I care more about the work behind the links than hand-rolling every CSS rule.
 
-## Adding real images
+---
 
-Drop image files into `assets/` (e.g. `assets/me.jpg`, `assets/cert-oscp.png`)
-and point to them from `config.js` (`profile.avatar`, `certificates[i].image`).
+## Main repos
 
-## How the file reader works
+- [ctf-writeups](https://github.com/aaadarsh1337/ctf-writeups) - challenge writeups (source of truth)
+- [CustomTools_cybersec](https://github.com/aaadarsh1337/CustomTools_cybersec) - small tools and automation
+- Other projects and notes live on my [GitHub profile](https://github.com/aaadarsh1337)
 
-Clicking "Browse files" on a repo card fetches that repo's file tree from
-the GitHub API. Clicking a file:
-- Text/source types (`.py`, `.md`, `.js`, `.txt`, `.json`, etc.) are fetched
-  from `raw.githubusercontent.com` and rendered inline with Markdown +
-  syntax highlighting.
-- Everything else (images, binaries, PDFs, archives…) shows a redirect
-  card straight to that file on GitHub.
+---
 
-The readable-extensions list lives near the top of `js/main.js`
-(`READABLE_EXT`) if you ever want to add or remove types.
+## Contact
 
-## Running it locally
-
-From inside the `portfolio/` folder:
-
-```
-python3 -m http.server 8000
-```
-
-Then open `http://localhost:8000` in a browser. It works on phones too —
-the top-left panel collapses into a hamburger menu under ~760px width.
-
-## Deploying to GitHub Pages
-
-1. Create a repo named exactly `<your-username>.github.io`.
-2. Push the **contents** of the `portfolio/` folder to that repo's default
-   branch (not the folder itself — the files should sit at the repo root).
-3. In Settings → Pages, confirm it's building from that branch.
-4. Site is live at `https://<your-username>.github.io`.
-
-## Notes / limits
-
-- GitHub API allows 60 unauthenticated requests per hour per IP. Normal
-  portfolio traffic is fine; heavy file browsing in a short window can
-  hit the limit and show a friendly retry message.
-- This is a fully static site — no backend, nothing is stored.
+Links and handles are on the [site](https://aaadarsh1337.github.io/).

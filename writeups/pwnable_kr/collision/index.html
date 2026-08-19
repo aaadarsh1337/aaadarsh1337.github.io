@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>collision · pwnable_kr</title>
+<meta name="description" content="CTF writeup: collision (pwnable_kr)" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../css/style.css" />
+</head>
+<body>
+<div class="blueprint-grid" aria-hidden="true"></div>
+
+<header class="topbar">
+  <div class="topbar__inner">
+    <a class="topbar__brand" href="../../index.html">
+      <span class="brand-mark">CTF</span>
+      <span class="brand-text">Writeups</span>
+    </a>
+    <div class="topbar__spacer"></div>
+    <div class="topbar__actions">
+      <a class="btn btn--ghost btn--small" href="https://aaadarsh1337.github.io/">&#8592; Portfolio</a>
+      <a class="btn btn--ghost btn--small" href="https://github.com/aaadarsh1337/ctf-writeups" target="_blank" rel="noopener">Repo &#8599;</a>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<div class="reader-layout reader-layout--static">
+  <aside class="sidebar">
+    <div class="sidebar__head">
+      <a class="btn btn--ghost btn--small" href="../../index.html">&#8592; All writeups</a>
+    </div>
+    <div class="sidebar__challenge">
+      <p class="tb-label">CHALLENGE</p>
+      <h2>collision</h2>
+      <p class="side-path">pwnable_kr</p>
+    </div>
+    <div class="sidebar__files">
+      <p class="tb-label">FILES</p>
+      <div class="file-list"><a class="file-item readable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/pwnable_kr/collision/exploit.py" target="_blank" rel="noopener"><span class="name">exploit.py</span><span class="kind">py</span></a><a class="file-item readable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/pwnable_kr/collision/notes.md" target="_blank" rel="noopener"><span class="name">notes.md</span><span class="kind">md</span></a><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/pwnable_kr/collision/files/col" target="_blank" rel="noopener"><span class="name">files/col</span><span class="kind">github</span></a><a class="file-item readable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/pwnable_kr/collision/files/col.c" target="_blank" rel="noopener"><span class="name">files/col.c</span><span class="kind">c</span></a><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/pwnable_kr/collision/files/readme" target="_blank" rel="noopener"><span class="name">files/readme</span><span class="kind">github</span></a></div>
+    </div>
+    <div class="sidebar__foot">
+      <a class="btn btn--ghost btn--small sidebar-gh-btn" href="https://github.com/aaadarsh1337/ctf-writeups/tree/main/pwnable_kr/collision" target="_blank" rel="noopener">Open folder &#8599;</a>
+      <a class="btn btn--ghost btn--small sidebar-gh-btn" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/pwnable_kr/collision/notes.md" target="_blank" rel="noopener">View markdown &#8599;</a>
+    </div>
+  </aside>
+  <article class="reader">
+    <div class="reader__toolbar">
+      <div class="reader__crumb">
+        <span class="tb-label">READING</span>
+        <span>notes.md</span>
+      </div>
+      <a class="btn btn--ghost btn--small" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/pwnable_kr/collision/notes.md" target="_blank" rel="noopener">Source &#8599;</a>
+    </div>
+    <div class="reader__body">
+      <div class="md-render">
+<div class="codehilite" style="background: #272822"><pre style="line-height: 125%;"><span></span><code>Hello Hackers!
+Welcome back to another writeup 
+Today we will be doing <span style="color: #E6DB74">`collision`</span> from pwnable.kr
+
+Downloading all the files locally, 
+
+Reading the source code, there is a comparison
+
+The return value of <span style="color: #E6DB74">`check_password()`</span> must be equal to hashcode, ie, <span style="color: #E6DB74">`0x21DD09EC`</span>
+
+From gdb, breaking at check_password() and setting eax = 568134124 (int of hashcode), we get 
+
+Analyzing the funcction, we realise that our 20 byte input is being divided into 5 parts of 4 bytes each.
+Sum of these should be equal to 568134124
+
+Therefore, divide 568134124 by 5
+
+We get <span style="color: #E6DB74">`113626824`</span>
+And remainder is 4
+
+Therefore, the first four chunks will become 113626824 and the last will be 568134124-113626824*4 = 113626828
+
+Taking hex values, 
+
+0x6c5cec8 *4 + 0x6c5cecc
+
+Passing values using pwntools, writing exploit
+
+We obtain the flag from the remote host
+
+<span style="color: #E6DB74">`Two_hash_collision_Nicely`</span>
+</code></pre></div>
+      </div>
+    </div>
+  </article>
+</div>
+
+</main>
+
+<footer class="site-footer">
+  <p class="footer-note">All files available on GitHub</p>
+</footer>
+</body>
+</html>
