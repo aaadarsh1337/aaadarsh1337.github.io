@@ -3,11 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<<<<<<< HEAD
 <title>tea_cash Â· picoctf â€” CTF Writeups</title>
-=======
-<title>tea_cash · picoctf</title>
->>>>>>> 6d031977a63bd1925da8977405c4e9c06d6524d1
 <meta name="description" content="CTF writeup: tea_cash (picoctf)" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -64,11 +60,7 @@
     <div class="reader__body">
       <div class="md-render">
 <h1 id="tea-cash">tea-cash</h1>
-<<<<<<< HEAD
-<h2 id="challenge-httpslearncylabacademyorglibrary746">Challenge: https://learn.cylabacademy.org/library/746</h2>
-=======
 <h2 id="challenge-httpslearncylabacademyorglibrary746">Challenge: <a href="https://learn.cylabacademy.org/library/746">https://learn.cylabacademy.org/library/746</a></h2>
->>>>>>> 6d031977a63bd1925da8977405c4e9c06d6524d1
 <p>Hello Hackers!<br>
 Welcome to my writeup on the challenge <code>tea-cash</code> from picoCTF<br>
 It is a medium challenge and in the category Binary Exploitation</p>
@@ -77,9 +69,9 @@ It is a medium challenge and in the category Binary Exploitation</p>
 We have the source and also the service to connect to</p>
 <p>Reading the source code, <br>
 User has to input an address, stored in the variable <code>expected</code></p>
-<div class="highlight"><pre><span></span><code><span class="cp">#define CHUNK_COUNT 6</span>
-<span class="cp">#define CHUNK_SIZE 0x80 </span>
-</code></pre></div>
+<pre class="highlight"><code class="language-c">#define CHUNK_COUNT 6
+#define CHUNK_SIZE 0x80 
+</code></pre>
 
 <p>--&gt; The user input check runs 6 times<br>
 --&gt; Chunk size is set to 0x80</p>
