@@ -58,15 +58,15 @@
     </div>
     <div class="reader__body">
       <div class="md-render">
-<div class="codehilite" style="background: #272822"><pre style="line-height: 125%;"><span></span><code>Hello Hackers!
+<pre class="codehilite"><code class="language-md">Hello Hackers!
 Welcome back to another writeup 
-Today we will be doing <span style="color: #E6DB74">`collision`</span> from pwnable.kr
+Today we will be doing `collision` from pwnable.kr
 
 Downloading all the files locally, 
 
 Reading the source code, there is a comparison
 
-The return value of <span style="color: #E6DB74">`check_password()`</span> must be equal to hashcode, ie, <span style="color: #E6DB74">`0x21DD09EC`</span>
+The return value of `check_password()` must be equal to hashcode, ie, `0x21DD09EC`
 
 From gdb, breaking at check_password() and setting eax = 568134124 (int of hashcode), we get 
 
@@ -75,7 +75,7 @@ Sum of these should be equal to 568134124
 
 Therefore, divide 568134124 by 5
 
-We get <span style="color: #E6DB74">`113626824`</span>
+We get `113626824`
 And remainder is 4
 
 Therefore, the first four chunks will become 113626824 and the last will be 568134124-113626824*4 = 113626828
@@ -88,8 +88,8 @@ Passing values using pwntools, writing exploit
 
 We obtain the flag from the remote host
 
-<span style="color: #E6DB74">`Two_hash_collision_Nicely`</span>
-</code></pre></div>
+`Two_hash_collision_Nicely`
+</code></pre>
       </div>
     </div>
   </article>

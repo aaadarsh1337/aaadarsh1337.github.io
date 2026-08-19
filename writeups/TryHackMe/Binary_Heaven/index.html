@@ -58,23 +58,23 @@
     </div>
     <div class="reader__body">
       <div class="md-render">
-<div class="codehilite" style="background: #272822"><pre style="line-height: 125%;"><span></span><code>Hello Hackers! Welcome back to another writeup
-Today we will be looking at <span style="color: #E6DB74">`Binary_Heaven`</span> from TryHackMe
-So let&#39;s hop on without wasting much time
+<pre class="codehilite"><code class="language-md">Hello Hackers! Welcome back to another writeup
+Today we will be looking at `Binary_Heaven` from TryHackMe
+So let's hop on without wasting much time
 
 When we download the task files and extract them, we get two binaries
-<span style="color: #66D9EF">1.</span> angel_A
-<span style="color: #66D9EF">2.</span> angel_B
+1. angel_A
+2. angel_B
 
-Let&#39;s see what these do
+Let's see what these do
 
-<span style="color: #959077">### angel_A</span>
+### angel_A
 
 Running strings on the binary, we get link to a youtube video
 Duh, got rickrolled :)
 
 Apart from that, we can see that a username comparison is taking place
-From BinaryNinja, we find a widechar <span style="color: #E6DB74">`username`</span> = <span style="color: #E6DB74">`kym~humr`</span>
+From BinaryNinja, we find a widechar `username` = `kym~humr`
 
 But this is not the correct username. 
 Reading through the main function, 
@@ -82,7 +82,7 @@ Reading through the main function,
 We can see a simple XOR operation followed by arithmetic that compares the input value to the username
 We can simply decode this using python
 
-<span style="color: #E6DB74">`exploit.py`</span> created and attached to decode the username
+`exploit.py` created and attached to decode the username
 
 --&gt; guardian
 
@@ -90,113 +90,113 @@ Submitting the answer, it is correct!
 
 Now moving on to the next binary
 
-<span style="color: #959077">### angel_B</span>
+### angel_B
 
 Running the binary, it asks for a magic word
 
 Well, i was stuck for a while. Because the binary seemed very complicated. But i found a simple solution
-I do not know if this was the intended way to find this out, but running <span style="color: #E6DB74">`binwalk`</span> on the binary reveals:
+I do not know if this was the intended way to find this out, but running `binwalk` on the binary reveals:
 
-<span style="color: #E6DB74">`830665        0xCACC9         Unix path: /dev/stderr/dev/stdout0123456789_30517578125: frame.sp=GOTRACEBACKGOg0esGrrr!IdeographicMedefaidrinNandinagariNew_Tai_LueOld_Per`</span>
+`830665        0xCACC9         Unix path: /dev/stderr/dev/stdout0123456789_30517578125: frame.sp=GOTRACEBACKGOg0esGrrr!IdeographicMedefaidrinNandinagariNew_Tai_LueOld_Per`
 
-From here, we see an interesting phrase, <span style="color: #E6DB74">`GOg0esGrrr!`</span>
+From here, we see an interesting phrase, `GOg0esGrrr!`
 
 Trying the password, SUCCESS!!
 
-![<span style="color: #FF4689">Success</span>](<span style="color: #A6E22E">userpass.png</span>)
+![Success](userpass.png)
 
 We see
 
-<span style="color: #E6DB74">`Right password! Now GO ahead and SSH into heaven`</span>
+`Right password! Now GO ahead and SSH into heaven`
 
 Lets try to SSH using guardian:GOg0esGrrr!
 
 Guardian flag retrieved!
 
-<span style="color: #E6DB74">`THM{crack3d_th3_gu4rd1an}`</span>
+`THM{crack3d_th3_gu4rd1an}`
 
 Now we see our next binary in the home folder
-It is <span style="color: #E6DB74">`SUID`</span>, ie, running a shell from it will give us privesc
+It is `SUID`, ie, running a shell from it will give us privesc
 
 Lets copy it to our local machine and analyze
 
 It is a 32 bit executable
-When we run it, we see an address for <span style="color: #E6DB74">`system`</span>
+When we run it, we see an address for `system`
 
 Also, inputting a large number of chars reveals that Buffer Overflow is present
 
-Lets find the offset using <span style="color: #E6DB74">`cyclic`</span> and <span style="color: #E6DB74">`pwndbg`</span>
+Lets find the offset using `cyclic` and `pwndbg`
 
 --&gt; Offset found at 32
 
-But since <span style="color: #E6DB74">`NX`</span> is enabled in our executable, we can&#39;t run shellcode
+But since `NX` is enabled in our executable, we can't run shellcode
 --&gt; Hence we need to use ROP attack
 
-libc is used in the binary, so we can try a <span style="color: #E6DB74">`ret2libc`</span> attack
+libc is used in the binary, so we can try a `ret2libc` attack
 
-<span style="color: #959077">### METHODOLOGY: We can access various functions using libc. Since the system address is leaked, we can find the libc base address. Using that, we can then locate /bin/sh and pass it as an argument for system. Thus, a shell will be spawned.</span>
+### METHODOLOGY: We can access various functions using libc. Since the system address is leaked, we can find the libc base address. Using that, we can then locate /bin/sh and pass it as an argument for system. Thus, a shell will be spawned.
 
 Writing an exploit in python using pwntools, (attached)
 
 Just like that, we spawn a shell as binexgod
 
-![<span style="color: #FF4689">binexgod_flag</span>](<span style="color: #A6E22E">binexgod.png</span>)
+![binexgod_flag](binexgod.png)
 
-<span style="color: #E6DB74">`THM{b1n3xg0d_pwn3d}`</span>
+`THM{b1n3xg0d_pwn3d}`
 
 Finally, lets move on to the final binary to get the root flag
 
-I ran the <span style="color: #E6DB74">`secret_of_heaven`</span> file, which just crashed the system for some reason? Let&#39;s ignore that. Our focus should be on the <span style="color: #E6DB74">`vuln.c`</span> and <span style="color: #E6DB74">`vuln`</span> files
-</code></pre></div>
+I ran the `secret_of_heaven` file, which just crashed the system for some reason? Let's ignore that. Our focus should be on the `vuln.c` and `vuln` files
+</code></pre>
 
-<div class="codehilite" style="background: #272822"><pre style="line-height: 125%;"><span></span><code><span style="color: #959077">#include</span><span style="color: #F8F8F2"> </span><span style="color: #959077">&lt;stdlib.h&gt;</span>
-<span style="color: #959077">#include</span><span style="color: #F8F8F2"> </span><span style="color: #959077">&lt;unistd.h&gt;</span>
-<span style="color: #959077">#include</span><span style="color: #F8F8F2"> </span><span style="color: #959077">&lt;string.h&gt;</span>
-<span style="color: #959077">#include</span><span style="color: #F8F8F2"> </span><span style="color: #959077">&lt;sys/types.h&gt;</span>
-<span style="color: #959077">#include</span><span style="color: #F8F8F2"> </span><span style="color: #959077">&lt;stdio.h&gt;</span>
+<pre class="codehilite"><code class="language-c">#include &lt;stdlib.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;string.h&gt;
+#include &lt;sys/types.h&gt;
+#include &lt;stdio.h&gt;
 
-<span style="color: #66D9EF">int</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main</span><span style="color: #F8F8F2">(</span><span style="color: #66D9EF">int</span><span style="color: #F8F8F2"> argc, </span><span style="color: #66D9EF">char</span><span style="color: #F8F8F2"> </span><span style="color: #FF4689">**</span><span style="color: #F8F8F2">argv, </span><span style="color: #66D9EF">char</span><span style="color: #F8F8F2"> </span><span style="color: #FF4689">**</span><span style="color: #F8F8F2">envp)</span>
-<span style="color: #F8F8F2">{</span>
-<span style="color: #F8F8F2">  </span><span style="color: #66D9EF">gid_t</span><span style="color: #F8F8F2"> gid;</span>
-<span style="color: #F8F8F2">  </span><span style="color: #66D9EF">uid_t</span><span style="color: #F8F8F2"> uid;</span>
-<span style="color: #F8F8F2">  gid </span><span style="color: #FF4689">=</span><span style="color: #F8F8F2"> getegid();</span>
-<span style="color: #F8F8F2">  uid </span><span style="color: #FF4689">=</span><span style="color: #F8F8F2"> geteuid();</span>
+int main(int argc, char **argv, char **envp)
+{
+  gid_t gid;
+  uid_t uid;
+  gid = getegid();
+  uid = geteuid();
 
-<span style="color: #F8F8F2">  setresgid(gid, gid, gid);</span>
-<span style="color: #F8F8F2">  setresuid(uid, uid, uid);</span>
+  setresgid(gid, gid, gid);
+  setresuid(uid, uid, uid);
 
-<span style="color: #F8F8F2">  system(</span><span style="color: #E6DB74">&quot;/usr/bin/env echo Get out of heaven lol&quot;</span><span style="color: #F8F8F2">);</span>
-<span style="color: #F8F8F2">}</span>
-</code></pre></div>
+  system(&quot;/usr/bin/env echo Get out of heaven lol&quot;);
+}
+</code></pre>
 
-<div class="codehilite" style="background: #272822"><pre style="line-height: 125%;"><span></span><code>Here, the vuln binary is run by root. When we analyze the code, we see something interesting.
-env is called via the absolute path <span style="color: #F8F8F2; font-weight: bold">**BUT**</span> echo isn&#39;t
+<pre class="codehilite"><code class="language-md">Here, the vuln binary is run by root. When we analyze the code, we see something interesting.
+env is called via the absolute path **BUT** echo isn't
 We can create our own echo in the PATH directory that spawns the shell
 
 Lets try
 
-<span style="color: #66D9EF">1.</span> Export path as <span style="color: #E6DB74">`export PATH=/tmp/:$PATH`</span>
-<span style="color: #66D9EF">2.</span> Then in /tmp, we create a file called echo with contents --&gt; <span style="color: #E6DB74">`bash`</span>
-<span style="color: #66D9EF">3.</span> Then <span style="color: #E6DB74">`chmod +x ./echo`</span>
-<span style="color: #66D9EF">4.</span> Now lets try running vuln
-<span style="color: #66D9EF">5.</span> BOOM! Shell spawned
+1. Export path as `export PATH=/tmp/:$PATH`
+2. Then in /tmp, we create a file called echo with contents --&gt; `bash`
+3. Then `chmod +x ./echo`
+4. Now lets try running vuln
+5. BOOM! Shell spawned
 
-![<span style="color: #FF4689">rootFlag</span>](<span style="color: #A6E22E">root.png</span>)
+![rootFlag](root.png)
 
 Final flag is retrieved
 
-<span style="color: #E6DB74">`THM{r00t_of_th3_he4v3n}`</span>
+`THM{r00t_of_th3_he4v3n}`
 
 Challenge complete!!
 
-<span style="color: #959077">### We learnt: Reversing basic XOR, finding secrets in binaries, SUID misuse &amp; problems caused by relative path</span>
+### We learnt: Reversing basic XOR, finding secrets in binaries, SUID misuse &amp; problems caused by relative path
 
 Overall, a very fun room
 
-I&#39;ll see you with another writeup soon, till then
+I'll see you with another writeup soon, till then
 
 Happy Hacking!
-</code></pre></div>
+</code></pre>
       </div>
     </div>
   </article>

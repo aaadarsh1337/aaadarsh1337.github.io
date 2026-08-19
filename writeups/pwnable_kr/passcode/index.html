@@ -58,10 +58,10 @@
     </div>
     <div class="reader__body">
       <div class="md-render">
-<div class="codehilite" style="background: #272822"><pre style="line-height: 125%;"><span></span><code>Hello Hackers!
+<pre class="codehilite"><code class="language-md">Hello Hackers!
 
 Welcome back to another writeup on a pwnable.kr challenge
-Today we will be looking at <span style="color: #E6DB74">`passcode`</span>
+Today we will be looking at `passcode`
 
 The hint:
 
@@ -69,13 +69,13 @@ Mommy told me to make a passcode based login system.
 My first trial C implementation compiled without any error!
 Well, there were some compiler warnings, but who cares about that?
 
---&gt; &#39;Compiler warnings&#39; looks interesting
+--&gt; 'Compiler warnings' looks interesting
 
 Let us read the source code
 
 From the source code, we find:
 
-<span style="color: #E6DB74">`ha! mommy told me that 32bit is vulnerable to bruteforcing :)`</span>
+`ha! mommy told me that 32bit is vulnerable to bruteforcing :)`
 
 That is interesting. Maybe it has to do something with bruteforcing
 
@@ -97,38 +97,38 @@ What happens is that we enter out passcode1
 Then when it flushes, it doesnt know which destination to put it in because the given destination is not even an address
 So if we just execute the flagread instead of fflush(), we can retrieve the flag
 
-Lets analyze the functions and addresses using <span style="color: #E6DB74">`pwndbg`</span>
-</code></pre></div>
+Lets analyze the functions and addresses using `pwndbg`
+</code></pre>
 
-<div class="codehilite" style="background: #272822"><pre style="line-height: 125%;"><span></span><code><span style="color: #ED007E; background-color: #1E0010">0</span><span style="color: #A6E22E">x08049000</span><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">_init</span>
-<span style="color: #ED007E; background-color: #1E0010">0</span><span style="color: #A6E22E">x08049040</span><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">__libc_start_main@plt</span>
-<span style="color: #ED007E; background-color: #1E0010">0</span><span style="color: #A6E22E">x08049050</span><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">printf@plt</span>
-<span style="color: #ED007E; background-color: #1E0010">0</span><span style="color: #A6E22E">x08049060</span><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">fflush@plt</span>
-<span style="color: #ED007E; background-color: #1E0010">0</span><span style="color: #A6E22E">x08049070</span><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">__stack_chk_fail@plt</span>
-<span style="color: #ED007E; background-color: #1E0010">0</span><span style="color: #A6E22E">x08049080</span><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">getegid@plt</span>
-<span style="color: #ED007E; background-color: #1E0010">0</span><span style="color: #A6E22E">x08049090</span><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">puts@plt</span>
-<span style="color: #ED007E; background-color: #1E0010">0</span><span style="color: #A6E22E">x080490a0</span><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">system@plt</span>
-<span style="color: #ED007E; background-color: #1E0010">0</span><span style="color: #A6E22E">x080490b0</span><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">exit@plt</span>
-<span style="color: #ED007E; background-color: #1E0010">0</span><span style="color: #A6E22E">x080490c0</span><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">setregid@plt</span>
-<span style="color: #ED007E; background-color: #1E0010">0</span><span style="color: #A6E22E">x080490d0</span><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">__isoc99_scanf@plt</span>
-<span style="color: #ED007E; background-color: #1E0010">0</span><span style="color: #A6E22E">x080490e0</span><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">_start</span>
-<span style="color: #ED007E; background-color: #1E0010">0</span><span style="color: #A6E22E">x08049120</span><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">_dl_relocate_static_pie</span>
-<span style="color: #ED007E; background-color: #1E0010">0</span><span style="color: #A6E22E">x08049130</span><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">__x86.get_pc_thunk.bx</span>
-<span style="color: #ED007E; background-color: #1E0010">0</span><span style="color: #A6E22E">x08049140</span><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">deregister_tm_clones</span>
-<span style="color: #ED007E; background-color: #1E0010">0</span><span style="color: #A6E22E">x08049180</span><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">register_tm_clones</span>
-<span style="color: #ED007E; background-color: #1E0010">0</span><span style="color: #A6E22E">x080491c0</span><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">__do_global_dtors_aux</span>
-<span style="color: #ED007E; background-color: #1E0010">0</span><span style="color: #A6E22E">x080491f0</span><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">frame_dummy</span>
-<span style="color: #ED007E; background-color: #1E0010">0</span><span style="color: #A6E22E">x080491f6</span><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">login</span>
-<span style="color: #ED007E; background-color: #1E0010">0</span><span style="color: #A6E22E">x080492f2</span><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">welcome</span>
-<span style="color: #ED007E; background-color: #1E0010">0</span><span style="color: #A6E22E">x08049364</span><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">main</span>
-<span style="color: #ED007E; background-color: #1E0010">0</span><span style="color: #A6E22E">x080493c0</span><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">__stack_chk_fail_local</span>
-<span style="color: #ED007E; background-color: #1E0010">0</span><span style="color: #A6E22E">x080493d8</span><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">_fini</span>
-</code></pre></div>
+<pre class="codehilite"><code class="language-asm">0x08049000  _init
+0x08049040  __libc_start_main@plt
+0x08049050  printf@plt
+0x08049060  fflush@plt
+0x08049070  __stack_chk_fail@plt
+0x08049080  getegid@plt
+0x08049090  puts@plt
+0x080490a0  system@plt
+0x080490b0  exit@plt
+0x080490c0  setregid@plt
+0x080490d0  __isoc99_scanf@plt
+0x080490e0  _start
+0x08049120  _dl_relocate_static_pie
+0x08049130  __x86.get_pc_thunk.bx
+0x08049140  deregister_tm_clones
+0x08049180  register_tm_clones
+0x080491c0  __do_global_dtors_aux
+0x080491f0  frame_dummy
+0x080491f6  login
+0x080492f2  welcome
+0x08049364  main
+0x080493c0  __stack_chk_fail_local
+0x080493d8  _fini
+</code></pre>
 
-<div class="codehilite" style="background: #272822"><pre style="line-height: 125%;"><span></span><code>When we use cyclic pattern as name, we find that SEGMENTATION FAULT occurs at 0x61616179 at &#39;yaaa&#39;
+<pre class="codehilite"><code class="language-md">When we use cyclic pattern as name, we find that SEGMENTATION FAULT occurs at 0x61616179 at 'yaaa'
 
 `cyclic -l yaaa
-Finding cyclic pattern of 4 bytes: b&#39;yaaa&#39; (hex: 0x79616161)
+Finding cyclic pattern of 4 bytes: b'yaaa' (hex: 0x79616161)
 Found at offset 96`
 
 Hence we found the  offset to be 96
@@ -136,20 +136,20 @@ Hence we found the  offset to be 96
 So we can use the GOT address of fflush and the address that gives us the flag
 And if we craft our exploit carefully we should be able to pwn this
 
---&gt; NOTE: to dump GOT, use: <span style="color: #E6DB74">`objdump -R passcode -M intel`</span>
+--&gt; NOTE: to dump GOT, use: `objdump -R passcode -M intel`
 
 Writing exploit.py (attached)
 
 We retrieve the flag!
 
-<span style="color: #E6DB74">`s0rry_mom_I_just_ign0red_c0mp1ler_w4rning`</span>
+`s0rry_mom_I_just_ign0red_c0mp1ler_w4rning`
 
 Another challenge down. We learnt about the implications caused by scanf, fflush() and also about GOT addresses.
 
 See you with another writeup soon, till then
 
 Happy Hacking!
-</code></pre></div>
+</code></pre>
       </div>
     </div>
   </article>
