@@ -112,25 +112,25 @@ When we run it, we see an address for <code>system</code></p>
 <p><code>THM{b1n3xg0d_pwn3d}</code></p>
 <p>Finally, lets move on to the final binary to get the root flag</p>
 <p>I ran the <code>secret_of_heaven</code> file, which just crashed the system for some reason? Let's ignore that. Our focus should be on the <code>vuln.c</code> and <code>vuln</code> files</p>
-<pre class="highlight"><code class="language-c">#include &lt;stdlib.h&gt;
-#include &lt;unistd.h&gt;
-#include &lt;string.h&gt;
-#include &lt;sys/types.h&gt;
-#include &lt;stdio.h&gt;
+<div class="highlight"><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdlib.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;unistd.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;string.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;sys/types.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
 
-int main(int argc, char **argv, char **envp)
-{
-  gid_t gid;
-  uid_t uid;
-  gid = getegid();
-  uid = geteuid();
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">**</span><span class="n">argv</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">**</span><span class="n">envp</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="kt">gid_t</span><span class="w"> </span><span class="n">gid</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">uid_t</span><span class="w"> </span><span class="n">uid</span><span class="p">;</span>
+<span class="w">  </span><span class="n">gid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">getegid</span><span class="p">();</span>
+<span class="w">  </span><span class="n">uid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">geteuid</span><span class="p">();</span>
 
-  setresgid(gid, gid, gid);
-  setresuid(uid, uid, uid);
+<span class="w">  </span><span class="n">setresgid</span><span class="p">(</span><span class="n">gid</span><span class="p">,</span><span class="w"> </span><span class="n">gid</span><span class="p">,</span><span class="w"> </span><span class="n">gid</span><span class="p">);</span>
+<span class="w">  </span><span class="n">setresuid</span><span class="p">(</span><span class="n">uid</span><span class="p">,</span><span class="w"> </span><span class="n">uid</span><span class="p">,</span><span class="w"> </span><span class="n">uid</span><span class="p">);</span>
 
-  system(&quot;/usr/bin/env echo Get out of heaven lol&quot;);
-}
-</code></pre>
+<span class="w">  </span><span class="n">system</span><span class="p">(</span><span class="s">"/usr/bin/env echo Get out of heaven lol"</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
 
 <p>Here, the vuln binary is run by root. When we analyze the code, we see something interesting.<br>
 env is called via the absolute path <strong>BUT</strong> echo isn't<br>
