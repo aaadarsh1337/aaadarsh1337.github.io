@@ -62,7 +62,7 @@
 <h1 id="binary-heaven">Binary Heaven</h1>
 <h2 id="room-link-httpstryhackmecomroombinaryheaven">Room link: <a href="https://tryhackme.com/room/binaryheaven">https://tryhackme.com/room/binaryheaven</a></h2>
 <p>Hello Hackers! Welcome back to another writeup<br>
-Today we will be looking at <code>Binary_Heaven</code> from TryHackMe<br>
+Today we will be looking at <strong>Binary_Heaven</strong> from TryHackMe<br>
 So let's hop on without wasting much time</p>
 <p>When we download the task files and extract them, we get two binaries<br>
 1. angel_A<br>
@@ -72,12 +72,12 @@ So let's hop on without wasting much time</p>
 <p>Running strings on the binary, we get link to a youtube video<br>
 Duh, got rickrolled :)</p>
 <p>Apart from that, we can see that a username comparison is taking place<br>
-From BinaryNinja, we find a widechar <code>username</code> = <code>kym~humr</code></p>
+From BinaryNinja, we find a widechar <strong>username = kym~humr</strong></p>
 <p>But this is not the correct username. <br>
 Reading through the main function, </p>
 <p>We can see a simple XOR operation followed by arithmetic that compares the input value to the username<br>
 We can simply decode this using python</p>
-<p><code>exploit.py</code> created and attached to decode the username</p>
+<p><strong>exploit.py</strong> created and attached to decode the username</p>
 <p>--&gt; guardian</p>
 <p>Submitting the answer, it is correct!</p>
 <p>Now moving on to the next binary</p>
@@ -85,33 +85,43 @@ We can simply decode this using python</p>
 <p>Running the binary, it asks for a magic word</p>
 <p>Well, i was stuck for a while. Because the binary seemed very complicated. But i found a simple solution<br>
 I do not know if this was the intended way to find this out, but running <code>binwalk</code> on the binary reveals:</p>
-<p><code>830665        0xCACC9         Unix path: /dev/stderr/dev/stdout0123456789_30517578125: frame.sp=GOTRACEBACKGOg0esGrrr!IdeographicMedefaidrinNandinagariNew_Tai_LueOld_Per</code></p>
-<p>From here, we see an interesting phrase, <code>GOg0esGrrr!</code></p>
+<div class="highlight"><pre><span></span><code><span class="m">830665</span><span class="w">        </span>0xCACC9<span class="w">         </span>Unix<span class="w"> </span>path:<span class="w"> </span>/dev/stderr/dev/stdout0123456789_30517578125:<span class="w"> </span>frame.sp<span class="o">=</span>GOTRACEBACKGOg0esGrrr!IdeographicMedefaidrinNandinagariNew_Tai_LueOld_Per
+</code></pre></div>
+
+<p>From here, we see an interesting phrase, <strong>GOg0esGrrr!</strong></p>
 <p>Trying the password, SUCCESS!!</p>
 <p><img alt="Success" src="userpass.png"></p>
 <p>We see</p>
-<p><code>Right password! Now GO ahead and SSH into heaven</code></p>
+<blockquote>
+<p>Right password! Now GO ahead and SSH into heaven</p>
+</blockquote>
 <p>Lets try to SSH using guardian:GOg0esGrrr!</p>
 <p>Guardian flag retrieved!</p>
-<p><code>THM{crack3d_th3_gu4rd1an}</code></p>
+<blockquote>
+<p>THM{crack3d_th3_gu4rd1an}</p>
+</blockquote>
 <p>Now we see our next binary in the home folder<br>
-It is <code>SUID</code>, ie, running a shell from it will give us privesc</p>
+It is <strong>SUID</strong>, ie, running a shell from it will give us privesc</p>
 <p>Lets copy it to our local machine and analyze</p>
 <p>It is a 32 bit executable<br>
-When we run it, we see an address for <code>system</code></p>
+When we run it, we see an address for <strong>system</strong></p>
 <p>Also, inputting a large number of chars reveals that Buffer Overflow is present</p>
-<p>Lets find the offset using <code>cyclic</code> and <code>pwndbg</code></p>
+<p>Lets find the offset using <strong>cyclic</strong> and <strong>pwndbg</strong></p>
 <p>--&gt; Offset found at 32</p>
-<p>But since <code>NX</code> is enabled in our executable, we can't run shellcode<br>
+<p>But since <strong>NX</strong> is enabled in our executable, we can't run shellcode<br>
 --&gt; Hence we need to use ROP attack</p>
-<p>libc is used in the binary, so we can try a <code>ret2libc</code> attack</p>
-<h3 id="methodology-we-can-access-various-functions-using-libc-since-the-system-address-is-leaked-we-can-find-the-libc-base-address-using-that-we-can-then-locate-binsh-and-pass-it-as-an-argument-for-system-thus-a-shell-will-be-spawned">METHODOLOGY: We can access various functions using libc. Since the system address is leaked, we can find the libc base address. Using that, we can then locate /bin/sh and pass it as an argument for system. Thus, a shell will be spawned.</h3>
+<p>libc is used in the binary, so we can try a <strong>ret2libc</strong> attack</p>
+<blockquote>
+<p>METHODOLOGY: We can access various functions using libc. Since the system address is leaked, we can find the libc base address. Using that, we can then locate /bin/sh and pass it as an argument for system. Thus, a shell will be spawned.</p>
+</blockquote>
 <p>Writing an exploit in python using pwntools, (attached)</p>
 <p>Just like that, we spawn a shell as binexgod</p>
 <p><img alt="binexgod_flag" src="binexgod.png"></p>
-<p><code>THM{b1n3xg0d_pwn3d}</code></p>
+<blockquote>
+<p>THM{b1n3xg0d_pwn3d}</p>
+</blockquote>
 <p>Finally, lets move on to the final binary to get the root flag</p>
-<p>I ran the <code>secret_of_heaven</code> file, which just crashed the system for some reason? Let's ignore that. Our focus should be on the <code>vuln.c</code> and <code>vuln</code> files</p>
+<p>I ran the <strong>secret_of_heaven</strong> file, which just crashed the system for some reason? Let's ignore that. Our focus should be on the <strong>vuln.c</strong> and <strong>vuln</strong> files</p>
 <div class="highlight"><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdlib.h&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;unistd.h&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;string.h&gt;</span>
@@ -145,9 +155,13 @@ We can create our own echo in the PATH directory that spawns the shell</p>
 </ol>
 <p><img alt="rootFlag" src="root.png"></p>
 <p>Final flag is retrieved</p>
-<p><code>THM{r00t_of_th3_he4v3n}</code></p>
+<blockquote>
+<p>THM{r00t_of_th3_he4v3n}</p>
+</blockquote>
 <p>Challenge complete!!</p>
-<h3 id="we-learnt-reversing-basic-xor-finding-secrets-in-binaries-suid-misuse-problems-caused-by-relative-path">We learnt: Reversing basic XOR, finding secrets in binaries, SUID misuse &amp; problems caused by relative path</h3>
+<blockquote>
+<p>We learnt: Reversing basic XOR, finding secrets in binaries, SUID misuse &amp; problems caused by relative path</p>
+</blockquote>
 <p>Overall, a very fun room</p>
 <p>I'll see you with another writeup soon, till then</p>
 <p>Happy Hacking!</p>

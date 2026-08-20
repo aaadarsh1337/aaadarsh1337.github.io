@@ -63,7 +63,7 @@
 <h2 id="challenge-httpspwnablekrplayphp">Challenge: <a href="https://pwnable.kr/play.php">https://pwnable.kr/play.php</a></h2>
 <p>Hello Hackers!</p>
 <p>Welcome back to another writeup on a pwnable.kr challenge<br>
-Today we will be looking at <code>passcode</code></p>
+Today we will be looking at <strong>passcode</strong></p>
 <p>The hint:</p>
 <p>Mommy told me to make a passcode based login system.<br>
 My first trial C implementation compiled without any error!<br>
@@ -71,7 +71,9 @@ Well, there were some compiler warnings, but who cares about that?</p>
 <p>--&gt; 'Compiler warnings' looks interesting</p>
 <p>Let us read the source code</p>
 <p>From the source code, we find:</p>
-<p><code>ha! mommy told me that 32bit is vulnerable to bruteforcing :)</code></p>
+<blockquote>
+<p>ha! mommy told me that 32bit is vulnerable to bruteforcing :)</p>
+</blockquote>
 <p>That is interesting. Maybe it has to do something with bruteforcing</p>
 <p>The file looks simple enough with checks of passcode1 = 338150 and passcode2 = 13371337<br>
 But when we try to run the binary and use these creds, we get a segmentation fault. </p>
@@ -84,7 +86,7 @@ But when we try to run the binary and use these creds, we get a segmentation fau
 <p>What happens is that we enter out passcode1<br>
 Then when it flushes, it doesnt know which destination to put it in because the given destination is not even an address<br>
 So if we just execute the flagread instead of fflush(), we can retrieve the flag</p>
-<p>Lets analyze the functions and addresses using <code>pwndbg</code></p>
+<p>Lets analyze the functions and addresses using <strong>pwndbg</strong></p>
 <div class="highlight"><pre><span></span><code><span class="err">0</span><span class="nf">x08049000</span><span class="w">  </span><span class="no">_init</span>
 <span class="err">0</span><span class="nf">x08049040</span><span class="w">  </span><span class="no">__libc_start_main@plt</span>
 <span class="err">0</span><span class="nf">x08049050</span><span class="w">  </span><span class="no">printf@plt</span>
@@ -111,16 +113,23 @@ So if we just execute the flagread instead of fflush(), we can retrieve the flag
 </code></pre></div>
 
 <p>When we use cyclic pattern as name, we find that SEGMENTATION FAULT occurs at 0x61616179 at 'yaaa'</p>
-<p><code>cyclic -l yaaa
-Finding cyclic pattern of 4 bytes: b'yaaa' (hex: 0x79616161)
-Found at offset 96</code></p>
+<div class="highlight"><pre><span></span><code>cyclic<span class="w"> </span>-l<span class="w"> </span>yaaa
+Finding<span class="w"> </span>cyclic<span class="w"> </span>pattern<span class="w"> </span>of<span class="w"> </span><span class="m">4</span><span class="w"> </span>bytes:<span class="w"> </span>b<span class="s1">'yaaa'</span><span class="w"> </span><span class="o">(</span>hex:<span class="w"> </span>0x79616161<span class="o">)</span>
+Found<span class="w"> </span>at<span class="w"> </span>offset<span class="w"> </span><span class="m">96</span>
+</code></pre></div>
+
 <p>Hence we found the  offset to be 96</p>
 <p>So we can use the GOT address of fflush and the address that gives us the flag<br>
 And if we craft our exploit carefully we should be able to pwn this</p>
-<p>--&gt; NOTE: to dump GOT, use: <code>objdump -R passcode -M intel</code></p>
+<p>--&gt; NOTE: to dump GOT, use: </p>
+<div class="highlight"><pre><span></span><code>objdump<span class="w"> </span>-R<span class="w"> </span>passcode<span class="w"> </span>-M<span class="w"> </span>intel
+</code></pre></div>
+
 <p>Writing exploit.py (attached)</p>
 <p>We retrieve the flag!</p>
-<p><code>s0rry_mom_I_just_ign0red_c0mp1ler_w4rning</code></p>
+<blockquote>
+<p>s0rry_mom_I_just_ign0red_c0mp1ler_w4rning</p>
+</blockquote>
 <p>Another challenge down. We learnt about the implications caused by scanf, fflush() and also about GOT addresses.</p>
 <p>See you with another writeup soon, till then</p>
 <p>Happy Hacking!</p>

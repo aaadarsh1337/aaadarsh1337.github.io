@@ -67,7 +67,9 @@ Since this is the first challenge, I recon it will be very easy</p>
 <p>The site instructs us to connect to the machine via SSH</p>
 <p>After login, we see our files</p>
 <p>Let's move all of it to our local machine </p>
-<p><code>scp -P 2222 -r fd@pwnable.kr:/home/fd .</code></p>
+<div class="highlight"><pre><span></span><code>scp<span class="w"> </span>-P<span class="w"> </span><span class="m">2222</span><span class="w"> </span>-r<span class="w"> </span>fd@pwnable.kr:/home/fd<span class="w"> </span>.
+</code></pre></div>
+
 <ol>
 <li>fd.c</li>
 </ol>
@@ -97,30 +99,40 @@ Since this is the first challenge, I recon it will be very easy</p>
 
 <p>The challenge hints us to learn about file descriptors<br>
 --&gt; In Linux, a file descriptor (FD) is a non-negative integer that serves as a unique per-process handle assigned by the kernel to manage any open input/output stream</p>
-<h3 id="the-fd-binary-has-suid">The fd binary has SUID</h3>
-<p>So it runs as root and we can read the file</p>
-<h2 id="understanding-the-logic-behind-the-code">Understanding the logic behind the code</h2>
-<p><code>int fd = atoi( argv[1] ) - 0x1234;</code></p>
+<blockquote>
+<p><strong>The fd binary has SUID</strong><br>
+So it runs as root and we can read the file</p>
+</blockquote>
+<h3 id="understanding-the-logic-behind-the-code">Understanding the logic behind the code</h3>
+<div class="highlight"><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="n">fd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">atoi</span><span class="p">(</span><span class="w"> </span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mh">0x1234</span><span class="p">;</span>
+</code></pre></div>
+
 <p>The argument which we pass to the program, it's converted to its int equivalent (atoi) and then 0x1234 is subtracted from it</p>
-<p><code>len = read(fd, buf, 32);</code></p>
+<div class="highlight"><pre><span></span><code><span class="n">len</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">read</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span><span class="w"> </span><span class="n">buf</span><span class="p">,</span><span class="w"> </span><span class="mi">32</span><span class="p">);</span>
+</code></pre></div>
+
 <p>What this means: we are reading fd, and we are storing the first 32 bytes into the "buf" which is a user defined 32 byte buffer</p>
-<p><code>if(!strcmp("LETMEWIN\n", buf))</code></p>
+<div class="highlight"><pre><span></span><code><span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">strcmp</span><span class="p">(</span><span class="s">"LETMEWIN</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="n">buf</span><span class="p">))</span>
+</code></pre></div>
+
 <p>strcmp compares two strings based off their ascii values. It returns 0 for true</p>
-<p>Since we can control the file descriptor here, set it to 0<br>
+<p>Since we can control the <strong>file descriptor</strong> here, set it to 0<br>
 WHY: Because 0 is the FD for standard input<br>
 ie, then we can just pass what the condition requires us to in order to obtain the flag</p>
 <p>The int value of 0x1234 is 4660</p>
 <p>Giving 4660 as arg, the program halts<br>
 --&gt; It is waiting for our input</p>
-<p>Entering <code>LETMEWIN</code> and pressing enter, we get good job</p>
+<p>Entering <strong>LETMEWIN</strong> and pressing enter, we get good job</p>
 <p>Repeat the process on the target machine to reveal the flag</p>
 <hr>
 <h1 id="alternate-approach-does-not-retrieve-flag">ALTERNATE APPROACH (DOES NOT RETRIEVE FLAG)</h1>
 <p>This is not the way the developers intended this challenge to be solve, but we can basically modify registers to trigger the winning funtion</p>
 <p>In gdb, </p>
-<p><code>set disassembly-flavor intel</code><br>
-<code>set follow-fork-mode parent</code>                # for reading the flag, the binary invokes a child process where main() isnt defines --&gt; error<br>
-<code>disassemble main</code></p>
+<div class="highlight"><pre><span></span><code><span class="nb">set</span><span class="w"> </span>disassembly-flavor<span class="w"> </span>intel
+<span class="nb">set</span><span class="w"> </span>follow-fork-mode<span class="w"> </span>parent<span class="w">                </span><span class="c1"># for reading the flag, the binary invokes a child process where main() isnt defines --&gt; error</span>
+disassemble<span class="w"> </span>main
+</code></pre></div>
+
 <div class="highlight"><pre><span></span><code><span class="w">   </span><span class="err">0</span><span class="nf">x0000120d</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">0</span><span class="err">&gt;</span><span class="p">:</span><span class="w"> </span><span class="no">lea</span><span class="w">    </span><span class="no">ecx</span><span class="p">,[</span><span class="no">esp</span><span class="err">+</span><span class="mi">0x4</span><span class="p">]</span>
 <span class="w">   </span><span class="err">0</span><span class="nf">x00001211</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">4</span><span class="err">&gt;</span><span class="p">:</span><span class="w"> </span><span class="no">and</span><span class="w">    </span><span class="no">esp</span><span class="p">,</span><span class="mi">0xfffffff0</span>
 <span class="w">   </span><span class="err">0</span><span class="nf">x00001214</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">7</span><span class="err">&gt;</span><span class="p">:</span><span class="w"> </span><span class="no">push</span><span class="w">   </span><span class="no">DWORD</span><span class="w"> </span><span class="no">PTR</span><span class="w"> </span><span class="p">[</span><span class="no">ecx-0x4</span><span class="p">]</span>
@@ -206,11 +218,17 @@ ie, then we can just pass what the condition requires us to in order to obtain t
 </code></pre></div>
 
 <p>From the above and from the code, we can see exactly where the comparison takes place</p>
-<p><code>0x000012a4 &lt;+151&gt;: test   eax,eax</code></p>
+<div class="highlight"><pre><span></span><code><span class="err">0</span><span class="nf">x000012a4</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">151</span><span class="err">&gt;</span><span class="p">:</span><span class="w">  </span><span class="no">test</span><span class="w">   </span><span class="no">eax</span><span class="p">,</span><span class="no">eax</span>
+</code></pre></div>
+
 <p>here, the value of strcmp is being compared to 0 --&gt; Strings match<br>
 Just trying to set eax=0 before the test to bypass the restrictions</p>
-<h3 id="get-the-address-after-running-the-file-and-breaking-at-main">Get the address after running the file and breaking at main</h3>
-<p><code>0x565562a4 &lt;+151&gt;: test   %eax,%eax</code></p>
+<blockquote>
+<p>Get the address after running the file and breaking at main</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="err">0</span><span class="nf">x565562a4</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">151</span><span class="err">&gt;</span><span class="p">:</span><span class="w">  </span><span class="no">test</span><span class="w">   </span><span class="nv">%eax</span><span class="p">,</span><span class="nv">%eax</span>
+</code></pre></div>
+
 <div class="highlight"><pre><span></span><code><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span><span class="k">break</span><span class="w"> </span>*0x565562a4
 Breakpoint<span class="w"> </span><span class="m">2</span><span class="w"> </span>at<span class="w"> </span>0x565562a4
 <span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span><span class="k">continue</span>

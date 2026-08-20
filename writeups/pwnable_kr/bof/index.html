@@ -66,36 +66,48 @@
 Today we'll be looking at bof</p>
 <p>From the room name and hints, it seems to be of course, buffer overflow</p>
 <p>Lets analyze the code</p>
-<p>We find that we will get a shell if we execute the function with address <code>0xcafebabe</code> but the main function runs it as <code>0xdeadbeat</code></p>
+<p>We find that we will get a shell if we execute the function with address <strong>0xcafebabe</strong> but the main function runs it as <strong>0xdeadbeat</strong></p>
 <p>Lets analyze the function</p>
 <p>It is a 32 bit executable<br>
 Using cyclic to create</p>
-<p><code>cyclic -n 4 200</code></p>
+<div class="highlight"><pre><span></span><code>cyclic<span class="w"> </span>-n<span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="m">200</span>
+</code></pre></div>
+
 <p>Using pwndbg<br>
 Lets see what we find</p>
-<p>Oops. forgot to <code>checksec</code><br>
+<p>Oops. forgot to <strong>checksec</strong><br>
 Everything is protected</p>
 <p>Trying to manually analyze the file using gdb<br>
 Break at func</p>
 <p>When we disassemble the function, we find this</p>
-<p><code>0x5655623c &lt;+63&gt;:  cmp    DWORD PTR [ebp+0x8],0xcafebabe</code></p>
+<div class="highlight"><pre><span></span><code><span class="err">0</span><span class="nf">x5655623c</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">63</span><span class="err">&gt;</span><span class="p">:</span><span class="w">   </span><span class="no">cmp</span><span class="w">    </span><span class="no">DWORD</span><span class="w"> </span><span class="no">PTR</span><span class="w"> </span><span class="p">[</span><span class="no">ebp</span><span class="err">+</span><span class="mi">0x8</span><span class="p">],</span><span class="mi">0xcafebabe</span>
+</code></pre></div>
+
 <p>Hence, we can try to set the value of ebp+0x8 to be equivalent to 0xcafebabe</p>
-<p><code>break 0x5655623c</code></p>
-<p>Using python we find that ebp+0x8 is <code>0xffffcb40</code></p>
-<p><code>set {int}0xffffcb40 = 3405691582</code></p>
+<div class="highlight"><pre><span></span><code><span class="k">break</span><span class="w"> </span>0x5655623c
+</code></pre></div>
+
+<p>Using python we find that <strong>ebp+0x8</strong> is <strong>0xffffcb40</strong></p>
+<div class="highlight"><pre><span></span><code><span class="nb">set</span><span class="w"> </span><span class="o">{</span>int<span class="o">}</span><span class="nv">0xffffcb40</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">3405691582</span>
+</code></pre></div>
+
 <p>The int is the equivalent of 0xcafebabe</p>
 <p>Continuing, we get our shell. </p>
 <p>But this is pretty much pointless. Because on the server, we cant run gdb as root<br>
 Hence we need to find smtg with the input that changes the value of ebp+0x8 to set 3405691582</p>
-<p>When i input 400 A, we can see that 200 of them were stored at eax and the rest 200 at ebp<br>
-<code>x $eax</code><br>
-<code>x $ebp</code></p>
+<p>When i input 400 A, we can see that 200 of them were stored at eax and the rest 200 at ebp</p>
+<div class="highlight"><pre><span></span><code>x<span class="w"> </span><span class="nv">$eax</span>
+x<span class="w"> </span><span class="nv">$ebp</span>
+</code></pre></div>
+
 <p>Thus, our payload needs 208 A (The whole eax) and then 0xcodebabe</p>
 <p>Ahh but we see that ebp still has a lot of A's <br>
 Doing some math, we can find that sending 52 chars junk and then our addresss, we can get the flag</p>
 <p>Writing exploit.py<br>
 We get flag:</p>
-<p><code>Daddy_I_just_pwned_a_buff3r!</code></p>
+<blockquote>
+<p>Daddy_I_just_pwned_a_buff3r!</p>
+</blockquote>
       </div>
     </div>
   </article>
