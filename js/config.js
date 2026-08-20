@@ -33,8 +33,8 @@ window.PORTFOLIO_CONFIG = {
     handles: [
       { platform: "GitHub",   handle: "aaadarsh1337",        url: "https://github.com/aaadarsh1337" },
       { platform: "PicoCTF",  handle: "jackthereaper1337",   url: "https://learn.cylabacademy.org/users/jackthereaper1337" },
-      { platform: "TryHackMe", handle: "aaadarsh1337",       url: "https://tryhackme.com/p/aaadarsh1337" },
-      { platform: "LinkedIn", handle: "aaadarsh1337",        url: "https://linkedin.com/in/aaadarsh1337" }
+      { platform: "TryHackMe", handle: "aaadarsh1337", url: "https://tryhackme.com/p/aaadarsh1337" },
+      { platform: "CTFtime",   handle: "aaadarsh1337", url: "https://ctftime.org/user/265799"}
     ],
     bio: [
       "I’m aaadarsh1337 | jackthereaper1337 | Hasher2009, a cybersecurity enthusiast and CTF player who loves turning ideas into working tools. I’m especially interested in penetration testing, reverse engineering, and building custom security utilities—from quick scripts for CTF challenges to more structured tools for learning and automation.",
@@ -50,19 +50,19 @@ window.PORTFOLIO_CONFIG = {
   skills: [
     {
       category: "Offensive Security",
-      items: ["Web Exploitation", "Recon & enumeration", "Reverse Engineering", "Binary Exploitation"]
+      items: ["Web Exploitation", "Network Security", "Reverse Engineering", "Binary Exploitation", "OSINT"]
     },
     {
       category: "Languages",
       items: ["Python", "Bash", "C", "SQL"]
     },
     {
-      category: "Tools & Platforms",
-      items: ["PicoCTF", "TryHackMe", "GitHub"]
+      category: "Tools",
+      items: ["Burp Suite", "FFUF", "Gobuster", "nmap", "Wireshark", "Ghidra", "Binary Ninja", "pwntools", "pwndbg"]
     },
     {
       category: "Currently Learning",
-      items: ["Forensics", "Blockchain", "Cloud"]
+      items: ["Forensics", "Blockchain", "Cloud", "Assembly for RE"]
     }
   ],
 
@@ -95,11 +95,8 @@ window.PORTFOLIO_CONFIG = {
   // --- Contact (display only — no form) -------------------------------
   contact: {
     email: "adarshpillai1337@gmail.com",        // EDIT ME
-    github: "https://github.com/aaadarsh1337",
-    tryhackme: "https://tryhackme.com/p/aaadarsh1337",
-    picoctf: "https://learn.cylabacademy.org/users/jackthereaper1337",
-    linkedin: "https://linkedin.com/in/aaadarsh1337",                    // leave blank to hide
-    extraLinks: []                   // e.g. [{ label: "Twitter / X", url: "https://..." }]
+    linkedin: "https://linkedin.com/in/aaadarsh1337",        // leave blank to hide
+    extraLinks: [{ label: "Twitter / X", url: "https://x.com/aaadarsh1337" }]                   // e.g. [{ label: "Twitter / X", url: "https://..." }]
   }
 
 };
