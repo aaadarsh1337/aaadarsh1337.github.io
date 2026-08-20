@@ -12,11 +12,11 @@ window.PORTFOLIO_CONFIG = {
   github: {
     username: "aaadarsh1337",
     // Repos you never want shown on the site
-    hiddenRepos: ["aaadarsh1337.github.io", "portfolio"],
+    hiddenRepos: ["aaadarsh1337.github.io"],
     // Repo names to always show first, in the exact order you list them.
     // Everything not listed here follows by most-recently-updated.
     // Example: pinnedRepos: ["my-best-project", "ctf-writeups", "pentest-notes"]
-    pinnedRepos: ["picoCTF_rawNotes", "CourseNotes-cybersec", "CustomTools_cybersec", "cybersec_certificates" ]
+    pinnedRepos: ["ctf-writeups", "security-automation-toolkit", "picoctf-lab-notes", "tryhackme-lab-notes", "practical-ethical-hacking-notes", "ctf-learning-archive", "cybersecurity-certifications" ]
   },
 
   // --- Identity -----------------------------------------------------
