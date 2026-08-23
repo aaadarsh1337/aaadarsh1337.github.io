@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>after_hours · hackerholidays</title>
+<meta name="description" content="CTF writeup: after_hours (hackerholidays)" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../css/style.css" />
+<link rel="stylesheet" href="../../css/pygments.css" />
+</head>
+<body>
+<div class="blueprint-grid" aria-hidden="true"></div>
+
+<header class="topbar">
+  <div class="topbar__inner">
+    <a class="topbar__brand" href="../../index.html">
+      <span class="brand-mark">CTF</span>
+      <span class="brand-text">Writeups</span>
+    </a>
+    <div class="topbar__spacer"></div>
+    <div class="topbar__actions">
+      <a class="btn btn--ghost btn--small" href="https://aaadarsh1337.github.io/">&#8592; Portfolio</a>
+      <a class="btn btn--ghost btn--small" href="https://github.com/aaadarsh1337/ctf-writeups" target="_blank" rel="noopener">Repo &#8599;</a>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<div class="reader-layout reader-layout--static">
+  <aside class="sidebar">
+    <div class="sidebar__head">
+      <a class="btn btn--ghost btn--small" href="../../index.html">&#8592; All writeups</a>
+    </div>
+    <div class="sidebar__challenge">
+      <p class="tb-label">CHALLENGE</p>
+      <h2>after_hours</h2>
+      <p class="side-path">hackerholidays</p>
+    </div>
+    <div class="sidebar__files">
+      <p class="tb-label">FILES</p>
+      <div class="file-list"><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/after_hours/INDEX.BTR" target="_blank" rel="noopener"><span class="name">INDEX.BTR</span><span class="kind">github</span></a><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/after_hours/MAPPING1.MAP" target="_blank" rel="noopener"><span class="name">MAPPING1.MAP</span><span class="kind">github</span></a><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/after_hours/MAPPING2.MAP" target="_blank" rel="noopener"><span class="name">MAPPING2.MAP</span><span class="kind">github</span></a><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/after_hours/MAPPING3.MAP" target="_blank" rel="noopener"><span class="name">MAPPING3.MAP</span><span class="kind">github</span></a><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/after_hours/OBJECTS.DATA" target="_blank" rel="noopener"><span class="name">OBJECTS.DATA</span><span class="kind">github</span></a><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/after_hours/attachments-1784136288483.zip" target="_blank" rel="noopener"><span class="name">attachments-1784136288483.zip</span><span class="kind">github</span></a><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/after_hours/configdata.b64" target="_blank" rel="noopener"><span class="name">configdata.b64</span><span class="kind">github</span></a><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/after_hours/configdata.deflate" target="_blank" rel="noopener"><span class="name">configdata.deflate</span><span class="kind">github</span></a><a class="file-item readable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/after_hours/convert.py" target="_blank" rel="noopener"><span class="name">convert.py</span><span class="kind">py</span></a><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/after_hours/final.png" target="_blank" rel="noopener"><span class="name">final.png</span><span class="kind">github</span></a><a class="file-item readable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/after_hours/notes.md" target="_blank" rel="noopener"><span class="name">notes.md</span><span class="kind">md</span></a><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/after_hours/payload.exe" target="_blank" rel="noopener"><span class="name">payload.exe</span><span class="kind">github</span></a><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/after_hours/somebase64" target="_blank" rel="noopener"><span class="name">somebase64</span><span class="kind">github</span></a></div>
+    </div>
+    <div class="sidebar__foot">
+      <a class="btn btn--ghost btn--small sidebar-gh-btn" href="https://github.com/aaadarsh1337/ctf-writeups/tree/main/hackerholidays/after_hours" target="_blank" rel="noopener">Open folder &#8599;</a>
+      <a class="btn btn--ghost btn--small sidebar-gh-btn" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/after_hours/notes.md" target="_blank" rel="noopener">View markdown &#8599;</a>
+    </div>
+  </aside>
+  <article class="reader">
+    <div class="reader__toolbar">
+      <div class="reader__crumb">
+        <span class="tb-label">READING</span>
+        <span>notes.md</span>
+      </div>
+      <a class="btn btn--ghost btn--small" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/after_hours/notes.md" target="_blank" rel="noopener">Source &#8599;</a>
+    </div>
+    <div class="reader__body">
+      <div class="md-render">
+<h1 id="day-12-after-hours">Day 12 - After Hours</h1>
+<h2 id="room-httpstryhackmecomroomhh-afterhours-b090d1f0">Room: <a href="https://tryhackme.com/room/hh-afterhours-b090d1f0">https://tryhackme.com/room/hh-afterhours-b090d1f0</a></h2>
+<p>Hello Hackers!</p>
+<p>Welcome to Day 12 of the TryHackMe Hacker Holidays 2026 writeups.</p>
+<p>This challenge involved analysing a suspicious <code>OBJECTS.DATA</code> file and identifying data hidden inside it.</p>
+<p>We started by running <code>strings</code> against <code>OBJECTS.DATA</code> to extract readable text from the file:</p>
+<div class="highlight"><pre><span></span><code>strings<span class="w"> </span>OBJECTS.DATA
+</code></pre></div>
+
+<p>Among the extracted strings, we found a Base64-encoded value. Base64 is an encoding method rather than encryption, so we decoded the value to inspect what it contained.</p>
+<p>After decoding it, we found a program that referenced something called <code>ConfigData</code>. This indicated that the next stage of the challenge was likely stored inside that configuration data.</p>
+<p>We located <code>ConfigData</code> and decoded it from Base64 as well. The decoded output was not immediately readable because it was compressed using zlib.</p>
+<p>We decompressed the data using zlib. Alternatively, the same result could be achieved in CyberChef by using the <strong>From Base64</strong> operation followed by <strong>Raw Inflate</strong>.</p>
+<p>Once the data was decompressed, we analysed the resulting program using ILSpy. This allowed us to inspect the program’s structure and review the relevant code and stored values.</p>
+<p>While analysing the program in ILSpy, we found the flag:</p>
+<blockquote>
+<p><code>THM{...}</code></p>
+</blockquote>
+<p>Happy Hacking!</p>
+      </div>
+    </div>
+  </article>
+</div>
+
+</main>
+</body>
+</html>

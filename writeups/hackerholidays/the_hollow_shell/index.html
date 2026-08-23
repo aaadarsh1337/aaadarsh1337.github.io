@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>the_hollow_shell · hackerholidays</title>
+<meta name="description" content="CTF writeup: the_hollow_shell (hackerholidays)" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../css/style.css" />
+<link rel="stylesheet" href="../../css/pygments.css" />
+</head>
+<body>
+<div class="blueprint-grid" aria-hidden="true"></div>
+
+<header class="topbar">
+  <div class="topbar__inner">
+    <a class="topbar__brand" href="../../index.html">
+      <span class="brand-mark">CTF</span>
+      <span class="brand-text">Writeups</span>
+    </a>
+    <div class="topbar__spacer"></div>
+    <div class="topbar__actions">
+      <a class="btn btn--ghost btn--small" href="https://aaadarsh1337.github.io/">&#8592; Portfolio</a>
+      <a class="btn btn--ghost btn--small" href="https://github.com/aaadarsh1337/ctf-writeups" target="_blank" rel="noopener">Repo &#8599;</a>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<div class="reader-layout reader-layout--static">
+  <aside class="sidebar">
+    <div class="sidebar__head">
+      <a class="btn btn--ghost btn--small" href="../../index.html">&#8592; All writeups</a>
+    </div>
+    <div class="sidebar__challenge">
+      <p class="tb-label">CHALLENGE</p>
+      <h2>the_hollow_shell</h2>
+      <p class="side-path">hackerholidays</p>
+    </div>
+    <div class="sidebar__files">
+      <p class="tb-label">FILES</p>
+      <div class="file-list"><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/the_hollow_shell/basic" target="_blank" rel="noopener"><span class="name">basic</span><span class="kind">github</span></a><a class="file-item readable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/the_hollow_shell/exploit.py" target="_blank" rel="noopener"><span class="name">exploit.py</span><span class="kind">py</span></a><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/the_hollow_shell/exploit.zip" target="_blank" rel="noopener"><span class="name">exploit.zip</span><span class="kind">github</span></a><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/the_hollow_shell/fullscan" target="_blank" rel="noopener"><span class="name">fullscan</span><span class="kind">github</span></a><a class="file-item readable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/the_hollow_shell/notes.md" target="_blank" rel="noopener"><span class="name">notes.md</span><span class="kind">md</span></a></div>
+    </div>
+    <div class="sidebar__foot">
+      <a class="btn btn--ghost btn--small sidebar-gh-btn" href="https://github.com/aaadarsh1337/ctf-writeups/tree/main/hackerholidays/the_hollow_shell" target="_blank" rel="noopener">Open folder &#8599;</a>
+      <a class="btn btn--ghost btn--small sidebar-gh-btn" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/the_hollow_shell/notes.md" target="_blank" rel="noopener">View markdown &#8599;</a>
+    </div>
+  </aside>
+  <article class="reader">
+    <div class="reader__toolbar">
+      <div class="reader__crumb">
+        <span class="tb-label">READING</span>
+        <span>notes.md</span>
+      </div>
+      <a class="btn btn--ghost btn--small" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/the_hollow_shell/notes.md" target="_blank" rel="noopener">Source &#8599;</a>
+    </div>
+    <div class="reader__body">
+      <div class="md-render">
+<h1 id="day-10-the-hollow-shell">Day 10 - The Hollow Shell</h1>
+<h2 id="room-httpstryhackmecomroomhh-thehollowshell-ddb582ac">Room: <a href="https://tryhackme.com/room/hh-thehollowshell-ddb582ac">https://tryhackme.com/room/hh-thehollowshell-ddb582ac</a></h2>
+<p>Hello Hackers!</p>
+<p>Welcome to Day 10 of the TryHackMe Hacker Holidays 2026 writeups.</p>
+<p>The initial clues point toward shells, listening, and uploading a file to the beachfront display portal:</p>
+<blockquote>
+<p><code>You find it on the beach: pretty, ordinary, the kind of thing nobody thinks to check. Slip something inside and hold it to your ear.</code></p>
+<p><code>The Byte Lotus beachfront lets guests personalise their in-room display by uploading a shell — a little souvenir pack of shoreline ambiance. Staff publish them through the Shoreline Display portal, and once a shell is "held to the room's ear" it plays its shore. Slip past what the portal forgets to check, and the shell answers with a shell of your own.</code></p>
+</blockquote>
+<p>The web application does not run on port 80. It is available on port <code>5000</code>.</p>
+<p>Reviewing the source code revealed credentials:</p>
+<div class="highlight"><pre><span></span><code>concierge:StayNoticed2024!
+</code></pre></div>
+
+<p>The portal allows ZIP file uploads, suggesting a possible ZIP Slip vulnerability.</p>
+<p>We tested for path traversal using:</p>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span><span class="m">10</span>.48.160.100:5000/shells/../app.py<span class="w"> </span>--path-as-is
+</code></pre></div>
+
+<p>This dumped the application source code and revealed the hooks used by the upload functionality.</p>
+<p>We then wrote <code>exploit.py</code> to create the malicious ZIP file. The ZIP Slip vulnerability allowed us to place a file in the <code>hooks</code> directory.</p>
+<p>The hooks run automatically after the upload, as explained under the upload section of the site. This caused our uploaded shell to execute and gave us a reverse shell.</p>
+<p>The flag was:</p>
+<blockquote>
+<p><code>THM{...}</code></p>
+</blockquote>
+<p>Happy Hacking!</p>
+      </div>
+    </div>
+  </article>
+</div>
+
+</main>
+</body>
+</html>

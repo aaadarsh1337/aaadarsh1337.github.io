@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>management_wants_a_word · hackerholidays</title>
+<meta name="description" content="CTF writeup: management_wants_a_word (hackerholidays)" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../css/style.css" />
+<link rel="stylesheet" href="../../css/pygments.css" />
+</head>
+<body>
+<div class="blueprint-grid" aria-hidden="true"></div>
+
+<header class="topbar">
+  <div class="topbar__inner">
+    <a class="topbar__brand" href="../../index.html">
+      <span class="brand-mark">CTF</span>
+      <span class="brand-text">Writeups</span>
+    </a>
+    <div class="topbar__spacer"></div>
+    <div class="topbar__actions">
+      <a class="btn btn--ghost btn--small" href="https://aaadarsh1337.github.io/">&#8592; Portfolio</a>
+      <a class="btn btn--ghost btn--small" href="https://github.com/aaadarsh1337/ctf-writeups" target="_blank" rel="noopener">Repo &#8599;</a>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<div class="reader-layout reader-layout--static">
+  <aside class="sidebar">
+    <div class="sidebar__head">
+      <a class="btn btn--ghost btn--small" href="../../index.html">&#8592; All writeups</a>
+    </div>
+    <div class="sidebar__challenge">
+      <p class="tb-label">CHALLENGE</p>
+      <h2>management_wants_a_word</h2>
+      <p class="side-path">hackerholidays</p>
+    </div>
+    <div class="sidebar__files">
+      <p class="tb-label">FILES</p>
+      <div class="file-list"><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/management_wants_a_word/chrome.dpapi" target="_blank" rel="noopener"><span class="name">chrome.dpapi</span><span class="kind">github</span></a><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/management_wants_a_word/encrypted_pass" target="_blank" rel="noopener"><span class="name">encrypted_pass</span><span class="kind">github</span></a><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/management_wants_a_word/important_invoice_byte_lotus.pdf" target="_blank" rel="noopener"><span class="name">important_invoice_byte_lotus.pdf</span><span class="kind">github</span></a><a class="file-item readable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/management_wants_a_word/notes.md" target="_blank" rel="noopener"><span class="name">notes.md</span><span class="kind">md</span></a></div>
+    </div>
+    <div class="sidebar__foot">
+      <a class="btn btn--ghost btn--small sidebar-gh-btn" href="https://github.com/aaadarsh1337/ctf-writeups/tree/main/hackerholidays/management_wants_a_word" target="_blank" rel="noopener">Open folder &#8599;</a>
+      <a class="btn btn--ghost btn--small sidebar-gh-btn" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/management_wants_a_word/notes.md" target="_blank" rel="noopener">View markdown &#8599;</a>
+    </div>
+  </aside>
+  <article class="reader">
+    <div class="reader__toolbar">
+      <div class="reader__crumb">
+        <span class="tb-label">READING</span>
+        <span>notes.md</span>
+      </div>
+      <a class="btn btn--ghost btn--small" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/management_wants_a_word/notes.md" target="_blank" rel="noopener">Source &#8599;</a>
+    </div>
+    <div class="reader__body">
+      <div class="md-render">
+<h1 id="day-14-management-wants-a-word">Day 14 - Management Wants a Word</h1>
+<h2 id="room-httpstryhackmecomroomhh-managementwantsaword-6bf3cc41">Room: <a href="https://tryhackme.com/room/hh-managementwantsaword-6bf3cc41">https://tryhackme.com/room/hh-managementwantsaword-6bf3cc41</a></h2>
+<p>Hello Hackers!</p>
+<p>Welcome to Day 14 of the TryHackMe Hacker Holidays 2026 writeups.</p>
+<p>This final challenge involved investigating a large forensic archive and following the clues left behind on Vera’s machine.</p>
+<p>The initial hints suggested that we needed to find several scattered artifacts and determine how they connected:</p>
+<blockquote>
+<p><code>Hunt down the artifacts scattered across her machine and figure out how they fit together. Somewhere in that trail is a password she never meant to leave behind. Follow it, and it'll open a door to something she was keeping very quiet.</code></p>
+<p><code>Some things aren't as locked away as she thought</code></p>
+</blockquote>
+<p>Another clue mentioned that a browser could remember information without the user explicitly sharing it:</p>
+<blockquote>
+<p><code>ok so apparently a browser will remember things for you that you never told anyone else 💀 not every hidden file needs a password cracker, some of them just need a really good memory also why did Patch tell me this version number 1.26.29 idk what it means :( #HackerHolidays</code></p>
+</blockquote>
+<p>The challenge contained a large ZIP file. After extracting it, we found several interesting files and notes.</p>
+<p>The version number <code>1.26.29</code> pointed toward VeraCrypt. The name <code>VERA</code>crypt also appeared to reinforce this clue.</p>
+<p>The main browser artefacts were located in:</p>
+<div class="highlight"><pre><span></span><code>/TryHackMeHackerHolidays/Day14/management-wants-a-word-forensics-hh-day-14/KAPE/C/Users/vera/AppData/Local/Google/Chrome For Testing/User Data/Default
+</code></pre></div>
+
+<p>There was also a backup file in Vera’s Documents directory.</p>
+<p>We first examined the files in:</p>
+<div class="highlight"><pre><span></span><code>C/Windows/System32/config
+</code></pre></div>
+
+<p>Using the SAM, SYSTEM, and SECURITY registry hives, we ran:</p>
+<div class="highlight"><pre><span></span><code>impacket-secretsdump<span class="w"> </span>-sam<span class="w"> </span>SAM<span class="w"> </span>-system<span class="w"> </span>SYSTEM<span class="w"> </span>-security<span class="w"> </span>SECURITY<span class="w"> </span>LOCAL
+</code></pre></div>
+
+<p>The output revealed a default password:</p>
+<div class="highlight"><pre><span></span><code>DefaultPassword (Unknown User):minivera
+</code></pre></div>
+
+<p>The dumped password was:</p>
+<div class="highlight"><pre><span></span><code>minivera
+</code></pre></div>
+
+<p>The output also showed that Vera’s user account shared the same NTLM hash as the Administrator account, but the default password was the useful discovery for the next stage.</p>
+<p>Next, we investigated the DPAPI files in:</p>
+<div class="highlight"><pre><span></span><code>C/Users/vera/AppData/Roaming/Microsoft/Protect/S-1-5-21-2529683458-431225740-1723070931-1000
+</code></pre></div>
+
+<p>We used the discovered password to decrypt the DPAPI master key:</p>
+<div class="highlight"><pre><span></span><code>impacket-dpapi<span class="w"> </span>masterkey<span class="w"> </span>-file<span class="w"> </span>c90719ef-5b98-474e-b934-136d606a702a<span class="w"> </span>-sid<span class="w"> </span>S-1-5-21-2529683458-431225740-1723070931-1000
+</code></pre></div>
+
+<p>The master key was successfully decrypted using the user key.</p>
+<p>This allowed us to decrypt Chrome’s saved passwords. We examined the Chrome Local State file at:</p>
+<div class="highlight"><pre><span></span><code>C/Users/vera/AppData/Local/Google/Chrome For Testing/User Data/Local State
+</code></pre></div>
+
+<p>The file contained an encrypted key. We then examined the Chrome login database using SQLite:</p>
+<div class="highlight"><pre><span></span><code>.tables
+select hex(password_value) from logins
+</code></pre></div>
+
+<p>This returned an encrypted password value:</p>
+<div class="highlight"><pre><span></span><code>763130C88A72A64F35F63E883EA0A7F64A6870E46B0BBB469A756EDA88B7E324C3E1C51015AA6FD8D65AC48961E1EA324CE1707807FEB3D7
+</code></pre></div>
+
+<p>After decrypting the saved Chrome password, we obtained:</p>
+<div class="highlight"><pre><span></span><code>Wh4t1sV3raD0inG0nTh1sH0st
+</code></pre></div>
+
+<p>This password allowed us to open Vera’s VeraCrypt backup file.</p>
+<p>We opened the backup using:</p>
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>cryptsetup<span class="w"> </span>open<span class="w"> </span>--type<span class="w"> </span>tcrypt<span class="w"> </span>--veracrypt<span class="w"> </span><span class="s2">"C/Users/vera/Documents/backup"</span><span class="w"> </span>veracontainer
+</code></pre></div>
+
+<p>We then created a mount directory and mounted the container as read-only:</p>
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>mkdir<span class="w"> </span>-p<span class="w"> </span>/mnt/veradata<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>sudo<span class="w"> </span>mount<span class="w"> </span>-o<span class="w"> </span>ro<span class="w"> </span>/dev/mapper/veracontainer<span class="w"> </span>/mnt/vera
+</code></pre></div>
+
+<p>After mounting the VeraCrypt container, we found a PDF file containing the flag.</p>
+<p>The flag was:</p>
+<blockquote>
+<p><code>THM{...}</code></p>
+</blockquote>
+<p>This was a really fun set of challenges, and I’ll see you guys again someday with something new.<br>
+Till then,</p>
+<p>Happy Hacking!</p>
+      </div>
+    </div>
+  </article>
+</div>
+
+</main>
+</body>
+</html>

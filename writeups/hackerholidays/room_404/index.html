@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>room_404 · hackerholidays</title>
+<meta name="description" content="CTF writeup: room_404 (hackerholidays)" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../css/style.css" />
+<link rel="stylesheet" href="../../css/pygments.css" />
+</head>
+<body>
+<div class="blueprint-grid" aria-hidden="true"></div>
+
+<header class="topbar">
+  <div class="topbar__inner">
+    <a class="topbar__brand" href="../../index.html">
+      <span class="brand-mark">CTF</span>
+      <span class="brand-text">Writeups</span>
+    </a>
+    <div class="topbar__spacer"></div>
+    <div class="topbar__actions">
+      <a class="btn btn--ghost btn--small" href="https://aaadarsh1337.github.io/">&#8592; Portfolio</a>
+      <a class="btn btn--ghost btn--small" href="https://github.com/aaadarsh1337/ctf-writeups" target="_blank" rel="noopener">Repo &#8599;</a>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<div class="reader-layout reader-layout--static">
+  <aside class="sidebar">
+    <div class="sidebar__head">
+      <a class="btn btn--ghost btn--small" href="../../index.html">&#8592; All writeups</a>
+    </div>
+    <div class="sidebar__challenge">
+      <p class="tb-label">CHALLENGE</p>
+      <h2>room_404</h2>
+      <p class="side-path">hackerholidays</p>
+    </div>
+    <div class="sidebar__files">
+      <p class="tb-label">FILES</p>
+      <div class="file-list"><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/room_404/basicscan" target="_blank" rel="noopener"><span class="name">basicscan</span><span class="kind">github</span></a><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/room_404/fullscan" target="_blank" rel="noopener"><span class="name">fullscan</span><span class="kind">github</span></a><a class="file-item readable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/room_404/notes.md" target="_blank" rel="noopener"><span class="name">notes.md</span><span class="kind">md</span></a></div>
+    </div>
+    <div class="sidebar__foot">
+      <a class="btn btn--ghost btn--small sidebar-gh-btn" href="https://github.com/aaadarsh1337/ctf-writeups/tree/main/hackerholidays/room_404" target="_blank" rel="noopener">Open folder &#8599;</a>
+      <a class="btn btn--ghost btn--small sidebar-gh-btn" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/room_404/notes.md" target="_blank" rel="noopener">View markdown &#8599;</a>
+    </div>
+  </aside>
+  <article class="reader">
+    <div class="reader__toolbar">
+      <div class="reader__crumb">
+        <span class="tb-label">READING</span>
+        <span>notes.md</span>
+      </div>
+      <a class="btn btn--ghost btn--small" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/room_404/notes.md" target="_blank" rel="noopener">Source &#8599;</a>
+    </div>
+    <div class="reader__body">
+      <div class="md-render">
+<h1 id="day-2-room-404">Day 2 - Room 404</h1>
+<h2 id="room-httpstryhackmecomroomhh-room404-804573bf">Room: <a href="https://tryhackme.com/room/hh-room404-804573bf">https://tryhackme.com/room/hh-room404-804573bf</a></h2>
+<p>Hello Hackers!</p>
+<p>Welcome to Day 2 of the TryHackMe Hacker Holidays 2026 writeups.</p>
+<p>This challenge involves enumerating a web server and recovering information from an exposed Git repository.</p>
+<p>The instructions mention that port <code>8080</code> is open, so let’s begin by scanning the target.</p>
+<div class="highlight"><pre><span></span><code>nmap<span class="w"> </span>-p-<span class="w"> </span><span class="m">10</span>.49.137.197
+</code></pre></div>
+
+<p>The scan confirms that port <code>8080</code> is available. Since this is a web service, we can enumerate its directories using a tool such as Gobuster:</p>
+<div class="highlight"><pre><span></span><code>gobuster<span class="w"> </span>dir<span class="w"> </span>-u<span class="w"> </span>http://10.49.137.197:8080<span class="w"> </span>-w<span class="w"> </span>/usr/share/wordlists/dirb/common.txt
+</code></pre></div>
+
+<p>The enumeration reveals a <code>.git</code> directory.</p>
+<p>An exposed <code>.git</code> directory can allow us to download the application’s Git repository and recover files that were not intended to be publicly accessible.</p>
+<p>We can use <code>git-dumper</code> to reconstruct the repository locally:</p>
+<div class="highlight"><pre><span></span><code>git-dumper<span class="w"> </span>http://10.49.137.197:8080/.git<span class="w"> </span>./git-dumped
+</code></pre></div>
+
+<p>After the repository has been downloaded, we can inspect its contents:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>git-dumped
+ls
+</code></pre></div>
+
+<p>The flag is stored in the <code>README</code> file:</p>
+<div class="highlight"><pre><span></span><code>cat<span class="w"> </span>README
+</code></pre></div>
+
+<p>This reveals the flag:</p>
+<blockquote>
+<p><code>THM{...}</code></p>
+</blockquote>
+<p>The key lesson is that accidentally exposing <code>.git</code> can leak source code, commit history, configuration files, and sensitive information.</p>
+<p>Happy Hacking!</p>
+      </div>
+    </div>
+  </article>
+</div>
+
+</main>
+</body>
+</html>

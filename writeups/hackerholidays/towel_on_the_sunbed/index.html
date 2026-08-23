@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>towel_on_the_sunbed · hackerholidays</title>
+<meta name="description" content="CTF writeup: towel_on_the_sunbed (hackerholidays)" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../css/style.css" />
+<link rel="stylesheet" href="../../css/pygments.css" />
+</head>
+<body>
+<div class="blueprint-grid" aria-hidden="true"></div>
+
+<header class="topbar">
+  <div class="topbar__inner">
+    <a class="topbar__brand" href="../../index.html">
+      <span class="brand-mark">CTF</span>
+      <span class="brand-text">Writeups</span>
+    </a>
+    <div class="topbar__spacer"></div>
+    <div class="topbar__actions">
+      <a class="btn btn--ghost btn--small" href="https://aaadarsh1337.github.io/">&#8592; Portfolio</a>
+      <a class="btn btn--ghost btn--small" href="https://github.com/aaadarsh1337/ctf-writeups" target="_blank" rel="noopener">Repo &#8599;</a>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<div class="reader-layout reader-layout--static">
+  <aside class="sidebar">
+    <div class="sidebar__head">
+      <a class="btn btn--ghost btn--small" href="../../index.html">&#8592; All writeups</a>
+    </div>
+    <div class="sidebar__challenge">
+      <p class="tb-label">CHALLENGE</p>
+      <h2>towel_on_the_sunbed</h2>
+      <p class="side-path">hackerholidays</p>
+    </div>
+    <div class="sidebar__files">
+      <p class="tb-label">FILES</p>
+      <div class="file-list"><a class="file-item readable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/towel_on_the_sunbed/notes.md" target="_blank" rel="noopener"><span class="name">notes.md</span><span class="kind">md</span></a></div>
+    </div>
+    <div class="sidebar__foot">
+      <a class="btn btn--ghost btn--small sidebar-gh-btn" href="https://github.com/aaadarsh1337/ctf-writeups/tree/main/hackerholidays/towel_on_the_sunbed" target="_blank" rel="noopener">Open folder &#8599;</a>
+      <a class="btn btn--ghost btn--small sidebar-gh-btn" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/towel_on_the_sunbed/notes.md" target="_blank" rel="noopener">View markdown &#8599;</a>
+    </div>
+  </aside>
+  <article class="reader">
+    <div class="reader__toolbar">
+      <div class="reader__crumb">
+        <span class="tb-label">READING</span>
+        <span>notes.md</span>
+      </div>
+      <a class="btn btn--ghost btn--small" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/towel_on_the_sunbed/notes.md" target="_blank" rel="noopener">Source &#8599;</a>
+    </div>
+    <div class="reader__body">
+      <div class="md-render">
+<h1 id="day-8-towel-on-the-sunbed">Day 8 - Towel on the Sunbed</h1>
+<h2 id="room-httpstryhackmecomroomhh-towelonthesunbed-61271709">Room: <a href="https://tryhackme.com/room/hh-towelonthesunbed-61271709">https://tryhackme.com/room/hh-towelonthesunbed-61271709</a></h2>
+<p>Hello Hackers!</p>
+<p>Welcome to Day 8 of the TryHackMe Hacker Holidays 2026 writeups.</p>
+<p>The initial hints suggest that the application has a time-based check, but the clock is not the only protection in place:</p>
+<blockquote>
+<p><code>The app disagrees, politely, once every 24 hours. Somewhere between his request and the server's clock, there's a gap wide enough to walk a whale through.</code></p>
+<p><code>bro really thinks the clock is the only thing checking him</code></p>
+</blockquote>
+<p>During the initial reconnaissance, we try to create an account using:</p>
+<div class="highlight"><pre><span></span><code>guest:guest123
+</code></pre></div>
+
+<p>The application reports that the username is already taken, confirming that <code>guest</code> is an existing user.</p>
+<p>We create another account using:</p>
+<div class="highlight"><pre><span></span><code>guest123:guest123
+</code></pre></div>
+
+<p>Inspecting the JavaScript source code and reviewing the hints reveals an API endpoint:</p>
+<blockquote>
+<p><code>/dashboard/api/me</code></p>
+</blockquote>
+<p>The session ID can be URL decoded to:</p>
+<blockquote>
+<p><code>s:skYb365MDbbq61daNdLz58uXnlC-CYvT.KursacNrnLBveu+edLpw+4GMN6Z/C+GDRSHWfj+J8uY</code></p>
+</blockquote>
+<p>Reading the hints again reveals:</p>
+<blockquote>
+<p><code>3 Requests at a time --&gt; 150 points --&gt; Vault unlocked</code></p>
+</blockquote>
+<p>The JavaScript shows that the vault status is checked through the <code>/api/me</code> endpoint.</p>
+<p>We intercept the claim request and send it to Burp Suite Repeater. Duplicate the request twice so that there are three identical requests in total.</p>
+<p>Group the three requests together and send them in parallel. Then turn off interception.</p>
+<p>The three requests are processed together before the application’s defence mechanism can prevent the duplicate claims. This allows three rewards to be claimed at once, increasing the balance to 150 points.</p>
+<p>The vault is now unlocked and contains the flag:</p>
+<blockquote>
+<p><code>THM{...}</code></p>
+</blockquote>
+<p>Happy Hacking!</p>
+      </div>
+    </div>
+  </article>
+</div>
+
+</main>
+</body>
+</html>

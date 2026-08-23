@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>overheard_at_breakfast · hackerholidays</title>
+<meta name="description" content="CTF writeup: overheard_at_breakfast (hackerholidays)" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../css/style.css" />
+<link rel="stylesheet" href="../../css/pygments.css" />
+</head>
+<body>
+<div class="blueprint-grid" aria-hidden="true"></div>
+
+<header class="topbar">
+  <div class="topbar__inner">
+    <a class="topbar__brand" href="../../index.html">
+      <span class="brand-mark">CTF</span>
+      <span class="brand-text">Writeups</span>
+    </a>
+    <div class="topbar__spacer"></div>
+    <div class="topbar__actions">
+      <a class="btn btn--ghost btn--small" href="https://aaadarsh1337.github.io/">&#8592; Portfolio</a>
+      <a class="btn btn--ghost btn--small" href="https://github.com/aaadarsh1337/ctf-writeups" target="_blank" rel="noopener">Repo &#8599;</a>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<div class="reader-layout reader-layout--static">
+  <aside class="sidebar">
+    <div class="sidebar__head">
+      <a class="btn btn--ghost btn--small" href="../../index.html">&#8592; All writeups</a>
+    </div>
+    <div class="sidebar__challenge">
+      <p class="tb-label">CHALLENGE</p>
+      <h2>overheard_at_breakfast</h2>
+      <p class="side-path">hackerholidays</p>
+    </div>
+    <div class="sidebar__files">
+      <p class="tb-label">FILES</p>
+      <div class="file-list"><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/overheard_at_breakfast/conversation.png" target="_blank" rel="noopener"><span class="name">conversation.png</span><span class="kind">github</span></a><a class="file-item readable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/overheard_at_breakfast/notes.md" target="_blank" rel="noopener"><span class="name">notes.md</span><span class="kind">md</span></a><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/overheard_at_breakfast/overheard-at-breakfast-1784259780309.zip" target="_blank" rel="noopener"><span class="name">overheard-at-breakfast-1784259780309.zip</span><span class="kind">github</span></a></div>
+    </div>
+    <div class="sidebar__foot">
+      <a class="btn btn--ghost btn--small sidebar-gh-btn" href="https://github.com/aaadarsh1337/ctf-writeups/tree/main/hackerholidays/overheard_at_breakfast" target="_blank" rel="noopener">Open folder &#8599;</a>
+      <a class="btn btn--ghost btn--small sidebar-gh-btn" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/overheard_at_breakfast/notes.md" target="_blank" rel="noopener">View markdown &#8599;</a>
+    </div>
+  </aside>
+  <article class="reader">
+    <div class="reader__toolbar">
+      <div class="reader__crumb">
+        <span class="tb-label">READING</span>
+        <span>notes.md</span>
+      </div>
+      <a class="btn btn--ghost btn--small" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/overheard_at_breakfast/notes.md" target="_blank" rel="noopener">Source &#8599;</a>
+    </div>
+    <div class="reader__body">
+      <div class="md-render">
+<h1 id="day-6-overheard-at-breakfast">Day 6 - Overheard at Breakfast</h1>
+<h2 id="room-httpstryhackmecomroomhh-overheardatbreakfast-6f01793c">Room: <a href="https://tryhackme.com/room/hh-overheardatbreakfast-6f01793c">https://tryhackme.com/room/hh-overheardatbreakfast-6f01793c</a></h2>
+<p>Hello Hackers!</p>
+<p>Welcome to Day 6 of the TryHackMe Hacker Holidays 2026 writeups.</p>
+<p>This is an OSINT challenge.</p>
+<p>We are given the email address:</p>
+<blockquote>
+<p><code>lambobytelotushotel@gmail.com</code></p>
+</blockquote>
+<p>Performing a reverse email lookup on <strong>epoeos.com</strong> reveals a Gravatar account.</p>
+<p>The account starts with a <strong>G</strong>, confirming that it is a Gravatar profile.</p>
+<p>Looking up the email address on Gravatar reveals an account containing a Base64-encoded string:</p>
+<blockquote>
+<p><code>VEhNe1MzY3JlVF9QcjBmaWwzX0g0c19iMzNuX0lkZW50MWZpM2R9</code></p>
+</blockquote>
+<p>Decoding the string reveals the flag:</p>
+<blockquote>
+<p><code>THM{...}</code></p>
+</blockquote>
+<p>Happy Hacking!</p>
+      </div>
+    </div>
+  </article>
+</div>
+
+</main>
+</body>
+</html>

