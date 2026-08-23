@@ -45,7 +45,7 @@ I care more about the work behind the links than hand-rolling every CSS rule.
 ## Main repos
 
 - [ctf-writeups](https://github.com/aaadarsh1337/ctf-writeups) - challenge writeups (source of truth)
-- [CustomTools_cybersec](https://github.com/aaadarsh1337/CustomTools_cybersec) - small tools and automation
+- [security-automation-toolkit](https://github.com/aaadarsh1337/security-automation-toolkit) - small tools and automation
 - Other projects and notes live on my [GitHub profile](https://github.com/aaadarsh1337)
 
 ---
