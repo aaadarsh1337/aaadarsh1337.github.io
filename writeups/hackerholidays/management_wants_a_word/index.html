@@ -125,7 +125,7 @@ select hex(password_value) from logins
 
 <p>This password allowed us to open Vera’s VeraCrypt backup file.</p>
 <p>We opened the backup using:</p>
-<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>cryptsetup<span class="w"> </span>open<span class="w"> </span>--type<span class="w"> </span>tcrypt<span class="w"> </span>--veracrypt<span class="w"> </span><span class="s2">"C/Users/vera/Documents/backup"</span><span class="w"> </span>veracontainer
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>cryptsetup<span class="w"> </span>open<span class="w"> </span>--type<span class="w"> </span>tcrypt<span class="w"> </span>--veracrypt<span class="w"> </span><span class="s2">&quot;C/Users/vera/Documents/backup&quot;</span><span class="w"> </span>veracontainer
 </code></pre></div>
 
 <p>We then created a mount directory and mounted the container as read-only:</p>

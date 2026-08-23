@@ -43,6 +43,13 @@ WRITEUP_NAMES = [
     "README.md", "readme.md", "solution.md", "SOLUTION.md",
 ]
 
+EVENT_ORDER = [
+    "tryhackme",
+    "pwnable_kr",
+    "picoctf",
+    "hackerholidays"
+]
+
 SKIP_DIRS = {".git", ".github", "node_modules", "__pycache__"}
 
 TEXT_EXT = {
@@ -411,7 +418,14 @@ def build(source: Path, out: Path, portfolio_url: str, github_user: str, github_
 
     jump_links = []
     sections_html = []
-    for event in sorted(by_event.keys(), key=str.lower):
+
+    def event_sort_key(name: str):
+        try:
+            return (0, EVENT_ORDER.index(name))
+        except ValueError:
+            return (1, name.lower())
+
+    for event in sorted(by_event.keys(), key=event_sort_key):
         items = by_event[event]
         slug = "sec-" + re.sub(r"[^a-z0-9]+", "-", event.lower()).strip("-")
         jump_links.append(

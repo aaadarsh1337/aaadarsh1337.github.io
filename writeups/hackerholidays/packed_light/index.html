@@ -72,7 +72,7 @@
 </blockquote>
 <p>The cookie values are Base64 encoded and XOR encrypted. The attached script can be used to extract the cookie values from the capture, decode them, and reconstruct the original message.</p>
 <p>The traffic can be isolated in Wireshark using:</p>
-<div class="highlight"><pre><span></span><code>ip.addr == 34.41.103.191 &amp;&amp; http &amp;&amp; http.request.method == "GET"
+<div class="highlight"><pre><span></span><code>ip.addr == 34.41.103.191 &amp;&amp; http &amp;&amp; http.request.method == &quot;GET&quot;
 </code></pre></div>
 
 <p>The attached script processes each cookie individually, reverses the Base64 encoding and XOR encryption, and joins the recovered characters in the correct order.</p>
