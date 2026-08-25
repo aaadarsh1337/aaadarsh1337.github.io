@@ -16,7 +16,7 @@ window.PORTFOLIO_CONFIG = {
     // Repo names to always show first, in the exact order you list them.
     // Everything not listed here follows by most-recently-updated.
     // Example: pinnedRepos: ["my-best-project", "ctf-writeups", "pentest-notes"]
-    pinnedRepos: ["ctf-writeups", "security-automation-toolkit", "picoctf-lab-notes", "tryhackme-lab-notes", "practical-ethical-hacking-notes", "ctf-learning-archive", "cybersecurity-certifications" ]
+    pinnedRepos: ["ctf-writeups", "security-automation-toolkit", "picoctf-lab-notes", "tryhackme-lab-notes", "practical-ethical-hacking-notes", "ctf-learning-archive", "cybersecurity-achievements" ]
   },
 
   // --- Identity -----------------------------------------------------
