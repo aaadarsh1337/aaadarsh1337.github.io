@@ -54,11 +54,11 @@ window.PORTFOLIO_CONFIG = {
     },
     {
       category: "Languages",
-      items: ["Python", "Bash", "C", "SQL"]
+      items: ["Python", "Bash", "C", "SQL", "GoLang"]
     },
     {
       category: "Tools",
-      items: ["Burp Suite", "FFUF", "Gobuster", "nmap", "Wireshark", "Ghidra", "Binary Ninja", "pwntools", "pwndbg"]
+      items: ["Web: Burp Suite, FFUF, Nikto", "Network: nmap, Wireshark", "Binary: Ghidra, Binary Ninja, pwntools, pwndbg", "Forensics: Autopsy, Binwalk"]
     },
     {
       category: "Currently Learning",
