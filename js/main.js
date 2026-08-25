@@ -130,6 +130,51 @@
     });
   }
 
+  function renderAchievements() {
+    const list = document.getElementById("achieveList");
+    if (!list) return;
+    list.innerHTML = "";
+
+    (CFG.achievements || []).forEach(function (item) {
+      const li = document.createElement("li");
+      li.className = "achieve-item";
+
+      const top = document.createElement("div");
+      top.className = "achieve-item__top";
+
+      const title = document.createElement("span");
+      title.className = "achieve-item__title";
+      title.textContent = item.title || "";
+      top.appendChild(title);
+
+      if (item.date) {
+        const date = document.createElement("span");
+        date.className = "achieve-item__date";
+        date.textContent = item.date;
+        top.appendChild(date);
+      }
+      li.appendChild(top);
+
+      if (item.detail) {
+        const detail = document.createElement("p");
+        detail.className = "achieve-item__detail";
+        detail.textContent = item.detail;
+        li.appendChild(detail);
+      }
+
+      if (item.url) {
+        const a = document.createElement("a");
+        a.className = "achieve-item__link";
+        a.href = item.url;
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+        a.textContent = "View proof →";
+        li.appendChild(a);
+      }
+
+      list.appendChild(li);
+    });
+  }
   // ---------------- Certificates ----------------
   function renderCerts() {
     const grid = document.getElementById("certGrid");
@@ -448,6 +493,7 @@
   document.addEventListener("DOMContentLoaded", () => {
     renderProfile();
     renderSkills();
+    renderAchievements();
     renderCerts();
     renderContact();
     initNav();

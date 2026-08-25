@@ -66,9 +66,36 @@ window.PORTFOLIO_CONFIG = {
     }
   ],
 
+  achievements: [
+    {
+      title: "z0d1ak CTF 2026",
+      detail: "404squad - #75 Overall; #13 Human Division",
+      date: "2026",
+      url: "https://github.com/aaadarsh1337/cybersecurity-achievements/tree/main/z0d1ak-ctf"
+    },
+    {
+      title: "Vulnerability disclosure",
+      detail: "Coming soon",
+      date: "2026",
+      url: "hehe"                    // advisory, report, or writeup
+    },
+    {
+      title: "TryHackMe",
+      detail: "Top 2% Global; 100+ Rooms Completed",
+      date: "2026",
+      url: "https://tryhackme.com/p/aaadarsh1337"                               // no link = text only
+    }
+  ],
   // --- Certificates ---------------------------------------------------
   // Duplicate the object below for each certificate. Order = display order.
   certificates: [
+    {
+      name: "z0d1ak CTF",
+      issuer: "z0d1ak",
+      date: "2026",
+      credentialUrl: "https://github.com/aaadarsh1337/cybersecurity-achievements/blob/main/z0d1ak-ctf/z0d1ak-certificate-adarsh-pillai.pdf",                          // verification link (optional)
+      image: "assets/certificate.png"        // drop a real badge into assets/ and point here
+    },
     {
       name: "HACKER HOLIDAYS",
       issuer: "TryHackMe",
