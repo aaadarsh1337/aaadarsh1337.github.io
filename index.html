@@ -71,7 +71,6 @@
         <div class="hero__text">
           <h1 id="heroName">ADARSH PILLAI</h1>
           <p class="hero__tagline" id="heroTagline">Attack to Defend</p>
-          <div class="hero__handles" id="heroHandles"></div>
           <div class="hero__meta">
             <span id="heroLocation">— Location —</span>
             <span class="dim">·</span>
@@ -84,6 +83,9 @@
           <div class="hero__bio" id="heroBio"></div>
           <div class="hero__actions">
             <a class="btn btn--primary" id="resumeBtn" href="#" target="_blank" rel="noopener">Download résumé ↗</a>
+            <button type="button" class="btn btn--ghost" id="linksOpen" aria-expanded="false" aria-controls="linksPanel">
+              Links →
+            </button>
             <a class="btn btn--ghost" href="#contact">Get in touch →</a>
           </div>
         </div>
@@ -196,5 +198,14 @@
 
 <script src="js/config.js"></script>
 <script src="js/main.js"></script>
+<!-- Panel: place once near end of <body>, before scripts -->
+<div class="links-backdrop" id="linksBackdrop" hidden></div>
+<div class="links-panel" id="linksPanel" role="dialog" aria-label="Links" hidden>
+  <div class="links-panel__head">
+    <span class="tb-label">LINKS</span>
+    <button type="button" class="links-panel__close" id="linksClose" aria-label="Close">x</button>
+  </div>
+  <div class="links-panel__list" id="linksPanelList"></div>
+</div>
 </body>
 </html>

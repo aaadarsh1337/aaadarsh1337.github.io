@@ -29,20 +29,27 @@ window.PORTFOLIO_CONFIG = {
     currentFocus: "Offensive",
     avatar: "assets/avatar.jpg",                   // EDIT ME: swap the file or path
     // All your platform handles — shown as chips under the tagline.
-    // Add / remove freely. Leave url blank if you don't want it clickable.
-    handles: [
-      { platform: "GitHub",   handle: "aaadarsh1337",        url: "https://github.com/aaadarsh1337" },
-      { platform: "PicoCTF",  handle: "jackthereaper1337",   url: "https://learn.cylabacademy.org/users/jackthereaper1337" },
-      { platform: "TryHackMe", handle: "aaadarsh1337", url: "https://tryhackme.com/p/aaadarsh1337" },
-      { platform: "CTFtime",   handle: "aaadarsh1337", url: "https://ctftime.org/user/265799"}
-    ],
+    // Add / remove freely. Leave url blank if you don't want it clickable
+
     bio: [
+      "",
       "I’m aaadarsh1337 | jackthereaper1337 | Hasher2009, a cybersecurity enthusiast and CTF player who loves turning ideas into working tools. I’m especially interested in penetration testing, reverse engineering, and building custom security utilities—from quick scripts for CTF challenges to more structured tools for learning and automation.",
       "Most of what I do is hands-on: I break down problems, explore how systems behave, and document what I learn along the way—whether it’s through clean code, notes, or practical experiments. My goal is to keep leveling up by tackling real challenges, studying the “why” behind the behavior, and continuously improving my workflow.",
       "On this portfolio, you’ll find projects and repositories focused on security tooling, CTF write-ups, and cybersec learning notes, plus the small experiments that help me get better every step of the way."
     ],
     resumeUrl: "https://github.com"   // EDIT ME: link to a hosted PDF resume. Leave blank and the button hides itself.
   },
+// --- Links (button-based reveal) --------------------------------
+  linkPanel: [
+    { label: "GitHub",      detail: "@aaadarsh1337",  url: "https://github.com/aaadarsh1337" },
+    { label: "TryHackMe", detail: "THM", url: "https://tryhackme.com/p/aaadarsh1337" },
+    { label: "PicoCTF", detail: "PICO", url: "https://learn.cylabacademy.org/users/jackthereaper1337" },
+    { label: "pwn.college",     detail: "PWN", url: "https://pwn.college/hacker/192643" },
+    { label: "CTFtime",     detail: "CTFs",  url: "https://ctftime.org/user/265799" },
+    { label: "LinkedIn",    detail: "Adarsh Pillai",  url: "https://linkedin.com/in/aaadarsh1337" },
+    { label: "Discord",     detail: "Hit Me Up",       url: "https://discord.com/users/15248404499301847090" },
+    { label: "Email",       detail: "GMail", url: "mailto:adarshpillai1337@gmail.com" }
+  ],
 
   // --- Skillset (button-based reveal) --------------------------------
   // Add or remove categories/items freely — the buttons and chips are
@@ -123,7 +130,7 @@ window.PORTFOLIO_CONFIG = {
   contact: {
     email: "adarshpillai1337@gmail.com",        // EDIT ME
     linkedin: "https://linkedin.com/in/aaadarsh1337",        // leave blank to hide
-    extraLinks: [{ label: "Twitter / X", url: "https://x.com/aaadarsh1337" }]                   // e.g. [{ label: "Twitter / X", url: "https://..." }]
+    extraLinks: [{ label: "Discord", url: "https://discord.com/users/15248404499301847090" },{ label: "Twitter / X", url: "https://x.com/aaadarsh1337" }]                   // e.g. [{ label: "Twitter / X", url: "https://..." }]
   }
 
 };

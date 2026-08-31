@@ -300,6 +300,113 @@ main {
   }
 }
 
+/* ---------- Links panel ---------- */
+.links-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 10, 24, 0.65);
+  z-index: 200;
+}
+
+.links-panel {
+  position: fixed;
+  z-index: 210;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(400px, calc(100vw - 32px));
+  max-height: min(70vh, 520px);
+  overflow: auto;
+  background: var(--bg-panel);
+  border: 1px solid var(--line-bright);
+  padding: 16px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+}
+
+.links-panel__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--line);
+}
+
+.links-panel__close {
+  background: none;
+  border: 1px solid var(--line);
+  color: var(--text-muted);
+  font-family: var(--mono);
+  font-size: 14px;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  line-height: 1;
+}
+.links-panel__close:hover {
+  border-color: var(--cyan);
+  color: var(--cyan);
+}
+
+.links-panel__list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.links-panel__item {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 10px;
+  align-items: center;
+  padding: 12px 12px;
+  border: 1px solid var(--line);
+  text-decoration: none;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 13px;
+  background: rgba(10, 17, 40, 0.35);
+}
+.links-panel__item:hover {
+  border-color: var(--cyan);
+  color: var(--cyan);
+  text-decoration: none;
+}
+
+.links-panel__label {
+  font-weight: 600;
+  color: var(--cyan);
+}
+.links-panel__item:hover .links-panel__label {
+  color: var(--amber);
+}
+
+.links-panel__detail {
+  color: var(--text-dim);
+  font-size: 11px;
+  justify-self: end;
+}
+
+.links-panel__arrow {
+  color: var(--text-dim);
+  font-size: 12px;
+}
+
+@media (max-width: 760px) {
+  .links-panel {
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    transform: none;
+    width: 100%;
+    max-height: 75vh;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
+  }
+}
 /* ---------- Cards & grids a bit roomier ---------- */
 .repo-grid {
   display: grid;
@@ -351,28 +458,6 @@ main {
   padding: 12px 16px;
 }
 
-.btn--writeups {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  margin: 4px 0 18px;
-  font-family: var(--mono);
-  font-size: 13px;
-  padding: 11px 16px;
-  border: 1px solid var(--cyan);
-  background: rgba(111, 203, 235, 0.1);
-  color: var(--cyan);
-  text-decoration: none;
-  transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
-}
-
-.btn--writeups:hover {
-  transform: translateY(-2px);
-  background: rgba(111, 203, 235, 0.1);
-  border-color: #8fd9f0;
-  color: #8fd9f0;
-  text-decoration: none;
-}
 .btn-writeups__tag {
   background: var(--cyan);
   color: #0A1128;
@@ -480,13 +565,35 @@ main {
 .btn--primary:hover {
   background: #f5b878;
 }
+
+.btn--ghost {
+    background: #b48ead;
+    border-color: #b48ead;
+    color: #1a1206;
+    font-weight: 600;
+}
+
 .btn--ghost:hover {
-  border-color: var(--cyan);
-  color: var(--cyan);
+    background: #bf9fb9;
+    transform: translateY(-2px);
+    text-decoration: none;
 }
 .btn--small {
   padding: 6px 12px;
   font-size: 12px;
+}
+
+.btn--writeups {
+    background: #a3be8c;
+    border-color: #a3be8c;
+    color: #1a1206;
+    font-weight: 600;
+}
+
+.btn--writeups:hover {
+    background: #bf9fb9;
+    transform: translateY(-2px);
+    text-decoration: none;
 }
 
 /* ---------- Skillset (category cards) ---------- */
@@ -1043,4 +1150,30 @@ main {
     font-size: 12px;
     line-height: 1.45;
   }
+}
+
+#linksOpen.btn {
+    border-color: #8fbcbb;
+    background: #8fbcbb;
+    color: #0A1128;
+    font-weight: 600;
+}
+
+#linksOpen.btn:hover {
+    background:  #5e81ac;
+    border-color: #5e81ac;
+    color: #0A1128;
+}
+
+#linksOpen.btn {
+    border-color: #8fbcbb;
+    background: #8fbcbb;
+    color: #0A1128;
+    font-weight: 600;
+}
+
+#linksOpen.btn:hover {
+    background:  #5e81ac;
+    border-color: #5e81ac;
+    color: #0A1128;
 }

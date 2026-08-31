@@ -72,20 +72,6 @@
     document.getElementById("avatarImg").src = p.avatar;
     document.getElementById("avatarImg").alt = p.name;
 
-    const handlesEl = document.getElementById("heroHandles");
-    handlesEl.innerHTML = "";
-    (p.handles || []).forEach((h) => {
-      const chip = document.createElement(h.url ? "a" : "span");
-      chip.className = "handle-chip";
-      if (h.url) {
-        chip.href = h.url;
-        chip.target = "_blank";
-        chip.rel = "noopener";
-      }
-      chip.innerHTML = `<span class="platform">${escapeHtml(h.platform)}</span> <span class="name">${escapeHtml(h.handle)}</span>`;
-      handlesEl.appendChild(chip);
-    });
-
     const bioEl = document.getElementById("heroBio");
     bioEl.innerHTML = "";
     (p.bio || []).forEach((para) => {
@@ -100,6 +86,57 @@
     } else {
       resumeBtn.style.display = "none";
     }
+  }
+  function renderLinkPanel() {
+    const list = document.getElementById("linksPanelList");
+    if (!list) return;
+    list.innerHTML = "";
+
+    (CFG.linkPanel || []).forEach(function (item) {
+      const a = document.createElement("a");
+      a.className = "links-panel__item";
+      a.href = item.url || "#";
+      if (item.url && item.url.indexOf("mailto:") !== 0) {
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+      }
+      a.innerHTML =
+        '<span class="links-panel__label">' + escapeHtml(item.label || "") + "</span>" +
+        '<span class="links-panel__detail">' + escapeHtml(item.detail || "") + "</span>" +
+        '<span class="links-panel__arrow">↗</span>';
+      list.appendChild(a);
+    });
+  }
+// Links Panel Config
+  function initLinkPanel() {
+    const openBtn = document.getElementById("linksOpen");
+    const closeBtn = document.getElementById("linksClose");
+    const panel = document.getElementById("linksPanel");
+    const backdrop = document.getElementById("linksBackdrop");
+    if (!openBtn || !panel || !backdrop) return;
+
+    function open() {
+      panel.hidden = false;
+      backdrop.hidden = false;
+      openBtn.setAttribute("aria-expanded", "true");
+      document.body.style.overflow = "hidden";
+    }
+    function close() {
+      panel.hidden = true;
+      backdrop.hidden = true;
+      openBtn.setAttribute("aria-expanded", "false");
+      document.body.style.overflow = "";
+    }
+
+    openBtn.addEventListener("click", function () {
+      if (panel.hidden) open();
+      else close();
+    });
+    closeBtn.addEventListener("click", close);
+    backdrop.addEventListener("click", close);
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && !panel.hidden) close();
+    });
   }
 
   // ---------------- Skillset ----------------
@@ -498,5 +535,7 @@
     renderContact();
     initNav();
     loadRepos();
+    renderLinkPanel();
+    initLinkPanel();
   });
 })();
