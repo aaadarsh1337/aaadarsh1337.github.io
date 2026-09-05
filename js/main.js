@@ -74,10 +74,9 @@
 
     const bioEl = document.getElementById("heroBio");
     bioEl.innerHTML = "";
-    (p.bio || []).filter((para) => para && para.trim()).forEach((para, i) => {
+    (p.bio || []).filter((para) => para && para.trim()).forEach((para) => {
       const el = document.createElement("p");
       el.textContent = para;
-      if (i === 0) el.className = "bio-lead";
       bioEl.appendChild(el);
     });
 
@@ -620,7 +619,14 @@
       const marker = window.scrollY + window.innerHeight * 0.28;
       let current = sections[0];
       for (const s of sections) {
-        if (s.offsetTop <= marker) current = s;
+        // Absolute top (section may not be a direct child of body).
+        const top = s.getBoundingClientRect().top + window.scrollY;
+        if (top <= marker) current = s;
+      }
+      // At the very bottom, always lock to the last section (contact).
+      const bottom = window.innerHeight + window.scrollY;
+      if (bottom >= document.documentElement.scrollHeight - 4) {
+        current = sections[sections.length - 1];
       }
       if (!current) return;
       const id = current.id;
@@ -629,6 +635,35 @@
 
     window.addEventListener("scroll", updateActive, { passive: true });
     updateActive();
+  }
+
+  // ---------------- Easter egg: secret flag ----------------
+  function initEasterEgg() {
+    const foot = document.querySelector(".rail__foot");
+    if (!foot) return;
+    const flag = "1337{wh0_ru_but_w3ll_pl4y3d}";
+    let clicks = 0;
+    let timer = null;
+    foot.addEventListener("click", () => {
+      clicks++;
+      clearTimeout(timer);
+      timer = setTimeout(() => (clicks = 0), 1600);
+      if (clicks >= 3) {
+        clicks = 0;
+        const cur = foot.textContent;
+        foot.textContent = flag;
+        foot.style.color = "var(--amber)";
+        foot.style.cursor = "default";
+        console.log("%cFLAG FOUND%c " + flag,
+          "background:#F0A34C;color:#0B0F16;font-weight:bold;padding:2px 6px;border-radius:2px",
+          "color:#6FA9C4;font-family:monospace;font-size:13px");
+        setTimeout(() => {
+          foot.textContent = cur;
+          foot.style.color = "";
+        }, 5000);
+      }
+    });
+    foot.setAttribute("title", "psst… try three quick clicks");
   }
 
   // ---------------- Init ----------------
@@ -642,5 +677,6 @@
     loadRepos();
     renderLinkPanel();
     initLinkPanel();
+    initEasterEgg();
   });
 })();

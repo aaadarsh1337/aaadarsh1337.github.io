@@ -536,8 +536,8 @@ a.file-item.unreadable .kind { color: var(--coral); }
 }
 
 @media (max-width: 560px) {
-  .topbar__inner { gap: 10px; padding: 10px 14px; flex-wrap: wrap; }
-  .topbar__actions { flex-wrap: wrap; gap: 6px; }
-  .topbar__actions .btn { padding: 6px 10px; font-size: 11px; }
+  .topbar__inner { gap: 8px; padding: 9px 12px; flex-wrap: wrap; }
+  .topbar__actions { flex-wrap: wrap; gap: 5px; width: 100%; justify-content: flex-start; }
+  .topbar__actions .btn { padding: 5px 9px; font-size: 11px; flex: 1 1 auto; text-align: center; justify-content: center; }
   .writeup-pager .pager-label, .writeup-pager .pager-event { font-size: 10px; }
 }

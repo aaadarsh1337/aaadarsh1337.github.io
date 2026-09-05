@@ -330,7 +330,11 @@ main {
   font-size: 11px;
   color: var(--faint);
   letter-spacing: 0.02em;
+  cursor: pointer;
+  user-select: none;
+  transition: color var(--dur) var(--ease);
 }
+.rail__foot:hover { color: var(--dim); }
 
 .rail__toggle {
   display: none;
@@ -402,10 +406,9 @@ main {
   margin: 0 0 14px;
   color: var(--muted);
   max-width: 64ch;
-  font-size: 16px;
-  line-height: 1.7;
+  font-size: 16.5px;
+  line-height: 1.75;
 }
-.hero__bio p.bio-lead { color: var(--ink); font-size: 17px; }
 
 .hero__actions {
   display: flex;
@@ -844,8 +847,8 @@ main {
 .links-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(8, 11, 16, 0.6);
-  backdrop-filter: blur(3px);
+  background: rgba(6, 9, 14, 0.78);
+  backdrop-filter: blur(2px);
   z-index: 200;
 }
 .links-panel {
@@ -857,8 +860,9 @@ main {
   width: min(420px, calc(100vw - 32px));
   max-height: min(72vh, 560px);
   overflow: auto;
-  background: var(--panel-2);
+  background: var(--panel);
   border: 1px solid var(--line-bright);
+  border-top: 2px solid var(--amber);
   border-radius: var(--radius);
   padding: 20px;
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
@@ -938,8 +942,9 @@ main {
   max-height: 94vh;
   display: flex;
   flex-direction: column;
-  background: var(--panel-2);
+  background: var(--panel);
   border: 1px solid var(--line-bright);
+  border-top: 2px solid var(--amber);
   border-radius: var(--radius);
   box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55);
   animation: sheetIn 0.22s var(--ease) both;
@@ -1146,17 +1151,19 @@ main {
   .rail__toggle {
     display: flex;
     flex-direction: column;
+    align-items: center;
     justify-content: center;
-    gap: 4px;
-    width: 36px;
-    height: 36px;
+    gap: 5px;
+    width: 40px;
+    height: 40px;
     background: var(--panel);
     border: 1px solid var(--line);
     cursor: pointer;
     margin-left: auto;
     border-radius: var(--radius);
+    flex-shrink: 0;
   }
-  .rail__toggle span { height: 2px; background: var(--amber); margin: 0 8px; }
+  .rail__toggle span { display: block; height: 2px; width: 18px; background: var(--amber); }
   .hero { flex-direction: column; gap: 32px; }
   .hero__portrait { width: 128px; height: 128px; }
 }
