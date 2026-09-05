@@ -23,7 +23,7 @@ window.PORTFOLIO_CONFIG = {
   profile: {
     name: "ADARSH PILLAI",                                   // EDIT ME — full name
     handle: "aaadarsh1337",
-    tagline: "Cybersecurity enthusiast · CTF player · Code tinkerer",  // EDIT ME
+    tagline: "Offensive security · reverse engineering · CTF",  // EDIT ME
     location: "India",                                         // EDIT ME
     // Short phrase for the top-left LOC / FOCUS boxes and the hero meta line
     currentFocus: "Offensive",
@@ -39,7 +39,8 @@ window.PORTFOLIO_CONFIG = {
     ],
     resumeUrl: "https://github.com"   // EDIT ME: link to a hosted PDF resume. Leave blank and the button hides itself.
   },
-// --- Links (button-based reveal) --------------------------------
+// --- Links (button-based reveal) -----------------------------------
+  // All profile, social, and platform handles. Shown in the "Links" panel.
   linkPanel: [
     { label: "GitHub",      detail: "@aaadarsh1337",  url: "https://github.com/aaadarsh1337" },
     { label: "TryHackMe", detail: "THM", url: "https://tryhackme.com/p/aaadarsh1337" },
@@ -48,6 +49,7 @@ window.PORTFOLIO_CONFIG = {
     { label: "CTFtime",     detail: "CTFs",  url: "https://ctftime.org/user/265799" },
     { label: "LinkedIn",    detail: "Adarsh Pillai",  url: "https://linkedin.com/in/aaadarsh1337" },
     { label: "Discord",     detail: "Hit Me Up",       url: "https://discord.com/users/15248404499301847090" },
+    { label: "Twitter / X", detail: "@aaadarsh1337",   url: "https://x.com/aaadarsh1337" },
     { label: "Email",       detail: "GMail", url: "mailto:adarshpillai1337@gmail.com" }
   ],
 
@@ -84,7 +86,7 @@ window.PORTFOLIO_CONFIG = {
       title: "Vulnerability disclosure",
       detail: "Coming soon",
       date: "2026",
-      url: "hehe"                    // advisory, report, or writeup
+      url: ""                    // advisory, report, or writeup
     },
     {
       title: "TryHackMe",
@@ -127,10 +129,12 @@ window.PORTFOLIO_CONFIG = {
   ],
 
   // --- Contact (display only — no form) -------------------------------
+  // Only genuine "reach me" methods live here. Social/profile links are in
+  // linkPanel (shown via the "Links" button) to keep the two concerns separate.
   contact: {
     email: "adarshpillai1337@gmail.com",        // EDIT ME
     linkedin: "https://linkedin.com/in/aaadarsh1337",        // leave blank to hide
-    extraLinks: [{ label: "Discord", url: "https://discord.com/users/15248404499301847090" },{ label: "Twitter / X", url: "https://x.com/aaadarsh1337" }]                   // e.g. [{ label: "Twitter / X", url: "https://..." }]
+    discord: "https://discord.com/users/15248404499301847090" // leave blank to hide
   }
 
 };

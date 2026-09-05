@@ -3,154 +3,185 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Portfolio</title>
-<meta name="description" content="Cybersecurity portfolio and live GitHub repository index." />
+<title>Adarsh Pillai — Cybersecurity Portfolio</title>
+<meta name="description" content="Adarsh Pillai (aaadarsh1337): offensive-security enthusiast and CTF player. Penetration testing, reverse engineering, binary exploitation, and security tooling — with live GitHub projects and CTF writeups." />
+<meta name="author" content="Adarsh Pillai" />
+<meta name="theme-color" content="#0E1117" />
+<link rel="canonical" href="https://aaadarsh1337.github.io/" />
 
-<!-- Fonts: IBM Plex (structure) + JetBrains Mono (nerd/code) -->
+<!-- Open Graph -->
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Adarsh Pillai — Cybersecurity Portfolio" />
+<meta property="og:description" content="Offensive security, reverse engineering, and security tooling — CTF writeups and live projects." />
+<meta property="og:url" content="https://aaadarsh1337.github.io/" />
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Adarsh Pillai — Cybersecurity Portfolio" />
+<meta name="twitter:description" content="Offensive security, reverse engineering, and security tooling." />
+
+<!-- Favicon (inline SVG, no binary asset needed) -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230E1117'/%3E%3Crect x='13' y='4' width='6' height='24' fill='%23F0A34C'/%3E%3Crect x='4' y='13' width='24' height='6' fill='%23F0A34C'/%3E%3Crect x='14' y='6' width='4' height='20' fill='%230E1117'/%3E%3Crect x='6' y='14' width='20' height='4' fill='%230E1117'/%3E%3C/svg%3E" />
+
+<!-- Fonts: Space Grotesk (display) + Inter (body) + JetBrains Mono (data/code) -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
-<!-- Markdown rendering -->
+<!-- Markdown rendering + syntax highlighting (theme styled locally to match) -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.0/marked.min.js"></script>
-<!-- Syntax highlighting -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+<!-- Structured data (Person) for SEO -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "Adarsh Pillai",
+  "alternateName": "aaadarsh1337",
+  "url": "https://aaadarsh1337.github.io/",
+  "jobTitle": "Cybersecurity Enthusiast",
+  "description": "Offensive-security enthusiast and CTF player focused on penetration testing, reverse engineering, and security tooling.",
+  "knowsAbout": ["Penetration Testing", "Reverse Engineering", "Binary Exploitation", "OSINT", "Web Exploitation"],
+  "sameAs": [
+    "https://github.com/aaadarsh1337",
+    "https://linkedin.com/in/aaadarsh1337",
+    "https://tryhackme.com/p/aaadarsh1337",
+    "https://ctftime.org/user/265799",
+    "https://x.com/aaadarsh1337"
+  ]
+}
+</script>
 
 <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
 
-<!-- Fixed grid backdrop -->
-<div class="blueprint-grid" aria-hidden="true"></div>
+<a class="skip-link" href="#about">Skip to content</a>
 
-<!-- Corner brand / nav panel -->
-<header class="titleblock" id="titleblock">
-  <button class="titleblock__toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false">
-    <span></span><span></span><span></span>
-  </button>
-  <div class="titleblock__grid">
-    <div class="tb-cell tb-cell--name">
-      <span class="tb-label">NAME</span>
-      <span class="tb-value" id="tbName">—</span>
-    </div>
-    <div class="tb-cell tb-cell--handle">
-      <span class="tb-label">HANDLE</span>
-      <span class="tb-value" id="tbHandle">—</span>
-    </div>
-    <div class="tb-cell tb-cell--focus">
-      <span class="tb-label">FOCUS</span>
-      <span class="tb-value" id="tbFocus">—</span>
-    </div>
-    <div class="tb-cell tb-cell--loc">
-      <span class="tb-label">LOC</span>
-      <span class="tb-value" id="tbLoc">—</span>
+<!-- Schematic lab-grid backdrop -->
+<div class="lab-grid" aria-hidden="true"></div>
+
+<!-- Fixed identity rail -->
+<header class="rail" id="rail">
+  <p class="rail__brand">aaadarsh1337</p>
+  <div class="rail__identity">
+    <p class="rail__name" id="rbName">ADARSH PILLAI</p>
+    <p class="rail__handle" id="rbHandle">@aaadarsh1337</p>
+    <div class="rail__meta">
+      <div class="rail__meta-row"><span class="k">Focus</span><span class="v" id="rbFocus">—</span></div>
+      <div class="rail__meta-row"><span class="k">Loc</span><span class="v" id="rbLoc">—</span></div>
     </div>
   </div>
-  <nav class="titleblock__nav" id="siteNav">
-    <a href="#about" data-nav="about">01 About</a>
-    <a href="#skillset" data-nav="skillset">02 Skillset</a>
-    <a href="#achievements" data-nav="achievements">03 Achievements</a>
-    <a href="#repositories" data-nav="repositories">04 Repositories</a>
-    <a href="#certificates" data-nav="certificates">05 Certificates</a>
-    <a href="#contact" data-nav="contact">06 Contact</a>
+  <nav class="rail__nav" id="siteNav" aria-label="Primary">
+    <a href="#about" data-nav="about"><span class="num">01</span>About</a>
+    <a href="#skillset" data-nav="skillset"><span class="num">02</span>Skillset</a>
+    <a href="#achievements" data-nav="achievements"><span class="num">03</span>Achievements</a>
+    <a href="#repositories" data-nav="repositories"><span class="num">04</span>Repositories</a>
+    <a href="#certificates" data-nav="certificates"><span class="num">05</span>Certificates</a>
+    <a href="#contact" data-nav="contact"><span class="num">06</span>Contact</a>
   </nav>
+  <button class="rail__toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="siteNav">
+    <span></span><span></span><span></span>
+  </button>
+  <p class="rail__foot">pwn for life</p>
 </header>
 
 <main>
 
-  <!-- FIG 01 — ABOUT / HERO -->
-  <section class="sheet" id="about" data-fig="01">
+  <!-- 01 · ABOUT / HERO -->
+  <section class="sheet" id="about">
     <div class="sheet__inner">
-      <p class="fig-label">FIG. 01 — ABOUT</p>
       <div class="hero">
         <div class="hero__portrait">
-          <img id="avatarImg" src="assets/avatar.jpg" alt="Portrait" />
-          <div class="hero__portrait-frame" aria-hidden="true"></div>
+          <img id="avatarImg" src="assets/avatar.jpg" alt="Portrait of Adarsh Pillai" width="176" height="176" decoding="async" />
         </div>
         <div class="hero__text">
+          <p class="fig-label">01 · About</p>
           <h1 id="heroName">ADARSH PILLAI</h1>
           <p class="hero__tagline" id="heroTagline">Attack to Defend</p>
           <div class="hero__meta">
             <span id="heroLocation">— Location —</span>
-            <span class="dim">·</span>
+            <span class="sep">/</span>
             <span id="heroFocus">— Current focus —</span>
           </div>
-          <a class="btn btn--writeups" href="/writeups/">
-                      <span class="btn-writeups__tag">CTF</span>
-                      Read my writeups →
-                    </a>
           <div class="hero__bio" id="heroBio"></div>
           <div class="hero__actions">
-            <a class="btn btn--primary" id="resumeBtn" href="#" target="_blank" rel="noopener">Download résumé ↗</a>
+            <a class="btn btn--primary" href="/writeups/">
+              Read my CTF writeups <span class="ext">→</span>
+            </a>
+            <a class="btn btn--ghost" id="resumeBtn" href="#" target="_blank" rel="noopener">Résumé <span class="ext">↗</span></a>
             <button type="button" class="btn btn--ghost" id="linksOpen" aria-expanded="false" aria-controls="linksPanel">
-              Links →
+              Links <span class="ext">→</span>
             </button>
-            <a class="btn btn--ghost" href="#contact">Get in touch →</a>
+            <a class="btn btn--ghost" href="#contact">Get in touch <span class="ext">→</span></a>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <div class="dim-rule" aria-hidden="true"></div>
+  <div class="reg-rule" aria-hidden="true"></div>
 
-  <!-- FIG 02 — SKILLSET -->
-  <section class="sheet" id="skillset" data-fig="02">
+  <!-- 02 · SKILLSET -->
+  <section class="sheet" id="skillset">
     <div class="sheet__inner">
-      <p class="fig-label">FIG. 02 — SKILLSET</p>
+      <p class="fig-label">02 · Skillset</p>
       <h2 class="sheet__title">What I work with</h2>
-      <p class="sheet__hint">Core areas and the tools I use in them.</p>
+      <p class="sheet__hint">Core areas of security and the tools I use to practice them.</p>
       <div class="skill-grid" id="skillGrid"></div>
     </div>
   </section>
 
-  <!-- FIG 03 — ACHIEVEMENTS -->
-  <section class="sheet" id="achievements" data-fig="03">
+  <!-- 03 · ACHIEVEMENTS -->
+  <section class="sheet" id="achievements">
     <div class="sheet__inner">
-      <p class="fig-label">FIG. 03 — ACHIEVEMENTS</p>
+      <p class="fig-label">03 · Achievements</p>
       <h2 class="sheet__title">Highlights</h2>
       <p class="sheet__hint">CTFs, disclosures, and other results worth showing.</p>
       <ul class="achieve-list" id="achieveList"></ul>
     </div>
   </section>
 
-  <!-- FIG 04 — REPOSITORIES -->
-  <section class="sheet" id="repositories" data-fig="03">
+  <!-- 04 · REPOSITORIES -->
+  <section class="sheet" id="repositories">
     <div class="sheet__inner">
-      <p class="fig-label">FIG. 04 — REPOSITORIES</p>
+      <p class="fig-label">04 · Repositories</p>
       <h2 class="sheet__title">Live from GitHub</h2>
-      <p class="sheet__hint" id="repoStatus">&gt; fetching repository index_</p>
+      <p class="sheet__hint status-line" id="repoStatus">&gt; fetching repository index&hellip;</p>
       <div class="repo-grid" id="repoGrid"></div>
     </div>
   </section>
 
-  <div class="dim-rule" aria-hidden="true"></div>
+  <div class="reg-rule" aria-hidden="true"></div>
 
-  <!-- FIG 05 — CERTIFICATES -->
-  <section class="sheet" id="certificates" data-fig="04">
+  <!-- 05 · CERTIFICATES -->
+  <section class="sheet" id="certificates">
     <div class="sheet__inner">
-      <p class="fig-label">FIG. 05 — CERTIFICATES</p>
+      <p class="fig-label">05 · Certificates</p>
       <h2 class="sheet__title">Certificate library</h2>
-      <p class="sheet__hint">Copies uploaded on GitHub (cybersecurity-achievements) in case link are unavailable</p>
+      <p class="sheet__hint">Copies hosted on GitHub (cybersecurity-achievements) in case original links are unavailable.</p>
       <div class="cert-grid" id="certGrid"></div>
     </div>
   </section>
 
-  <div class="dim-rule" aria-hidden="true"></div>
+  <div class="reg-rule" aria-hidden="true"></div>
 
-  <!-- FIG 06 — CONTACT -->
-  <section class="sheet" id="contact" data-fig="05">
+  <!-- 06 · CONTACT -->
+  <section class="sheet" id="contact">
     <div class="sheet__inner">
-      <p class="fig-label">FIG. 06 — CONTACT</p>
+      <p class="fig-label">06 · Contact</p>
       <h2 class="sheet__title">Get in touch</h2>
-      <p class="sheet__hint">Find me on these platforms.</p>
+      <p class="sheet__hint">Reach me directly. For my other profiles and platforms, open <button type="button" id="contactLinksBtn" class="btn btn--ghost btn--small">Links</button>.</p>
       <div class="contact-list" id="contactList"></div>
     </div>
   </section>
 
   <footer class="site-footer">
-    <p class="footer-note">pwn for life</p>
+    <p class="footer-note">
+      <span>Adarsh Pillai — cybersecurity portfolio</span>
+      <span>last updated 2026</span>
+    </p>
   </footer>
 
 </main>
@@ -161,17 +192,17 @@
   <div class="filesheet__panel" role="dialog" aria-modal="true" aria-label="File viewer">
     <div class="filesheet__header">
       <div class="filesheet__breadcrumb">
-        <span class="tb-label">REPO</span><span id="fsRepo">—</span>
-        <span class="tb-label">PATH</span><span id="fsPath">—</span>
+        <span class="tb-label">Repo</span><span id="fsRepo">—</span>
+        <span class="tb-label">Path</span><span id="fsPath">—</span>
       </div>
       <button class="filesheet__close" id="fsClose" aria-label="Close">×</button>
     </div>
     <div class="filesheet__body" id="fsBody">
-      <p class="dim">Loading file_</p>
+      <p class="dim">Loading file&hellip;</p>
     </div>
     <div class="filesheet__footer">
       <span class="dim" id="fsMeta"></span>
-      <a id="fsGithubLink" class="btn btn--ghost btn--small" href="#" target="_blank" rel="noopener">Open on GitHub ↗</a>
+      <a id="fsGithubLink" class="btn btn--ghost btn--small" href="#" target="_blank" rel="noopener">Open on GitHub <span class="ext">↗</span></a>
     </div>
   </div>
 </div>
@@ -182,27 +213,28 @@
   <div class="filesheet__panel" role="dialog" aria-modal="true" aria-label="Repository files">
     <div class="filesheet__header">
       <div class="filesheet__breadcrumb">
-        <span class="tb-label">REPO</span><span id="tsRepo">—</span>
+        <span class="tb-label">Repo</span><span id="tsRepo">—</span>
       </div>
       <button class="filesheet__close" id="tsClose" aria-label="Close">×</button>
     </div>
     <div class="filesheet__body" id="tsBody">
-      <p class="dim">Loading file tree_</p>
+      <p class="dim">Loading file tree&hellip;</p>
     </div>
     <div class="filesheet__footer">
-      <span class="dim">Files open inline · unreadable types redirect to GitHub</span>
-      <a id="tsGithubLink" class="btn btn--ghost btn--small" href="#" target="_blank" rel="noopener">View repo on GitHub ↗</a>
+      <span class="dim">Files open inline · other types redirect to GitHub</span>
+      <a id="tsGithubLink" class="btn btn--ghost btn--small" href="#" target="_blank" rel="noopener">View repo on GitHub <span class="ext">↗</span></a>
     </div>
   </div>
 </div>
 
 <script src="js/config.js"></script>
 <script src="js/main.js"></script>
-<!-- Panel: place once near end of <body>, before scripts -->
+
+<!-- Links panel -->
 <div class="links-backdrop" id="linksBackdrop" hidden></div>
 <div class="links-panel" id="linksPanel" role="dialog" aria-label="Links" hidden>
   <div class="links-panel__head">
-    <span class="tb-label">LINKS</span>
+    <span class="tb-label">Links</span>
     <button type="button" class="links-panel__close" id="linksClose" aria-label="Close">x</button>
   </div>
   <div class="links-panel__list" id="linksPanelList"></div>

@@ -3,16 +3,18 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>packed_light · hackerholidays</title>
-<meta name="description" content="CTF writeup: packed_light (hackerholidays)" />
+<title>Packed Light · hackerholidays</title>
+<meta name="description" content="CTF writeup: Packed Light (hackerholidays)" />
+<meta name="theme-color" content="#0E1117" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230E1117'/%3E%3Crect x='13' y='4' width='6' height='24' fill='%23F0A34C'/%3E%3Crect x='4' y='13' width='24' height='6' fill='%23F0A34C'/%3E%3Crect x='14' y='6' width='4' height='20' fill='%230E1117'/%3E%3Crect x='6' y='14' width='20' height='4' fill='%230E1117'/%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../../css/style.css" />
 <link rel="stylesheet" href="../../css/pygments.css" />
 </head>
 <body>
-<div class="blueprint-grid" aria-hidden="true"></div>
+<div class="lab-grid" aria-hidden="true"></div>
 
 <header class="topbar">
   <div class="topbar__inner">
@@ -22,6 +24,7 @@
     </a>
     <div class="topbar__spacer"></div>
     <div class="topbar__actions">
+      <a class="btn btn--ghost btn--small" href="../../index.html">&#8592; All writeups</a>
       <a class="btn btn--ghost btn--small" href="https://aaadarsh1337.github.io/">&#8592; Portfolio</a>
       <a class="btn btn--ghost btn--small" href="https://github.com/aaadarsh1337/ctf-writeups" target="_blank" rel="noopener">Repo &#8599;</a>
     </div>
@@ -32,12 +35,9 @@
 
 <div class="reader-layout reader-layout--static">
   <aside class="sidebar">
-    <div class="sidebar__head">
-      <a class="btn btn--ghost btn--small" href="../../index.html">&#8592; All writeups</a>
-    </div>
     <div class="sidebar__challenge">
       <p class="tb-label">CHALLENGE</p>
-      <h2>packed_light</h2>
+      <h2>Packed Light</h2>
       <p class="side-path">hackerholidays</p>
     </div>
     <div class="sidebar__files">
@@ -72,7 +72,7 @@
 </blockquote>
 <p>The cookie values are Base64 encoded and XOR encrypted. The attached script can be used to extract the cookie values from the capture, decode them, and reconstruct the original message.</p>
 <p>The traffic can be isolated in Wireshark using:</p>
-<div class="highlight"><pre><span></span><code>ip.addr == 34.41.103.191 &amp;&amp; http &amp;&amp; http.request.method == "GET"
+<div class="highlight"><pre><span></span><code>ip.addr == 34.41.103.191 &amp;&amp; http &amp;&amp; http.request.method == &quot;GET&quot;
 </code></pre></div>
 
 <p>The attached script processes each cookie individually, reverses the Base64 encoding and XOR encryption, and joins the recovered characters in the correct order.</p>
@@ -83,6 +83,7 @@
 <p>The main lesson is that attackers can hide stolen data inside normal-looking HTTP headers and cookies. Unusual request timing, suspicious downloaded scripts, and very short cookie values can help identify this type of covert channel.</p>
 <p>Happy Hacking!</p>
       </div>
+<nav class="writeup-pager" aria-label="Writeup navigation"><a class="pager-item pager-item--previous" href="../../hackerholidays/overheard_at_breakfast/index.html"><span class="pager-label">Previous</span><span class="pager-name">Overheard At Breakfast</span><span class="pager-event">hackerholidays</span></a><a class="pager-item pager-item--next" href="../../hackerholidays/room_404/index.html"><span class="pager-label">Next</span><span class="pager-name">Room 404</span><span class="pager-event">hackerholidays</span></a></nav>
     </div>
   </article>
 </div>

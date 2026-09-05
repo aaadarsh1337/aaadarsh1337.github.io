@@ -90,6 +90,7 @@ def find_writeups(source: Path):
         results.append({
             "event": event,
             "name": name,
+            "display_name": display_name(name),
             "folder": root_path,
             "md_path": md_file,
             "rel": rel.as_posix() if str(rel) != "." else name,
@@ -98,6 +99,27 @@ def find_writeups(source: Path):
 
     results.sort(key=lambda w: (w["event"].lower(), w["name"].lower()))
     return results
+
+
+def display_name(raw: str) -> str:
+    """Turn a folder/slug name into a readable challenge title.
+    Preserve uppercase acronyms (BOF, FD) and camelCase tokens."""
+    acronyms = {"fd", "bof", "ctf", "xor", "crc", "sha", "md5", "rsa", "aes", "des", "otp"}
+    words = raw.replace("_", " ").replace("-", " ").split()
+    out = []
+    for w in words:
+        low = w.lower()
+        if low in acronyms:                  # known acronym → uppercase
+            out.append(low.upper())
+        elif w.isupper() and len(w) <= 5:    # short all-caps acronym
+            out.append(w)
+        elif w.isupper():                    # longer all-caps → title case
+            out.append(w.title())
+        elif w.islower():                    # plain lowercase → title case
+            out.append(w.capitalize())
+        else:                                # already mixed/camel → keep
+            out.append(w)
+    return " ".join(out)
 
 
 def md_to_html(text: str) -> str:
@@ -116,8 +138,7 @@ def md_to_html(text: str) -> str:
         extension_configs={
             "codehilite": {
                 "guess_lang": True,
-                "noclasses": False,       # use CSS classes
-                "pygments_style": "monokai",
+                "noclasses": False,       # use CSS classes (styled by write_pygments_css)
                 "css_class": "highlight",
             },
             "toc": {"permalink": False},
@@ -127,18 +148,41 @@ def md_to_html(text: str) -> str:
 
 
 def write_pygments_css(dest_css: Path) -> None:
-    """Write a monokai stylesheet for highlighted code blocks."""
-    try:
-        from pygments.formatters import HtmlFormatter
-        css = HtmlFormatter(style="monokai").get_style_defs(".highlight")
-        # Make it sit well on the dark blueprint background
-        extra = """
+    """Write a Lab-Notebook-matching stylesheet for highlighted code blocks.
+
+    Instead of the stock monokai palette (blue/pink), we emit a custom
+    token palette tuned to the portfolio theme: soft neutrals on near-black,
+    amber + cyan accents, muted coral for strings/errors. This keeps code
+    blocks reading as part of the site rather than a jarring third-party
+    theme.
+    """
+    # foreground, background (unused tokens keep the default foreground)
+    css = """
+.highlight { color: #D6DBE3; background: #0B0F16; }
+.highlight .hll { background: #1A2130; }
+.highlight .c  { color: #5A6272; font-style: italic; }
+.highlight .ch, .highlight .c1, .highlight .cm, .highlight .cs { color: #5A6272; font-style: italic; }
+.highlight .cp, .highlight .cpf { color: #7C8595; font-style: italic; }
+.highlight .k, .highlight .kd, .highlight .kn, .highlight .kr, .highlight .kt, .highlight .kc, .highlight .kp { color: #F0A34C; }
+.highlight .n, .highlight .na, .highlight .nb, .highlight .nc, .highlight .no, .highlight .nd, .highlight .ni, .highlight .ne, .highlight .nf, .highlight .nl, .highlight .nn, .highlight .nx, .highlight .py, .highlight .nt, .highlight .nv, .highlight .bp, .highlight .fm, .highlight .vc, .highlight .vg, .highlight .vi, .highlight .vm { color: #D6DBE3; }
+.highlight .nf { color: #6FA9C4; }
+.highlight .s, .highlight .sa, .highlight .sb, .highlight .sc, .highlight .dl, .highlight .sd, .highlight .s2, .highlight .se, .highlight .sh, .highlight .si, .highlight .sx, .highlight .sr, .highlight .s1, .highlight .ss { color: #E2735F; }
+.highlight .m, .highlight .mb, .highlight .mf, .highlight .mh, .highlight .mi, .highlight .mo, .highlight .il { color: #A7C988; }
+.highlight .o, .highlight .ow { color: #7C8595; }
+.highlight .err { color: #E2735F; background-color: #1E0010; }
+.highlight .g, .highlight .ge, .highlight .ges, .highlight .gr, .highlight .gh, .highlight .gi, .highlight .go, .highlight .gp, .highlight .gs, .highlight .gu, .highlight .gt, .highlight .gd { color: #D6DBE3; }
+.highlight .gi { color: #A7C988; }
+.highlight .gd { color: #E2735F; }
+.highlight .w { color: #5A6272; }
+"""
+    extra = """
 .highlight {
-  background: #0d1530 !important;
-  border: 1px solid #3E5E8C;
+  background: #0B0F16 !important;
+  border: 1px solid #2A3340;
   padding: 14px 16px;
   overflow-x: auto;
   margin: 0 0 1.3em;
+  border-radius: 2px;
 }
 .highlight pre {
   background: transparent !important;
@@ -157,6 +201,7 @@ def write_pygments_css(dest_css: Path) -> None:
   line-height: 1.6;
 }
 """
+    try:
         dest_css.write_text(css + "\n" + extra, encoding="utf-8")
     except Exception as e:
         print(f"  warning: could not write pygments css ({e})")
@@ -232,14 +277,16 @@ PAGE_SHELL = """<!DOCTYPE html>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>{title}</title>
 <meta name="description" content="{description}" />
+<meta name="theme-color" content="#0E1117" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230E1117'/%3E%3Crect x='13' y='4' width='6' height='24' fill='%23F0A34C'/%3E%3Crect x='4' y='13' width='24' height='6' fill='%23F0A34C'/%3E%3Crect x='14' y='6' width='4' height='20' fill='%230E1117'/%3E%3Crect x='6' y='14' width='20' height='4' fill='%230E1117'/%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{css_prefix}css/style.css" />
 <link rel="stylesheet" href="{css_prefix}css/pygments.css" />
 </head>
 <body>
-<div class="blueprint-grid" aria-hidden="true"></div>
+<div class="lab-grid" aria-hidden="true"></div>
 
 <header class="topbar">
   <div class="topbar__inner">
@@ -249,6 +296,7 @@ PAGE_SHELL = """<!DOCTYPE html>
     </a>
     <div class="topbar__spacer"></div>
     <div class="topbar__actions">
+      {topbar_extra}
       <a class="btn btn--ghost btn--small" href="{portfolio_url}">&#8592; Portfolio</a>
       <a class="btn btn--ghost btn--small" href="{github_repo}" target="_blank" rel="noopener">Repo &#8599;</a>
     </div>
@@ -265,9 +313,6 @@ PAGE_SHELL = """<!DOCTYPE html>
 WRITEUP_BODY = """
 <div class="reader-layout reader-layout--static">
   <aside class="sidebar">
-    <div class="sidebar__head">
-      <a class="btn btn--ghost btn--small" href="{home_href}">&#8592; All writeups</a>
-    </div>
     <div class="sidebar__challenge">
       <p class="tb-label">CHALLENGE</p>
       <h2>{name}</h2>
@@ -294,6 +339,7 @@ WRITEUP_BODY = """
       <div class="md-render">
 {content}
       </div>
+{pager}
     </div>
   </article>
 </div>
@@ -367,7 +413,7 @@ def build(source: Path, out: Path, portfolio_url: str, github_user: str, github_
     writeups = find_writeups(source)
     gh_base = f"https://github.com/{github_user}/{github_repo}"
 
-    for w in writeups:
+    for i, w in enumerate(writeups):
         text = w["md_path"].read_text(encoding="utf-8", errors="replace")
         body_html = md_to_html(text)
 
@@ -390,24 +436,44 @@ def build(source: Path, out: Path, portfolio_url: str, github_user: str, github_
         files = list_files_recursive(w["folder"], source)
         file_list_html = render_file_list(files, gh_base, branch)
 
+        # Previous / next writeup navigation (flat order across events).
+        prev_w = writeups[i - 1] if i > 0 else None
+        next_w = writeups[i + 1] if i < len(writeups) - 1 else None
+        pager = []
+        for label, target in (("Previous", prev_w), ("Next", next_w)):
+            if target is None:
+                pager.append('<span class="pager-item pager-item--disabled"></span>')
+            else:
+                target_href = css_prefix + target["url_path"].rstrip("/") + "/index.html"
+                pager.append(
+                    f'<a class="pager-item pager-item--{label.lower()}" href="{html.escape(target_href)}">'
+                    f'<span class="pager-label">{label}</span>'
+                    f'<span class="pager-name">{html.escape(target["display_name"])}</span>'
+                    f'<span class="pager-event">{html.escape(target["event"])}</span>'
+                    f"</a>"
+                )
+        pager_html = '<nav class="writeup-pager" aria-label="Writeup navigation">' + "".join(pager) + "</nav>"
+
         body = WRITEUP_BODY.format(
             home_href=home_href,
-            name=html.escape(w["name"]),
+            name=html.escape(w["display_name"]),
             event=html.escape(w["event"]),
             folder_github=folder_gh,
             md_github=md_gh,
             md_name=html.escape(w["md_path"].name),
             content=body_html,
             file_list=file_list_html,
+            pager=pager_html,
         )
         page = PAGE_SHELL.format(
-            title=html.escape(f"{w['name']} · {w['event']}"),
-            description=html.escape(f"CTF writeup: {w['name']} ({w['event']})"),
+            title=html.escape(f"{w['display_name']} · {w['event']}"),
+            description=html.escape(f"CTF writeup: {w['display_name']} ({w['event']})"),
             css_prefix=css_prefix,
             home_href=home_href,
             portfolio_url=portfolio_url,
             github_repo=gh_base,
             body=body,
+            topbar_extra=f'<a class="btn btn--ghost btn--small" href="{home_href}">&#8592; All writeups</a>',
         )
         (dest_dir / "index.html").write_text(page, encoding="utf-8")
         print(f"  wrote  {w['url_path']}/index.html  ({len(files)} files listed)")
@@ -434,10 +500,11 @@ def build(source: Path, out: Path, portfolio_url: str, github_user: str, github_
         cards = []
         for w in items:
             href = w["url_path"].rstrip("/") + "/index.html"
-            search = html.escape(f"{w['event']} {w['name']} {w['url_path']}")
+            search = html.escape(f"{w['event']} {w['name']} {w['display_name']} {w['url_path']}")
             cards.append(
                 f'<a class="writeup-card" href="{html.escape(href)}" data-search="{search}">'
-                f"<h3>{html.escape(w['name'])}</h3>"
+                f'<span class="event">{html.escape(w["event"])}</span>'
+                f"<h3>{html.escape(w['display_name'])}</h3>"
                 f'<div class="meta"><span class="md-badge">writeup</span></div>'
                 f"</a>"
             )
@@ -464,6 +531,7 @@ def build(source: Path, out: Path, portfolio_url: str, github_user: str, github_
         portfolio_url=portfolio_url,
         github_repo=gh_base,
         body=index_body,
+        topbar_extra="",
     )
     (out / "index.html").write_text(index_page, encoding="utf-8")
     print(f"  wrote  index.html ({len(writeups)} writeups)")
@@ -484,7 +552,7 @@ def main():
     if not source.is_dir():
         raise SystemExit(f"Source not found: {source}")
 
-    print(f"Building from {source} â†’ {out}")
+    print(f"Building from {source} → {out}")
     build(source, out, args.portfolio_url, args.github_user, args.github_repo, args.branch)
     print("Done.")
 

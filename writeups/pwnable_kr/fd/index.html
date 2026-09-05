@@ -3,16 +3,18 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>fd · pwnable_kr</title>
-<meta name="description" content="CTF writeup: fd (pwnable_kr)" />
+<title>FD · pwnable_kr</title>
+<meta name="description" content="CTF writeup: FD (pwnable_kr)" />
+<meta name="theme-color" content="#0E1117" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230E1117'/%3E%3Crect x='13' y='4' width='6' height='24' fill='%23F0A34C'/%3E%3Crect x='4' y='13' width='24' height='6' fill='%23F0A34C'/%3E%3Crect x='14' y='6' width='4' height='20' fill='%230E1117'/%3E%3Crect x='6' y='14' width='20' height='4' fill='%230E1117'/%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../../css/style.css" />
 <link rel="stylesheet" href="../../css/pygments.css" />
 </head>
 <body>
-<div class="blueprint-grid" aria-hidden="true"></div>
+<div class="lab-grid" aria-hidden="true"></div>
 
 <header class="topbar">
   <div class="topbar__inner">
@@ -22,6 +24,7 @@
     </a>
     <div class="topbar__spacer"></div>
     <div class="topbar__actions">
+      <a class="btn btn--ghost btn--small" href="../../index.html">&#8592; All writeups</a>
       <a class="btn btn--ghost btn--small" href="https://aaadarsh1337.github.io/">&#8592; Portfolio</a>
       <a class="btn btn--ghost btn--small" href="https://github.com/aaadarsh1337/ctf-writeups" target="_blank" rel="noopener">Repo &#8599;</a>
     </div>
@@ -32,12 +35,9 @@
 
 <div class="reader-layout reader-layout--static">
   <aside class="sidebar">
-    <div class="sidebar__head">
-      <a class="btn btn--ghost btn--small" href="../../index.html">&#8592; All writeups</a>
-    </div>
     <div class="sidebar__challenge">
       <p class="tb-label">CHALLENGE</p>
-      <h2>fd</h2>
+      <h2>FD</h2>
       <p class="side-path">pwnable_kr</p>
     </div>
     <div class="sidebar__files">
@@ -79,19 +79,19 @@ Since this is the first challenge, I recon it will be very easy</p>
 <span class="kt">char</span><span class="w"> </span><span class="n">buf</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span>
 <span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">argv</span><span class="p">[],</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">envp</span><span class="p">[]){</span>
 <span class="w">    </span><span class="k">if</span><span class="p">(</span><span class="n">argc</span><span class="o">&lt;</span><span class="mi">2</span><span class="p">){</span>
-<span class="w">        </span><span class="n">printf</span><span class="p">(</span><span class="s">"pass argv[1] a number</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+<span class="w">        </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;pass argv[1] a number</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
 <span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">fd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">atoi</span><span class="p">(</span><span class="w"> </span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mh">0x1234</span><span class="p">;</span>
 <span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">len</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
 <span class="w">    </span><span class="n">len</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">read</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span><span class="w"> </span><span class="n">buf</span><span class="p">,</span><span class="w"> </span><span class="mi">32</span><span class="p">);</span>
-<span class="w">    </span><span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">strcmp</span><span class="p">(</span><span class="s">"LETMEWIN</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="n">buf</span><span class="p">)){</span>
-<span class="w">        </span><span class="n">printf</span><span class="p">(</span><span class="s">"good job :)</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">strcmp</span><span class="p">(</span><span class="s">&quot;LETMEWIN</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">buf</span><span class="p">)){</span>
+<span class="w">        </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;good job :)</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
 <span class="w">        </span><span class="n">setregid</span><span class="p">(</span><span class="n">getegid</span><span class="p">(),</span><span class="w"> </span><span class="n">getegid</span><span class="p">());</span>
-<span class="w">        </span><span class="n">system</span><span class="p">(</span><span class="s">"/bin/cat flag"</span><span class="p">);</span>
+<span class="w">        </span><span class="n">system</span><span class="p">(</span><span class="s">&quot;/bin/cat flag&quot;</span><span class="p">);</span>
 <span class="w">        </span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
 <span class="w">    </span><span class="p">}</span>
-<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">"learn about Linux file IO</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;learn about Linux file IO</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
 
 <span class="p">}</span>
@@ -112,7 +112,7 @@ So it runs as root and we can read the file</p>
 </code></pre></div>
 
 <p>What this means: we are reading fd, and we are storing the first 32 bytes into the "buf" which is a user defined 32 byte buffer</p>
-<div class="highlight"><pre><span></span><code><span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">strcmp</span><span class="p">(</span><span class="s">"LETMEWIN</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="n">buf</span><span class="p">))</span>
+<div class="highlight"><pre><span></span><code><span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">strcmp</span><span class="p">(</span><span class="s">&quot;LETMEWIN</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">buf</span><span class="p">))</span>
 </code></pre></div>
 
 <p>strcmp compares two strings based off their ascii values. It returns 0 for true</p>
@@ -251,6 +251,7 @@ But this is another vuln<br>
 But since gdb isnt run as root, flag will say permission denied</p>
 <p>Happy Hacking :)</p>
       </div>
+<nav class="writeup-pager" aria-label="Writeup navigation"><a class="pager-item pager-item--previous" href="../../pwnable_kr/collision/index.html"><span class="pager-label">Previous</span><span class="pager-name">Collision</span><span class="pager-event">pwnable_kr</span></a><a class="pager-item pager-item--next" href="../../pwnable_kr/passcode/index.html"><span class="pager-label">Next</span><span class="pager-name">Passcode</span><span class="pager-event">pwnable_kr</span></a></nav>
     </div>
   </article>
 </div>

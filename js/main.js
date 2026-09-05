@@ -60,10 +60,10 @@
   // ---------------- Profile / Title block ----------------
   function renderProfile() {
     const p = CFG.profile;
-    document.getElementById("tbName").textContent = p.name;
-    document.getElementById("tbHandle").textContent = "@" + p.handle;
-    document.getElementById("tbFocus").textContent = (p.currentFocus || "—").split("—")[0].trim().slice(0, 28) || "—";
-    document.getElementById("tbLoc").textContent = p.location || "—";
+    document.getElementById("rbName").textContent = p.name;
+    document.getElementById("rbHandle").textContent = "@" + p.handle;
+    document.getElementById("rbFocus").textContent = (p.currentFocus || "—").split("—")[0].trim().slice(0, 28) || "—";
+    document.getElementById("rbLoc").textContent = p.location || "—";
 
     document.getElementById("heroName").textContent = p.name;
     document.getElementById("heroTagline").textContent = p.tagline;
@@ -74,9 +74,10 @@
 
     const bioEl = document.getElementById("heroBio");
     bioEl.innerHTML = "";
-    (p.bio || []).forEach((para) => {
+    (p.bio || []).filter((para) => para && para.trim()).forEach((para, i) => {
       const el = document.createElement("p");
       el.textContent = para;
+      if (i === 0) el.className = "bio-lead";
       bioEl.appendChild(el);
     });
 
@@ -110,28 +111,32 @@
 // Links Panel Config
   function initLinkPanel() {
     const openBtn = document.getElementById("linksOpen");
+    const contactBtn = document.getElementById("contactLinksBtn");
     const closeBtn = document.getElementById("linksClose");
     const panel = document.getElementById("linksPanel");
     const backdrop = document.getElementById("linksBackdrop");
-    if (!openBtn || !panel || !backdrop) return;
+    if (!panel || !backdrop) return;
 
     function open() {
       panel.hidden = false;
       backdrop.hidden = false;
-      openBtn.setAttribute("aria-expanded", "true");
+      if (openBtn) openBtn.setAttribute("aria-expanded", "true");
       document.body.style.overflow = "hidden";
+      closeBtn.focus();
     }
     function close() {
       panel.hidden = true;
       backdrop.hidden = true;
-      openBtn.setAttribute("aria-expanded", "false");
+      if (openBtn) openBtn.setAttribute("aria-expanded", "false");
       document.body.style.overflow = "";
     }
-
-    openBtn.addEventListener("click", function () {
+    function toggle() {
       if (panel.hidden) open();
       else close();
-    });
+    }
+
+    if (openBtn) openBtn.addEventListener("click", toggle);
+    if (contactBtn) contactBtn.addEventListener("click", toggle);
     closeBtn.addEventListener("click", close);
     backdrop.addEventListener("click", close);
     document.addEventListener("keydown", function (e) {
@@ -199,7 +204,7 @@
         li.appendChild(detail);
       }
 
-      if (item.url) {
+      if (item.url && /^https?:\/\//i.test(item.url)) {
         const a = document.createElement("a");
         a.className = "achieve-item__link";
         a.href = item.url;
@@ -220,11 +225,11 @@
       const card = document.createElement("div");
       card.className = "cert-card";
       card.innerHTML = `
-        <img src="${escapeHtml(c.image || "assets/cert-placeholder.svg")}" alt="" />
+        <img src="${escapeHtml(c.image || "assets/cert-placeholder.svg")}" alt="" aria-hidden="true" />
         <div>
-          <h3>${escapeHtml(c.name)}</a></h3>
+          <h3>${escapeHtml(c.name)}</h3>
           <div class="cert-meta">${escapeHtml(c.issuer || "")}${c.date ? " · " + escapeHtml(c.date) : ""}</div>
-          ${c.credentialUrl ? `<a href="${escapeHtml(c.credentialUrl)}" target="_blank" rel="noopener">View certificate ↗</a>` : ""}
+          ${c.credentialUrl ? `<a href="${escapeHtml(c.credentialUrl)}" target="_blank" rel="noopener">View certificate <span class="ext">↗</span></a>` : ""}
         </div>
       `;
       grid.appendChild(card);
@@ -234,37 +239,93 @@
   // ---------------- Contact (display only) ----------------
   function renderContact() {
     const list = document.getElementById("contactList");
-    const c = CFG.contact;
-    const rows = [
-      ["Email", c.email, c.email ? "mailto:" + c.email : ""],
-      ["GitHub", c.github, c.github],
-      ["TryHackMe", c.tryhackme, c.tryhackme],
-      ["PicoCTF", c.picoctf, c.picoctf],
-      ["LinkedIn", c.linkedin, c.linkedin]
-    ].filter(([, val]) => val);
-    (c.extraLinks || []).forEach((l) => rows.push([l.label, l.url, l.url]));
-
-    list.innerHTML = rows.map(([k, display, href]) => `
-      <div class="row">
-        <span class="k">${escapeHtml(k)}</span>
-        <a href="${escapeHtml(href)}" ${href.startsWith("mailto:") ? "" : 'target="_blank" rel="noopener"'}>${escapeHtml(display)}</a>
-      </div>
-    `).join("");
+    const c = CFG.contact || {};
+    const methods = [];
+    if (c.email) {
+      methods.push(`
+        <div class="contact-method contact-method--email">
+          <span class="cm-label">Email</span>
+          <a class="cm-value" href="mailto:${escapeHtml(c.email)}">${escapeHtml(c.email)}</a>
+          <span class="cm-note">Best for longer conversations &amp; opportunities</span>
+        </div>`);
+    }
+    if (c.linkedin) {
+      methods.push(`
+        <div class="contact-method">
+          <span class="cm-label">LinkedIn</span>
+          <a class="cm-value" href="${escapeHtml(c.linkedin)}" target="_blank" rel="noopener">Adarsh Pillai</a>
+          <span class="cm-note">Professional profile</span>
+        </div>`);
+    }
+    if (c.discord) {
+      methods.push(`
+        <div class="contact-method">
+          <span class="cm-label">Discord</span>
+          <a class="cm-value" href="${escapeHtml(c.discord)}" target="_blank" rel="noopener">@aaadarsh1337</a>
+          <span class="cm-note">Fastest for a quick chat</span>
+        </div>`);
+    }
+    list.innerHTML = methods.join("");
   }
 
   // ---------------- Repositories (GitHub API) ----------------
+  const REPO_CACHE_KEY = "portfolio.repos";
+  const REPO_CACHE_TTL = 10 * 60 * 1000; // 10 minutes
+
+  function fetchWithTimeout(url, ms) {
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), ms);
+    return fetch(url, { signal: ctrl.signal }).finally(() => clearTimeout(t));
+  }
+
+  function renderSkeletons(count) {
+    const frag = document.createDocumentFragment();
+    for (let i = 0; i < count; i++) {
+      const s = document.createElement("div");
+      s.className = "repo-card repo-skel";
+      s.innerHTML = `
+        <div class="skel skel--name"></div>
+        <div class="skel skel--desc"></div>
+        <div class="skel skel--desc short"></div>
+        <div class="skel skel--meta"></div>
+      `;
+      frag.appendChild(s);
+    }
+    return frag;
+  }
+
   async function loadRepos() {
     const status = document.getElementById("repoStatus");
     const grid = document.getElementById("repoGrid");
     const username = CFG.github.username;
 
     try {
-      const res = await fetch(`https://api.github.com/users/${username}/repos?per_page=100&sort=updated`);
-      if (!res.ok) throw new Error("GitHub API responded " + res.status);
-      let repos = await res.json();
+      let repos = null;
+
+      // Try cache first (only if fresh).
+      try {
+        const cached = JSON.parse(sessionStorage.getItem(REPO_CACHE_KEY) || "null");
+        if (cached && cached.t && (Date.now() - cached.t) < REPO_CACHE_TTL && Array.isArray(cached.d)) {
+          repos = cached.d;
+        }
+      } catch (e) { /* ignore malformed cache */ }
+
+      if (!repos) {
+        status.textContent = "Fetching repository index…";
+        grid.innerHTML = "";
+        grid.appendChild(renderSkeletons(6));
+        const res = await fetchWithTimeout(
+          `https://api.github.com/users/${username}/repos?per_page=100&sort=updated`,
+          9000
+        );
+        if (res.status === 403) throw { rateLimit: true };
+        if (!res.ok) throw new Error("GitHub API responded " + res.status);
+        repos = await res.json();
+        try { sessionStorage.setItem(REPO_CACHE_KEY, JSON.stringify({ t: Date.now(), d: repos })); } catch (e) { /* storage full/unavailable */ }
+      }
 
       const hidden = new Set((CFG.github.hiddenRepos || []).map((s) => s.toLowerCase()));
-      repos = repos.filter((r) => !hidden.has(r.name.toLowerCase()));
+      repos = repos.filter((r) => !hidden.has((r.name || "").toLowerCase()));
 
       const pinned = CFG.github.pinnedRepos || [];
       repos.sort((a, b) => {
@@ -279,37 +340,83 @@
       });
 
       if (repos.length === 0) {
-        status.textContent = "No public repositories found.";
+        status.textContent = "No public repositories found yet.";
+        grid.innerHTML = renderEmpty("No public repositories to show.");
         return;
       }
 
-      status.textContent = `${repos.length} repositor${repos.length === 1 ? "y" : "ies"} · click one to browse its files`;
+      status.textContent = `${repos.length} repositor${repos.length === 1 ? "y" : "ies"} — browse a repo to view its files`;
       grid.innerHTML = "";
-      repos.forEach((repo) => grid.appendChild(renderRepoCard(repo)));
+      repos.forEach((repo) => grid.appendChild(renderRepoCard(repo, pinned)));
     } catch (err) {
-      const username = CFG.github.username;
-      status.innerHTML =
-        'GitHub API isn\'t reachable right now (rate limit or network). ' +
-        'You can still view the repos on GitHub: ' +
-        '<a href="https://github.com/' + username + '?tab=repositories" target="_blank" rel="noopener">github.com/' +
-        username + ' ↗</a>';
+      const gh = "https://github.com/" + username + "?tab=repositories";
+      if (err && err.rateLimit) {
+        status.innerHTML = 'GitHub rate limit reached. <a href="' + gh + '" target="_blank" rel="noopener">View repos on GitHub ↗</a>';
+      } else {
+        status.innerHTML = 'Couldn’t reach GitHub. <a href="' + gh + '" target="_blank" rel="noopener">View repos on GitHub ↗</a>';
+      }
+      grid.innerHTML = renderEmpty("The repository feed is unavailable right now.");
       console.error(err);
     }
   }
 
-  function renderRepoCard(repo) {
+  function renderEmpty(message) {
+    const div = document.createElement("div");
+    div.className = "repo-empty";
+    div.innerHTML = '<p>' + escapeHtml(message) + '</p>';
+    return div.innerHTML;
+  }
+
+  // GitHub language → color (subset; falls back to the neutral dim).
+  const LANG_COLORS = {
+    Python: "#3572A5", JavaScript: "#f1e05a", TypeScript: "#3178c6", C: "#555555",
+    "C++": "#f34b7d", "C#": "#178600", Go: "#00ADD8", Rust: "#dea584", Java: "#b07219",
+    Shell: "#89e051", HTML: "#e34c26", CSS: "#563d7c", PHP: "#4F5D95", Ruby: "#701516",
+    SQL: "#e38c00", Vim: "#199f4b", Dockerfile: "#384d54", Makefile: "#427819",
+    Jupyter: "#DA5B0B", PowerShell: "#012456", Assembly: "#6E4C13", Scala: "#c22d40",
+    Kotlin: "#A97BFF", Swift: "#F05138", Lua: "#000080", R: "#198CE7", Perl: "#0298c3",
+    Vue: "#41b883", Svelte: "#ff3e00", Haskell: "#5e5086", Zig: "#ec915c"
+  };
+
+  function langColor(lang) {
+    return LANG_COLORS[lang] || "var(--dim)";
+  }
+
+  function statIcon(kind) {
+    // Minimal inline SVG for star and fork (GitHub-style, theme-aware).
+    if (kind === "star") {
+      return '<svg class="ico" viewBox="0 0 16 16" width="13" height="13" aria-hidden="true"><path fill="currentColor" d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.75.75 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Z"/></svg>';
+    }
+    return '<svg class="ico" viewBox="0 0 16 16" width="13" height="13" aria-hidden="true"><path fill="currentColor" d="M5 5.372v.878c0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75v-.878a2.25 2.25 0 1 1 1.5 0v.878a2.25 2.25 0 0 1-2.25 2.25h-1.5v2.128a2.251 2.251 0 1 1-1.5 0V8.5h-1.5A2.25 2.25 0 0 1 3.5 6.25v-.878a2.25 2.25 0 1 1 1.5 0ZM5 3.25a.75.75 0 1 0-1.5 0 .75.75 0 0 0 1.5 0Zm6.75.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm-3.75 8.25a.75.75 0 1 0-1.5 0 .75.75 0 0 0 1.5 0Z"/></svg>';
+  }
+
+  function renderRepoCard(repo, pinned) {
     const card = document.createElement("div");
-    card.className = "repo-card";
+    const isPinned = pinned.indexOf(repo.name) !== -1;
+    card.className = "repo-card" + (isPinned ? " pinned" : "");
+    const stars = repo.stargazers_count || 0;
+    const forks = repo.forks_count || 0;
+    const lang = repo.language || "";
     card.innerHTML = `
-      <h3>${escapeHtml(repo.name)}</h3>
-      <p class="desc">${escapeHtml(repo.description || "No description yet.")}</p>
-      <div class="repo-meta">
-        ${repo.language ? `<span class="lang">${escapeHtml(repo.language)}</span>` : ""}
-        <span>updated ${formatDate(repo.updated_at)}</span>
+      <div class="repo-top">
+        <a class="repo-name" href="${escapeHtml(repo.html_url)}" target="_blank" rel="noopener">
+          ${escapeHtml(repo.name)}
+        </a>
+        ${isPinned ? '<span class="pin" title="Pinned repository">Pinned</span>' : ''}
       </div>
-      <button class="btn btn--ghost btn--small">Browse files →</button>
+      <p class="repo-desc">${escapeHtml(repo.description || "No description provided.")}</p>
+      ${lang ? `<div class="repo-lang"><span class="lang-dot" style="background:${langColor(lang)}"></span>${escapeHtml(lang)}</div>` : ""}
+      <div class="repo-meta">
+        <span class="stat" title="${stars} stars">${statIcon("star")} ${stars}</span>
+        <span class="stat" title="${forks} forks">${statIcon("fork")} ${forks}</span>
+        <span class="updated">Updated ${formatDate(repo.updated_at)}</span>
+      </div>
+      <div class="repo-foot">
+        <button class="btn btn--ghost btn--small repo-browse">Browse files</button>
+        <a class="repo-open" href="${escapeHtml(repo.html_url)}" target="_blank" rel="noopener">GitHub ↗</a>
+      </div>
     `;
-    card.querySelector("button").addEventListener("click", () => openTreeSheet(repo));
+    card.querySelector(".repo-browse").addEventListener("click", () => openTreeSheet(repo));
     return card;
   }
 
@@ -368,13 +475,17 @@
     });
   }
 
+  let lastFocus = null;
+
   function openTreeSheet(repo) {
     closeFileSheet();
+    lastFocus = document.activeElement;
     document.getElementById("tsRepo").textContent = repo.name;
     document.getElementById("tsGithubLink").href = repo.html_url;
     tsBody.innerHTML = `<p class="dim">&gt; fetching file tree_</p>`;
     treeSheet.classList.add("open");
     treeSheet.setAttribute("aria-hidden", "false");
+    document.getElementById("tsClose").focus();
 
     const branch = repo.default_branch || "main";
     fetch(`https://api.github.com/repos/${repo.owner.login}/${repo.name}/git/trees/${branch}?recursive=1`)
@@ -406,6 +517,7 @@
   function closeTreeSheet() {
     treeSheet.classList.remove("open");
     treeSheet.setAttribute("aria-hidden", "true");
+    if (!fileSheet.classList.contains("open") && lastFocus && lastFocus.focus) lastFocus.focus();
   }
 
   // ---------------- File viewer modal ----------------
@@ -413,6 +525,7 @@
   const fsBody = document.getElementById("fsBody");
 
   function openFileSheet(repo, path, branch, readable) {
+    lastFocus = document.activeElement;
     document.getElementById("fsRepo").textContent = repo.name;
     document.getElementById("fsPath").textContent = path;
     const githubBlobUrl = `${repo.html_url}/blob/${branch}/${path}`;
@@ -421,6 +534,7 @@
     fsBody.innerHTML = `<p class="dim">&gt; loading file_</p>`;
     fileSheet.classList.add("open");
     fileSheet.setAttribute("aria-hidden", "false");
+    document.getElementById("fsClose").focus();
 
     if (!readable) {
       fsBody.innerHTML = `
@@ -473,6 +587,7 @@
   function closeFileSheet() {
     fileSheet.classList.remove("open");
     fileSheet.setAttribute("aria-hidden", "true");
+    if (!treeSheet.classList.contains("open") && lastFocus && lastFocus.focus) lastFocus.focus();
   }
 
   document.addEventListener("keydown", (e) => {
@@ -497,33 +612,23 @@
       });
     });
 
-    const sections = Array.from(document.querySelectorAll(".sheet[data-fig]"));
+    const sections = Array.from(document.querySelectorAll(".sheet[id]"));
     const navLinks = Array.from(nav.querySelectorAll("a"));
 
-    // More reliable scrollspy — works even for short sections like Certificates
+    // Scrollspy — highlights the section currently in view.
     function updateActive() {
       const marker = window.scrollY + window.innerHeight * 0.28;
       let current = sections[0];
       for (const s of sections) {
         if (s.offsetTop <= marker) current = s;
       }
+      if (!current) return;
       const id = current.id;
       navLinks.forEach((a) => a.classList.toggle("active", a.dataset.nav === id));
-      current.classList.add("in-view");
     }
 
     window.addEventListener("scroll", updateActive, { passive: true });
     updateActive();
-
-    // Still fade sections in as they appear
-    const footIo = new IntersectionObserver((entries) => {
-      entries.forEach((e) => {
-        if (e.isIntersecting) e.target.classList.add("in-view");
-      });
-    }, { threshold: 0.12 });
-    sections.forEach((s) => footIo.observe(s));
-    const foot = document.querySelector(".site-footer");
-    if (foot) footIo.observe(foot);
   }
 
   // ---------------- Init ----------------
