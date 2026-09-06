@@ -81,13 +81,13 @@ window.PORTFOLIO_CONFIG = {
   achievements: [
     {
       title: "TFC CTF 2026",
-      detail: "#23 Humans; #172 Overall",
+      detail: "404squad - #23 Human Division; #172 Overall",
       date: "2026",
       url: "https://github.com/aaadarsh1337/cybersecurity-achievements/tree/main/TFCCTF"
     },
     {
       title: "z0d1ak CTF 2026",
-      detail: "404squad - #75 Overall; #13 Human Division",
+      detail: "404squad - #13 Human Division; #75 Overall",
       date: "2026",
       url: "https://github.com/aaadarsh1337/cybersecurity-achievements/tree/main/z0d1ak-ctf"
     },
