@@ -5,8 +5,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>The Add On Trap · picoctf</title>
 <meta name="description" content="CTF writeup: The Add On Trap (picoctf)" />
-<meta name="theme-color" content="#0E1117" />
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230E1117'/%3E%3Crect x='13' y='4' width='6' height='24' fill='%23F0A34C'/%3E%3Crect x='4' y='13' width='24' height='6' fill='%23F0A34C'/%3E%3Crect x='14' y='6' width='4' height='20' fill='%230E1117'/%3E%3Crect x='6' y='14' width='20' height='4' fill='%230E1117'/%3E%3C/svg%3E" />
+<meta name="theme-color" content="#16161e" />
+<link rel="canonical" href="https://aaadarsh1337.github.io/writeups/picoctf/the_add_on_trap/" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="The Add On Trap · picoctf" />
+<meta property="og:description" content="CTF writeup: The Add On Trap (picoctf)" />
+<meta property="og:url" content="https://aaadarsh1337.github.io/writeups/picoctf/the_add_on_trap/" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="The Add On Trap · picoctf" />
+<meta name="twitter:description" content="CTF writeup: The Add On Trap (picoctf)" />
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "The Add On Trap · picoctf", "description": "CTF writeup: The Add On Trap (picoctf)", "url": "https://aaadarsh1337.github.io/writeups/picoctf/the_add_on_trap/", "author": {"@type": "Person", "name": "Adarsh Pillai", "url": "https://aaadarsh1337.github.io/"}}</script>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2316161e'/%3E%3Crect x='13' y='4' width='6' height='24' fill='%237DCFFF'/%3E%3Crect x='4' y='13' width='24' height='6' fill='%237DCFFF'/%3E%3Crect x='14' y='6' width='4' height='20' fill='%2316161e'/%3E%3Crect x='6' y='14' width='20' height='4' fill='%2316161e'/%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -24,9 +33,9 @@
     </a>
     <div class="topbar__spacer"></div>
     <div class="topbar__actions">
-      <a class="btn btn--ghost btn--small" href="../../index.html">&#8592; All writeups</a>
-      <a class="btn btn--ghost btn--small" href="https://aaadarsh1337.github.io/">&#8592; Portfolio</a>
-      <a class="btn btn--ghost btn--small" href="https://github.com/aaadarsh1337/ctf-writeups" target="_blank" rel="noopener">Repo &#8599;</a>
+      <a class="btn btn--ghost" href="../../index.html">&#8592; All writeups</a>
+      <a class="btn btn--ghost" href="https://aaadarsh1337.github.io/">&#8592; Portfolio</a>
+      <a class="btn btn--ghost" href="https://github.com/aaadarsh1337/ctf-writeups" target="_blank" rel="noopener">Repo &#8599;</a>
     </div>
   </div>
 </header>
@@ -39,6 +48,7 @@
       <p class="tb-label">CHALLENGE</p>
       <h2>The Add On Trap</h2>
       <p class="side-path">picoctf</p>
+      <p class="side-meta">1 min read &middot; 1 files</p><span class="side-diffwrap"><span class="diff diff-medium">Medium</span></span>
     </div>
     <div class="sidebar__files">
       <p class="tb-label">FILES</p>
@@ -69,12 +79,12 @@ Welcome back to another writeup, today we will be looking at <code>The Add/On Tr
 <p>Upon inspection, we can find fernet is being used</p>
 <p>From main.js we find</p>
 <div class="highlight"><pre><span></span><code><span class="c1">// Secret key must be 32 url-safe base64-encoded bytes!</span>
-<span class="c1">// TODO I must find a solution to remove the key from here, for now I'll leave it there because I need it to encrypt the webhook</span>
+<span class="c1">// TODO I must find a solution to remove the key from here, for now I&#39;ll leave it there because I need it to encrypt the webhook</span>
 
 <span class="kd">function</span><span class="w"> </span><span class="nx">logOnCompleted</span><span class="p">(</span><span class="nx">details</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`Information to exfiltrate: </span><span class="si">${</span><span class="nx">details</span><span class="p">.</span><span class="nx">url</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
-<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">key</span><span class="o">=</span><span class="s2">"cGljb0NURnt5b3UncmUgb24gdGhlIHJpZ2h0IHRyYX0="</span>
-<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">webhookUrl</span><span class="o">=</span><span class="s1">'gAAAAABmfRjwFKUB-X3GBBqaN1tZYcPg5oLJVJ5XQHFogEgcRSxSis1e4qwicAKohmjqaD-QG8DIN5ie3uijCVAe3xiYmoEHlxATWUP3DC97R00Cgkw4f3HZKsP5xHewOqVPH8ap9FbE'</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">key</span><span class="o">=</span><span class="s2">&quot;cGljb0NURnt5b3UncmUgb24gdGhlIHJpZ2h0IHRyYX0=&quot;</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">webhookUrl</span><span class="o">=</span><span class="s1">&#39;gAAAAABmfRjwFKUB-X3GBBqaN1tZYcPg5oLJVJ5XQHFogEgcRSxSis1e4qwicAKohmjqaD-QG8DIN5ie3uijCVAe3xiYmoEHlxATWUP3DC97R00Cgkw4f3HZKsP5xHewOqVPH8ap9FbE&#39;</span>
 </code></pre></div>
 
 <p>Hence we got the key and a string to decrypt<br>

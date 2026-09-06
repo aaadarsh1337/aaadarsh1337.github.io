@@ -11,6 +11,10 @@ window.PORTFOLIO_CONFIG = {
   // --- GitHub -----------------------------------------------------
   github: {
     username: "aaadarsh1337",
+    // Optional: personal access token to raise API rate limit (60 -> 5000/hr).
+    // Leave blank for anonymous requests. Do NOT commit a secret token here
+    // for a public site — only use a read-only token if you understand the risk.
+    token: "",
     // Repos you never want shown on the site
     hiddenRepos: ["aaadarsh1337.github.io", "aaadarsh1337"],
     // Repo names to always show first, in the exact order you list them.
@@ -26,13 +30,12 @@ window.PORTFOLIO_CONFIG = {
     tagline: "Offensive security · reverse engineering · CTF",  // EDIT ME
     location: "India",                                         // EDIT ME
     // Short phrase for the top-left LOC / FOCUS boxes and the hero meta line
-    currentFocus: "Offensive",
-    avatar: "assets/avatar.jpg",                   // EDIT ME: swap the file or path
+    currentFocus: "Binary Exploitation + RE",
+    avatar: "assets/avatar.webp",                   // EDIT ME: swap the file or path (JPG fallback: assets/avatar.jpg)
     // All your platform handles — shown as chips under the tagline.
     // Add / remove freely. Leave url blank if you don't want it clickable
 
     bio: [
-      "",
       "I’m aaadarsh1337 | jackthereaper1337 | Hasher2009, a cybersecurity enthusiast and CTF player who loves turning ideas into working tools. I’m especially interested in penetration testing, reverse engineering, and building custom security utilities—from quick scripts for CTF challenges to more structured tools for learning and automation.",
       "Most of what I do is hands-on: I break down problems, explore how systems behave, and document what I learn along the way—whether it’s through clean code, notes, or practical experiments. My goal is to keep leveling up by tackling real challenges, studying the “why” behind the behavior, and continuously improving my workflow.",
       "On this portfolio, you’ll find projects and repositories focused on security tooling, CTF write-ups, and cybersec learning notes, plus the small experiments that help me get better every step of the way."
@@ -83,17 +86,20 @@ window.PORTFOLIO_CONFIG = {
       url: "https://github.com/aaadarsh1337/cybersecurity-achievements/tree/main/z0d1ak-ctf"
     },
     {
-      title: "Vulnerability disclosure",
-      detail: "Coming soon",
-      date: "2026",
-      url: ""                    // advisory, report, or writeup
-    },
-    {
       title: "TryHackMe",
       detail: "Top 2% Global; 100+ Rooms Completed",
       date: "2026",
       url: "https://tryhackme.com/p/aaadarsh1337"                               // no link = text only
     }
+  ],
+
+  // --- Stats band (glanceable numbers under the hero) ------------------
+  // ONLY what you list here is shown — add or delete rows freely.
+  // Keep it to 3-4 essentials so it reads at a glance.
+  stats: [
+    { value: "Top 2%", label: "TryHackMe global" },
+    { value: "100+", label: "THM rooms done" },
+    { value: "22", label: "CTF writeups" }
   ],
   // --- Certificates ---------------------------------------------------
   // Duplicate the object below for each certificate. Order = display order.

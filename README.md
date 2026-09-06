@@ -22,7 +22,7 @@ Writeups are maintained as Markdown in a separate repo ([`ctf-writeups`](https:/
 
 ## Design
 
-Blueprint-inspired layout (dark navy, cyan/amber accents, monospace details).  
+Tokyo Night-inspired layout (near-black indigo, cyan/blue neon-cool accents, monospace details).  
 Built as a static site for GitHub Pages - fast, simple, no backend.
 
 ---

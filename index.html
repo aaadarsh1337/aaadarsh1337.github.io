@@ -6,7 +6,7 @@
 <title>Adarsh Pillai — Cybersecurity Portfolio</title>
 <meta name="description" content="Adarsh Pillai (aaadarsh1337): offensive-security enthusiast and CTF player. Penetration testing, reverse engineering, binary exploitation, and security tooling — with live GitHub projects and CTF writeups." />
 <meta name="author" content="Adarsh Pillai" />
-<meta name="theme-color" content="#0E1117" />
+<meta name="theme-color" content="#16161e" />
 <link rel="canonical" href="https://aaadarsh1337.github.io/" />
 
 <!-- Open Graph -->
@@ -14,23 +14,29 @@
 <meta property="og:title" content="Adarsh Pillai — Cybersecurity Portfolio" />
 <meta property="og:description" content="Offensive security, reverse engineering, and security tooling — CTF writeups and live projects." />
 <meta property="og:url" content="https://aaadarsh1337.github.io/" />
+<meta property="og:image" content="https://aaadarsh1337.github.io/assets/avatar.jpg" />
+<meta property="og:image:alt" content="Portrait of Adarsh Pillai" />
 
 <!-- Twitter -->
 <meta name="twitter:card" content="summary" />
 <meta name="twitter:title" content="Adarsh Pillai — Cybersecurity Portfolio" />
 <meta name="twitter:description" content="Offensive security, reverse engineering, and security tooling." />
+<meta name="twitter:image" content="https://aaadarsh1337.github.io/assets/avatar.jpg" />
 
 <!-- Favicon (inline SVG, no binary asset needed) -->
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230E1117'/%3E%3Crect x='13' y='4' width='6' height='24' fill='%23F0A34C'/%3E%3Crect x='4' y='13' width='24' height='6' fill='%23F0A34C'/%3E%3Crect x='14' y='6' width='4' height='20' fill='%230E1117'/%3E%3Crect x='6' y='14' width='20' height='4' fill='%230E1117'/%3E%3C/svg%3E" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2316161e'/%3E%3Crect x='13' y='4' width='6' height='24' fill='%237DCFFF'/%3E%3Crect x='4' y='13' width='24' height='6' fill='%237DCFFF'/%3E%3Crect x='14' y='6' width='4' height='20' fill='%2316161e'/%3E%3Crect x='6' y='14' width='20' height='4' fill='%2316161e'/%3E%3C/svg%3E" />
+<link rel="apple-touch-icon" href="assets/avatar.jpg" />
 
 <!-- Fonts: Space Grotesk (display) + Inter (body) + JetBrains Mono (data/code) -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
 <!-- Markdown rendering + syntax highlighting (theme styled locally to match) -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.0/marked.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.0/marked.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.9/purify.min.js"></script>
 
 <!-- Structured data (Person) for SEO -->
 <script type="application/ld+json">
@@ -57,7 +63,7 @@
 </head>
 <body>
 
-<a class="skip-link" href="#about">Skip to content</a>
+<a class="skip-link" href="#main">Skip to content</a>
 
 <!-- Schematic lab-grid backdrop -->
 <div class="lab-grid" aria-hidden="true"></div>
@@ -84,22 +90,22 @@
   <button class="rail__toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="siteNav">
     <span></span><span></span><span></span>
   </button>
-  <p class="rail__foot">pwn for life</p>
+  <p class="rail__foot" id="easterEgg" role="button" tabindex="0" aria-label="Easter egg — try three quick clicks">pwn for life</p>
 </header>
 
-<main>
+<main id="main">
 
   <!-- 01 · ABOUT / HERO -->
   <section class="sheet" id="about">
     <div class="sheet__inner">
       <div class="hero">
         <div class="hero__portrait">
-          <img id="avatarImg" src="assets/avatar.jpg" alt="Portrait of Adarsh Pillai" width="176" height="176" decoding="async" />
+          <img id="avatarImg" src="assets/avatar.webp" onerror="this.onerror=null;this.src='assets/avatar.jpg'" alt="Portrait of Adarsh Pillai" width="176" height="176" decoding="async" fetchpriority="high" />
         </div>
         <div class="hero__text">
           <p class="fig-label">01 · About</p>
           <h1 id="heroName">ADARSH PILLAI</h1>
-          <p class="hero__tagline" id="heroTagline">Attack to Defend</p>
+          <p class="hero__tagline" id="heroTagline">Offensive security · reverse engineering · CTF</p>
           <div class="hero__meta">
             <span id="heroLocation">— Location —</span>
             <span class="sep">/</span>
@@ -116,6 +122,7 @@
             </button>
             <a class="btn btn--ghost" href="#contact">Get in touch <span class="ext">→</span></a>
           </div>
+          <dl class="stats-band" id="statsBand" aria-label="Highlights at a glance"></dl>
         </div>
       </div>
     </div>
@@ -133,6 +140,8 @@
     </div>
   </section>
 
+  <div class="reg-rule" aria-hidden="true"></div>
+
   <!-- 03 · ACHIEVEMENTS -->
   <section class="sheet" id="achievements">
     <div class="sheet__inner">
@@ -142,6 +151,8 @@
       <ul class="achieve-list" id="achieveList"></ul>
     </div>
   </section>
+
+  <div class="reg-rule" aria-hidden="true"></div>
 
   <!-- 04 · REPOSITORIES -->
   <section class="sheet" id="repositories">
@@ -227,15 +238,24 @@
   </div>
 </div>
 
+<!-- Command palette -->
+<button class="cmdk-fab" id="cmdkFab" aria-label="Open command palette (Control K)" title="Command palette (Ctrl+K)">⌘K <span class="fab-label">Commands</span></button>
+<div class="cmdk-backdrop" id="cmdkBackdrop" hidden></div>
+<div class="cmdk" id="cmdk" role="dialog" aria-modal="true" aria-label="Command palette" hidden>
+  <input type="text" id="cmdkInput" placeholder="Type a command or search…" autocomplete="off" aria-label="Command palette" role="combobox" aria-expanded="true" aria-controls="cmdkList" />
+  <div class="cmdk-list" id="cmdkList" role="listbox" aria-label="Results"></div>
+  <div class="cmdk-foot"><span><kbd>↑↓</kbd> navigate</span><span><kbd>↵</kbd> run</span><span><kbd>esc</kbd> close</span></div>
+</div>
+
 <script src="js/config.js"></script>
 <script src="js/main.js"></script>
 
 <!-- Links panel -->
 <div class="links-backdrop" id="linksBackdrop" hidden></div>
-<div class="links-panel" id="linksPanel" role="dialog" aria-label="Links" hidden>
+<div class="links-panel" id="linksPanel" role="dialog" aria-modal="true" aria-label="Links" hidden>
   <div class="links-panel__head">
     <span class="tb-label">Links</span>
-    <button type="button" class="links-panel__close" id="linksClose" aria-label="Close">x</button>
+    <button type="button" class="links-panel__close" id="linksClose" aria-label="Close">×</button>
   </div>
   <div class="links-panel__list" id="linksPanelList"></div>
 </div>

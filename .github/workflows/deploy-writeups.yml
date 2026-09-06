@@ -13,7 +13,7 @@ on:
   push:
     paths:
       - "scripts/build_writeups.py"
-      - "scripts/writeups-style.css"
+      - "scripts/style.css"
       - ".github/workflows/deploy-writeups.yml"
 
   # Rebuild when ctf-writeups gets new content (requires repo access)
