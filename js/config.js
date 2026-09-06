@@ -118,7 +118,7 @@ window.PORTFOLIO_CONFIG = {
       image: "assets/certificate.png"        // drop a real badge into assets/ and point here
     },
     {
-      name: "z0d1ak CTF",
+      name: " z0d1ak CTF",
       issuer: "z0d1ak",
       date: "2026",
       credentialUrl: "https://github.com/aaadarsh1337/cybersecurity-achievements/blob/main/z0d1ak-ctf/z0d1ak-certificate-adarsh-pillai.pdf",                          // verification link (optional)
