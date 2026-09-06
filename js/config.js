@@ -80,6 +80,12 @@ window.PORTFOLIO_CONFIG = {
 
   achievements: [
     {
+      title: "TFC CTF 2026",
+      detail: "#23 Humans; #172 Overall",
+      date: "2026",
+      url: "https://github.com/aaadarsh1337/cybersecurity-achievements/tree/main/TFCCTF"
+    },
+    {
       title: "z0d1ak CTF 2026",
       detail: "404squad - #75 Overall; #13 Human Division",
       date: "2026",
@@ -104,6 +110,13 @@ window.PORTFOLIO_CONFIG = {
   // --- Certificates ---------------------------------------------------
   // Duplicate the object below for each certificate. Order = display order.
   certificates: [
+    {
+      name: "TFC CTF",
+      issuer: "TFC",
+      date: "2026",
+      credentialUrl: "https://github.com/aaadarsh1337/cybersecurity-achievements/blob/main/TFCCTF/tfc-ctf-26-diploma-adarsh-pillai.png",
+      image: "assets/certificate.png"        // drop a real badge into assets/ and point here
+    },
     {
       name: "z0d1ak CTF",
       issuer: "z0d1ak",
