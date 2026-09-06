@@ -72,7 +72,8 @@
     document.getElementById("heroName").textContent = p.name;
     document.getElementById("heroTagline").textContent = p.tagline;
     document.getElementById("heroLocation").textContent = p.location;
-    document.getElementById("heroFocus").textContent = p.currentFocus;
+    var heroFocusEl = document.getElementById("heroFocus");
+    if (heroFocusEl) heroFocusEl.textContent = p.currentFocus;
     const avatarImg = document.getElementById("avatarImg");
     avatarImg.onerror = function () {
       if (!avatarImg.dataset.fb) {

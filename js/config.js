@@ -27,10 +27,10 @@ window.PORTFOLIO_CONFIG = {
   profile: {
     name: "ADARSH PILLAI",                                   // EDIT ME — full name
     handle: "aaadarsh1337",
-    tagline: "Offensive security · reverse engineering · CTF",  // EDIT ME
+    tagline: "Offensive security · Reverse Engineering · CTF",  // EDIT ME
     location: "India",                                         // EDIT ME
     // Short phrase for the top-left LOC / FOCUS boxes and the hero meta line
-    currentFocus: "Binary Exploitation + RE",
+    currentFocus: "Offensive",
     avatar: "assets/avatar.webp",                   // EDIT ME: swap the file or path (JPG fallback: assets/avatar.jpg)
     // All your platform handles — shown as chips under the tagline.
     // Add / remove freely. Leave url blank if you don't want it clickable
@@ -40,7 +40,7 @@ window.PORTFOLIO_CONFIG = {
       "Most of what I do is hands-on: I break down problems, explore how systems behave, and document what I learn along the way—whether it’s through clean code, notes, or practical experiments. My goal is to keep leveling up by tackling real challenges, studying the “why” behind the behavior, and continuously improving my workflow.",
       "On this portfolio, you’ll find projects and repositories focused on security tooling, CTF write-ups, and cybersec learning notes, plus the small experiments that help me get better every step of the way."
     ],
-    resumeUrl: "https://github.com"   // EDIT ME: link to a hosted PDF resume. Leave blank and the button hides itself.
+    resumeUrl: "https://github.com/aaadarsh1337"   // EDIT ME: link to a hosted PDF resume. Leave blank and the button hides itself.
   },
 // --- Links (button-based reveal) -----------------------------------
   // All profile, social, and platform handles. Shown in the "Links" panel.
