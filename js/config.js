@@ -16,11 +16,43 @@ window.PORTFOLIO_CONFIG = {
     // for a public site — only use a read-only token if you understand the risk.
     token: "",
     // Repos you never want shown on the site
-    hiddenRepos: ["aaadarsh1337.github.io", "aaadarsh1337"],
+    hiddenRepos: ["aaadarsh1337.github.io", "aaadarsh1337", "threat-harbour"],
     // Repo names to always show first, in the exact order you list them.
     // Everything not listed here follows by most-recently-updated.
     // Example: pinnedRepos: ["my-best-project", "ctf-writeups", "pentest-notes"]
+    // Note: threat-harbour lives above as the flagship spotlight, so it is
+    // hidden from the normal tiles (hiddenRepos wins) and not pinned here.
     pinnedRepos: ["ctf-writeups", "security-automation-toolkit", "picoctf-lab-notes", "tryhackme-lab-notes", "practical-ethical-hacking-notes", "ctf-learning-archive", "cybersecurity-achievements" ]
+  },
+
+  // --- Flagship spotlight -------------------------------------------
+  // Rendered as a hero card at the top of the Repositories section.
+  // Edit copy freely. Live sensor numbers are fetched from metricsUrl
+  // (with the fallbackStats below shown if the fetch fails/offline).
+  flagship: {
+    repo: "threat-harbour",
+    badge: "Flagship project",
+    name: "Threat Harbour",
+    tagline: "Live SSH honeypot · daily threat-intel leaderboard",
+    description: "A Cowrie SSH sensor on Oracle Cloud Free Tier that publishes a fresh leaderboard of real attacker credentials every 24 hours — the usernames, passwords, and commands bots actually try against SSH servers in the wild.",
+    highlights: [
+      "Daily GitHub Actions pipeline parses Cowrie logs on-box, commits aggregates only",
+      "Grafana + Loki + Promtail monitor stack, localhost-bound via SSH tunnel",
+      "Reproducible offline analysis in scripts/ with full methodology docs"
+    ],
+    stack: ["Cowrie 3.x", "Oracle Cloud", "Grafana + Loki", "GitHub Actions", "Python"],
+    metricsUrl: "https://raw.githubusercontent.com/aaadarsh1337/threat-harbour/main/analysis/metrics.json",
+    fallbackStats: [
+      { value: "174,927", label: "events captured" },
+      { value: "2,112", label: "unique source IPs" },
+      { value: "28,501", label: "sessions" },
+      { value: "daily", label: "leaderboard refresh" }
+    ],
+    links: {
+      github: "https://github.com/aaadarsh1337/threat-harbour",
+      leaderboard: "https://github.com/aaadarsh1337/threat-harbour#collected-data--refreshed-every-24-hours-last-run-08-09-2026-utc",
+      docs: "https://github.com/aaadarsh1337/threat-harbour/tree/main/docs"
+    }
   },
 
   // --- Identity -----------------------------------------------------

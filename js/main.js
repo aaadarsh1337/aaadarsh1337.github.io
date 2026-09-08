@@ -202,6 +202,11 @@
       { label: "Open Links", detail: "action", run: openLinksPanel },
       { label: "Copy email", detail: "action", run: () => copyText((CFG.contact || {}).email || "", null) },
     ];
+    if (CFG.flagship && CFG.flagship.repo) {
+      const fl = CFG.flagship.links || {};
+      entries.push({ label: "Open " + (CFG.flagship.name || "Threat Harbour") + " — flagship", detail: "repo · live honeypot", run: () => goSection("repositories") });
+      entries.push({ label: "View Threat Harbour on GitHub", detail: "external", run: () => window.open(fl.github || ("https://github.com/" + CFG.github.username + "/" + CFG.flagship.repo), "_blank", "noopener") });
+    }
     (writeupCache || []).forEach((w) => {
       entries.push({
         label: w.title,
@@ -440,6 +445,225 @@
       list.appendChild(li);
     });
   }
+  // ---------------- Flagship spotlight ----------------
+  // Static config-first render (never breaks the page), then progressive
+  // enhancement: live sensor counts from metrics.json + live repo meta.
+  function fmtNum(n) {
+    if (typeof n !== "number" || !isFinite(n)) return null;
+    try { return n.toLocaleString("en-US"); } catch (e) { return String(n); }
+  }
+
+  function flagshipRepoRef() {
+    const f = CFG.flagship || {};
+    const username = CFG.github && CFG.github.username;
+    return { owner: username, repo: f.repo || "threat-harbour" };
+  }
+
+  function renderFlagship() {
+    const f = CFG.flagship;
+    const host = document.getElementById("flagship");
+    if (!host || !f) { renderHeroFlagship(); return; }
+    host.innerHTML = "";
+
+    const card = document.createElement("article");
+    card.className = "flagship-card";
+    card.id = "flagshipCard";
+
+    const badge = document.createElement("span");
+    badge.className = "flagship-badge";
+    const pulse = document.createElement("span");
+    pulse.className = "pulse";
+    pulse.setAttribute("aria-hidden", "true");
+    badge.appendChild(pulse);
+    badge.appendChild(document.createTextNode(f.badge || "Flagship project"));
+    card.appendChild(badge);
+
+    const title = document.createElement("h3");
+    title.className = "flagship-title";
+    title.textContent = f.name || "Threat Harbour";
+    card.appendChild(title);
+
+    if (f.tagline) {
+      const tag = document.createElement("p");
+      tag.className = "flagship-tagline";
+      tag.textContent = f.tagline;
+      card.appendChild(tag);
+    }
+
+    if (f.description) {
+      const desc = document.createElement("p");
+      desc.className = "flagship-desc";
+      desc.textContent = f.description;
+      card.appendChild(desc);
+    }
+
+    if (Array.isArray(f.highlights) && f.highlights.length) {
+      const ul = document.createElement("ul");
+      ul.className = "flagship-points";
+      f.highlights.forEach((h) => {
+        const li = document.createElement("li");
+        li.textContent = h;
+        ul.appendChild(li);
+      });
+      card.appendChild(ul);
+    }
+
+    // Stats (fallback first, live values swap in when fetched).
+    const statsDl = document.createElement("dl");
+    statsDl.className = "flagship-stats";
+    statsDl.setAttribute("aria-label", "Live sensor statistics");
+    (f.fallbackStats || []).slice(0, 4).forEach((s, i) => {
+      const wrap = document.createElement("div");
+      const dt = document.createElement("dt");
+      dt.textContent = s.label || "";
+      const dd = document.createElement("dd");
+      dd.textContent = s.value || "";
+      dd.dataset.stat = ["events", "ips", "sessions", "refresh"][i] || ("s" + i);
+      wrap.appendChild(dt);
+      wrap.appendChild(dd);
+      statsDl.appendChild(wrap);
+    });
+    card.appendChild(statsDl);
+
+    const live = document.createElement("p");
+    live.className = "flagship-live";
+    live.id = "flagshipLive";
+    live.innerHTML = '<span class="dot">●</span> live counts load from the sensor leaderboard';
+    card.appendChild(live);
+
+    if (Array.isArray(f.stack) && f.stack.length) {
+      const stack = document.createElement("div");
+      stack.className = "flagship-stack";
+      stack.setAttribute("aria-label", "Built with");
+      f.stack.forEach((t) => {
+        const chip = document.createElement("span");
+        chip.textContent = t;
+        stack.appendChild(chip);
+      });
+      card.appendChild(stack);
+    }
+
+    const actions = document.createElement("div");
+    actions.className = "flagship-actions";
+    const links = f.links || {};
+    function addBtn(label, href, primary, ext) {
+      const a = document.createElement("a");
+      a.className = "btn " + (primary ? "btn--primary" : "btn--ghost");
+      a.href = href;
+      a.target = "_blank";
+      a.rel = "noopener";
+      a.innerHTML = escapeHtml(label) + ' <span class="ext">' + (ext || "↗") + "</span>";
+      actions.appendChild(a);
+      return a;
+    }
+    if (links.github) addBtn("View on GitHub", links.github, true);
+    if (links.leaderboard) addBtn("Live leaderboard", links.leaderboard, false);
+    const browseBtn = document.createElement("button");
+    browseBtn.type = "button";
+    browseBtn.className = "btn btn--ghost";
+    browseBtn.textContent = "Browse files →";
+    browseBtn.addEventListener("click", () => {
+      const found = (repoCache || []).find((r) => (r.name || "").toLowerCase() === String(f.repo || "").toLowerCase());
+      if (found) { openTreeSheet(found); return; }
+      const ref = flagshipRepoRef();
+      openTreeSheet({
+        name: f.repo,
+        html_url: (f.links || {}).github || ("https://github.com/" + ref.owner + "/" + ref.repo),
+        default_branch: "main",
+        owner: { login: ref.owner },
+      });
+    });
+    actions.appendChild(browseBtn);
+    card.appendChild(actions);
+
+    const meta = document.createElement("p");
+    meta.className = "flagship-meta";
+    meta.id = "flagshipMeta";
+    meta.textContent = "";
+    card.appendChild(meta);
+
+    host.appendChild(card);
+
+    renderHeroFlagship();
+    enrichFlagshipLive();
+    enrichFlagshipRepo();
+  }
+
+  function renderHeroFlagship() {
+    const f = CFG.flagship;
+    const el = document.getElementById("heroFlagship");
+    if (!el || !f) return;
+    el.hidden = false;
+    el.innerHTML = "";
+    const star = document.createElement("span");
+    star.className = "star";
+    star.textContent = "★ ";
+    el.appendChild(star);
+    el.appendChild(document.createTextNode("Flagship: "));
+    const a = document.createElement("a");
+    a.href = "#repositories";
+    a.textContent = (f.name || "Threat Harbour") + " — live SSH honeypot";
+    el.appendChild(a);
+  }
+
+  function enrichFlagshipLive() {
+    const f = CFG.flagship || {};
+    if (!f.metricsUrl) return;
+    const live = document.getElementById("flagshipLive");
+    fetchWithTimeout(f.metricsUrl, 9000)
+      .then((r) => { if (!r.ok) throw new Error("metrics " + r.status); return r.json(); })
+      .then((m) => {
+        const card = document.getElementById("flagshipCard");
+        if (!card) return;
+        const set = (key, val) => {
+          const dd = card.querySelector('[data-stat="' + key + '"]');
+          if (dd && val != null) dd.textContent = val;
+        };
+        const events = m.totals && m.totals.total_events;
+        const ips = m.sources && m.sources.unique_source_ips;
+        const sessions = m.sessions && m.sessions.unique_session_ids;
+        set("events", fmtNum(events));
+        set("ips", fmtNum(ips));
+        set("sessions", fmtNum(sessions));
+        const cutoff = m.analysis_cutoff_utc || (m.observation_period && m.observation_period.interim_cutoff);
+        if (live) {
+          let when = "";
+          if (cutoff) {
+            try {
+              when = " · updated " + new Date(cutoff).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+            } catch (e) { when = ""; }
+          }
+          live.innerHTML = '<span class="dot">●</span> live sensor counts' + escapeHtml(when) + ' · <a href="' + escapeHtml((f.links || {}).leaderboard || (f.links || {}).github || "#repositories") + '" target="_blank" rel="noopener">full tables ↗</a>';
+        }
+      })
+      .catch(() => {
+        if (live) live.innerHTML = '<span class="dot">●</span> snapshot counts · <a href="' + escapeHtml((f.links || {}).github || "#repositories") + '" target="_blank" rel="noopener">live leaderboard ↗</a>';
+      });
+  }
+
+  function enrichFlagshipRepo() {
+    const f = CFG.flagship || {};
+    if (!f.repo) return;
+    const meta = document.getElementById("flagshipMeta");
+    const apply = (repo) => {
+      if (!meta || !repo) return;
+      // Same inline SVG star the repo tiles use — the raw ★ glyph has no
+      // glyph in the mono stack on some systems and renders as tofu.
+      const bits = [];
+      if (typeof repo.stargazers_count === "number") bits.push('<span class="stat">' + statIcon("star") + " " + repo.stargazers_count + "</span>");
+      if (repo.language) bits.push("<span>" + escapeHtml(repo.language) + "</span>");
+      if (repo.updated_at) bits.push("<span>updated " + escapeHtml(formatDate(repo.updated_at)) + "</span>");
+      meta.innerHTML = bits.join(" · ");
+    };
+    const cached = (repoCache || []).find((r) => (r.name || "").toLowerCase() === String(f.repo).toLowerCase());
+    if (cached) { apply(cached); return; }
+    const ref = flagshipRepoRef();
+    fetchWithTimeout("https://api.github.com/repos/" + ref.owner + "/" + ref.repo, 9000, { headers: githubHeaders() })
+      .then((r) => { if (!r.ok) throw new Error("repo " + r.status); return r.json(); })
+      .then(apply)
+      .catch(() => { /* keep meta empty — card already stands alone */ });
+  }
+
   // ---------------- Certificates ----------------
   function renderCerts() {
     const grid = document.getElementById("certGrid");
@@ -611,6 +835,7 @@
       grid.innerHTML = "";
       repoCache = repos;
       repos.forEach((repo) => grid.appendChild(renderRepoCard(repo, pinned)));
+      try { enrichFlagshipRepo(); } catch (e) { /* flagship meta is optional */ }
     } catch (err) {
       const gh = "https://github.com/" + username + "?tab=repositories";
       if (err && err.rateLimit) {
@@ -1047,6 +1272,7 @@
     renderStats();
     renderSkills();
     renderAchievements();
+    renderFlagship();
     renderCerts();
     renderContact();
     initNav();
