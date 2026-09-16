@@ -33,7 +33,9 @@ jobs:
         run: pip install "markdown==3.7" "Pygments==2.19.1"
 
       - name: Python compiles
-        run: python3 -m py_compile scripts/build_writeups.py
+        run: |
+          python3 -m py_compile scripts/build_writeups.py
+          rm -rf scripts/__pycache__
 
       - name: JS syntax check
         run: |
@@ -69,4 +71,4 @@ jobs:
       - name: No committed token / no __pycache__
         run: |
           ! grep -rn "Authorization.*Bearer" js/ || exit 1
-          test ! -e scripts/__pycache__
+          ! git ls-files | grep -q "__pycache__\|\.pyc$" || exit 1
