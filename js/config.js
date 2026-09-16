@@ -99,7 +99,7 @@ window.PORTFOLIO_CONFIG = {
     },
     {
       category: "Tools",
-      items: ["Web: Burp Suite, FFUF, Nikto", "Network: nmap, Wireshark", "Binary: Ghidra, Binary Ninja, pwntools, pwndbg", "Forensics: Autopsy, Binwalk"]
+      items: ["Web: Burp Suite, ffuf, Nuclei", "Network: Nmap, Wireshark", "Binary: Ghidra, Binary Ninja, pwntools, pwndbg", "Forensics: Autopsy, Binwalk"]
     },
     {
       category: "Currently Learning",
