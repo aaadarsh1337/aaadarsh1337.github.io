@@ -208,9 +208,10 @@
       entries.push({ label: "View Threat Harbour on GitHub", detail: "external", run: () => window.open(fl.github || ("https://github.com/" + CFG.github.username + "/" + CFG.flagship.repo), "_blank", "noopener") });
     }
     (writeupCache || []).forEach((w) => {
+      const tagPart = (w.tags && w.tags.length) ? " · " + w.tags.join("/") : "";
       entries.push({
         label: w.title,
-        detail: w.event + " · " + (w.difficulty ? w.difficulty + " writeup" : "writeup"),
+        detail: w.event + tagPart + " · " + (w.difficulty ? w.difficulty + " writeup" : "writeup"),
         run: () => { window.location.href = "/writeups/" + w.url; },
       });
     });
@@ -223,11 +224,18 @@
 
   function setPalActive(i) {
     const list = document.getElementById("cmdkList");
+    const input = document.getElementById("cmdkInput");
     if (!list) return;
     const rows = list.querySelectorAll(".cmdk-item");
+    if (rows.length === 0) return;
     palActive = ((i % rows.length) + rows.length) % rows.length || 0;
-    rows.forEach((r, j) => r.classList.toggle("active", j === palActive));
+    rows.forEach((r, j) => {
+      const on = j === palActive;
+      r.classList.toggle("active", on);
+      r.setAttribute("aria-selected", on ? "true" : "false");
+    });
     const active = rows[palActive];
+    if (input && active && active.id) input.setAttribute("aria-activedescendant", active.id);
     if (active && active.scrollIntoView) active.scrollIntoView({ block: "nearest" });
   }
 
@@ -267,6 +275,8 @@
     }
     palFiltered = palFiltered.slice(0, 9);
     list.innerHTML = "";
+    const input = document.getElementById("cmdkInput");
+    if (input) input.removeAttribute("aria-activedescendant");
     if (palFiltered.length === 0) {
       list.innerHTML = '<p class="cmdk-empty">No matches</p>';
       return;
@@ -275,6 +285,8 @@
       const row = document.createElement("div");
       row.className = "cmdk-item" + (i === 0 ? " active" : "");
       row.setAttribute("role", "option");
+      row.id = "cmdkOpt" + i;
+      row.setAttribute("aria-selected", i === 0 ? "true" : "false");
       const label = document.createElement("span");
       label.className = "cmdk-label";
       label.textContent = e.label;
@@ -292,6 +304,8 @@
       list.appendChild(row);
     });
     palActive = 0;
+    const first = list.querySelector(".cmdk-item");
+    if (input && first && first.id) input.setAttribute("aria-activedescendant", first.id);
   }
 
   function runPalette(i) {
@@ -551,7 +565,7 @@
       a.className = "btn " + (primary ? "btn--primary" : "btn--ghost");
       a.href = href;
       a.target = "_blank";
-      a.rel = "noopener";
+      a.rel = "noopener noreferrer";
       a.innerHTML = escapeHtml(label) + ' <span class="ext">' + (ext || "↗") + "</span>";
       actions.appendChild(a);
       return a;
@@ -633,11 +647,11 @@
               when = " · updated " + new Date(cutoff).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
             } catch (e) { when = ""; }
           }
-          live.innerHTML = '<span class="dot">●</span> live sensor counts' + escapeHtml(when) + ' · <a href="' + escapeHtml((f.links || {}).leaderboard || (f.links || {}).github || "#repositories") + '" target="_blank" rel="noopener">full tables ↗</a>';
+          live.innerHTML = '<span class="dot">●</span> live sensor counts' + escapeHtml(when) + ' · <a href="' + escapeHtml((f.links || {}).leaderboard || (f.links || {}).github || "#repositories") + '" target="_blank" rel="noopener noreferrer">full tables ↗</a>';
         }
       })
       .catch(() => {
-        if (live) live.innerHTML = '<span class="dot">●</span> snapshot counts · <a href="' + escapeHtml((f.links || {}).github || "#repositories") + '" target="_blank" rel="noopener">live leaderboard ↗</a>';
+        if (live) live.innerHTML = '<span class="dot">●</span> snapshot counts · <a href="' + escapeHtml((f.links || {}).github || "#repositories") + '" target="_blank" rel="noopener noreferrer">live leaderboard ↗</a>';
       });
   }
 
@@ -665,18 +679,43 @@
   }
 
   // ---------------- Certificates ----------------
+  // Per-issuer monogram tints — same pill language as .diff/.tag.
+  const MONO_HUES = [
+    { fg: "#7dcfff", bg: "rgba(125,207,255,0.12)", bd: "rgba(125,207,255,0.50)" },
+    { fg: "#7aa2f7", bg: "rgba(122,162,247,0.12)", bd: "rgba(122,162,247,0.50)" },
+    { fg: "#9ece6a", bg: "rgba(158,206,106,0.12)", bd: "rgba(158,206,106,0.50)" },
+    { fg: "#ff9e64", bg: "rgba(255,158,100,0.12)", bd: "rgba(255,158,100,0.50)" },
+    { fg: "#bb9af7", bg: "rgba(187,154,247,0.14)", bd: "rgba(187,154,247,0.50)" },
+  ];
+
+  function certInitials(name) {
+    const words = String(name || "").trim().split(/\s+/).filter(Boolean);
+    if (words.length >= 2) return (words[0][0] + words[1][0]).toUpperCase();
+    const clean = (words[0] || "?").replace(/[^A-Za-z0-9]/g, "");
+    return (clean.slice(0, 2) || "?").toUpperCase();
+  }
+
+  function certBadge(c, i) {
+    // A real badge image wins; the shared placeholder gets a monogram.
+    if (c.image && c.image !== "assets/certificate.png") {
+      return `<img src="${escapeHtml(c.image)}" alt="${escapeHtml((c.name || "Certificate") + " badge")}" width="44" height="44" loading="lazy" decoding="async" />`;
+    }
+    const hue = MONO_HUES[i % MONO_HUES.length];
+    return `<span class="cert-mono" style="color:${hue.fg};background:${hue.bg};border-color:${hue.bd}" aria-hidden="true">${escapeHtml(certInitials(c.name))}</span>`;
+  }
+
   function renderCerts() {
     const grid = document.getElementById("certGrid");
     grid.innerHTML = "";
-    (CFG.certificates || []).forEach((c) => {
+    (CFG.certificates || []).forEach((c, i) => {
       const card = document.createElement("div");
       card.className = "cert-card";
       card.innerHTML = `
-        <img src="${escapeHtml(c.image || "assets/cert-placeholder.svg")}" alt="${escapeHtml((c.name || "Certificate") + " badge")}" width="44" height="44" loading="lazy" decoding="async" />
+        ${certBadge(c, i)}
         <div>
           <h3>${escapeHtml(c.name)}</h3>
           <div class="cert-meta">${escapeHtml(c.issuer || "")}${c.date ? " · " + escapeHtml(c.date) : ""}</div>
-          ${c.credentialUrl ? `<a href="${escapeHtml(c.credentialUrl)}" target="_blank" rel="noopener">View certificate <span class="ext">↗</span></a>` : ""}
+          ${c.credentialUrl ? `<a href="${escapeHtml(c.credentialUrl)}" target="_blank" rel="noopener noreferrer">View certificate <span class="ext">↗</span></a>` : ""}
         </div>
       `;
       grid.appendChild(card);
@@ -716,24 +755,18 @@
       methods.push(`
         <div class="contact-method contact-method--email">
           <span class="cm-label">Email</span>
-          <a class="cm-value" href="mailto:${escapeHtml(c.email)}">${escapeHtml(c.email)}</a>
+          <div class="cm-row">
+            <a class="cm-value" href="mailto:${escapeHtml(c.email)}">${escapeHtml(c.email)}</a>
+            <button type="button" class="btn btn--ghost btn--small cm-copy" data-copy-email data-label="Copy" title="Copy email">Copy</button>
+          </div>
           <span class="cm-note">Best for longer conversations &amp; opportunities</span>
-          <button type="button" class="btn btn--ghost btn--small cm-copy" data-copy-email data-label="Copy email">Copy email</button>
-        </div>`);
-    }
-    if (c.linkedin) {
-      methods.push(`
-        <div class="contact-method">
-          <span class="cm-label">LinkedIn</span>
-          <a class="cm-value" href="${escapeHtml(c.linkedin)}" target="_blank" rel="noopener">Adarsh Pillai</a>
-          <span class="cm-note">Professional profile</span>
         </div>`);
     }
     if (c.discord) {
       methods.push(`
         <div class="contact-method">
           <span class="cm-label">Discord</span>
-          <a class="cm-value" href="${escapeHtml(c.discord)}" target="_blank" rel="noopener">@aaadarsh1337</a>
+          <a class="cm-value" href="${escapeHtml(c.discord)}" target="_blank" rel="noopener noreferrer">@aaadarsh1337</a>
           <span class="cm-note">Fastest for a quick chat</span>
         </div>`);
     }
@@ -751,10 +784,9 @@
   const MAX_TREE_FILES = 2000;
 
   function githubHeaders() {
-    const headers = { Accept: "application/vnd.github.v3+json" };
-    const token = CFG.github && CFG.github.token;
-    if (token) headers.Authorization = "Bearer " + token;
-    return headers;
+    // Anonymous requests only. A token committed here would ship to every
+    // visitor of this public site, so token support was removed.
+    return { Accept: "application/vnd.github.v3+json" };
   }
 
   function fetchWithTimeout(url, ms, opts) {
@@ -839,9 +871,9 @@
     } catch (err) {
       const gh = "https://github.com/" + username + "?tab=repositories";
       if (err && err.rateLimit) {
-        status.innerHTML = 'GitHub rate limit reached. <a href="' + gh + '" target="_blank" rel="noopener">View repos on GitHub ↗</a>';
+        status.innerHTML = 'GitHub rate limit reached. <a href="' + escapeHtml(gh) + '" target="_blank" rel="noopener noreferrer">View repos on GitHub ↗</a>';
       } else {
-        status.innerHTML = 'Couldn’t reach GitHub. <a href="' + gh + '" target="_blank" rel="noopener">View repos on GitHub ↗</a>';
+        status.innerHTML = 'Couldn’t reach GitHub. <a href="' + escapeHtml(gh) + '" target="_blank" rel="noopener noreferrer">View repos on GitHub ↗</a>';
       }
       grid.innerHTML = renderEmpty("The repository feed is unavailable right now.");
       console.error(err);
@@ -889,7 +921,7 @@
     const lang = repo.language || "";
     card.innerHTML = `
       <div class="repo-top">
-        <a class="repo-name" href="${escapeHtml(repo.html_url)}" target="_blank" rel="noopener">
+        <a class="repo-name" href="${escapeHtml(repo.html_url)}" target="_blank" rel="noopener noreferrer">
           ${escapeHtml(repo.name)}
         </a>
       </div>
@@ -902,7 +934,7 @@
       </div>
       <div class="repo-foot">
         <button class="btn btn--ghost btn--small repo-browse">Browse files</button>
-        <a class="repo-open" href="${escapeHtml(repo.html_url)}" target="_blank" rel="noopener">GitHub ↗</a>
+        <a class="repo-open" href="${escapeHtml(repo.html_url)}" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
       </div>
     `;
     card.querySelector(".repo-browse").addEventListener("click", () => openTreeSheet(repo));
@@ -931,6 +963,18 @@
     return root;
   }
 
+  function makeActivatable(el, fn, label) {
+    el.tabIndex = 0;
+    el.setAttribute("role", "button");
+    if (label) el.setAttribute("aria-label", label);
+    el.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        fn();
+      }
+    });
+  }
+
   function renderTreeNode(node, container, depth, repo, branch) {
     const indent = 14 + depth * 18;
 
@@ -943,10 +987,14 @@
       const childWrap = document.createElement("div");
       childWrap.className = "tree-children";
 
-      dirRow.addEventListener("click", () => {
+      const toggleDir = () => {
         const isOpen = childWrap.classList.toggle("open");
         dirRow.querySelector(".dir-arrow").textContent = isOpen ? "▾" : "▸";
-      });
+        dirRow.setAttribute("aria-expanded", isOpen ? "true" : "false");
+      };
+      dirRow.setAttribute("aria-expanded", "false");
+      dirRow.addEventListener("click", toggleDir);
+      makeActivatable(dirRow, toggleDir);
 
       container.appendChild(dirRow);
       container.appendChild(childWrap);
@@ -959,7 +1007,9 @@
       row.className = "tree-item " + (readable ? "readable" : "unreadable");
       row.style.paddingLeft = indent + "px";
       row.innerHTML = `<span class="path">${escapeHtml(f.name)}</span><span class="kind">${readable ? "inline" : "github ↗"}</span>`;
-      row.addEventListener("click", () => openFileSheet(repo, f.path, branch, readable));
+      const openFile = () => openFileSheet(repo, f.path, branch, readable);
+      row.addEventListener("click", openFile);
+      makeActivatable(row, openFile, "Open " + f.name);
       container.appendChild(row);
     });
   }
@@ -1002,7 +1052,8 @@
     if (window.DOMPurify && window.DOMPurify.sanitize) {
       return window.DOMPurify.sanitize(dirty, { USE_PROFILES: { html: true } });
     }
-    return dirty;
+    // Fail closed: without DOMPurify, never inject raw HTML.
+    return escapeHtml(dirty);
   }
 
   function openTreeSheet(repo) {
@@ -1051,7 +1102,7 @@
         tsBody.appendChild(list);
       })
       .catch((err) => {
-        tsBody.innerHTML = `<p class="dim">Couldn't load the file tree (rate limit or network). <a href="${repo.html_url}" target="_blank" rel="noopener">Open on GitHub instead ↗</a></p>`;
+        tsBody.innerHTML = `<p class="dim">Couldn't load the file tree (rate limit or network). <a href="${escapeHtml(repo.html_url)}" target="_blank" rel="noopener noreferrer">Open on GitHub instead ↗</a></p>`;
         console.error(err);
       });
   }
@@ -1086,7 +1137,7 @@
       fsBody.innerHTML = `
         <div class="redirect-card">
           <p>This file type isn't rendered inline (binary, image, or otherwise not source/text).</p>
-          <a class="btn btn--primary" href="${githubBlobUrl}" target="_blank" rel="noopener">Open on GitHub ↗</a>
+          <a class="btn btn--primary" href="${escapeHtml(githubBlobUrl)}" target="_blank" rel="noopener noreferrer">Open on GitHub ↗</a>
         </div>`;
       return;
     }
@@ -1142,7 +1193,7 @@
         fsBody.innerHTML = `
           <div class="redirect-card">
             <p>Couldn't load this file inline (rate limit or network hiccup).</p>
-            <a class="btn btn--primary" href="${githubBlobUrl}" target="_blank" rel="noopener">Open on GitHub ↗</a>
+            <a class="btn btn--primary" href="${escapeHtml(githubBlobUrl)}" target="_blank" rel="noopener noreferrer">Open on GitHub ↗</a>
           </div>`;
         console.error(err);
       });
@@ -1212,7 +1263,12 @@
       }
       if (!current) return;
       const id = current.id;
-      navLinks.forEach((a) => a.classList.toggle("active", a.dataset.nav === id));
+      navLinks.forEach((a) => {
+        const on = a.dataset.nav === id;
+        a.classList.toggle("active", on);
+        if (on) a.setAttribute("aria-current", "true");
+        else a.removeAttribute("aria-current");
+      });
     }
 
     let spyQueued = false;
@@ -1232,7 +1288,7 @@
 
   // ---------------- Easter egg: secret flag ----------------
   function initEasterEgg() {
-    const foot = document.querySelector(".rail__foot");
+    const foot = document.getElementById("easterEgg");
     if (!foot) return;
     const flag = "1337{wh0_ru_but_w3ll_pl4y3d}";
     let clicks = 0;
@@ -1257,12 +1313,7 @@
       }
     }
     foot.addEventListener("click", activate);
-    foot.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" || e.key === " ") {
-        e.preventDefault();
-        activate();
-      }
-    });
+    // Native <button>: Enter/Space already fire click — no manual key handler.
     foot.setAttribute("title", "psst… try three quick clicks");
   }
 

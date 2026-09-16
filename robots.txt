@@ -1,4 +1,2 @@
 User-agent: *
 Allow: /
-
-Sitemap: https://aaadarsh1337.github.io/sitemap.xml

@@ -1,0 +1,72 @@
+name: Validate site
+
+on:
+  push:
+    paths:
+      - "index.html"
+      - "404.html"
+      - "css/**"
+      - "js/**"
+      - "scripts/**"
+      - "robots.txt"
+      - ".github/workflows/validate.yml"
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install build deps (pinned)
+        run: pip install "markdown==3.7" "Pygments==2.19.1"
+
+      - name: Python compiles
+        run: python3 -m py_compile scripts/build_writeups.py
+
+      - name: JS syntax check
+        run: |
+          node --check js/main.js
+          node --check js/config.js
+          test -f scripts/writeups-filter.js && node --check scripts/writeups-filter.js || true
+          test -f writeups/js/filter.js && node --check writeups/js/filter.js
+          test -f writeups/js/page.js && node --check writeups/js/page.js
+
+      - name: Generated CSS in sync
+        run: diff scripts/style.css writeups/css/style.css
+
+      - name: No sitemaps
+        run: |
+          test ! -e sitemap.xml
+          test ! -e writeups/sitemap-writeups.xml
+          ! grep -ri "sitemap" robots.txt index.html 404.html scripts/build_writeups.py || exit 1
+
+      - name: No inline event handlers
+        run: |
+          ! grep -rn "onerror=\|onclick=\|onload=" index.html 404.html scripts/build_writeups.py || exit 1
+
+      - name: SRI present on CDN scripts
+        run: |
+          grep -c 'integrity="sha384-' index.html | grep -q "3"
+
+      - name: CSP present
+        run: |
+          grep -q "Content-Security-Policy" index.html
+          grep -q "Content-Security-Policy" 404.html
+          grep -q "Content-Security-Policy" scripts/build_writeups.py
+
+      - name: No committed token / no __pycache__
+        run: |
+          ! grep -rn "Authorization.*Bearer" js/ || exit 1
+          test ! -e scripts/__pycache__

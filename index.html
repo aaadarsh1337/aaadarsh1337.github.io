@@ -7,6 +7,7 @@
 <meta name="description" content="Adarsh Pillai (aaadarsh1337): offensive-security enthusiast and CTF player. Penetration testing, reverse engineering, binary exploitation, and security tooling — with live GitHub projects and CTF writeups." />
 <meta name="author" content="Adarsh Pillai" />
 <meta name="theme-color" content="#16161e" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://api.github.com https://raw.githubusercontent.com; object-src 'none'; base-uri 'self'; frame-ancestors 'self'" />
 <link rel="canonical" href="https://aaadarsh1337.github.io/" />
 
 <!-- Open Graph -->
@@ -34,9 +35,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
 <!-- Markdown rendering + syntax highlighting (theme styled locally to match) -->
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.0/marked.min.js"></script>
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.9/purify.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.0/marked.min.js" integrity="sha384-NNQgBjjuhtXzPmmy4gurS5X7P4uTt1DThyevz4Ua0IVK5+kazYQI1W27JHjbbxQz" crossorigin="anonymous"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha384-F/bZzf7p3Joyp5psL90p/p89AZJsndkSoGwRpXcZhleCWhd8SnRuoYo4d0yirjJp" crossorigin="anonymous"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.9/purify.min.js" integrity="sha384-3HPB1XT51W3gGRxAmZ+qbZwRpRlFQL632y8x+adAqCr4Wp3TaWwCLSTAJJKbyWEK" crossorigin="anonymous"></script>
 
 <!-- Structured data (Person) for SEO -->
 <script type="application/ld+json">
@@ -51,7 +52,6 @@
   "knowsAbout": ["Penetration Testing", "Reverse Engineering", "Binary Exploitation", "OSINT", "Web Exploitation"],
   "sameAs": [
     "https://github.com/aaadarsh1337",
-    "https://linkedin.com/in/aaadarsh1337",
     "https://tryhackme.com/p/aaadarsh1337",
     "https://ctftime.org/user/265799",
     "https://x.com/aaadarsh1337"
@@ -90,7 +90,7 @@
   <button class="rail__toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="siteNav">
     <span></span><span></span><span></span>
   </button>
-  <p class="rail__foot" id="easterEgg" role="button" tabindex="0" aria-label="Easter egg — try three quick clicks">pwn for life</p>
+  <button class="rail__foot" id="easterEgg" aria-label="Easter egg — try three quick clicks">pwn for life</button>
 </header>
 
 <main id="main">
@@ -100,10 +100,11 @@
     <div class="sheet__inner">
       <div class="hero">
         <div class="hero__portrait">
-          <img id="avatarImg" src="assets/avatar.webp" onerror="this.onerror=null;this.src='assets/avatar.jpg'" alt="Portrait of Adarsh Pillai" width="176" height="176" decoding="async" fetchpriority="high" />
+          <img id="avatarImg" src="assets/avatar.webp" alt="Portrait of Adarsh Pillai" width="176" height="176" decoding="async" fetchpriority="high" />
+          <p class="hero__figcap" aria-hidden="true">fig. 01 — the human</p>
         </div>
         <div class="hero__text">
-          <p class="fig-label">01 · About</p>
+          <p class="fig-label">01 · About<span class="fig-total" aria-hidden="true">/ 06</span></p>
           <h1 id="heroName">ADARSH PILLAI</h1>
           <p class="hero__tagline" id="heroTagline">Offensive security · reverse engineering · CTF</p>
           <div class="hero__meta">
@@ -114,7 +115,7 @@
             <a class="btn btn--primary" href="/writeups/">
               Read my CTF writeups <span class="ext">→</span>
             </a>
-            <a class="btn btn--ghost" id="resumeBtn" href="#" target="_blank" rel="noopener">Résumé <span class="ext">↗</span></a>
+            <a class="btn btn--ghost" id="resumeBtn" href="#" target="_blank" rel="noopener noreferrer">Résumé <span class="ext">↗</span></a>
             <button type="button" class="btn btn--ghost" id="linksOpen" aria-expanded="false" aria-controls="linksPanel">
               Links <span class="ext">→</span>
             </button>
@@ -132,7 +133,7 @@
   <!-- 02 · SKILLSET -->
   <section class="sheet" id="skillset">
     <div class="sheet__inner">
-      <p class="fig-label">02 · Skillset</p>
+      <p class="fig-label">02 · Skillset<span class="fig-total" aria-hidden="true">/ 06</span></p>
       <h2 class="sheet__title">What I work with</h2>
       <p class="sheet__hint">Core areas of security and the tools I use to practice them.</p>
       <div class="skill-grid" id="skillGrid"></div>
@@ -144,7 +145,7 @@
   <!-- 03 · ACHIEVEMENTS -->
   <section class="sheet" id="achievements">
     <div class="sheet__inner">
-      <p class="fig-label">03 · Achievements</p>
+      <p class="fig-label">03 · Achievements<span class="fig-total" aria-hidden="true">/ 06</span></p>
       <h2 class="sheet__title">Highlights</h2>
       <p class="sheet__hint">CTFs, disclosures, and other results worth showing.</p>
       <ul class="achieve-list" id="achieveList"></ul>
@@ -156,7 +157,7 @@
   <!-- 04 · REPOSITORIES -->
   <section class="sheet" id="repositories">
     <div class="sheet__inner">
-      <p class="fig-label">04 · Repositories</p>
+      <p class="fig-label">04 · Repositories<span class="fig-total" aria-hidden="true">/ 06</span></p>
       <h2 class="sheet__title">Live from GitHub</h2>
       <div class="flagship" id="flagship" aria-label="Flagship project spotlight"></div>
       <p class="sheet__hint status-line" id="repoStatus">&gt; fetching repository index&hellip;</p>
@@ -169,7 +170,7 @@
   <!-- 05 · CERTIFICATES -->
   <section class="sheet" id="certificates">
     <div class="sheet__inner">
-      <p class="fig-label">05 · Certificates</p>
+      <p class="fig-label">05 · Certificates<span class="fig-total" aria-hidden="true">/ 06</span></p>
       <h2 class="sheet__title">Certificate library</h2>
       <p class="sheet__hint">Copies hosted on GitHub (cybersecurity-achievements) in case original links are unavailable.</p>
       <div class="cert-grid" id="certGrid"></div>
@@ -181,7 +182,7 @@
   <!-- 06 · CONTACT -->
   <section class="sheet" id="contact">
     <div class="sheet__inner">
-      <p class="fig-label">06 · Contact</p>
+      <p class="fig-label">06 · Contact<span class="fig-total" aria-hidden="true">/ 06</span></p>
       <h2 class="sheet__title">Get in touch</h2>
       <p class="sheet__hint">Reach me directly. For my other profiles and platforms, open <button type="button" id="contactLinksBtn" class="btn btn--ghost btn--small">Links</button>.</p>
       <div class="contact-list" id="contactList"></div>
@@ -213,7 +214,7 @@
     </div>
     <div class="filesheet__footer">
       <span class="dim" id="fsMeta"></span>
-      <a id="fsGithubLink" class="btn btn--ghost btn--small" href="#" target="_blank" rel="noopener">Open on GitHub <span class="ext">↗</span></a>
+      <a id="fsGithubLink" class="btn btn--ghost btn--small" href="#" target="_blank" rel="noopener noreferrer">Open on GitHub <span class="ext">↗</span></a>
     </div>
   </div>
 </div>
@@ -233,7 +234,7 @@
     </div>
     <div class="filesheet__footer">
       <span class="dim">Files open inline · other types redirect to GitHub</span>
-      <a id="tsGithubLink" class="btn btn--ghost btn--small" href="#" target="_blank" rel="noopener">View repo on GitHub <span class="ext">↗</span></a>
+      <a id="tsGithubLink" class="btn btn--ghost btn--small" href="#" target="_blank" rel="noopener noreferrer">View repo on GitHub <span class="ext">↗</span></a>
     </div>
   </div>
 </div>
@@ -242,7 +243,7 @@
 <button class="cmdk-fab" id="cmdkFab" aria-label="Open command palette (Control K)" title="Command palette (Ctrl+K)">⌘K <span class="fab-label">Commands</span></button>
 <div class="cmdk-backdrop" id="cmdkBackdrop" hidden></div>
 <div class="cmdk" id="cmdk" role="dialog" aria-modal="true" aria-label="Command palette" hidden>
-  <input type="text" id="cmdkInput" placeholder="Type a command or search…" autocomplete="off" aria-label="Command palette" role="combobox" aria-expanded="true" aria-controls="cmdkList" />
+  <input type="text" id="cmdkInput" placeholder="Type a command or search…" autocomplete="off" aria-label="Command palette" role="combobox" aria-expanded="true" aria-controls="cmdkList" aria-autocomplete="list" />
   <div class="cmdk-list" id="cmdkList" role="listbox" aria-label="Results"></div>
   <div class="cmdk-foot"><span><kbd>↑↓</kbd> navigate</span><span><kbd>↵</kbd> run</span><span><kbd>esc</kbd> close</span></div>
 </div>

@@ -186,6 +186,7 @@ h1, h2, h3, h4 { font-family: var(--display); font-weight: 600; color: var(--ink
 }
 .brand-text { color: var(--ink); font-size: 15px; font-family: var(--display); font-weight: 600; }
 .topbar__spacer { flex: 1; }
+.topbar__back { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 .topbar__actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
 
 /* ---------- Buttons ---------- */
@@ -200,7 +201,7 @@ h1, h2, h3, h4 { font-family: var(--display); font-weight: 600; color: var(--ink
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease);
+  transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease), transform var(--dur) var(--ease);
   text-decoration: none;
   border-radius: var(--radius);
 }
@@ -208,7 +209,7 @@ h1, h2, h3, h4 { font-family: var(--display); font-weight: 600; color: var(--ink
 .btn--ghost:hover { border-color: var(--accent-2); color: var(--ink); }
 .btn--small { padding: 6px 11px; font-size: 12px; }
 .btn--primary { background: var(--accent); border-color: var(--accent); color: #16161e; font-weight: 600; }
-.btn--primary:hover { background: #a5e3ff; border-color: #a5e3ff; color: #16161e; }
+.btn--primary:hover { background: #a5e3ff; border-color: #a5e3ff; color: #16161e; transform: translateY(-1px); }
 
 /* ---------- Index page ---------- */
 main { position: relative; z-index: 1; }
@@ -301,55 +302,111 @@ main { position: relative; z-index: 1; }
   flex-wrap: wrap;
 }
 .writeup-section__title {
-  font-family: var(--mono);
-  font-size: 15px;
-  color: var(--accent);
+  font-family: var(--display);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--ink);
   margin: 0;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  letter-spacing: -0.01em;
 }
 .writeup-section__count { font-family: var(--mono); font-size: 12px; color: var(--dim); }
 
 .writeup-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 14px;
 }
+/* Index tiles: kicker · title · difficulty pill + meta line.
+   Tier accent hairline mirrors the pinned repo cards. */
 .writeup-card {
+  position: relative;
   background: var(--panel);
   border: 1px solid var(--line);
-  padding: 20px;
-  position: relative;
-  transition: border-color var(--dur) var(--ease), transform var(--dur) var(--ease);
-  text-align: left;
-  width: 100%;
-  color: inherit;
-  font: inherit;
+  border-top: 2px solid var(--line-bright);
   border-radius: var(--radius);
-  display: block;
+  padding: 20px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: inherit;
+  transition: border-color var(--dur) var(--ease), transform var(--dur) var(--ease), background var(--dur) var(--ease);
 }
+.writeup-card.tier-easy { border-top-color: #9ece6a; }
+.writeup-card.tier-medium { border-top-color: var(--accent-2); }
+.writeup-card.tier-hard { border-top-color: var(--danger); }
 .writeup-card:hover {
   border-color: var(--line-bright);
-  transform: translateY(-2px);
+  background: var(--panel-2);
+  transform: translateY(-1px);
   text-decoration: none;
+}
+.writeup-card__kicker {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--faint);
+  padding-right: 24px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 .writeup-card h3 {
   font-family: var(--display);
-  font-size: 17px;
+  font-size: 18px;
   font-weight: 600;
   color: var(--ink);
-  margin: 0;
+  margin: 0 0 6px;
   word-break: break-word;
   letter-spacing: -0.01em;
 }
-.writeup-card__top {
+.writeup-card:hover h3 { color: var(--accent); }
+/* Card footer: tier-colored difficulty + quiet meta, bottom-aligned so
+   rows line up, separated by a hairline like the repo-card meta. */
+.writeup-card__foot {
+  margin: auto 0 0;
+  padding: 12px 0 0;
+  border-top: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--dim);
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 10px;
-  margin-bottom: 6px;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 8px;
 }
-/* Difficulty badge (auto-assigned at build time — see DIFFICULTY_MAP) */
+.writeup-card__foot .w-tier { font-weight: 600; }
+.tier-easy .w-tier { color: #9ece6a; }
+.tier-medium .w-tier { color: var(--accent-2); }
+.tier-hard .w-tier { color: var(--danger); }
+.writeup-card__kicker .k-tag {
+  color: var(--accent-2);
+  font-weight: 600;
+}
+/* Difficulty badge (reader sidebar + index cards) */
+.writeup-card__go {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  font-family: var(--mono);
+  font-size: 14px;
+  color: var(--faint);
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+.writeup-card:hover .writeup-card__go,
+.writeup-card:focus-visible .writeup-card__go {
+  opacity: 1;
+  transform: none;
+  color: var(--accent);
+}
+@media (prefers-reduced-motion: reduce) {
+  .writeup-card, .writeup-card__go { transition: none; transform: none; }
+}
+/* Difficulty badge (reader sidebar only — index cards use plain text + dot) */
 .diff {
   display: inline-block;
   font-family: var(--mono);
@@ -366,15 +423,46 @@ main { position: relative; z-index: 1; }
 .diff-easy { color: #B5E0A8; background: rgba(158, 206, 106, 0.18); border-color: #9ece6a; }
 .diff-medium { color: #A9C6FF; background: rgba(122, 162, 247, 0.18); border-color: var(--accent-2); }
 .diff-hard { color: #F2A3B3; background: rgba(247, 118, 142, 0.20); border-color: var(--danger); }
-.writeup-card .meta {
+
+/* Category tags (reader sidebar only — index cards use plain-text kicker) */
+.tag {
+  display: inline-block;
   font-family: var(--mono);
-  font-size: 11px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 3px 9px;
+  border: 1px solid var(--line-bright);
+  border-radius: 1px;
   color: var(--dim);
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
+  background: rgba(59, 66, 97, 0.25);
+  flex-shrink: 0;
+  white-space: nowrap;
 }
-.writeup-card .meta .md-badge { color: var(--accent); }
+.tag-rev, .tag-pwn { color: var(--accent); border-color: var(--accent-2); background: var(--accent-2-soft); }
+.tag-web { color: #A9C6FF; border-color: var(--accent-2); background: rgba(122, 162, 247, 0.10); }
+.tag-crypto, .tag-forensics, .tag-cloud, .tag-osint { color: var(--muted); }
+.side-tagwrap { display: block; margin-top: 8px; }
+.side-tagwrap .tag { margin-right: 6px; }
+
+/* Tag filter chips on the index */
+.tag-filters { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 26px; }
+.tag-chip {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  letter-spacing: 0.06em;
+  padding: 7px 12px;
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--dim);
+  cursor: pointer;
+  border-radius: var(--radius);
+  transition: border-color var(--dur) var(--ease), color var(--dur) var(--ease), background var(--dur) var(--ease);
+}
+.tag-chip:hover { border-color: var(--accent-2); color: var(--ink); }
+.tag-chip.active { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+.tag-chip__count { opacity: 0.65; font-size: 10.5px; }
 
 /* ---------- Reader layout ---------- */
 .reader-layout {
@@ -548,6 +636,47 @@ a.file-item.unreadable .kind { color: var(--danger); }
 .reader__body .md-render th, .reader__body .md-render td { border: 1px solid var(--line); padding: 8px 10px; text-align: left; }
 .reader__body .md-render th { background: var(--panel); color: var(--dim); font-family: var(--mono); font-size: 12px; }
 .reader__body .md-render hr { border: none; border-top: 1px solid var(--line); margin: 2em 0; }
+
+/* ---------- Reading progress ---------- */
+.read-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 2px;
+  width: 0;
+  background: var(--accent);
+  z-index: 200;
+  pointer-events: none;
+}
+
+/* ---------- Code copy buttons (added by js/page.js) ---------- */
+div.highlight,
+.reader__body .md-render pre { position: relative; }
+.copy-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 4px 10px;
+  background: rgba(22, 22, 30, 0.88);
+  border: 1px solid var(--line-bright);
+  color: var(--dim);
+  border-radius: var(--radius);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity var(--dur) var(--ease), color var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+div.highlight:hover .copy-btn,
+.reader__body .md-render pre:hover .copy-btn,
+.copy-btn:focus-visible { opacity: 1; }
+.copy-btn:hover { color: var(--accent); border-color: var(--accent-2); }
+@media (hover: none) {
+  .copy-btn { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .copy-btn { transition: none; }
+}
 
 /* ---------- Prev / next pager ---------- */
 .writeup-pager {

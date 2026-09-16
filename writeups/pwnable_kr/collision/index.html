@@ -6,11 +6,14 @@
 <title>Collision · pwnable_kr</title>
 <meta name="description" content="CTF writeup: Collision (pwnable_kr)" />
 <meta name="theme-color" content="#16161e" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; object-src 'none'; base-uri 'self'; frame-ancestors 'self'" />
 <link rel="canonical" href="https://aaadarsh1337.github.io/writeups/pwnable_kr/collision/" />
 <meta property="og:type" content="article" />
 <meta property="og:title" content="Collision · pwnable_kr" />
 <meta property="og:description" content="CTF writeup: Collision (pwnable_kr)" />
 <meta property="og:url" content="https://aaadarsh1337.github.io/writeups/pwnable_kr/collision/" />
+<meta property="og:image" content="https://aaadarsh1337.github.io/assets/avatar.jpg" />
+<meta name="twitter:image" content="https://aaadarsh1337.github.io/assets/avatar.jpg" />
 <meta name="twitter:card" content="summary" />
 <meta name="twitter:title" content="Collision · pwnable_kr" />
 <meta name="twitter:description" content="CTF writeup: Collision (pwnable_kr)" />
@@ -23,6 +26,7 @@
 <link rel="stylesheet" href="../../css/pygments.css" />
 </head>
 <body>
+<div class="read-progress" id="readProgress" aria-hidden="true"></div>
 <div class="lab-grid" aria-hidden="true"></div>
 
 <header class="topbar">
@@ -31,11 +35,13 @@
       <span class="brand-mark">CTF</span>
       <span class="brand-text">Writeups</span>
     </a>
-    <div class="topbar__spacer"></div>
-    <div class="topbar__actions">
+    <div class="topbar__back">
       <a class="btn btn--ghost" href="../../index.html">&#8592; All writeups</a>
       <a class="btn btn--ghost" href="https://aaadarsh1337.github.io/">&#8592; Portfolio</a>
-      <a class="btn btn--ghost" href="https://github.com/aaadarsh1337/ctf-writeups" target="_blank" rel="noopener">Repo &#8599;</a>
+    </div>
+    <div class="topbar__spacer"></div>
+    <div class="topbar__actions">
+      <a class="btn btn--ghost" href="https://github.com/aaadarsh1337/ctf-writeups" target="_blank" rel="noopener noreferrer">Repo &#8599;</a>
     </div>
   </div>
 </header>
@@ -48,15 +54,15 @@
       <p class="tb-label">CHALLENGE</p>
       <h2>Collision</h2>
       <p class="side-path">pwnable_kr</p>
-      <p class="side-meta">1 min read &middot; 2 files</p><span class="side-diffwrap"><span class="diff diff-easy">Toddler&#x27;s Bottle</span></span>
+      <p class="side-meta">1 min read &middot; 2 files</p><span class="side-diffwrap"><span class="diff diff-easy">Toddler&#x27;s Bottle</span></span><span class="side-tagwrap"><span class="tag tag-pwn">pwn</span></span>
     </div>
     <div class="sidebar__files">
       <p class="tb-label">FILES</p>
-      <div class="file-list"><a class="file-item readable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/pwnable_kr/collision/exploit.py" target="_blank" rel="noopener"><span class="name">exploit.py</span><span class="kind">py</span></a><a class="file-item readable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/pwnable_kr/collision/notes.md" target="_blank" rel="noopener"><span class="name">notes.md</span><span class="kind">md</span></a></div>
+      <div class="file-list"><a class="file-item readable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/pwnable_kr/collision/exploit.py" target="_blank" rel="noopener noreferrer"><span class="name">exploit.py</span><span class="kind">py</span></a><a class="file-item readable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/pwnable_kr/collision/notes.md" target="_blank" rel="noopener noreferrer"><span class="name">notes.md</span><span class="kind">md</span></a></div>
     </div>
     <div class="sidebar__foot">
-      <a class="btn btn--ghost btn--small sidebar-gh-btn" href="https://github.com/aaadarsh1337/ctf-writeups/tree/main/pwnable_kr/collision" target="_blank" rel="noopener">Open folder &#8599;</a>
-      <a class="btn btn--ghost btn--small sidebar-gh-btn" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/pwnable_kr/collision/notes.md" target="_blank" rel="noopener">View markdown &#8599;</a>
+      <a class="btn btn--ghost btn--small sidebar-gh-btn" href="https://github.com/aaadarsh1337/ctf-writeups/tree/main/pwnable_kr/collision" target="_blank" rel="noopener noreferrer">Open folder &#8599;</a>
+      <a class="btn btn--ghost btn--small sidebar-gh-btn" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/pwnable_kr/collision/notes.md" target="_blank" rel="noopener noreferrer">View markdown &#8599;</a>
     </div>
   </aside>
   <article class="reader">
@@ -65,7 +71,7 @@
         <span class="tb-label">READING</span>
         <span>notes.md</span>
       </div>
-      <a class="btn btn--ghost btn--small" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/pwnable_kr/collision/notes.md" target="_blank" rel="noopener">Source &#8599;</a>
+      <a class="btn btn--ghost btn--small" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/pwnable_kr/collision/notes.md" target="_blank" rel="noopener noreferrer">Source &#8599;</a>
     </div>
     <div class="reader__body">
       <div class="md-render">
@@ -100,5 +106,6 @@ And remainder is 4</p>
 </div>
 
 </main>
+<script src="../../js/page.js" defer></script>
 </body>
 </html>

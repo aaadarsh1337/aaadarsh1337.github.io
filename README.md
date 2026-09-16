@@ -18,8 +18,8 @@ Static site on GitHub Pages. No backend, no build step for the main site — jus
 | **03 · Achievements** | `js/config.js` → `achievements` | CTF placements, THM rank, with proof links |
 | **04 · Repositories** | GitHub REST API + `js/config.js` → `github`, `flagship` | Flagship spotlight (Threat Harbour w/ live metrics) + pinned repos sorted by recent push, with language / stars / push date |
 | **05 · Certificates** | `js/config.js` → `certificates` | Card grid, verification links, local copies in `cybersecurity-achievements` as fallback |
-| **06 · Contact** | `js/config.js` → `contact` | Email / LinkedIn / Discord only (socials live in Links panel) |
-| **CTF Writeups** | Generated `/writeups/` | 22+ static pages grouped by event (TryHackMe, pwnable.kr, picoCTF, HackerHolidays), with search + difficulty badges |
+| **06 · Contact** | `js/config.js` → `contact` | Email / Discord only (socials live in Links panel) |
+| **CTF Writeups** | Generated `/writeups/` | 22+ static pages grouped by event (TryHackMe, pwnable.kr, picoCTF, HackerHolidays), with search + category tag filter + difficulty badges |
 
 Interactive extras (all in `js/main.js`, no framework):
 
@@ -48,7 +48,7 @@ Design: Tokyo Night-inspired (near-black indigo `#16161e`, cyan `#7DCFFF` accent
 ├── writeups/                   # GENERATED — do not hand-edit (see below)
 │   ├── index.html              # Event-grouped cards + live filter
 │   ├── search.json             # Title/event/url index for ⌘K palette
-│   ├── sitemap-writeups.xml
+│   ├── js/filter.js + page.js  # Index live-filter + reader progress/copy (external for strict CSP)
 │   ├── css/style.css + pygments.css
 │   └── hackerholidays/ picoctf/ pwnable_kr/ tryhackme/  # one folder per challenge
 ├── scripts/
@@ -56,7 +56,7 @@ Design: Tokyo Night-inspired (near-black indigo `#16161e`, cyan `#7DCFFF` accent
 │   ├── style.css               # Writeups theme source (copied to writeups/css/)
 │   └── difficulty_cache.json   # Verified difficulty labels (fallback when offline)
 ├── .github/workflows/deploy-writeups.yml  # Daily + on-push writeups rebuild
-├── sitemap.xml  robots.txt  .nojekyll
+├── robots.txt  .nojekyll
 ```
 
 ---
@@ -74,7 +74,7 @@ skills:      [...]   // categories → chips
 achievements: [...]  // { title, detail, date, url }
 stats:       [...]   // 3–4 hero numbers
 certificates:[...]   // { name, issuer, date, credentialUrl, image }
-contact:     { email, linkedin, discord }
+contact:     { email, discord }
 ```
 
 No build step — edit, commit, push, GitHub Pages deploys.
@@ -97,9 +97,10 @@ What the build does:
 - Finds writeups (`notes.md` / `writeup.md` / `README.md` / single `*.md` per folder)
 - Renders Markdown → HTML with fenced code, tables, TOC, Tokyo Night Pygments theme
 - Emits per-challenge page with sidebar (challenge meta, file list, GitHub folder/markdown links), prev/next pager, JSON-LD `TechArticle` + canonical/OG tags
-- Builds `writeups/index.html` (event sections, live filter), `search.json`, `sitemap-writeups.xml`
+- Builds `writeups/index.html` (event sections, live filter), `search.json`, `js/filter.js`
 - Copies challenge images preserving relative paths; sidebar lists all sibling files
 - Difficulty badges are **source-grounded only**: frontmatter `difficulty:` wins → live platform pull (pwnable.kr bottle list, THM room JSON-LD `educationalLevel`, other pages' JSON-LD) → `difficulty_cache.json` → author-stated in text → no badge
+- Category tags are **automatic**: frontmatter `tags: [rev]` wins → keyword + filename + event scoring (`rev` / `pwn` / `web` / `crypto` / `forensics` / `cloud` / `osint`, else `misc`) → index filter chips + card/sidebar badges + `search.json` refresh every build, so new writeups (and new categories) appear with zero template changes
 
 Automation (`.github/workflows/deploy-writeups.yml`):
 
@@ -126,7 +127,7 @@ python3 -m http.server 8000
 # → http://localhost:8000/writeups/
 ```
 
-SEO/perf notes: canonical URLs, OG/Twitter cards, `Person` + `TechArticle` JSON-LD, `sitemap.xml` + `robots.txt`, deferred CDN scripts (`marked` + `highlight.js` + `DOMPurify`), preloaded fonts, WebP avatar with JPG fallback.
+SEO/perf notes: canonical URLs, OG/Twitter cards, `Person` + `TechArticle` JSON-LD, `robots.txt`, strict CSP meta tags, SRI-pinned CDN scripts (`marked` + `highlight.js` + `DOMPurify`), preloaded fonts, WebP avatar with JPG fallback. No sitemap is shipped (search engines discover pages via links; avoids daily-churn commits).
 
 ---
 

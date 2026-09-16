@@ -29,7 +29,7 @@ import os
 import re
 import shutil
 import urllib.request
-from datetime import date
+from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import urlparse
 
@@ -172,6 +172,94 @@ def md_to_html(text: str) -> str:
     )
 
 
+# ---------------------------------------------------------------------------
+# Build-time HTML sanitizer (stdlib only, no extra deps).
+# Markdown output is trusted-author content, but a compromised source repo
+# must not turn into stored XSS in static HTML. Strips executable elements
+# (script/style/iframe/object/embed/base/link/meta), event-handler attributes
+# (on*), and javascript:/data:text/html/vbscript: URLs. Allows everything
+# else, including code-highlight spans, tables, and images.
+# ---------------------------------------------------------------------------
+
+_BLOCKED_TAGS = {"script", "style", "iframe", "object", "embed", "base", "link", "meta", "form", "input", "button"}
+_DANGEROUS_SCHEMES = ("javascript:", "data:text/html", "vbscript:")
+
+
+class _Sanitizer(HTMLParser):
+    def __init__(self):
+        super().__init__(convert_charrefs=False)
+        self.out: list = []
+        self.skip_depth = 0
+
+    def handle_starttag(self, tag, attrs):
+        low = tag.lower()
+        if low in _BLOCKED_TAGS or self.skip_depth:
+            if low in _BLOCKED_TAGS:
+                self.skip_depth += 1
+            return
+        clean = []
+        for k, v in attrs:
+            kl = k.lower()
+            if kl.startswith("on"):
+                continue
+            if kl in ("href", "src", "xlink:href") and isinstance(v, str):
+                vv = v.strip().lower()
+                if vv.startswith(_DANGEROUS_SCHEMES):
+                    continue
+            clean.append((k, v))
+        attr_str = "".join(
+            f' {k}="{html.escape(v, quote=True)}"' if v is not None else f" {k}"
+            for k, v in clean
+        )
+        self.out.append(f"<{tag}{attr_str}>")
+
+    def handle_startendtag(self, tag, attrs):
+        low = tag.lower()
+        if low in _BLOCKED_TAGS or self.skip_depth:
+            return
+        self.handle_starttag(tag, attrs)
+        self.out.append("")  # handle_starttag already emitted; close below
+        self.out[-2:] = [self.out[-2].rstrip(">") + " />"] if self.out[-2].endswith(">") else self.out[-2:]
+
+    def handle_endtag(self, tag):
+        low = tag.lower()
+        if low in _BLOCKED_TAGS:
+            self.skip_depth = max(0, self.skip_depth - 1)
+            return
+        if self.skip_depth:
+            return
+        self.out.append(f"</{tag}>")
+
+    def handle_data(self, data):
+        if not self.skip_depth:
+            self.out.append(data)
+
+    def handle_entityref(self, name):
+        if not self.skip_depth:
+            self.out.append(f"&{name};")
+
+    def handle_charref(self, name):
+        if not self.skip_depth:
+            self.out.append(f"&#{name};")
+
+    def handle_comment(self, data):
+        pass  # drop comments (conditional comments can hide payloads)
+
+    def get_html(self):
+        return "".join(self.out)
+
+
+def sanitize_html(raw_html: str) -> str:
+    """Strip executable constructs from rendered markdown HTML."""
+    try:
+        p = _Sanitizer()
+        p.feed(raw_html)
+        p.close()
+        return p.get_html()
+    except Exception:
+        return html.escape(raw_html)
+
+
 def write_pygments_css(dest_css: Path) -> None:
     """Write a Tokyo-Night-matching stylesheet for highlighted code blocks.
 
@@ -291,7 +379,7 @@ def render_file_list(files: list, gh_base: str, branch: str) -> str:
         url = f"{gh_base}/blob/{branch}/{f['rel_repo']}"
         rows.append(
             f'<a class="file-item {kind_class}" href="{html.escape(url)}" '
-            f'target="_blank" rel="noopener">'
+            f'target="_blank" rel="noopener noreferrer">'
             f'<span class="name">{html.escape(f["rel_local"])}</span>'
             f'<span class="kind">{html.escape(label)}</span>'
             f"</a>"
@@ -307,14 +395,17 @@ PAGE_SHELL = """<!DOCTYPE html>
 <title>{title}</title>
 <meta name="description" content="{description}" />
 <meta name="theme-color" content="#16161e" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; object-src 'none'; base-uri 'self'; frame-ancestors 'self'" />
 <link rel="canonical" href="{canonical}" />
 <meta property="og:type" content="article" />
 <meta property="og:title" content="{title}" />
 <meta property="og:description" content="{description}" />
 <meta property="og:url" content="{canonical}" />
+<meta property="og:image" content="https://aaadarsh1337.github.io/assets/avatar.jpg" />
 <meta name="twitter:card" content="summary" />
 <meta name="twitter:title" content="{title}" />
 <meta name="twitter:description" content="{description}" />
+<meta name="twitter:image" content="https://aaadarsh1337.github.io/assets/avatar.jpg" />
 <script type="application/ld+json">{jsonld}</script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2316161e'/%3E%3Crect x='13' y='4' width='6' height='24' fill='%237DCFFF'/%3E%3Crect x='4' y='13' width='24' height='6' fill='%237DCFFF'/%3E%3Crect x='14' y='6' width='4' height='20' fill='%2316161e'/%3E%3Crect x='6' y='14' width='20' height='4' fill='%2316161e'/%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -324,6 +415,7 @@ PAGE_SHELL = """<!DOCTYPE html>
 <link rel="stylesheet" href="{css_prefix}css/pygments.css" />
 </head>
 <body>
+<div class="read-progress" id="readProgress" aria-hidden="true"></div>
 <div class="lab-grid" aria-hidden="true"></div>
 
 <header class="topbar">
@@ -332,11 +424,13 @@ PAGE_SHELL = """<!DOCTYPE html>
       <span class="brand-mark">CTF</span>
       <span class="brand-text">Writeups</span>
     </a>
+    <div class="topbar__back">
+      {topbar_back}
+    </div>
     <div class="topbar__spacer"></div>
     <div class="topbar__actions">
       {topbar_extra}
-      <a class="btn btn--ghost" href="{portfolio_url}">&#8592; Portfolio</a>
-      <a class="btn btn--ghost" href="{github_repo}" target="_blank" rel="noopener">Repo &#8599;</a>
+      <a class="btn btn--ghost" href="{github_repo}" target="_blank" rel="noopener noreferrer">Repo &#8599;</a>
     </div>
   </div>
 </header>
@@ -344,6 +438,7 @@ PAGE_SHELL = """<!DOCTYPE html>
 <main>
 {body}
 </main>
+{page_scripts}
 </body>
 </html>
 """
@@ -355,15 +450,15 @@ WRITEUP_BODY = """
       <p class="tb-label">CHALLENGE</p>
       <h2>{name}</h2>
       <p class="side-path">{event}</p>
-      <p class="side-meta">{day_prefix}{reading_time} min read &middot; {file_count} files</p>{diff_block}
+      <p class="side-meta">{day_prefix}{reading_time} min read &middot; {file_count} files</p>{diff_block}{tag_block}
     </div>
     <div class="sidebar__files">
       <p class="tb-label">FILES</p>
       {file_list}
     </div>
     <div class="sidebar__foot">
-      <a class="btn btn--ghost btn--small sidebar-gh-btn" href="{folder_github}" target="_blank" rel="noopener">Open folder &#8599;</a>
-      <a class="btn btn--ghost btn--small sidebar-gh-btn" href="{md_github}" target="_blank" rel="noopener">View markdown &#8599;</a>
+      <a class="btn btn--ghost btn--small sidebar-gh-btn" href="{folder_github}" target="_blank" rel="noopener noreferrer">Open folder &#8599;</a>
+      <a class="btn btn--ghost btn--small sidebar-gh-btn" href="{md_github}" target="_blank" rel="noopener noreferrer">View markdown &#8599;</a>
     </div>
   </aside>
   <article class="reader">
@@ -372,7 +467,7 @@ WRITEUP_BODY = """
         <span class="tb-label">READING</span>
         <span>{md_name}</span>
       </div>
-      <a class="btn btn--ghost btn--small" href="{md_github}" target="_blank" rel="noopener">Source &#8599;</a>
+      <a class="btn btn--ghost btn--small" href="{md_github}" target="_blank" rel="noopener noreferrer">Source &#8599;</a>
     </div>
     <div class="reader__body">
       <div class="md-render">
@@ -591,6 +686,158 @@ def resolve_difficulty(meta: dict, body_md: str, url_path: str, slug: str,
     return None, None, "none"
 
 
+# ---------------------------------------------------------------------------
+# Source-grounded category tags.
+# Same philosophy as difficulty: explicit beats inferred, never guessed.
+# Order: frontmatter `tags:` wins (normalized through TAG_ALIASES) ->
+# keyword + filename + event scoring -> `misc` fallback (always 1+ tags,
+# so the index filter and search.json stay complete for future writeups).
+# To tag a new writeup explicitly, add to its markdown frontmatter:
+#   ---
+#   tags: [rev]
+#   ---
+# ---------------------------------------------------------------------------
+
+TAG_ORDER = ["rev", "pwn", "web", "crypto", "forensics", "cloud", "osint", "misc"]
+
+TAG_ALIASES = {
+    "rev": "rev", "re": "rev", "reverse": "rev", "reversing": "rev",
+    "reverse-engineering": "rev", "reverse engineering": "rev",
+    "pwn": "pwn", "binexp": "pwn", "exploit": "pwn", "exploitation": "pwn",
+    "binary-exploitation": "pwn", "binary exploitation": "pwn",
+    "web": "web", "web-exploitation": "web", "web exploitation": "web",
+    "crypto": "crypto", "cryptography": "crypto", "crypt": "crypto",
+    "forensics": "forensics", "forensic": "forensics", "dfir": "forensics",
+    "stego": "forensics", "steganography": "forensics",
+    "cloud": "cloud",
+    "osint": "osint",
+    "misc": "misc", "general": "misc", "other": "misc",
+}
+
+# (regex, weight) per tag. Distinctive tool/technique names weigh more than
+# generic words; per-term hits are capped so one repeated word can't dominate.
+TAG_SIGNALS = {
+    "rev": [
+        (r"reverse.engineering|reversing", 3),
+        (r"\bghidra\b", 3), (r"binary[\s-]?ninja", 3), (r"\bida\b", 2),
+        (r"\bradare2?\b", 2), (r"\bobjdump\b", 2), (r"\bstrings\b", 1),
+        (r"decompil", 2), (r"disassembl", 2), (r"\bilspy\b|\bdnspy\b", 3),
+        (r"\bopcode\b", 2),
+        (r"crackme", 3), (r"keygen", 2), (r"\.xpi\b", 2),
+        (r"browser extension", 2), (r"widechar", 2), (r"\bxor\b", 1),
+    ],
+    "pwn": [
+        # NOTE: bare "got" is deliberately NOT matched here — it collides
+        # with the English word "got". Uppercase GOT is counted separately
+        # (case-sensitive) in resolve_tags.
+        (r"pwntools", 3), (r"shellcode", 3), (r"\brop\b", 3), (r"ret2", 3),
+        (r"\bplt\b", 2), (r"\btcache\b", 3),
+        (r"heap exploit", 3), (r"buffer overflow", 3), (r"stack overflow", 2),
+        (r"format.string", 2), (r"\blibc\b", 2),
+        (r"segmentation fault|segfault", 2), (r"pwndbg|\bgdb\b", 2),
+        (r"binary exploitation", 4), (r"pwnable", 2),
+    ],
+    "web": [
+        (r"\bburp\b", 3), (r"\bsqli\b|sql injection", 3),
+        (r"\bxss\b|cross.site.script", 3), (r"\bssti\b|template injection", 3),
+        (r"\blfi\b|\brfi\b|file inclusion", 3),
+        (r"command injection", 3),
+        (r"path traversal|zip slip", 3), (r"webshell|reverse shell", 2),
+        (r"vulnerable.*upload|upload.*vulnerab", 2),
+        (r"\bffuf\b|\bgobuster\b|\bnikto\b", 2),
+        (r"upload.*portal|portal.*upload", 2),
+    ],
+    "crypto": [
+        (r"\brsa\b", 3), (r"\baes\b", 3), (r"fernet", 3), (r"cipher", 2),
+        (r"decrypt", 2), (r"seed.phrase", 3), (r"key vault|keyvault", 2),
+        (r"hashcat|john.*ripper", 2),
+    ],
+    "forensics": [
+        (r"\bpcap\b|wireshark", 3), (r"volatility", 3), (r"autopsy", 3),
+        (r"binwalk", 2), (r"steghide|stegseek|zsteg", 3), (r"\bexif\b", 2),
+        (r"memory dump|\.e01\b|disk image", 2),
+    ],
+    "cloud": [
+        (r"\bazure\b", 3), (r"\bsas token\b", 3),
+        (r"storage account|storage container|\bblob\b", 2),
+        (r"\baws\b|\bgcp\b", 2),
+    ],
+    "osint": [
+        (r"\bosint\b", 3), (r"sherlock", 2),
+        (r"username.*search|email.*lookup", 2),
+    ],
+}
+
+TAG_EVENT_HINTS = [
+    ("pwnable", "pwn", 3),
+    ("rev", "rev", 3), ("reverse", "rev", 3),
+    ("crypt", "crypto", 2),
+    ("forens", "forensics", 3),
+    ("osint", "osint", 3),
+    ("binary", "rev", 2), ("binary", "pwn", 1),
+]
+
+TAG_FILE_HINTS = [
+    (r"\.pcap(ng)?$", "forensics", 4),
+    (r"(exploit|solve|payload).*\.py$", "pwn", 2),
+    (r"\.xpi$|\.apk$", "rev", 2),
+]
+
+
+def normalize_tags(raw) -> list:
+    """Lowercase + alias-map a frontmatter tag list. Keeps unknown tags only
+    if they look like safe slugs (so future categories don't break the UI)."""
+    out = []
+    for t in raw or []:
+        slug = str(t).strip().lower().replace(" ", "-")
+        slug = TAG_ALIASES.get(slug, slug)
+        if not slug or slug in out:
+            continue
+        if slug in TAG_ORDER or re.fullmatch(r"[a-z0-9][a-z0-9-]{0,19}", slug):
+            out.append(slug)
+    return out[:2]
+
+
+def resolve_tags(meta: dict, body_md: str, files: list, event: str, name: str):
+    """Returns (tags, provenance). Always 1+ tags; second tag only when it
+    scores >= max(2, 25% of the top score)."""
+    fm = normalize_tags(meta.get("tags"))
+    if fm:
+        return fm, "frontmatter"
+
+    hay = f"{event} {name} {body_md[:12000]}".lower()
+    scores: dict = {t: 0 for t in TAG_ORDER if t != "misc"}
+    for pat, tag, w in TAG_EVENT_HINTS:
+        if pat in f"{event} {name}".lower():
+            scores[tag] = scores.get(tag, 0) + w
+    for entry in files or []:
+        fname = str(entry.get("rel_local", "")).lower()
+        for pat, tag, w in TAG_FILE_HINTS:
+            if re.search(pat, fname):
+                scores[tag] = scores.get(tag, 0) + w
+    for tag, signals in TAG_SIGNALS.items():
+        for pat, w in signals:
+            hits = len(re.findall(pat, hay))
+            if hits:
+                scores[tag] = scores.get(tag, 0) + min(hits, 4) * w
+    # Uppercase GOT, counted case-sensitively: bare lowercase "got" is
+    # usually just English ("we got the flag").
+    got_hits = len(re.findall(r"\bGOT\b", body_md[:12000]))
+    if got_hits:
+        scores["pwn"] = scores.get("pwn", 0) + min(got_hits, 4) * 2
+
+    ranked = sorted(scores.items(), key=lambda kv: kv[1], reverse=True)
+    if not ranked or ranked[0][1] <= 0:
+        return ["misc"], "misc-fallback"
+    top_tag, top_score = ranked[0]
+    tags = [top_tag]
+    if len(ranked) > 1:
+        second, second_score = ranked[1]
+        if second_score >= max(2, 0.25 * top_score):
+            tags.append(second)
+    return tags, "auto"
+
+
 INDEX_BODY = """
 <div class="page">
   <header class="page-hero">
@@ -599,8 +846,11 @@ INDEX_BODY = """
     <p class="page-sub">Every writeup shows each command and its output, step by step &middot; static pages generated from markdown</p>
     <div class="search-row">
       <label class="visually-hidden" for="searchInput">Filter writeups</label>
-      <input type="search" id="searchInput" placeholder="Filter by name, event..." autocomplete="off" />
+      <input type="search" id="searchInput" placeholder="Filter by name, event, tag..." autocomplete="off" />
       <span class="search-meta" id="searchMeta" role="status">{count} writeups</span>
+    </div>
+    <div class="tag-filters" id="tagFilters" role="group" aria-label="Filter by category">
+{tag_filters}
     </div>
   </header>
 
@@ -613,33 +863,140 @@ INDEX_BODY = """
 
 {sections}
 </div>
-<script>
-(function () {{
+<script src="js/filter.js" defer></script>
+"""
+
+
+# Live-filter for the writeups index. Kept here (not inline in HTML) so the
+# pages can ship a strict Content-Security-Policy without 'unsafe-inline'.
+# build() writes this to writeups/js/filter.js.
+FILTER_JS = """(function () {
   var input = document.getElementById("searchInput");
-  if (!input) return;
-  function norm(s) {{
+  var activeTag = "";
+  function norm(s) {
     return (s || "").toLowerCase().replace(/[_\\-]+/g, " ").replace(/\\s+/g, " ").trim();
-  }}
-  input.addEventListener("input", function () {{
-    var q = norm(input.value);
+  }
+  function applyFilter() {
+    var q = input ? norm(input.value) : "";
     var total = 0;
-    document.querySelectorAll(".writeup-section").forEach(function (sec) {{
-      var visible = 0;
-      sec.querySelectorAll(".writeup-card").forEach(function (card) {{
-        var hay = norm(card.getAttribute("data-search") || card.textContent);
-        var show = !q || hay.indexOf(q) !== -1;
-        card.style.display = show ? "" : "none";
-        if (show) visible++;
-      }});
-      sec.style.display = visible ? "" : "none";
-      total += visible;
-    }});
+    document.querySelectorAll(".writeup-card").forEach(function (card) {
+      var hay = norm(card.getAttribute("data-search") || card.textContent);
+      var tags = (card.getAttribute("data-tags") || "").split(/\\s+/);
+      var tagOk = !activeTag || tags.indexOf(activeTag) !== -1;
+      var textOk = !q || hay.indexOf(q) !== -1;
+      var show = tagOk && textOk;
+      card.style.display = show ? "" : "none";
+      if (show) total++;
+    });
+    document.querySelectorAll(".writeup-section").forEach(function (sec) {
+      var any = Array.prototype.some.call(sec.querySelectorAll(".writeup-card"), function (c) {
+        return c.style.display !== "none";
+      });
+      sec.style.display = any ? "" : "none";
+    });
     var meta = document.getElementById("searchMeta");
     if (meta) meta.textContent = total + " writeup" + (total === 1 ? "" : "s");
-  }});
-}})();
-</script>
+  }
+  if (input) input.addEventListener("input", applyFilter);
+  document.querySelectorAll("#tagFilters .tag-chip").forEach(function (chip) {
+    chip.addEventListener("click", function () {
+      var tag = chip.getAttribute("data-tag") || "";
+      activeTag = (activeTag === tag) ? "" : tag;
+      document.querySelectorAll("#tagFilters .tag-chip").forEach(function (c) {
+        var on = activeTag && c.getAttribute("data-tag") === activeTag;
+        c.classList.toggle("active", !!on);
+        c.setAttribute("aria-pressed", on ? "true" : "false");
+      });
+      applyFilter();
+    });
+  });
+})();
 """
+
+
+# Reader enhancements for challenge pages: scroll progress bar + copy
+# buttons on code blocks. External file (like filter.js) so pages keep a
+# strict Content-Security-Policy without 'unsafe-inline'.
+# build() writes this to writeups/js/page.js.
+PAGE_JS = """(function () {
+  // Thin reading-progress bar under the topbar.
+  var bar = document.getElementById("readProgress");
+  var ticking = false;
+  function updateBar() {
+    ticking = false;
+    if (!bar) return;
+    var h = document.documentElement;
+    var max = h.scrollHeight - h.clientHeight;
+    bar.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + "%";
+  }
+  window.addEventListener("scroll", function () {
+    if (!ticking) { ticking = true; requestAnimationFrame(updateBar); }
+  }, { passive: true });
+  window.addEventListener("resize", updateBar);
+  updateBar();
+
+  // Copy buttons on every code block (highlighted or plain <pre>).
+  function flash(btn, ok) {
+    var orig = btn.getAttribute("data-label") || "copy";
+    btn.textContent = ok ? "copied \\u2713" : "copy failed";
+    setTimeout(function () { btn.textContent = orig; }, 1600);
+  }
+  function copyText(text, btn) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () { flash(btn, true); }, function () { flash(btn, false); });
+    } else {
+      try {
+        var ta = document.createElement("textarea");
+        ta.value = text;
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.select();
+        var ok = document.execCommand("copy");
+        document.body.removeChild(ta);
+        flash(btn, ok);
+      } catch (e) { flash(btn, false); }
+    }
+  }
+  var hosts = [];
+  document.querySelectorAll("div.highlight").forEach(function (el) { hosts.push(el); });
+  document.querySelectorAll(".reader__body pre").forEach(function (pre) {
+    if (!pre.closest("div.highlight")) hosts.push(pre);
+  });
+  hosts.forEach(function (host) {
+    var code = host.querySelector("code");
+    if (!code) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.textContent = "copy";
+    btn.setAttribute("data-label", "copy");
+    btn.setAttribute("aria-label", "Copy code to clipboard");
+    btn.addEventListener("click", function () { copyText(code.innerText, btn); });
+    host.appendChild(btn);
+  });
+})();
+"""
+
+
+def tag_filter_chips(writeups: list) -> list:
+    """One toggle chip per tag present in this build (with counts), ordered
+    by TAG_ORDER. Recomputed every build, so new categories appear automatically."""
+    counts: dict = {}
+    for w in writeups:
+        for t in w.get("_tags", ["misc"]):
+            counts[t] = counts.get(t, 0) + 1
+    ordered = [t for t in TAG_ORDER if t in counts]
+    ordered += sorted([t for t in counts if t not in TAG_ORDER])
+    chips = []
+    for t in ordered:
+        cls = t if t in TAG_ORDER else "misc"
+        chips.append(
+            f'<button type="button" class="tag-chip tag-{html.escape(cls)}" '
+            f'data-tag="{html.escape(t)}" aria-pressed="false">'
+            f'{html.escape(t)} <span class="tag-chip__count">{counts[t]}</span></button>'
+        )
+    return chips
 
 
 def build(source: Path, out: Path, portfolio_url: str, github_user: str, github_repo: str, branch: str):
@@ -659,6 +1016,11 @@ def build(source: Path, out: Path, portfolio_url: str, github_user: str, github_
     shutil.copy2(css_src, out / "css" / "style.css")
     write_pygments_css(out / "css" / "pygments.css")
     print("  wrote  css/pygments.css")
+    (out / "js").mkdir(parents=True, exist_ok=True)
+    (out / "js" / "filter.js").write_text(FILTER_JS, encoding="utf-8")
+    print("  wrote  js/filter.js")
+    (out / "js" / "page.js").write_text(PAGE_JS, encoding="utf-8")
+    print("  wrote  js/page.js")
 
     writeups = find_writeups(source)
     gh_base = f"https://github.com/{github_user}/{github_repo}"
@@ -698,7 +1060,7 @@ def build(source: Path, out: Path, portfolio_url: str, github_user: str, github_
         text = w["md_path"].read_text(encoding="utf-8", errors="replace")
         meta, body_md = parse_frontmatter(text)
         title = meta.get("title") or w["display_name"]
-        body_html = md_to_html(body_md)
+        body_html = sanitize_html(md_to_html(body_md))
 
         dest_dir = out / Path(w["url_path"])
         dest_dir.mkdir(parents=True, exist_ok=True)
@@ -733,6 +1095,13 @@ def build(source: Path, out: Path, portfolio_url: str, github_user: str, github_
             diff_badge = ""
             diff_block = ""
 
+        w["_tags"], tag_prov = resolve_tags(meta, body_md, files, w["event"], w["name"])
+        tag_badges = "".join(
+            f'<span class="tag tag-{html.escape(t) if t in TAG_ORDER else "misc"}">{html.escape(t)}</span>'
+            for t in w["_tags"]
+        )
+        tag_block = f'<span class="side-tagwrap">{tag_badges}</span>' if tag_badges else ""
+
         # Previous / next writeup navigation (flat order across events).
         prev_w = writeups[i - 1] if i > 0 else None
         next_w = writeups[i + 1] if i < len(writeups) - 1 else None
@@ -763,6 +1132,7 @@ def build(source: Path, out: Path, portfolio_url: str, github_user: str, github_
             reading_time=w["_reading_time"],
             file_count=len(files),
             diff_block=diff_block,
+            tag_block=tag_block,
             folder_github=folder_gh,
             md_github=md_gh,
             md_name=html.escape(w["md_path"].name),
@@ -780,10 +1150,13 @@ def build(source: Path, out: Path, portfolio_url: str, github_user: str, github_
             portfolio_url=portfolio_url,
             github_repo=gh_base,
             body=body,
-            topbar_extra=f'<a class="btn btn--ghost" href="{home_href}">&#8592; All writeups</a>',
+            topbar_extra="",
+            topbar_back=(f'<a class="btn btn--ghost" href="{home_href}">&#8592; All writeups</a>'
+                         f'<a class="btn btn--ghost" href="{portfolio_url}">&#8592; Portfolio</a>'),
+            page_scripts=f'<script src="{css_prefix}js/page.js" defer></script>',
         )
         (dest_dir / "index.html").write_text(page, encoding="utf-8")
-        print(f"  wrote  {w['url_path']}/index.html  ({len(files)} files listed)  difficulty: {diff_label or '-'} ({diff_prov})")
+        print(f"  wrote  {w['url_path']}/index.html  ({len(files)} files listed)  difficulty: {diff_label or '-'} ({diff_prov})  tags: {','.join(w['_tags'])} ({tag_prov})")
 
     by_event = {}
     for w in writeups:
@@ -807,16 +1180,35 @@ def build(source: Path, out: Path, portfolio_url: str, github_user: str, github_
         cards = []
         for w in items:
             href = w["url_path"].rstrip("/") + "/index.html"
-            search = html.escape(f"{w['event']} {w['name']} {w['display_name']} {w['url_path']}")
-            file_count = w.get("_file_count", 0)
+            tags = w.get("_tags", ["misc"])
+            search = html.escape(f"{w['event']} {w['name']} {w['display_name']} {w['url_path']} {' '.join(tags)}")
             read_min = w.get("_reading_time", 1)
             diff = w.get("_difficulty")
             tier = w.get("_tier", "medium")
-            diff_badge = f'<span class="diff diff-{tier}">{html.escape(diff)}</span>' if diff else ""
+            kicker_tags = " · ".join(
+                f'<span class="k-tag">{html.escape(t)}</span>' for t in tags
+            )
+            kicker = f"{html.escape(w['event'])} · {kicker_tags}"
+            meta_bits = []
+            if w.get("day") is not None:
+                meta_bits.append(f"Day {w['day']}")
+            meta_bits.append(f"{read_min} min read")
+            meta = html.escape(" · ".join(meta_bits))
+            if diff:
+                sub = (
+                    f'<p class="writeup-card__foot">'
+                    f'<span class="w-tier">{html.escape(diff)}</span>'
+                    f"<span>{meta}</span>"
+                    f"</p>"
+                )
+            else:
+                sub = f'<p class="writeup-card__foot"><span>{meta}</span></p>'
             cards.append(
-                f'<a class="writeup-card" href="{html.escape(href)}" data-search="{search}">'
-                f'<div class="writeup-card__top"><h3>{html.escape(w["display_name"])}</h3>{diff_badge}</div>'
-                f'<div class="meta"><span class="md-badge">writeup</span><span>{file_count} file{"s" if file_count != 1 else ""}</span><span>{read_min} min read</span></div>'
+                f'<a class="writeup-card tier-{tier}" href="{html.escape(href)}" data-search="{search}" data-tags="{" ".join(html.escape(t) for t in tags)}">'
+                f'<p class="writeup-card__kicker">{kicker}</p>'
+                f'<h3>{html.escape(w["display_name"])}</h3>'
+                f"{sub}"
+                f'<span class="writeup-card__go" aria-hidden="true">→</span>'
                 f"</a>"
             )
         sections_html.append(
@@ -833,6 +1225,7 @@ def build(source: Path, out: Path, portfolio_url: str, github_user: str, github_
         count=len(writeups),
         jump_links="\n".join(jump_links),
         sections="\n".join(sections_html),
+        tag_filters="\n".join(tag_filter_chips(writeups)),
     )
     index_canonical = canonical_for("")
     index_page = PAGE_SHELL.format(
@@ -846,6 +1239,8 @@ def build(source: Path, out: Path, portfolio_url: str, github_user: str, github_
         github_repo=gh_base,
         body=index_body,
         topbar_extra="",
+        topbar_back=f'<a class="btn btn--ghost" href="{portfolio_url}">&#8592; Portfolio</a>',
+        page_scripts="",
     )
     (out / "index.html").write_text(index_page, encoding="utf-8")
     print(f"  wrote  index.html ({len(writeups)} writeups)")
@@ -857,23 +1252,13 @@ def build(source: Path, out: Path, portfolio_url: str, github_user: str, github_
             "event": w["event"],
             "url": w["url_path"].rstrip("/") + "/",
             "difficulty": w.get("_difficulty"),
+            "tags": w.get("_tags", ["misc"]),
             "day": w.get("day"),
         }
         for w in writeups
     ]
     (out / "search.json").write_text(json.dumps(search_index, ensure_ascii=False), encoding="utf-8")
     print(f"  wrote  search.json ({len(search_index)} entries)")
-
-    # Sitemap for writeups (main sitemap references this via CI or manual merge)
-    today = date.today().isoformat()
-    urls = [canonical_for("")] + [canonical_for(w["url_path"]) for w in writeups]
-    sitemap = ['<?xml version="1.0" encoding="UTF-8"?>',
-               '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
-    for u in urls:
-        sitemap.append(f"  <url><loc>{html.escape(u)}</loc><lastmod>{today}</lastmod></url>")
-    sitemap.append("</urlset>")
-    (out / "sitemap-writeups.xml").write_text("\n".join(sitemap) + "\n", encoding="utf-8")
-    print(f"  wrote  sitemap-writeups.xml ({len(urls)} urls)")
 
 
 def main():

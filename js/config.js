@@ -9,12 +9,10 @@
 window.PORTFOLIO_CONFIG = {
 
   // --- GitHub -----------------------------------------------------
+  // Anonymous API requests only (60/hr). No token field: a token committed
+  // here would ship to every visitor of this public site.
   github: {
     username: "aaadarsh1337",
-    // Optional: personal access token to raise API rate limit (60 -> 5000/hr).
-    // Leave blank for anonymous requests. Do NOT commit a secret token here
-    // for a public site — only use a read-only token if you understand the risk.
-    token: "",
     // Repos you never want shown on the site
     hiddenRepos: ["aaadarsh1337.github.io", "aaadarsh1337", "threat-harbour"],
     // Repo names to always show first, in the exact order you list them.
@@ -22,7 +20,7 @@ window.PORTFOLIO_CONFIG = {
     // Example: pinnedRepos: ["my-best-project", "ctf-writeups", "pentest-notes"]
     // Note: threat-harbour lives above as the flagship spotlight, so it is
     // hidden from the normal tiles (hiddenRepos wins) and not pinned here.
-    pinnedRepos: ["ctf-writeups", "security-automation-toolkit", "picoctf-lab-notes", "tryhackme-lab-notes", "practical-ethical-hacking-notes", "ctf-learning-archive", "cybersecurity-achievements" ]
+    pinnedRepos: ["ctf-writeups", "security-automation-toolkit", "tryhackme-lab-notes", "cybersecurity-achievements"]
   },
 
   // --- Flagship spotlight -------------------------------------------
@@ -72,7 +70,7 @@ window.PORTFOLIO_CONFIG = {
       "Most of what I do is hands-on: I break down problems, explore how systems behave, and document what I learn along the way—whether it’s through clean code, notes, or practical experiments. My goal is to keep leveling up by tackling real challenges, studying the “why” behind the behavior, and continuously improving my workflow.",
       "On this portfolio, you’ll find projects and repositories focused on security tooling, CTF write-ups, and cybersec learning notes, plus the small experiments that help me get better every step of the way."
     ],
-    resumeUrl: "https://github.com/aaadarsh1337"   // EDIT ME: link to a hosted PDF resume. Leave blank and the button hides itself.
+    resumeUrl: ""   // EDIT ME: link to a hosted PDF resume. Leave blank and the button hides itself.
   },
 // --- Links (button-based reveal) -----------------------------------
   // All profile, social, and platform handles. Shown in the "Links" panel.
@@ -82,7 +80,6 @@ window.PORTFOLIO_CONFIG = {
     { label: "PicoCTF", detail: "PICO", url: "https://learn.cylabacademy.org/users/jackthereaper1337" },
     { label: "pwn.college",     detail: "PWN", url: "https://pwn.college/hacker/192643" },
     { label: "CTFtime",     detail: "CTFs",  url: "https://ctftime.org/user/265799" },
-    { label: "LinkedIn",    detail: "Adarsh Pillai",  url: "https://linkedin.com/in/aaadarsh1337" },
     { label: "Discord",     detail: "Hit Me Up",       url: "https://discord.com/users/15248404499301847090" },
     { label: "Twitter / X", detail: "@aaadarsh1337",   url: "https://x.com/aaadarsh1337" },
     { label: "Email",       detail: "GMail", url: "mailto:adarshpillai1337@gmail.com" }
@@ -150,7 +147,7 @@ window.PORTFOLIO_CONFIG = {
       image: "assets/certificate.png"        // drop a real badge into assets/ and point here
     },
     {
-      name: " z0d1ak CTF",
+      name: "z0d1ak CTF",
       issuer: "z0d1ak",
       date: "2026",
       credentialUrl: "https://github.com/aaadarsh1337/cybersecurity-achievements/blob/main/z0d1ak-ctf/z0d1ak-certificate-adarsh-pillai.pdf",                          // verification link (optional)
@@ -184,7 +181,6 @@ window.PORTFOLIO_CONFIG = {
   // linkPanel (shown via the "Links" button) to keep the two concerns separate.
   contact: {
     email: "adarshpillai1337@gmail.com",        // EDIT ME
-    linkedin: "https://linkedin.com/in/aaadarsh1337",        // leave blank to hide
     discord: "https://discord.com/users/15248404499301847090" // leave blank to hide
   }
 

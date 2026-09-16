@@ -322,6 +322,11 @@ html {
   background: var(--line-bright);
 }
 .fig-label .fig-idx { color: var(--accent); }
+.fig-label .fig-total {
+  margin-left: auto;
+  color: var(--faint);
+  letter-spacing: 0.14em;
+}
 
 /* ---------- Layout ---------- */
 main {
@@ -525,12 +530,11 @@ main {
 .hero__portrait {
   position: relative;
   width: 176px;
-  height: 176px;
   flex-shrink: 0;
 }
 .hero__portrait img {
-  width: 100%;
-  height: 100%;
+  width: 176px;
+  height: 176px;
   object-fit: cover;
   display: block;
   filter: saturate(0.9) contrast(1.02);
@@ -551,6 +555,14 @@ main {
 }
 .hero__portrait::before { top: -14px; left: -14px; }
 .hero__portrait::after { bottom: -14px; right: -14px; }
+.hero__figcap {
+  margin: 20px 0 0;
+  text-align: center;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--faint);
+}
 
 .hero__text { flex: 1; min-width: 0; }
 
@@ -635,6 +647,7 @@ main {
   color: var(--accent-2);
   letter-spacing: -0.01em;
   white-space: nowrap;
+  font-variant-numeric: tabular-nums;
 }
 @media (max-width: 700px) {
   .stats-band { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -665,7 +678,6 @@ main {
   color: var(--ink);
   background: var(--accent-2-soft);
   text-decoration: none;
-  transform: translateY(-1px);
 }
 .btn--primary {
   background: var(--accent);
@@ -677,6 +689,7 @@ main {
   background: #a5e3ff;
   border-color: #a5e3ff;
   color: #16161e;
+  transform: translateY(-1px);
 }
 .btn--ghost:hover {
   border-color: var(--accent-2);
@@ -724,23 +737,24 @@ main {
   display: flex;
   flex-direction: column;
   gap: 9px;
+  counter-reset: skill;
 }
 .skill-card__list li {
   font-size: 15px;
   color: var(--muted);
   line-height: 1.45;
-  padding-left: 16px;
+  padding-left: 34px;
   position: relative;
+  counter-increment: skill;
 }
 .skill-card__list li::before {
-  content: '';
+  content: counter(skill, decimal-leading-zero);
   position: absolute;
   left: 0;
-  top: 0.55em;
-  width: 6px;
-  height: 6px;
-  border: 1px solid var(--dim);
-  border-radius: 1px;
+  top: 0.3em;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--faint);
 }
 
 /* ---------- Achievements ---------- */
@@ -955,6 +969,7 @@ main {
   font-weight: 700;
   color: var(--accent-2);
   white-space: nowrap;
+  font-variant-numeric: tabular-nums;
 }
 .flagship-stats > div { display: flex; flex-direction: column; }
 .flagship-live {
@@ -1153,6 +1168,22 @@ main {
   flex-shrink: 0;
   opacity: 0.9;
 }
+/* Monogram badge: used when a certificate has no real badge image.
+   Initials on a per-issuer tint — same pill language as .diff/.tag. */
+.cert-mono {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.02em;
+  border: 1px solid;
+  border-radius: var(--radius);
+}
 .cert-card h3 {
   font-family: var(--display);
   font-size: 14px;
@@ -1208,12 +1239,18 @@ main {
 }
 .cm-value:hover { color: var(--accent-2); text-decoration: none; }
 .contact-method--email .cm-value { color: var(--accent); }
+.cm-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.cm-row .cm-value { flex: 1; min-width: 0; }
 .cm-note {
   font-size: 13px;
   color: var(--dim);
   line-height: 1.5;
 }
-.cm-copy { align-self: flex-start; margin-top: 8px; }
+.cm-copy { align-self: center; margin-top: 0; flex-shrink: 0; }
 
 /* ---------- Footer ---------- */
 .site-footer {
@@ -1554,7 +1591,8 @@ main {
   }
   .rail__toggle span { display: block; height: 2px; width: 18px; background: var(--accent); }
   .hero { flex-direction: column; gap: 32px; }
-  .hero__portrait { width: 128px; height: 128px; }
+  .hero__portrait { width: 128px; }
+  .hero__portrait img { width: 128px; height: 128px; }
 }
 
 @media (max-width: 560px) {
@@ -1571,4 +1609,24 @@ main {
   .filesheet__body pre { font-size: 13px; padding: 12px; }
   .links-panel { top: auto; bottom: 0; left: 0; right: 0; transform: none; width: 100%; max-height: 82vh; border-radius: 0; border-left: none; border-right: none; border-bottom: none; }
   @keyframes panelIn { from { transform: translateY(20px); opacity: 0 } to { transform: none; opacity: 1 } }
+}
+
+/* ---------- Print (clean one-pager, no app chrome) ---------- */
+@media print {
+  .rail,
+  .cmdk-fab,
+  .cmdk,
+  .cmdk-backdrop,
+  .filesheet,
+  .links-panel,
+  .links-backdrop,
+  .lab-grid { display: none !important; }
+  main { padding: 0; }
+  .sheet { padding: 20px 0; }
+  .repo-card,
+  .skill-card,
+  .cert-card,
+  .contact-method,
+  .achieve-item,
+  .flagship-card { break-inside: avoid; }
 }
