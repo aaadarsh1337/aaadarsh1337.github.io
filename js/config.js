@@ -66,9 +66,9 @@ window.PORTFOLIO_CONFIG = {
     // Add / remove freely. Leave url blank if you don't want it clickable
 
     bio: [
-      "I’m aaadarsh1337 | jackthereaper1337 | Hasher2009, a cybersecurity enthusiast and CTF player who loves turning ideas into working tools. I’m especially interested in penetration testing, reverse engineering, and building custom security utilities—from quick scripts for CTF challenges to more structured tools for learning and automation.",
-      "Most of what I do is hands-on: I break down problems, explore how systems behave, and document what I learn along the way—whether it’s through clean code, notes, or practical experiments. My goal is to keep leveling up by tackling real challenges, studying the “why” behind the behavior, and continuously improving my workflow.",
-      "On this portfolio, you’ll find projects and repositories focused on security tooling, CTF write-ups, and cybersec learning notes, plus the small experiments that help me get better every step of the way."
+      "I’m Adarsh Pillai — aaadarsh1337, jackthereaper1337, or Hasher2009 online. I’m a cybersecurity student with a longstanding interest in offensive security and a growing focus on reverse engineering. What started as curiosity about computers became something I spend much of my free time on: solving challenges, experimenting with tools, and understanding the details behind how things work.",
+      "As one of the three co-founders and a core member of 404squad, I organize our near-weekly CTF participation and primarily work on misc and rev challenges. Building a team that consistently shows up, learns together, and enjoys the process matters to me as much as the competition itself.",
+      "Outside CTFs, I’m usually digging further into reverse engineering or working on security projects of my own. I enjoy having something unfamiliar to figure out, whether that means tracing a binary, testing an approach, or writing a tool to make progress. This site collects that work, along with the notes and writeups I produce along the way."
     ],
     resumeUrl: ""   // EDIT ME: link to a hosted PDF resume. Leave blank and the button hides itself.
   },
