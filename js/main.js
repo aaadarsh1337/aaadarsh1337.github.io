@@ -1290,7 +1290,7 @@
   function initEasterEgg() {
     const foot = document.getElementById("easterEgg");
     if (!foot) return;
-    const flag = "1337{wh0_ru_but_w3ll_pl4y3d}";
+    const flag = "flag{s3cr3ts_d13_h3r3}";
     let clicks = 0;
     let timer = null;
     function activate() {

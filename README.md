@@ -85,10 +85,10 @@ No build step — edit, commit, push, GitHub Pages deploys.
 
 Source of truth: [`ctf-writeups`](https://github.com/aaadarsh1337/ctf-writeups) (Markdown, one folder per challenge).
 
-Generator: `scripts/build_writeups.py` (requires `markdown`, `pygments`):
+Generator: `scripts/build_writeups.py` (requires `markdown`, `pygments`, `pillow`):
 
 ```bash
-pip install markdown pygments
+pip install markdown pygments pillow
 python3 scripts/build_writeups.py --source ../ctf-writeups --out ./writeups
 ```
 

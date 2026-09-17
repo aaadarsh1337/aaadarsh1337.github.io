@@ -157,12 +157,11 @@ def md_to_html(text: str) -> str:
             "codehilite",
             "tables",
             "toc",
-            "nl2br",
             "sane_lists",
         ],
         extension_configs={
             "codehilite": {
-                "guess_lang": True,
+                "guess_lang": False,
                 "noclasses": False,       # use CSS classes (styled by write_pygments_css)
                 "css_class": "highlight",
             },
@@ -170,6 +169,128 @@ def md_to_html(text: str) -> str:
         },
         output_format="html5",
     )
+
+
+FLAG_RE = re.compile(r"(THM\{[^}]*\}|flag\{[^}]*\}|picoCTF\{[^}]*\}|HTB\{[^}]*\})", re.IGNORECASE)
+
+
+def enhance_html(body_html: str, title: str) -> str:
+    """Reader upgrades, Tokyo Night tokens intact. Headings untouched.
+    - flag blockquotes -> <blockquote class="flag">
+    - bare <img> -> <figure> with alt-text caption
+    """
+    def _flag_bq(m):
+        inner = m.group(1)
+        if FLAG_RE.search(re.sub(r"<[^>]+>", "", inner)):
+            return f"<blockquote class=\"flag\">{inner}</blockquote>"
+        return m.group(0)
+    body_html = re.sub(r"<blockquote>(.*?)</blockquote>", _flag_bq, body_html, flags=re.S | re.I)
+
+    def _fig(m):
+        attrs, alt, src = m.group(1), m.group(2), m.group(3)
+        alt_esc = html.escape(alt.strip())
+        if not alt_esc:
+            return m.group(0)
+        return (f"<figure class=\"md-fig\"><img{attrs}alt=\"{alt_esc}\" src=\"{src}\">"
+                f"<figcaption>{alt_esc}</figcaption></figure>")
+    body_html = re.sub(
+        r"<img((?:(?!\bsrc=)[^>])*)alt=\"([^\"]*)\"[^>]*src=\"([^\"]+)\"[^>]*>",
+        _fig, body_html, flags=re.I)
+    body_html = re.sub(
+        r"<img((?:(?!\balt=)[^>])*)src=\"([^\"]+)\"[^>]*alt=\"([^\"]*)\"[^>]*>",
+        lambda m: (f"<figure class=\"md-fig\"><img{m.group(1)}src=\"{m.group(2)}\">"
+                   f"<figcaption>{html.escape(m.group(3).strip())}</figcaption></figure>"
+                   if m.group(3).strip() else m.group(0)),
+        body_html, flags=re.I)
+    return body_html
+
+
+TERMINAL_LANGS = {"bash", "sh", "shell", "console", "zsh"}
+OUTPUT_LANGS = {"text", "txt", "output", "log", ""}
+
+
+def extract_fence_langs(body_md: str) -> list:
+    """Opening-fence languages only (closers skipped via in/out state),
+    so langs align 1:1 with rendered code blocks."""
+    langs = []
+    in_fence = False
+    for m in re.finditer(r"^[ \t]*```[ \t]*([\w+-]*)[ \t]*$", body_md, re.M):
+        if not in_fence:
+            langs.append((m.group(1) or "").lower())
+            in_fence = True
+        else:
+            in_fence = False
+    return langs
+
+
+def tag_code_blocks(body_html: str, langs: list) -> str:
+    """Label each highlight div: terminal (commands) vs output vs code."""
+    idx = 0
+
+    def _tag(m):
+        nonlocal idx
+        lang = langs[idx] if idx < len(langs) else ""
+        idx += 1
+        low = lang.lower()
+        if low in TERMINAL_LANGS:
+            kind = "is-terminal"
+        elif low in OUTPUT_LANGS:
+            kind = "is-output"
+        else:
+            kind = "is-code"
+        label = lang if lang else "output"
+        return f'<div class="highlight {kind} lang-{html.escape(low or "plain")}" data-lang="{html.escape(label)}">'
+
+    return re.sub(r'<div class="highlight">', _tag, body_html)
+
+
+def excerpt_from_html(body_html: str, limit: int = 180) -> str:
+    """First substantial paragraph as card/SEO excerpt. Skips the tiny
+    challenge-link line and empty intros."""
+    import html as _html
+    for m in re.finditer(r"<p[^>]*>(.*?)</p>", body_html, re.S | re.I):
+        if 'class="challenge-link"' in m.group(0):
+            continue
+        text = re.sub(r"<[^>]+>", "", m.group(1)).strip()
+        text = _html.unescape(re.sub(r"\s+", " ", text))
+        if len(text) >= 40:
+            return text if len(text) <= limit else text[:limit].rsplit(" ", 1)[0] + "…"
+    return ""
+
+
+def make_og_image(title: str, event: str, dest: Path) -> bool:
+    """1200x630 per-writeup social card in Tokyo Night tokens.
+    Returns True on success, False when Pillow/fonts are unavailable."""
+    try:
+        from PIL import Image, ImageDraw, ImageFont
+        import textwrap
+    except ImportError:
+        return False
+    try:
+        W, H = 1200, 630
+        img = Image.new("RGB", (W, H), "#16161e")
+        d = ImageDraw.Draw(img)
+        # faint grid
+        for x in range(0, W, 60):
+            d.line([(x, 0), (x, H)], fill="#1c1e2b")
+        for y in range(0, H, 60):
+            d.line([(0, y), (W, y)], fill="#1c1e2b")
+        d.rectangle([0, 0, 14, H], fill="#7dcfff")
+        f_bold = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 72)
+        f_mono = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf", 34)
+        f_small = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf", 28)
+        d.text((80, 90), (event or "ctf").upper() + " · WRITEUP", font=f_mono, fill="#8b93c0")
+        lines = textwrap.wrap(title, width=22)[:3]
+        y = 170
+        for ln in lines:
+            d.text((80, y), ln, font=f_bold, fill="#c0caf5")
+            y += 92
+        d.text((80, H - 90), "aaadarsh1337.github.io", font=f_small, fill="#7dcfff")
+        img.save(dest, "PNG")
+        return True
+    except Exception as e:
+        print(f"  warning: og image failed for {title} ({e})")
+        return False
 
 
 # ---------------------------------------------------------------------------
@@ -282,7 +403,7 @@ def write_pygments_css(dest_css: Path) -> None:
 .highlight .s, .highlight .sa, .highlight .sb, .highlight .sc, .highlight .dl, .highlight .sd, .highlight .s2, .highlight .se, .highlight .sh, .highlight .si, .highlight .sx, .highlight .sr, .highlight .s1, .highlight .ss { color: #9ece6a; }
 .highlight .m, .highlight .mb, .highlight .mf, .highlight .mh, .highlight .mi, .highlight .mo, .highlight .il { color: #ff9e64; }
 .highlight .o, .highlight .ow { color: #8b93c0; }
-.highlight .err { color: #f7768e; background-color: #2b1f2e; }
+.highlight .err { color: #c0caf5; background: transparent; }
 .highlight .g, .highlight .ge, .highlight .ges, .highlight .gr, .highlight .gh, .highlight .gi, .highlight .go, .highlight .gp, .highlight .gs, .highlight .gu, .highlight .gt, .highlight .gd { color: #c0caf5; }
 .highlight .gi { color: #9ece6a; }
 .highlight .gd { color: #f7768e; }
@@ -302,8 +423,8 @@ def write_pygments_css(dest_css: Path) -> None:
   border: none !important;
   margin: 0;
   padding: 0;
-  white-space: pre-wrap;
-  word-break: break-word;
+  white-space: pre;
+  word-break: normal;
 }
 .highlight code {
   background: transparent !important;
@@ -311,7 +432,7 @@ def write_pygments_css(dest_css: Path) -> None:
   padding: 0 !important;
   font-family: "JetBrains Mono", "SF Mono", ui-monospace, monospace;
   font-size: 13.5px;
-  line-height: 1.6;
+  line-height: 1.65;
 }
 """
     try:
@@ -401,16 +522,17 @@ PAGE_SHELL = """<!DOCTYPE html>
 <meta property="og:title" content="{title}" />
 <meta property="og:description" content="{description}" />
 <meta property="og:url" content="{canonical}" />
-<meta property="og:image" content="https://aaadarsh1337.github.io/assets/avatar.jpg" />
-<meta name="twitter:card" content="summary" />
+<meta property="og:image" content="{og_image}" />
+<meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="{title}" />
 <meta name="twitter:description" content="{description}" />
-<meta name="twitter:image" content="https://aaadarsh1337.github.io/assets/avatar.jpg" />
+<meta name="twitter:image" content="{og_image}" />
 <script type="application/ld+json">{jsonld}</script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2316161e'/%3E%3Crect x='13' y='4' width='6' height='24' fill='%237DCFFF'/%3E%3Crect x='4' y='13' width='24' height='6' fill='%237DCFFF'/%3E%3Crect x='14' y='6' width='4' height='20' fill='%2316161e'/%3E%3Crect x='6' y='14' width='20' height='4' fill='%2316161e'/%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{css_prefix}../css/tokens.css" />
 <link rel="stylesheet" href="{css_prefix}css/style.css" />
 <link rel="stylesheet" href="{css_prefix}css/pygments.css" />
 </head>
@@ -467,6 +589,7 @@ WRITEUP_BODY = """
         <span class="tb-label">READING</span>
         <span>{md_name}</span>
       </div>
+      <button type="button" class="btn btn--ghost btn--small" id="copyLinkBtn">Copy link</button>
       <a class="btn btn--ghost btn--small" href="{md_github}" target="_blank" rel="noopener noreferrer">Source &#8599;</a>
     </div>
     <div class="reader__body">
@@ -975,6 +1098,48 @@ PAGE_JS = """(function () {
     btn.addEventListener("click", function () { copyText(code.innerText, btn); });
     host.appendChild(btn);
   });
+
+  // Line-number gutter on real code only (never terminal/output).
+  // Gutter is a separate element so copy still grabs clean code.
+  document.querySelectorAll("div.highlight.is-code").forEach(function (host) {
+    var code = host.querySelector("code");
+    if (!code) return;
+    var n = code.innerText.replace(/\\n$/, "").split("\\n").length;
+    if (n < 2) return;
+    var gut = document.createElement("div");
+    gut.className = "line-nos";
+    gut.setAttribute("aria-hidden", "true");
+    var s = "";
+    for (var i = 1; i <= n; i++) s += "<span>" + i + "</span>";
+    gut.innerHTML = s;
+    host.appendChild(gut);
+    host.classList.add("has-lines");
+  });
+
+  // Click-to-zoom screenshots (native dialog, no deps).
+  var dlg = document.createElement("dialog");
+  dlg.className = "img-lightbox";
+  var dlgImg = document.createElement("img");
+  dlgImg.alt = "";
+  dlg.appendChild(dlgImg);
+  document.body.appendChild(dlg);
+  dlg.addEventListener("click", function () { dlg.close(); });
+  document.querySelectorAll(".md-fig img").forEach(function (im) {
+    im.style.cursor = "zoom-in";
+    im.addEventListener("click", function () {
+      dlgImg.src = im.currentSrc || im.src;
+      dlgImg.alt = im.alt || "";
+      if (dlg.showModal) dlg.showModal();
+    });
+  });
+
+  // Copy-link button (page URL, no query).
+  var linkBtn = document.getElementById("copyLinkBtn");
+  if (linkBtn) {
+    linkBtn.addEventListener("click", function () {
+      copyText(window.location.href.split("?")[0], linkBtn);
+    });
+  }
 })();
 """
 
@@ -1060,7 +1225,9 @@ def build(source: Path, out: Path, portfolio_url: str, github_user: str, github_
         text = w["md_path"].read_text(encoding="utf-8", errors="replace")
         meta, body_md = parse_frontmatter(text)
         title = meta.get("title") or w["display_name"]
-        body_html = sanitize_html(md_to_html(body_md))
+        body_html = tag_code_blocks(
+            enhance_html(sanitize_html(md_to_html(body_md)), title),
+            extract_fence_langs(body_md))
 
         dest_dir = out / Path(w["url_path"])
         dest_dir.mkdir(parents=True, exist_ok=True)
@@ -1102,9 +1269,11 @@ def build(source: Path, out: Path, portfolio_url: str, github_user: str, github_
         )
         tag_block = f'<span class="side-tagwrap">{tag_badges}</span>' if tag_badges else ""
 
-        # Previous / next writeup navigation (flat order across events).
-        prev_w = writeups[i - 1] if i > 0 else None
-        next_w = writeups[i + 1] if i < len(writeups) - 1 else None
+        # Previous / next writeup navigation (same event only).
+        siblings = [x for x in writeups if x["event"] == w["event"]]
+        pos = siblings.index(w)
+        prev_w = siblings[pos - 1] if pos > 0 else None
+        next_w = siblings[pos + 1] if pos < len(siblings) - 1 else None
         pager = []
         for label, target in (("Previous", prev_w), ("Next", next_w)):
             if target is None:
@@ -1121,8 +1290,18 @@ def build(source: Path, out: Path, portfolio_url: str, github_user: str, github_
         pager_html = '<nav class="writeup-pager" aria-label="Writeup navigation">' + "".join(pager) + "</nav>"
 
         page_title = f"{title} · {w['event']}"
-        page_desc = meta.get("excerpt") or f"CTF writeup: {title} ({w['event']})"
+        excerpt = meta.get("excerpt") or excerpt_from_html(body_html)
+        w["_excerpt"] = excerpt
+        page_desc = excerpt or f"CTF writeup: {title} ({w['event']})"
         canonical = canonical_for(w["url_path"])
+        # Per-writeup social card; falls back to the avatar when Pillow
+        # is unavailable (e.g. minimal CI env).
+        og_path = f"{site_base}/{w['url_path'].rstrip('/')}/og.png"
+        if make_og_image(title, w["event"], dest_dir / "og.png"):
+            og_image = og_path
+        else:
+            og_image = "https://aaadarsh1337.github.io/assets/avatar.jpg"
+        w["_og"] = og_image
         day_prefix = f"Day {w['day']} &middot; " if w.get("day") is not None else ""
         body = WRITEUP_BODY.format(
             home_href=home_href,
@@ -1143,6 +1322,7 @@ def build(source: Path, out: Path, portfolio_url: str, github_user: str, github_
         page = PAGE_SHELL.format(
             title=html.escape(page_title),
             description=html.escape(page_desc),
+            og_image=og_image,
             canonical=canonical,
             jsonld=jsonld_for(page_title, page_desc, canonical),
             css_prefix=css_prefix,
@@ -1231,6 +1411,7 @@ def build(source: Path, out: Path, portfolio_url: str, github_user: str, github_
     index_page = PAGE_SHELL.format(
         title="CTF Writeups — aaadarsh1337",
         description="CTF writeups and challenge notes by Adarsh Pillai",
+        og_image="https://aaadarsh1337.github.io/assets/avatar.jpg",
         canonical=index_canonical,
         jsonld=jsonld_for("CTF Writeups", "CTF writeups and challenge notes", index_canonical),
         css_prefix="",
@@ -1254,6 +1435,7 @@ def build(source: Path, out: Path, portfolio_url: str, github_user: str, github_
             "difficulty": w.get("_difficulty"),
             "tags": w.get("_tags", ["misc"]),
             "day": w.get("day"),
+            "excerpt": w.get("_excerpt", ""),
         }
         for w in writeups
     ]

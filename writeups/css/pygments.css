@@ -10,7 +10,7 @@
 .highlight .s, .highlight .sa, .highlight .sb, .highlight .sc, .highlight .dl, .highlight .sd, .highlight .s2, .highlight .se, .highlight .sh, .highlight .si, .highlight .sx, .highlight .sr, .highlight .s1, .highlight .ss { color: #9ece6a; }
 .highlight .m, .highlight .mb, .highlight .mf, .highlight .mh, .highlight .mi, .highlight .mo, .highlight .il { color: #ff9e64; }
 .highlight .o, .highlight .ow { color: #8b93c0; }
-.highlight .err { color: #f7768e; background-color: #2b1f2e; }
+.highlight .err { color: #c0caf5; background: transparent; }
 .highlight .g, .highlight .ge, .highlight .ges, .highlight .gr, .highlight .gh, .highlight .gi, .highlight .go, .highlight .gp, .highlight .gs, .highlight .gu, .highlight .gt, .highlight .gd { color: #c0caf5; }
 .highlight .gi { color: #9ece6a; }
 .highlight .gd { color: #f7768e; }
@@ -30,8 +30,8 @@
   border: none !important;
   margin: 0;
   padding: 0;
-  white-space: pre-wrap;
-  word-break: break-word;
+  white-space: pre;
+  word-break: normal;
 }
 .highlight code {
   background: transparent !important;
@@ -39,5 +39,5 @@
   padding: 0 !important;
   font-family: "JetBrains Mono", "SF Mono", ui-monospace, monospace;
   font-size: 13.5px;
-  line-height: 1.6;
+  line-height: 1.65;
 }

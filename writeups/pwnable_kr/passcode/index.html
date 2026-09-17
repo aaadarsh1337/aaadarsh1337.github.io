@@ -4,24 +4,25 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Passcode · pwnable_kr</title>
-<meta name="description" content="CTF writeup: Passcode (pwnable_kr)" />
+<meta name="description" content="Welcome back to another writeup on a pwnable.kr challenge Today we will be looking at passcode" />
 <meta name="theme-color" content="#16161e" />
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; object-src 'none'; base-uri 'self'; frame-ancestors 'self'" />
 <link rel="canonical" href="https://aaadarsh1337.github.io/writeups/pwnable_kr/passcode/" />
 <meta property="og:type" content="article" />
 <meta property="og:title" content="Passcode · pwnable_kr" />
-<meta property="og:description" content="CTF writeup: Passcode (pwnable_kr)" />
+<meta property="og:description" content="Welcome back to another writeup on a pwnable.kr challenge Today we will be looking at passcode" />
 <meta property="og:url" content="https://aaadarsh1337.github.io/writeups/pwnable_kr/passcode/" />
-<meta property="og:image" content="https://aaadarsh1337.github.io/assets/avatar.jpg" />
-<meta name="twitter:card" content="summary" />
+<meta property="og:image" content="https://aaadarsh1337.github.io/writeups/pwnable_kr/passcode/og.png" />
+<meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="Passcode · pwnable_kr" />
-<meta name="twitter:description" content="CTF writeup: Passcode (pwnable_kr)" />
-<meta name="twitter:image" content="https://aaadarsh1337.github.io/assets/avatar.jpg" />
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Passcode · pwnable_kr", "description": "CTF writeup: Passcode (pwnable_kr)", "url": "https://aaadarsh1337.github.io/writeups/pwnable_kr/passcode/", "author": {"@type": "Person", "name": "Adarsh Pillai", "url": "https://aaadarsh1337.github.io/"}}</script>
+<meta name="twitter:description" content="Welcome back to another writeup on a pwnable.kr challenge Today we will be looking at passcode" />
+<meta name="twitter:image" content="https://aaadarsh1337.github.io/writeups/pwnable_kr/passcode/og.png" />
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Passcode · pwnable_kr", "description": "Welcome back to another writeup on a pwnable.kr challenge Today we will be looking at passcode", "url": "https://aaadarsh1337.github.io/writeups/pwnable_kr/passcode/", "author": {"@type": "Person", "name": "Adarsh Pillai", "url": "https://aaadarsh1337.github.io/"}}</script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2316161e'/%3E%3Crect x='13' y='4' width='6' height='24' fill='%237DCFFF'/%3E%3Crect x='4' y='13' width='24' height='6' fill='%237DCFFF'/%3E%3Crect x='14' y='6' width='4' height='20' fill='%2316161e'/%3E%3Crect x='6' y='14' width='20' height='4' fill='%2316161e'/%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../../css/tokens.css" />
 <link rel="stylesheet" href="../../css/style.css" />
 <link rel="stylesheet" href="../../css/pygments.css" />
 </head>
@@ -71,6 +72,7 @@
         <span class="tb-label">READING</span>
         <span>notes.md</span>
       </div>
+      <button type="button" class="btn btn--ghost btn--small" id="copyLinkBtn">Copy link</button>
       <a class="btn btn--ghost btn--small" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/pwnable_kr/passcode/notes.md" target="_blank" rel="noopener noreferrer">Source &#8599;</a>
     </div>
     <div class="reader__body">
@@ -78,11 +80,11 @@
 <h1 id="passcode">passcode</h1>
 <h2 id="challenge-httpspwnablekrplayphp">Challenge: <a href="https://pwnable.kr/play.php">https://pwnable.kr/play.php</a></h2>
 <p>Hello Hackers!</p>
-<p>Welcome back to another writeup on a pwnable.kr challenge<br>
+<p>Welcome back to another writeup on a pwnable.kr challenge
 Today we will be looking at <strong>passcode</strong></p>
 <p>The hint:</p>
-<p>Mommy told me to make a passcode based login system.<br>
-My first trial C implementation compiled without any error!<br>
+<p>Mommy told me to make a passcode based login system.
+My first trial C implementation compiled without any error!
 Well, there were some compiler warnings, but who cares about that?</p>
 <p>--&gt; 'Compiler warnings' looks interesting</p>
 <p>Let us read the source code</p>
@@ -91,19 +93,19 @@ Well, there were some compiler warnings, but who cares about that?</p>
 <p>ha! mommy told me that 32bit is vulnerable to bruteforcing :)</p>
 </blockquote>
 <p>That is interesting. Maybe it has to do something with bruteforcing</p>
-<p>The file looks simple enough with checks of passcode1 = 338150 and passcode2 = 13371337<br>
+<p>The file looks simple enough with checks of passcode1 = 338150 and passcode2 = 13371337
 But when we try to run the binary and use these creds, we get a segmentation fault. </p>
 <p>Lets try to compile the binary ourself to see what warnings were encountered</p>
 <p>Well we cant, because the original code is a lil different. We get error while trying to complile</p>
 <p>Lets analyze the binary using BinaryNinja</p>
-<p>Another flaw we notice is that passcode1 and 2 expect pointer but get int (%d in scanf)<br>
+<p>Another flaw we notice is that passcode1 and 2 expect pointer but get int (%d in scanf)
 --&gt; in scanf("%d", smtg), the smtg is the destinaion address. Hence we need to pass &amp;passcode1 </p>
 <p>After some research, we find that fflush(stdin) is the problem </p>
-<p>What happens is that we enter out passcode1<br>
-Then when it flushes, it doesnt know which destination to put it in because the given destination is not even an address<br>
+<p>What happens is that we enter out passcode1
+Then when it flushes, it doesnt know which destination to put it in because the given destination is not even an address
 So if we just execute the flagread instead of fflush(), we can retrieve the flag</p>
 <p>Lets analyze the functions and addresses using <strong>pwndbg</strong></p>
-<div class="highlight"><pre><span></span><code><span class="err">0</span><span class="nf">x08049000</span><span class="w">  </span><span class="no">_init</span>
+<div class="highlight is-code lang-asm" data-lang="asm"><pre><span></span><code><span class="err">0</span><span class="nf">x08049000</span><span class="w">  </span><span class="no">_init</span>
 <span class="err">0</span><span class="nf">x08049040</span><span class="w">  </span><span class="no">__libc_start_main@plt</span>
 <span class="err">0</span><span class="nf">x08049050</span><span class="w">  </span><span class="no">printf@plt</span>
 <span class="err">0</span><span class="nf">x08049060</span><span class="w">  </span><span class="no">fflush@plt</span>
@@ -129,19 +131,19 @@ So if we just execute the flagread instead of fflush(), we can retrieve the flag
 </code></pre></div>
 
 <p>When we use cyclic pattern as name, we find that SEGMENTATION FAULT occurs at 0x61616179 at 'yaaa'</p>
-<div class="highlight"><pre><span></span><code>cyclic<span class="w"> </span>-l<span class="w"> </span>yaaa
+<div class="highlight is-terminal lang-bash" data-lang="bash"><pre><span></span><code>cyclic<span class="w"> </span>-l<span class="w"> </span>yaaa
 Finding<span class="w"> </span>cyclic<span class="w"> </span>pattern<span class="w"> </span>of<span class="w"> </span><span class="m">4</span><span class="w"> </span>bytes:<span class="w"> </span>b<span class="s1">&#39;yaaa&#39;</span><span class="w"> </span><span class="o">(</span>hex:<span class="w"> </span>0x79616161<span class="o">)</span>
 Found<span class="w"> </span>at<span class="w"> </span>offset<span class="w"> </span><span class="m">96</span>
 </code></pre></div>
 
 <p>Hence we found the  offset to be 96</p>
-<p>So we can use the GOT address of fflush and the address that gives us the flag<br>
+<p>So we can use the GOT address of fflush and the address that gives us the flag
 And if we craft our exploit carefully we should be able to pwn this</p>
 <p>--&gt; NOTE: to dump GOT, use: </p>
-<div class="highlight"><pre><span></span><code>objdump<span class="w"> </span>-R<span class="w"> </span>passcode<span class="w"> </span>-M<span class="w"> </span>intel
+<div class="highlight is-terminal lang-bash" data-lang="bash"><pre><span></span><code>objdump<span class="w"> </span>-R<span class="w"> </span>passcode<span class="w"> </span>-M<span class="w"> </span>intel
 </code></pre></div>
 
-<p><img alt="GOT" src="GOT.png"></p>
+<p><figure class="md-fig"><img alt="GOT" src="GOT.png"><figcaption>GOT</figcaption></figure></p>
 <p>Writing exploit.py (attached)</p>
 <p>We retrieve the flag!</p>
 <blockquote>
@@ -151,7 +153,7 @@ And if we craft our exploit carefully we should be able to pwn this</p>
 <p>See you with another writeup soon, till then</p>
 <p>Happy Hacking!</p>
       </div>
-<nav class="writeup-pager" aria-label="Writeup navigation"><a class="pager-item pager-item--previous" href="../../pwnable_kr/fd/index.html"><span class="pager-label">Previous</span><span class="pager-name">FD</span><span class="pager-event">pwnable_kr</span></a><a class="pager-item pager-item--next" href="../../tryhackme/binary_heaven/index.html"><span class="pager-label">Next</span><span class="pager-name">Binary Heaven</span><span class="pager-event">tryhackme</span></a></nav>
+<nav class="writeup-pager" aria-label="Writeup navigation"><a class="pager-item pager-item--previous" href="../../pwnable_kr/fd/index.html"><span class="pager-label">Previous</span><span class="pager-name">FD</span><span class="pager-event">pwnable_kr</span></a><span class="pager-item pager-item--disabled"></span></nav>
     </div>
   </article>
 </div>

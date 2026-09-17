@@ -1,35 +1,7 @@
 /* =====================================================================
    CTF WRITEUPS — "Tokyo Night" theme (matches portfolio)
+   Tokens live in css/tokens.css (site root) — do not duplicate :root here.
    ===================================================================== */
-
-:root {
-  /* palette — Tokyo Night, darker */
-  --bg: #16161e;
-  --bg-elev: #1a1b26;
-  --panel: #1f2335;
-  --panel-2: #24283b;
-  --line: #292e42;
-  --line-bright: #3b4261;
-  --ink: #c0caf5;
-  --muted: #a9b1d6;
-  --dim: #8b93c0;
-  --faint: #7d86b0;
-
-  --accent: #7dcfff;
-  --accent-soft: rgba(125, 207, 255, 0.14);
-  --accent-2: #7aa2f7;
-  --accent-2-soft: rgba(122, 162, 247, 0.12);
-  --danger: #f7768e;
-  --danger-soft: rgba(247, 118, 142, 0.12);
-
-  --display: 'Space Grotesk', 'IBM Plex Sans', -apple-system, sans-serif;
-  --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --mono: 'JetBrains Mono', 'SF Mono', ui-monospace, monospace;
-
-  --radius: 2px;
-  --ease: cubic-bezier(0.22, 1, 0.36, 1);
-  --dur: 0.18s;
-}
 
 *, *::before, *::after { box-sizing: border-box; }
 
@@ -567,12 +539,11 @@ a.file-item.unreadable .kind { color: var(--danger); }
   word-wrap: break-word;
 }
 .reader__body .md-render {
-  font-size: 17.5px;
-  line-height: 1.8;
-  color: var(--muted);
+  font-size: 17px;
+  line-height: 1.75;
+  color: var(--ink);
   overflow-wrap: break-word;
-  word-break: break-word;
-  max-width: 80ch;
+  max-width: 72ch;
 }
 .reader__body .md-render > :first-child { margin-top: 0; }
 .reader__body .md-render h1,
@@ -588,8 +559,15 @@ a.file-item.unreadable .kind { color: var(--danger); }
 }
 .reader__body .md-render h1 { font-size: 1.8em; }
 .reader__body .md-render h2 { font-size: 1.4em; border-bottom: 1px solid var(--line); padding-bottom: 0.35em; }
-.reader__body .md-render h3 { font-size: 1.15em; color: var(--accent-2); }
-.reader__body .md-render p { margin: 0 0 1.15em; }
+.reader__body .md-render h3 { font-size: 1.15em; color: var(--ink); }
+.reader__body .md-render p { margin: 0 0 1.15em; color: var(--ink); }
+.reader__body .md-render .challenge-link {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--dim);
+  margin: 0 0 1.4em;
+  word-break: break-all;
+}
 .reader__body .md-render a { color: var(--accent-2); }
 .reader__body .md-render ul, .reader__body .md-render ol { margin: 0 0 1.1em; padding-left: 1.4em; }
 .reader__body .md-render li { margin-bottom: 0.4em; }
@@ -599,6 +577,23 @@ a.file-item.unreadable .kind { color: var(--danger); }
   border-left: 3px solid var(--accent-2);
   color: var(--muted);
   background: var(--accent-2-soft);
+}
+.reader__body .md-render blockquote p:last-child,
+.reader__body .md-render blockquote ul:last-child,
+.reader__body .md-render blockquote ol:last-child {
+  margin-bottom: 0;
+}
+/* Flag callout — same tokens, green accent so flags pop without breaking theme */
+.reader__body .md-render blockquote.flag {
+  border-left-color: #9ece6a;
+  background: rgba(158, 206, 106, 0.10);
+  color: var(--ink);
+}
+.reader__body .md-render blockquote.flag p {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 14px;
+  word-break: break-all;
 }
 .reader__body .md-render code {
   font-family: var(--mono);
@@ -611,14 +606,14 @@ a.file-item.unreadable .kind { color: var(--danger); }
 }
 .reader__body .md-render pre,
 .reader__body pre {
-  background: #22273a;
+  background: #1a1b26;
   border: 1px solid var(--line);
-  padding: 16px 18px;
+  padding: 16px 18px 8px;
   margin: 0 0 1.3em;
   max-width: 100%;
   overflow-x: auto;
-  white-space: pre-wrap;
-  word-break: break-word;
+  white-space: pre;
+  word-break: normal;
   border-radius: var(--radius);
 }
 .reader__body .md-render pre code,
@@ -626,12 +621,21 @@ a.file-item.unreadable .kind { color: var(--danger); }
   border: none;
   padding: 0;
   background: transparent;
-  font-size: 14px;
-  line-height: 1.6;
-  white-space: pre-wrap;
-  word-break: break-word;
+  font-size: 13.5px;
+  line-height: 1.65;
+  white-space: pre;
+  word-break: normal;
 }
 .reader__body .md-render img { max-width: 100%; height: auto; border: 1px solid var(--line); border-radius: var(--radius); }
+/* Centered figures with alt-text captions — same panel/line tokens */
+.md-fig { margin: 0 0 1.4em; text-align: center; }
+.md-fig img { display: inline-block; }
+.md-fig figcaption {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--dim);
+  margin-top: 8px;
+}
 .reader__body .md-render table { display: block; max-width: 100%; overflow-x: auto; border-collapse: collapse; margin: 0 0 1.2em; font-size: 14px; }
 .reader__body .md-render th, .reader__body .md-render td { border: 1px solid var(--line); padding: 8px 10px; text-align: left; }
 .reader__body .md-render th { background: var(--panel); color: var(--dim); font-family: var(--mono); font-size: 12px; }
@@ -648,6 +652,24 @@ a.file-item.unreadable .kind { color: var(--danger); }
   z-index: 200;
   pointer-events: none;
 }
+
+/* ---------- Terminal vs output vs code (same Tokyo Night tokens) ---------- */
+div.highlight { padding: 30px 16px 8px; }
+div.highlight::before {
+  content: attr(data-lang);
+  position: absolute;
+  top: 8px;
+  left: 12px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+div.highlight.is-terminal { border-left: 3px solid var(--accent); }
+div.highlight.is-terminal::before { color: var(--accent); }
+div.highlight.is-output { border-style: dashed; }
+div.highlight.is-output code { color: var(--muted); }
 
 /* ---------- Code copy buttons (added by js/page.js) ---------- */
 div.highlight,
@@ -752,4 +774,63 @@ div.highlight:hover .copy-btn,
   .topbar__actions { flex-wrap: wrap; gap: 8px; width: 100%; justify-content: flex-start; }
   .topbar__actions .btn { padding: 8px 12px; font-size: 12px; flex: none; text-align: center; justify-content: center; }
   .writeup-pager .pager-label, .writeup-pager .pager-event { font-size: 10px; }
+}
+
+/* ---------- Code line numbers (gutter only, copy stays clean) ---------- */
+div.highlight.has-lines { padding-left: 0; }
+div.highlight.has-lines pre { padding-left: 52px; }
+.line-nos {
+  position: absolute;
+  top: 30px;
+  bottom: 8px;
+  left: 0;
+  width: 40px;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--mono);
+  font-size: 13.5px;
+  line-height: 1.65;
+  text-align: right;
+  color: var(--faint);
+  user-select: none;
+  -webkit-user-select: none;
+  border-right: 1px solid var(--line);
+  padding-right: 8px;
+  overflow: hidden;
+}
+.line-nos span { display: block; }
+
+/* ---------- Screenshot lightbox (native dialog) ---------- */
+.img-lightbox {
+  background: var(--bg-elev);
+  border: 1px solid var(--line-bright);
+  border-radius: var(--radius);
+  padding: 12px;
+  max-width: min(92vw, 1100px);
+}
+.img-lightbox::backdrop { background: rgba(10, 10, 18, 0.85); }
+.img-lightbox img { max-width: 100%; max-height: 82vh; display: block; }
+
+/* ---------- Print ---------- */
+@media print {
+  .topbar, .sidebar, .reader__toolbar, .writeup-pager,
+  .read-progress, .lab-grid, .copy-btn, .img-lightbox { display: none !important; }
+  body { background: #fff; color: #111; font-size: 12pt; }
+  .reader-layout { display: block; }
+  .reader__body { max-width: 100%; padding: 0; margin: 0; }
+  .reader__body .md-render { color: #111; font-size: 12pt; max-width: 100%; }
+  .reader__body .md-render h1,
+  .reader__body .md-render h2,
+  .reader__body .md-render h3,
+  .reader__body .md-render a { color: #111; }
+  div.highlight, .reader__body .md-render pre {
+    background: #f5f5f5 !important;
+    border: 1px solid #ccc;
+    white-space: pre-wrap;
+  }
+  div.highlight::before, .line-nos { display: none; }
+  div.highlight.has-lines pre { padding-left: 0; }
+  .highlight code, .reader__body .md-render code { color: #111; }
+  .page { max-width: 100%; padding: 0; }
+  .writeup-card { break-inside: avoid; }
 }

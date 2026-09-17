@@ -4,24 +4,25 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>The Brochure · hackerholidays</title>
-<meta name="description" content="CTF writeup: The Brochure (hackerholidays)" />
+<meta name="description" content="Hello Hackers! Welcome to this series of writeups for all the rooms in the TryHackMe Hacker Holidays event 2026" />
 <meta name="theme-color" content="#16161e" />
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; object-src 'none'; base-uri 'self'; frame-ancestors 'self'" />
 <link rel="canonical" href="https://aaadarsh1337.github.io/writeups/hackerholidays/the_brochure/" />
 <meta property="og:type" content="article" />
 <meta property="og:title" content="The Brochure · hackerholidays" />
-<meta property="og:description" content="CTF writeup: The Brochure (hackerholidays)" />
+<meta property="og:description" content="Hello Hackers! Welcome to this series of writeups for all the rooms in the TryHackMe Hacker Holidays event 2026" />
 <meta property="og:url" content="https://aaadarsh1337.github.io/writeups/hackerholidays/the_brochure/" />
-<meta property="og:image" content="https://aaadarsh1337.github.io/assets/avatar.jpg" />
-<meta name="twitter:card" content="summary" />
+<meta property="og:image" content="https://aaadarsh1337.github.io/writeups/hackerholidays/the_brochure/og.png" />
+<meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="The Brochure · hackerholidays" />
-<meta name="twitter:description" content="CTF writeup: The Brochure (hackerholidays)" />
-<meta name="twitter:image" content="https://aaadarsh1337.github.io/assets/avatar.jpg" />
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "The Brochure · hackerholidays", "description": "CTF writeup: The Brochure (hackerholidays)", "url": "https://aaadarsh1337.github.io/writeups/hackerholidays/the_brochure/", "author": {"@type": "Person", "name": "Adarsh Pillai", "url": "https://aaadarsh1337.github.io/"}}</script>
+<meta name="twitter:description" content="Hello Hackers! Welcome to this series of writeups for all the rooms in the TryHackMe Hacker Holidays event 2026" />
+<meta name="twitter:image" content="https://aaadarsh1337.github.io/writeups/hackerholidays/the_brochure/og.png" />
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "The Brochure · hackerholidays", "description": "Hello Hackers! Welcome to this series of writeups for all the rooms in the TryHackMe Hacker Holidays event 2026", "url": "https://aaadarsh1337.github.io/writeups/hackerholidays/the_brochure/", "author": {"@type": "Person", "name": "Adarsh Pillai", "url": "https://aaadarsh1337.github.io/"}}</script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2316161e'/%3E%3Crect x='13' y='4' width='6' height='24' fill='%237DCFFF'/%3E%3Crect x='4' y='13' width='24' height='6' fill='%237DCFFF'/%3E%3Crect x='14' y='6' width='4' height='20' fill='%2316161e'/%3E%3Crect x='6' y='14' width='20' height='4' fill='%2316161e'/%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../../css/tokens.css" />
 <link rel="stylesheet" href="../../css/style.css" />
 <link rel="stylesheet" href="../../css/pygments.css" />
 </head>
@@ -71,13 +72,14 @@
         <span class="tb-label">READING</span>
         <span>notes.md</span>
       </div>
+      <button type="button" class="btn btn--ghost btn--small" id="copyLinkBtn">Copy link</button>
       <a class="btn btn--ghost btn--small" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/the_brochure/notes.md" target="_blank" rel="noopener noreferrer">Source &#8599;</a>
     </div>
     <div class="reader__body">
       <div class="md-render">
 <h1 id="day-0-the-brochure">Day 0 - The Brochure</h1>
 <h2 id="room-httpstryhackmecomroomhh-thebrochure-081f3e36">Room: <a href="https://tryhackme.com/room/hh-thebrochure-081f3e36">https://tryhackme.com/room/hh-thebrochure-081f3e36</a></h2>
-<p>Hello Hackers!<br>
+<p>Hello Hackers!
 Welcome to this series of writeups for all the rooms in the TryHackMe Hacker Holidays event 2026</p>
 <p>It is an OSINT challenge</p>
 <p>Opening an image, it seems to be a brochure for The Byte Lotus Resort</p>
@@ -89,7 +91,7 @@ Welcome to this series of writeups for all the rooms in the TryHackMe Hacker Hol
 <p>VEhNe1YzckBzX2FDQzB1bnRfaDRzX2IzM25fZjB1bmQhfQ==</p>
 </blockquote>
 <p>Decoding it reveals the flag</p>
-<blockquote>
+<blockquote class="flag">
 <p>THM{...}</p>
 </blockquote>
 <p>Happy Hacking!</p>

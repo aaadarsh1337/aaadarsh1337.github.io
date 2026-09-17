@@ -4,24 +4,25 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>The Hollow Shell · hackerholidays</title>
-<meta name="description" content="CTF writeup: The Hollow Shell (hackerholidays)" />
+<meta name="description" content="Welcome to Day 10 of the TryHackMe Hacker Holidays 2026 writeups." />
 <meta name="theme-color" content="#16161e" />
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; object-src 'none'; base-uri 'self'; frame-ancestors 'self'" />
 <link rel="canonical" href="https://aaadarsh1337.github.io/writeups/hackerholidays/the_hollow_shell/" />
 <meta property="og:type" content="article" />
 <meta property="og:title" content="The Hollow Shell · hackerholidays" />
-<meta property="og:description" content="CTF writeup: The Hollow Shell (hackerholidays)" />
+<meta property="og:description" content="Welcome to Day 10 of the TryHackMe Hacker Holidays 2026 writeups." />
 <meta property="og:url" content="https://aaadarsh1337.github.io/writeups/hackerholidays/the_hollow_shell/" />
-<meta property="og:image" content="https://aaadarsh1337.github.io/assets/avatar.jpg" />
-<meta name="twitter:card" content="summary" />
+<meta property="og:image" content="https://aaadarsh1337.github.io/writeups/hackerholidays/the_hollow_shell/og.png" />
+<meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="The Hollow Shell · hackerholidays" />
-<meta name="twitter:description" content="CTF writeup: The Hollow Shell (hackerholidays)" />
-<meta name="twitter:image" content="https://aaadarsh1337.github.io/assets/avatar.jpg" />
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "The Hollow Shell · hackerholidays", "description": "CTF writeup: The Hollow Shell (hackerholidays)", "url": "https://aaadarsh1337.github.io/writeups/hackerholidays/the_hollow_shell/", "author": {"@type": "Person", "name": "Adarsh Pillai", "url": "https://aaadarsh1337.github.io/"}}</script>
+<meta name="twitter:description" content="Welcome to Day 10 of the TryHackMe Hacker Holidays 2026 writeups." />
+<meta name="twitter:image" content="https://aaadarsh1337.github.io/writeups/hackerholidays/the_hollow_shell/og.png" />
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "The Hollow Shell · hackerholidays", "description": "Welcome to Day 10 of the TryHackMe Hacker Holidays 2026 writeups.", "url": "https://aaadarsh1337.github.io/writeups/hackerholidays/the_hollow_shell/", "author": {"@type": "Person", "name": "Adarsh Pillai", "url": "https://aaadarsh1337.github.io/"}}</script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2316161e'/%3E%3Crect x='13' y='4' width='6' height='24' fill='%237DCFFF'/%3E%3Crect x='4' y='13' width='24' height='6' fill='%237DCFFF'/%3E%3Crect x='14' y='6' width='4' height='20' fill='%2316161e'/%3E%3Crect x='6' y='14' width='20' height='4' fill='%2316161e'/%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../../css/tokens.css" />
 <link rel="stylesheet" href="../../css/style.css" />
 <link rel="stylesheet" href="../../css/pygments.css" />
 </head>
@@ -71,6 +72,7 @@
         <span class="tb-label">READING</span>
         <span>notes.md</span>
       </div>
+      <button type="button" class="btn btn--ghost btn--small" id="copyLinkBtn">Copy link</button>
       <a class="btn btn--ghost btn--small" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/the_hollow_shell/notes.md" target="_blank" rel="noopener noreferrer">Source &#8599;</a>
     </div>
     <div class="reader__body">
@@ -86,19 +88,19 @@
 </blockquote>
 <p>The web application does not run on port 80. It is available on port <code>5000</code>.</p>
 <p>Reviewing the source code revealed credentials:</p>
-<div class="highlight"><pre><span></span><code>concierge:StayNoticed2024!
+<div class="highlight is-output lang-text" data-lang="text"><pre><span></span><code>concierge:StayNoticed2024!
 </code></pre></div>
 
 <p>The portal allows ZIP file uploads, suggesting a possible ZIP Slip vulnerability.</p>
 <p>We tested for path traversal using:</p>
-<div class="highlight"><pre><span></span><code>curl<span class="w"> </span><span class="m">10</span>.48.160.100:5000/shells/../app.py<span class="w"> </span>--path-as-is
+<div class="highlight is-terminal lang-bash" data-lang="bash"><pre><span></span><code>curl<span class="w"> </span><span class="m">10</span>.48.160.100:5000/shells/../app.py<span class="w"> </span>--path-as-is
 </code></pre></div>
 
 <p>This dumped the application source code and revealed the hooks used by the upload functionality.</p>
 <p>We then wrote <code>exploit.py</code> to create the malicious ZIP file. The ZIP Slip vulnerability allowed us to place a file in the <code>hooks</code> directory.</p>
 <p>The hooks run automatically after the upload, as explained under the upload section of the site. This caused our uploaded shell to execute and gave us a reverse shell.</p>
 <p>The flag was:</p>
-<blockquote>
+<blockquote class="flag">
 <p><code>THM{...}</code></p>
 </blockquote>
 <p>Happy Hacking!</p>

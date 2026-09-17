@@ -4,24 +4,25 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Cryptocabana · hackerholidays</title>
-<meta name="description" content="CTF writeup: Cryptocabana (hackerholidays)" />
+<meta name="description" content="Welcome to Day 9 of the TryHackMe Hacker Holidays 2026 writeups." />
 <meta name="theme-color" content="#16161e" />
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; object-src 'none'; base-uri 'self'; frame-ancestors 'self'" />
 <link rel="canonical" href="https://aaadarsh1337.github.io/writeups/hackerholidays/cryptocabana/" />
 <meta property="og:type" content="article" />
 <meta property="og:title" content="Cryptocabana · hackerholidays" />
-<meta property="og:description" content="CTF writeup: Cryptocabana (hackerholidays)" />
+<meta property="og:description" content="Welcome to Day 9 of the TryHackMe Hacker Holidays 2026 writeups." />
 <meta property="og:url" content="https://aaadarsh1337.github.io/writeups/hackerholidays/cryptocabana/" />
-<meta property="og:image" content="https://aaadarsh1337.github.io/assets/avatar.jpg" />
-<meta name="twitter:card" content="summary" />
+<meta property="og:image" content="https://aaadarsh1337.github.io/writeups/hackerholidays/cryptocabana/og.png" />
+<meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="Cryptocabana · hackerholidays" />
-<meta name="twitter:description" content="CTF writeup: Cryptocabana (hackerholidays)" />
-<meta name="twitter:image" content="https://aaadarsh1337.github.io/assets/avatar.jpg" />
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Cryptocabana · hackerholidays", "description": "CTF writeup: Cryptocabana (hackerholidays)", "url": "https://aaadarsh1337.github.io/writeups/hackerholidays/cryptocabana/", "author": {"@type": "Person", "name": "Adarsh Pillai", "url": "https://aaadarsh1337.github.io/"}}</script>
+<meta name="twitter:description" content="Welcome to Day 9 of the TryHackMe Hacker Holidays 2026 writeups." />
+<meta name="twitter:image" content="https://aaadarsh1337.github.io/writeups/hackerholidays/cryptocabana/og.png" />
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Cryptocabana · hackerholidays", "description": "Welcome to Day 9 of the TryHackMe Hacker Holidays 2026 writeups.", "url": "https://aaadarsh1337.github.io/writeups/hackerholidays/cryptocabana/", "author": {"@type": "Person", "name": "Adarsh Pillai", "url": "https://aaadarsh1337.github.io/"}}</script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2316161e'/%3E%3Crect x='13' y='4' width='6' height='24' fill='%237DCFFF'/%3E%3Crect x='4' y='13' width='24' height='6' fill='%237DCFFF'/%3E%3Crect x='14' y='6' width='4' height='20' fill='%2316161e'/%3E%3Crect x='6' y='14' width='20' height='4' fill='%2316161e'/%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../../css/tokens.css" />
 <link rel="stylesheet" href="../../css/style.css" />
 <link rel="stylesheet" href="../../css/pygments.css" />
 </head>
@@ -71,6 +72,7 @@
         <span class="tb-label">READING</span>
         <span>notes.md</span>
       </div>
+      <button type="button" class="btn btn--ghost btn--small" id="copyLinkBtn">Copy link</button>
       <a class="btn btn--ghost btn--small" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/cryptocabana/notes.md" target="_blank" rel="noopener noreferrer">Source &#8599;</a>
     </div>
     <div class="reader__body">
@@ -81,13 +83,13 @@
 <p>Welcome to Day 9 of the TryHackMe Hacker Holidays 2026 writeups.</p>
 <p>This challenge involves Azure Storage, exposed SAS tokens, and Azure Key Vault secrets.</p>
 <p>Inspecting <code>app.js</code> reveals an Azure Storage account and a SAS token:</p>
-<div class="highlight"><pre><span></span><code><span class="kd">const</span><span class="w"> </span><span class="nx">STORAGE_ACCOUNT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;cryptocabanaf5scjagc&quot;</span><span class="p">;</span>
+<div class="highlight is-code lang-javascript" data-lang="javascript"><pre><span></span><code><span class="kd">const</span><span class="w"> </span><span class="nx">STORAGE_ACCOUNT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;cryptocabanaf5scjagc&quot;</span><span class="p">;</span>
 <span class="kd">const</span><span class="w"> </span><span class="nx">BACKUPS_CONTAINER</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;backups&quot;</span><span class="p">;</span>
 <span class="kd">const</span><span class="w"> </span><span class="nx">BACKUP_SAS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;?sv=2022-11-02&amp;ss=b&amp;srt=sco&amp;sp=rl&amp;se=2099-12-31T23:59:59Z&amp;st=2024-01-01T00:00:00Z&amp;spr=https&amp;sig=...&quot;</span><span class="p">;</span>
 </code></pre></div>
 
 <p>We export the storage account and SAS token:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span><span class="w"> </span><span class="nv">AZURE_STORAGE_ACCOUNT</span><span class="o">=</span><span class="s2">&quot;cryptocabanaf5scjagc&quot;</span>
+<div class="highlight is-terminal lang-bash" data-lang="bash"><pre><span></span><code><span class="nb">export</span><span class="w"> </span><span class="nv">AZURE_STORAGE_ACCOUNT</span><span class="o">=</span><span class="s2">&quot;cryptocabanaf5scjagc&quot;</span>
 <span class="nb">export</span><span class="w"> </span><span class="nv">AZURE_STORAGE_SAS_TOKEN</span><span class="o">=</span><span class="s2">&quot;...&quot;</span>
 </code></pre></div>
 
@@ -98,16 +100,16 @@
 <li><code>vault</code></li>
 </ul>
 <p>The <code>vault</code> and <code>backups</code> containers look interesting, so we check the contents of the vault:</p>
-<div class="highlight"><pre><span></span><code>az<span class="w"> </span>storage<span class="w"> </span>blob<span class="w"> </span>list<span class="w"> </span>--container-name<span class="w"> </span>vault<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>name
+<div class="highlight is-terminal lang-bash" data-lang="bash"><pre><span></span><code>az<span class="w"> </span>storage<span class="w"> </span>blob<span class="w"> </span>list<span class="w"> </span>--container-name<span class="w"> </span>vault<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>name
 </code></pre></div>
 
 <p>This reveals two files:</p>
-<div class="highlight"><pre><span></span><code>backup-service-account.json
+<div class="highlight is-output lang-text" data-lang="text"><pre><span></span><code>backup-service-account.json
 seed_phrase.txt
 </code></pre></div>
 
 <p>The seed phrase file looks interesting, so we download both files:</p>
-<div class="highlight"><pre><span></span><code>az<span class="w"> </span>storage<span class="w"> </span>blob<span class="w"> </span>download<span class="w"> </span><span class="se">\</span>
+<div class="highlight is-terminal lang-bash" data-lang="bash"><pre><span></span><code>az<span class="w"> </span>storage<span class="w"> </span>blob<span class="w"> </span>download<span class="w"> </span><span class="se">\</span>
 --container-name<span class="w"> </span>vault<span class="w"> </span><span class="se">\</span>
 --name<span class="w"> </span>seed_phrase.txt<span class="w"> </span><span class="se">\</span>
 --file<span class="w"> </span>seed_phrase.txt
@@ -120,7 +122,7 @@ az<span class="w"> </span>storage<span class="w"> </span>blob<span class="w"> </
 
 <p>The <code>seed_phrase.txt</code> file contains a 12-word seed phrase.</p>
 <p>The JSON file contains the credentials for an Azure service principal, along with the name of an Azure Key Vault. We use those details to set the required environment variables and log in:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span><span class="w"> </span><span class="nv">AZURE_CLIENT_ID</span><span class="o">=</span><span class="s2">&quot;...&quot;</span>
+<div class="highlight is-terminal lang-bash" data-lang="bash"><pre><span></span><code><span class="nb">export</span><span class="w"> </span><span class="nv">AZURE_CLIENT_ID</span><span class="o">=</span><span class="s2">&quot;...&quot;</span>
 <span class="nb">export</span><span class="w"> </span><span class="nv">AZURE_CLIENT_SECRET</span><span class="o">=</span><span class="s2">&quot;...&quot;</span>
 <span class="nb">export</span><span class="w"> </span><span class="nv">AZURE_TENANT_ID</span><span class="o">=</span><span class="s2">&quot;...&quot;</span>
 <span class="nb">export</span><span class="w"> </span><span class="nv">AZURE_VAULT_NAME</span><span class="o">=</span><span class="s2">&quot;ccabana-kv-f5scjagc&quot;</span>
@@ -135,19 +137,19 @@ az<span class="w"> </span>login<span class="w"> </span><span class="se">\</span>
 </code></pre></div>
 
 <p>Next, list the secrets in the Key Vault:</p>
-<div class="highlight"><pre><span></span><code>az<span class="w"> </span>keyvault<span class="w"> </span>secret<span class="w"> </span>list<span class="w"> </span><span class="se">\</span>
+<div class="highlight is-terminal lang-bash" data-lang="bash"><pre><span></span><code>az<span class="w"> </span>keyvault<span class="w"> </span>secret<span class="w"> </span>list<span class="w"> </span><span class="se">\</span>
 --vault-name<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$AZURE_VAULT_NAME</span><span class="s2">&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>name
 </code></pre></div>
 
 <p>The vault contains:</p>
-<div class="highlight"><pre><span></span><code>key-shard-1
+<div class="highlight is-output lang-text" data-lang="text"><pre><span></span><code>key-shard-1
 key-shard-2
 key-shard-3
 master-key
 </code></pre></div>
 
 <p>The <code>master-key</code> is forbidden, but the three key shards can be accessed:</p>
-<div class="highlight"><pre><span></span><code>az<span class="w"> </span>keyvault<span class="w"> </span>secret<span class="w"> </span>show<span class="w"> </span><span class="se">\</span>
+<div class="highlight is-terminal lang-bash" data-lang="bash"><pre><span></span><code>az<span class="w"> </span>keyvault<span class="w"> </span>secret<span class="w"> </span>show<span class="w"> </span><span class="se">\</span>
 --vault-name<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$AZURE_VAULT_NAME</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
 --name<span class="w"> </span>key-shard-1<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>value
 
@@ -162,13 +164,13 @@ az<span class="w"> </span>keyvault<span class="w"> </span>secret<span class="w">
 
 <p>The first and third shards reveal partial flag values. The second shard contains a message indicating that it was rotated and that the old value may still be recoverable.</p>
 <p>Azure Key Vault keeps previous secret versions, so we list the versions of <code>key-shard-2</code>:</p>
-<div class="highlight"><pre><span></span><code>az<span class="w"> </span>keyvault<span class="w"> </span>secret<span class="w"> </span>list-versions<span class="w"> </span><span class="se">\</span>
+<div class="highlight is-terminal lang-bash" data-lang="bash"><pre><span></span><code>az<span class="w"> </span>keyvault<span class="w"> </span>secret<span class="w"> </span>list-versions<span class="w"> </span><span class="se">\</span>
 --vault-name<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$AZURE_VAULT_NAME</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
 --name<span class="w"> </span>key-shard-2
 </code></pre></div>
 
 <p>The older version can then be retrieved using its version ID:</p>
-<div class="highlight"><pre><span></span><code>az<span class="w"> </span>keyvault<span class="w"> </span>secret<span class="w"> </span>show<span class="w"> </span><span class="se">\</span>
+<div class="highlight is-terminal lang-bash" data-lang="bash"><pre><span></span><code>az<span class="w"> </span>keyvault<span class="w"> </span>secret<span class="w"> </span>show<span class="w"> </span><span class="se">\</span>
 --vault-name<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$AZURE_VAULT_NAME</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
 --name<span class="w"> </span>key-shard-2<span class="w"> </span><span class="se">\</span>
 --version<span class="w"> </span>&lt;old-version-id&gt;<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>value
@@ -176,7 +178,7 @@ az<span class="w"> </span>keyvault<span class="w"> </span>secret<span class="w">
 
 <p>The old value completes the missing section of the flag.</p>
 <p>Combining all three shards reveals the flag:</p>
-<blockquote>
+<blockquote class="flag">
 <p><code>THM{...}</code></p>
 </blockquote>
 <p>Happy Hacking!</p>

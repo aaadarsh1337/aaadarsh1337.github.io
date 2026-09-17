@@ -4,24 +4,25 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>BOF · pwnable_kr</title>
-<meta name="description" content="CTF writeup: BOF (pwnable_kr)" />
+<meta name="description" content="Welcome back to another writeup from pwnable.kr Today we&#x27;ll be looking at bof" />
 <meta name="theme-color" content="#16161e" />
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; object-src 'none'; base-uri 'self'; frame-ancestors 'self'" />
 <link rel="canonical" href="https://aaadarsh1337.github.io/writeups/pwnable_kr/bof/" />
 <meta property="og:type" content="article" />
 <meta property="og:title" content="BOF · pwnable_kr" />
-<meta property="og:description" content="CTF writeup: BOF (pwnable_kr)" />
+<meta property="og:description" content="Welcome back to another writeup from pwnable.kr Today we&#x27;ll be looking at bof" />
 <meta property="og:url" content="https://aaadarsh1337.github.io/writeups/pwnable_kr/bof/" />
-<meta property="og:image" content="https://aaadarsh1337.github.io/assets/avatar.jpg" />
-<meta name="twitter:card" content="summary" />
+<meta property="og:image" content="https://aaadarsh1337.github.io/writeups/pwnable_kr/bof/og.png" />
+<meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="BOF · pwnable_kr" />
-<meta name="twitter:description" content="CTF writeup: BOF (pwnable_kr)" />
-<meta name="twitter:image" content="https://aaadarsh1337.github.io/assets/avatar.jpg" />
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "BOF · pwnable_kr", "description": "CTF writeup: BOF (pwnable_kr)", "url": "https://aaadarsh1337.github.io/writeups/pwnable_kr/bof/", "author": {"@type": "Person", "name": "Adarsh Pillai", "url": "https://aaadarsh1337.github.io/"}}</script>
+<meta name="twitter:description" content="Welcome back to another writeup from pwnable.kr Today we&#x27;ll be looking at bof" />
+<meta name="twitter:image" content="https://aaadarsh1337.github.io/writeups/pwnable_kr/bof/og.png" />
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "BOF · pwnable_kr", "description": "Welcome back to another writeup from pwnable.kr Today we'll be looking at bof", "url": "https://aaadarsh1337.github.io/writeups/pwnable_kr/bof/", "author": {"@type": "Person", "name": "Adarsh Pillai", "url": "https://aaadarsh1337.github.io/"}}</script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2316161e'/%3E%3Crect x='13' y='4' width='6' height='24' fill='%237DCFFF'/%3E%3Crect x='4' y='13' width='24' height='6' fill='%237DCFFF'/%3E%3Crect x='14' y='6' width='4' height='20' fill='%2316161e'/%3E%3Crect x='6' y='14' width='20' height='4' fill='%2316161e'/%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../../css/tokens.css" />
 <link rel="stylesheet" href="../../css/style.css" />
 <link rel="stylesheet" href="../../css/pygments.css" />
 </head>
@@ -71,6 +72,7 @@
         <span class="tb-label">READING</span>
         <span>notes.md</span>
       </div>
+      <button type="button" class="btn btn--ghost btn--small" id="copyLinkBtn">Copy link</button>
       <a class="btn btn--ghost btn--small" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/pwnable_kr/bof/notes.md" target="_blank" rel="noopener noreferrer">Source &#8599;</a>
     </div>
     <div class="reader__body">
@@ -78,54 +80,54 @@
 <h1 id="bof">bof</h1>
 <h2 id="challenge-httpspwnablekrplayphp">Challenge: <a href="https://pwnable.kr/play.php">https://pwnable.kr/play.php</a></h2>
 <p>Hello Hackers!</p>
-<p>Welcome back to another writeup from pwnable.kr<br>
+<p>Welcome back to another writeup from pwnable.kr
 Today we'll be looking at bof</p>
 <p>From the room name and hints, it seems to be of course, buffer overflow</p>
 <p>Lets analyze the code</p>
 <p>We find that we will get a shell if we execute the function with address <strong>0xcafebabe</strong> but the main function runs it as <strong>0xdeadbeat</strong></p>
 <p>Lets analyze the function</p>
-<p>It is a 32 bit executable<br>
+<p>It is a 32 bit executable
 Using cyclic to create</p>
-<div class="highlight"><pre><span></span><code>cyclic<span class="w"> </span>-n<span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="m">200</span>
+<div class="highlight is-terminal lang-bash" data-lang="bash"><pre><span></span><code>cyclic<span class="w"> </span>-n<span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="m">200</span>
 </code></pre></div>
 
-<p>Using pwndbg<br>
+<p>Using pwndbg
 Lets see what we find</p>
-<p>Oops. forgot to <strong>checksec</strong><br>
+<p>Oops. forgot to <strong>checksec</strong>
 Everything is protected</p>
-<p>Trying to manually analyze the file using gdb<br>
+<p>Trying to manually analyze the file using gdb
 Break at func</p>
 <p>When we disassemble the function, we find this</p>
-<div class="highlight"><pre><span></span><code><span class="err">0</span><span class="nf">x5655623c</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">63</span><span class="err">&gt;</span><span class="p">:</span><span class="w">   </span><span class="no">cmp</span><span class="w">    </span><span class="no">DWORD</span><span class="w"> </span><span class="no">PTR</span><span class="w"> </span><span class="p">[</span><span class="no">ebp</span><span class="err">+</span><span class="mi">0x8</span><span class="p">],</span><span class="mi">0xcafebabe</span>
+<div class="highlight is-code lang-asm" data-lang="asm"><pre><span></span><code><span class="err">0</span><span class="nf">x5655623c</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">63</span><span class="err">&gt;</span><span class="p">:</span><span class="w">   </span><span class="no">cmp</span><span class="w">    </span><span class="no">DWORD</span><span class="w"> </span><span class="no">PTR</span><span class="w"> </span><span class="p">[</span><span class="no">ebp</span><span class="err">+</span><span class="mi">0x8</span><span class="p">],</span><span class="mi">0xcafebabe</span>
 </code></pre></div>
 
 <p>Hence, we can try to set the value of ebp+0x8 to be equivalent to 0xcafebabe</p>
-<div class="highlight"><pre><span></span><code><span class="k">break</span><span class="w"> </span>0x5655623c
+<div class="highlight is-terminal lang-bash" data-lang="bash"><pre><span></span><code><span class="k">break</span><span class="w"> </span>0x5655623c
 </code></pre></div>
 
 <p>Using python we find that <strong>ebp+0x8</strong> is <strong>0xffffcb40</strong></p>
-<div class="highlight"><pre><span></span><code><span class="nb">set</span><span class="w"> </span><span class="o">{</span>int<span class="o">}</span><span class="nv">0xffffcb40</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">3405691582</span>
+<div class="highlight is-terminal lang-bash" data-lang="bash"><pre><span></span><code><span class="nb">set</span><span class="w"> </span><span class="o">{</span>int<span class="o">}</span><span class="nv">0xffffcb40</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">3405691582</span>
 </code></pre></div>
 
 <p>The int is the equivalent of 0xcafebabe</p>
 <p>Continuing, we get our shell. </p>
-<p>But this is pretty much pointless. Because on the server, we cant run gdb as root<br>
+<p>But this is pretty much pointless. Because on the server, we cant run gdb as root
 Hence we need to find smtg with the input that changes the value of ebp+0x8 to set 3405691582</p>
 <p>When i input 400 A, we can see that 200 of them were stored at eax and the rest 200 at ebp</p>
-<div class="highlight"><pre><span></span><code>x<span class="w"> </span><span class="nv">$eax</span>
+<div class="highlight is-terminal lang-bash" data-lang="bash"><pre><span></span><code>x<span class="w"> </span><span class="nv">$eax</span>
 x<span class="w"> </span><span class="nv">$ebp</span>
 </code></pre></div>
 
 <p>Thus, our payload needs 208 A (The whole eax) and then 0xcodebabe</p>
-<p>Ahh but we see that ebp still has a lot of A's <br>
+<p>Ahh but we see that ebp still has a lot of A's 
 Doing some math, we can find that sending 52 chars junk and then our addresss, we can get the flag</p>
-<p>Writing exploit.py<br>
+<p>Writing exploit.py
 We get flag:</p>
 <blockquote>
 <p>Daddy_I_just_pwned_a_buff3r!</p>
 </blockquote>
       </div>
-<nav class="writeup-pager" aria-label="Writeup navigation"><a class="pager-item pager-item--previous" href="../../picoctf/the_add_on_trap/index.html"><span class="pager-label">Previous</span><span class="pager-name">The Add On Trap</span><span class="pager-event">picoctf</span></a><a class="pager-item pager-item--next" href="../../pwnable_kr/collision/index.html"><span class="pager-label">Next</span><span class="pager-name">Collision</span><span class="pager-event">pwnable_kr</span></a></nav>
+<nav class="writeup-pager" aria-label="Writeup navigation"><span class="pager-item pager-item--disabled"></span><a class="pager-item pager-item--next" href="../../pwnable_kr/collision/index.html"><span class="pager-label">Next</span><span class="pager-name">Collision</span><span class="pager-event">pwnable_kr</span></a></nav>
     </div>
   </article>
 </div>

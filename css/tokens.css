@@ -1,0 +1,40 @@
+/* =====================================================================
+   TOKENS — "Tokyo Night" design system (single source of truth)
+   ---------------------------------------------------------------------
+   Shared by the portfolio (css/style.css) and the writeups
+   (scripts/style.css → writeups/css/style.css). Edit here, not there.
+   ===================================================================== */
+
+:root {
+  /* palette — Tokyo Night, darker */
+  --bg: #16161e;
+  --bg-elev: #1a1b26;
+  --panel: #1f2335;
+  --panel-2: #24283b;
+  --line: #292e42;
+  --line-bright: #3b4261;
+  --ink: #c0caf5;
+  --muted: #a9b1d6;
+  --dim: #8b93c0;
+  --faint: #7d86b0;
+
+  --accent: #7dcfff;
+  --accent-soft: rgba(125, 207, 255, 0.14);
+  --accent-2: #7aa2f7;
+  --accent-2-soft: rgba(122, 162, 247, 0.12);
+  --danger: #f7768e;
+  --danger-soft: rgba(247, 118, 142, 0.12);
+
+  /* type */
+  --display: 'Space Grotesk', 'IBM Plex Sans', -apple-system, sans-serif;
+  --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --mono: 'JetBrains Mono', 'SF Mono', 'IBM Plex Mono', ui-monospace, monospace;
+
+  /* geometry */
+  --radius: 2px;
+  --content: 1150px;
+
+  /* motion */
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur: 0.18s;
+}
