@@ -41,15 +41,15 @@ window.PORTFOLIO_CONFIG = {
     stack: ["Cowrie 3.x", "Oracle Cloud", "Grafana + Loki", "GitHub Actions", "Python"],
     metricsUrl: "https://raw.githubusercontent.com/aaadarsh1337/threat-harbour/main/analysis/metrics.json",
     fallbackStats: [
-      { value: "174,927", label: "events captured" },
-      { value: "2,112", label: "unique source IPs" },
-      { value: "28,501", label: "sessions" },
+      { value: "357,922", label: "events captured" },
+      { value: "3,302", label: "unique source IPs" },
+      { value: "55,975", label: "sessions" },
       { value: "daily", label: "leaderboard refresh" }
     ],
     links: {
       github: "https://github.com/aaadarsh1337/threat-harbour",
-      leaderboard: "https://github.com/aaadarsh1337/threat-harbour/blob/main/analysis/summary.md",
-      docs: "https://github.com/aaadarsh1337/threat-harbour/tree/main/docs"
+      docs: "https://github.com/aaadarsh1337/threat-harbour/tree/main/docs",
+      intel: "https://aaadarsh1337.github.io/intel/"
     }
   },
 

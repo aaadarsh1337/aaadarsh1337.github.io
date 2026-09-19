@@ -35,6 +35,7 @@ jobs:
       - name: Python compiles
         run: |
           python3 -m py_compile scripts/build_writeups.py
+          python3 -m py_compile scripts/build_intel.py
           rm -rf scripts/__pycache__
 
       - name: JS syntax check
@@ -44,19 +45,23 @@ jobs:
           test -f scripts/writeups-filter.js && node --check scripts/writeups-filter.js || true
           test -f writeups/js/filter.js && node --check writeups/js/filter.js
           test -f writeups/js/page.js && node --check writeups/js/page.js
+          test -f intel/js/intel.js && node --check intel/js/intel.js
 
       - name: Generated CSS in sync
-        run: diff scripts/style.css writeups/css/style.css
+        run: |
+          diff scripts/style.css writeups/css/style.css
+          diff scripts/intel-style.css intel/css/style.css
 
       - name: No sitemaps
         run: |
           test ! -e sitemap.xml
           test ! -e writeups/sitemap-writeups.xml
-          ! grep -ri "sitemap" robots.txt index.html 404.html scripts/build_writeups.py || exit 1
+          test ! -e intel/sitemap-intel.xml
+          ! grep -ri "sitemap" robots.txt index.html 404.html scripts/build_writeups.py scripts/build_intel.py || exit 1
 
       - name: No inline event handlers
         run: |
-          ! grep -rn "onerror=\|onclick=\|onload=" index.html 404.html scripts/build_writeups.py || exit 1
+          ! grep -rn "onerror=\|onclick=\|onload=" index.html 404.html scripts/build_writeups.py scripts/build_intel.py || exit 1
 
       - name: SRI present on CDN scripts
         run: |
@@ -67,6 +72,7 @@ jobs:
           grep -q "Content-Security-Policy" index.html
           grep -q "Content-Security-Policy" 404.html
           grep -q "Content-Security-Policy" scripts/build_writeups.py
+          grep -q "Content-Security-Policy" scripts/build_intel.py
 
       - name: No committed token / no __pycache__
         run: |

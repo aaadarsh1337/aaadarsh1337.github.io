@@ -20,6 +20,7 @@ Static site on GitHub Pages. No backend, no build step for the main site — jus
 | **05 · Certificates** | `js/config.js` → `certificates` | Card grid, verification links, local copies in `cybersecurity-achievements` as fallback |
 | **06 · Contact** | `js/config.js` → `contact` | Email / Discord only (socials live in Links panel) |
 | **CTF Writeups** | Generated `/writeups/` | 22+ static pages grouped by event (TryHackMe, pwnable.kr, picoCTF, HackerHolidays), with search + category tag filter + difficulty badges |
+| **Threat Intel** | Generated `/intel/` | Daily Threat Harbour dashboard (KPIs, timeline, credential/command leaderboards, takeaways) + vendored `data.json` |
 
 Interactive extras (all in `js/main.js`, no framework):
 
@@ -45,17 +46,18 @@ Design: Tokyo Night-inspired (near-black indigo `#16161e`, cyan `#7DCFFF` accent
 ├── assets/
 │   ├── avatar.webp / avatar.jpg
 │   └── certificate.png         # Placeholder cert badge
-├── writeups/                   # GENERATED — do not hand-edit (see below)
-│   ├── index.html              # Event-grouped cards + live filter
-│   ├── search.json             # Title/event/url index for ⌘K palette
-│   ├── js/filter.js + page.js  # Index live-filter + reader progress/copy (external for strict CSP)
-│   ├── css/style.css + pygments.css
-│   └── hackerholidays/ picoctf/ pwnable_kr/ tryhackme/  # one folder per challenge
+├── intel/                      # GENERATED — do not hand-edit (see below)
+│   ├── index.html              # Threat Harbour dashboard (KPIs, timeline, leaderboards)
+│   ├── data.json               # Vendored metrics.json snapshot this render came from
+│   └── css/style.css + js/intel.js  # Theme + filter/copy (external for strict CSP)
 ├── scripts/
 │   ├── build_writeups.py       # Markdown → static HTML generator
+│   ├── build_intel.py          # metrics.json → static /intel/ dashboard (stdlib only)
 │   ├── style.css               # Writeups theme source (copied to writeups/css/)
+│   ├── intel-style.css         # Intel theme source (copied to intel/css/)
 │   └── difficulty_cache.json   # Verified difficulty labels (fallback when offline)
 ├── .github/workflows/deploy-writeups.yml  # Daily + on-push writeups rebuild
+├── .github/workflows/deploy-intel.yml      # Daily 07:00 UTC + on-push intel rebuild
 ├── robots.txt  .nojekyll
 ```
 

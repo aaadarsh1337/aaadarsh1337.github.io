@@ -1,0 +1,54 @@
+name: Build threat intel
+
+on:
+  workflow_dispatch:
+
+  push:
+    paths:
+      - "scripts/build_intel.py"
+      - "scripts/intel-style.css"
+      - ".github/workflows/deploy-intel.yml"
+
+  repository_dispatch:
+    types: [threat-harbour-updated, intel-updated]
+
+  # Run after the sensor pipeline so we pick up the fresh cut.
+  # Sensor publishes ~06:00 UTC; writeups rebuild at 06:00 — intel at 07:00.
+  schedule:
+    - cron: "0 7 * * *"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout portfolio site
+        uses: actions/checkout@v4
+        with:
+          path: site
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build static intel
+        run: |
+          python3 site/scripts/build_intel.py \
+            --out site/intel \
+            --portfolio-url "https://aaadarsh1337.github.io/"
+
+      - name: Commit and push
+        working-directory: site
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add intel
+          if git diff --staged --quiet; then
+            echo "No changes to intel."
+            exit 0
+          fi
+          git commit -m "chore: rebuild intel from threat-harbour"
+          git push

@@ -199,12 +199,12 @@
       { label: "Go to Certificates", detail: "section", run: () => goSection("certificates") },
       { label: "Go to Contact", detail: "section", run: () => goSection("contact") },
       { label: "Read CTF writeups", detail: "page", run: () => { window.location.href = "/writeups/"; } },
+      { label: "Open live threat intel", detail: "page · daily sensor dashboard", run: () => { window.location.href = "/intel/"; } },
       { label: "Open Links", detail: "action", run: openLinksPanel },
       { label: "Copy email", detail: "action", run: () => copyText((CFG.contact || {}).email || "", null) },
     ];
     if (CFG.flagship && CFG.flagship.repo) {
       const fl = CFG.flagship.links || {};
-      entries.push({ label: "Open " + (CFG.flagship.name || "Threat Harbour") + " — flagship", detail: "repo · live honeypot", run: () => goSection("repositories") });
       entries.push({ label: "View Threat Harbour on GitHub", detail: "external", run: () => window.open(fl.github || ("https://github.com/" + CFG.github.username + "/" + CFG.flagship.repo), "_blank", "noopener") });
     }
     (writeupCache || []).forEach((w) => {
@@ -570,8 +570,14 @@
       actions.appendChild(a);
       return a;
     }
-    if (links.github) addBtn("View on GitHub", links.github, true);
-    if (links.leaderboard) addBtn("Live leaderboard", links.leaderboard, false);
+    if (links.intel) {
+      const intelA = document.createElement("a");
+      intelA.className = "btn btn--primary";
+      intelA.href = links.intel;
+      intelA.innerHTML = escapeHtml("Live threat intel") + ' <span class="ext">→</span>';
+      actions.appendChild(intelA);
+    }
+    if (links.github) addBtn("View on GitHub", links.github, false);
     const browseBtn = document.createElement("button");
     browseBtn.type = "button";
     browseBtn.className = "btn btn--ghost";
@@ -647,11 +653,13 @@
               when = " · updated " + new Date(cutoff).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
             } catch (e) { when = ""; }
           }
-          live.innerHTML = '<span class="dot">●</span> live sensor counts' + escapeHtml(when) + ' · <a href="' + escapeHtml((f.links || {}).leaderboard || (f.links || {}).github || "#repositories") + '" target="_blank" rel="noopener noreferrer">full tables ↗</a>';
+          const intelHref = (f.links || {}).intel || "/intel/";
+          live.innerHTML = '<span class="dot">●</span> live sensor counts' + escapeHtml(when) + ' · <a href="' + escapeHtml(intelHref) + '">full dashboard →</a>';
         }
       })
       .catch(() => {
-        if (live) live.innerHTML = '<span class="dot">●</span> snapshot counts · <a href="' + escapeHtml((f.links || {}).github || "#repositories") + '" target="_blank" rel="noopener noreferrer">live leaderboard ↗</a>';
+        const intelHref = ((CFG.flagship || {}).links || {}).intel || "/intel/";
+        if (live) live.innerHTML = '<span class="dot">●</span> snapshot counts · <a href="' + escapeHtml(intelHref) + '">live dashboard →</a>';
       });
   }
 
