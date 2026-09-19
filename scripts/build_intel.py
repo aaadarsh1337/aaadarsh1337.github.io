@@ -351,7 +351,7 @@ def build(out: Path, metrics_url: str, portfolio_url: str):
   <section class="panel" id="timeline">
     <div class="panel__head"><p class="tb-label">Activity</p><h2>Event volume · <span id="granLabel">{granularity}</span></h2></div>
     <p class="panel__note">Botnet sweeps against this sensor — not global trends.
-    Day pages by week; arrows walk the history. Full daily series in <code>data.json</code>.</p>
+    Full daily series in <code>data.json</code>.</p>
     <div class="seg" id="granSeg" role="group" aria-label="Chart granularity">{seg_html}</div>
     <div id="timelineChart">{timeline_svg(buckets)}</div>
     <div class="pager" id="chartPager" hidden>
@@ -443,16 +443,15 @@ def build(out: Path, metrics_url: str, portfolio_url: str):
 
   <section class="panel" id="visuals">
     <div class="panel__head"><p class="tb-label">Sensor visuals</p><h2>Session funnel</h2></div>
-    <p class="panel__note">Rendered daily upstream.</p>
     <figure class="shot shot--wide"><img src="{DIAGRAMS["session-funnel"]}" alt="Session funnel diagram" loading="lazy" decoding="async" />
-    <figcaption>session funnel · shown at full width so axis labels stay legible · <a href="{GH_BASE}/blob/{GH_BRANCH}/diagrams/session-funnel.png" target="_blank" rel="noopener noreferrer">source ↗</a></figcaption></figure>
+    <figcaption>Session funnel · <a href="{GH_BASE}/blob/{GH_BRANCH}/diagrams/session-funnel.png" target="_blank" rel="noopener noreferrer">source ↗</a></figcaption></figure>
   </section>
 
   <section class="panel" id="method">
     <div class="panel__head"><p class="tb-label">Method</p><h2>How it works</h2></div>
     <div class="prose">
       <p>{html.escape(method or "Parsed Cowrie JSONL on sensor; aggregates only.")}</p>
-      <p>Parsed on-box daily by a read-only job; this page rebuilds from that output (<code>data.json</code> vendored alongside).</p>
+      <p>Aggregates are published daily; the full dataset ships alongside as <code>data.json</code>.</p>
       <p>One VM, one IP, one region — what hit this sensor, not the internet. Never attribution.</p>
       <div class="stack-chips">{stack_chips}</div>
     </div>

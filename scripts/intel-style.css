@@ -481,7 +481,7 @@ main { position: relative; z-index: 1; }
 }
 .shot img { display: block; width: 100%; }
 .shot--wide { grid-column: 1 / -1; }
-.shot--wide img { display: block; width: 100%; max-height: 560px; margin: 0 auto; background: #fff; }
+.shot--wide img { display: block; width: auto; max-width: 100%; height: auto; max-height: 560px; margin: 0 auto; background: #fff; object-fit: contain; }
 .shot figcaption { font-family: var(--mono); font-size: 13px; color: var(--dim); padding: 10px 14px; }
 .shot figcaption a { color: var(--accent-2); }
 
