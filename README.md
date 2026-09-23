@@ -16,7 +16,7 @@ Static site on GitHub Pages. No backend, no build step for the main site — jus
 | **01 · About / Hero** | `js/config.js` → `profile`, `stats` | Bio, tagline, location, résumé button, stats band |
 | **02 · Skillset** | `js/config.js` → `skills` | Offensive sec / languages / tools / currently learning |
 | **03 · Achievements** | `js/config.js` → `achievements` | CTF placements, THM rank, with proof links |
-| **04 · Repositories** | GitHub REST API + `js/config.js` → `github`, `flagship` | Flagship spotlight (Threat Harbour w/ live metrics) + pinned repos sorted by recent push, with language / stars / push date |
+| **04 · Repositories** | GitHub REST API + `js/config.js` → `github`, `flagship` | Flagship spotlight (Threat Harbour w/ latest sensor metrics) + pinned repos sorted by recent push, with language / stars / push date |
 | **05 · Certificates** | `js/config.js` → `certificates` | Card grid, verification links, local copies in `cybersecurity-achievements` as fallback |
 | **06 · Contact** | `js/config.js` → `contact` | Email / Discord only (socials live in Links panel) |
 | **CTF Writeups** | Generated `/writeups/` | 22+ static pages grouped by event (TryHackMe, pwnable.kr, picoCTF, HackerHolidays), with search + category tag filter + difficulty badges |
@@ -28,7 +28,7 @@ Interactive extras (all in `js/main.js`, no framework):
 - **Repo file browser** — per-repo tree modal; readable files open inline, binaries link out to GitHub
 - **File viewer modal** — renders code/text with highlighting inside the site
 - **Links panel** — all socials/handles from `linkPanel` in one place
-- **Live GitHub data** — repo cards fetch `repos` + `languages` from `api.github.com`, cached in-session; degrades gracefully offline/rate-limited
+- **Live GitHub data** — repo cards fetch repository metadata from `api.github.com`, cached in-session; degrades gracefully offline/rate-limited
 
 Design: Tokyo Night-inspired (near-black indigo `#16161e`, cyan `#7DCFFF` accents, Space Grotesk + Inter + JetBrains Mono).
 

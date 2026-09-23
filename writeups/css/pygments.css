@@ -1,8 +1,8 @@
 
 .highlight { color: #c0caf5; background: #1a1b26; }
 .highlight .hll { background: #24283b; }
-.highlight .c  { color: #616a92; font-style: italic; }
-.highlight .ch, .highlight .c1, .highlight .cm, .highlight .cs { color: #616a92; font-style: italic; }
+.highlight .c  { color: #8791b8; font-style: italic; }
+.highlight .ch, .highlight .c1, .highlight .cm, .highlight .cs { color: #8791b8; font-style: italic; }
 .highlight .cp, .highlight .cpf { color: #8b93c0; font-style: italic; }
 .highlight .k, .highlight .kd, .highlight .kn, .highlight .kr, .highlight .kt, .highlight .kc, .highlight .kp { color: #bb9af7; }
 .highlight .n, .highlight .na, .highlight .nb, .highlight .nc, .highlight .no, .highlight .nd, .highlight .ni, .highlight .ne, .highlight .nf, .highlight .nl, .highlight .nn, .highlight .nx, .highlight .py, .highlight .nt, .highlight .nv, .highlight .bp, .highlight .fm, .highlight .vc, .highlight .vg, .highlight .vi, .highlight .vm { color: #c0caf5; }
@@ -14,7 +14,7 @@
 .highlight .g, .highlight .ge, .highlight .ges, .highlight .gr, .highlight .gh, .highlight .gi, .highlight .go, .highlight .gp, .highlight .gs, .highlight .gu, .highlight .gt, .highlight .gd { color: #c0caf5; }
 .highlight .gi { color: #9ece6a; }
 .highlight .gd { color: #f7768e; }
-.highlight .w { color: #616a92; }
+.highlight .w { color: #8791b8; }
 
 
 .highlight {

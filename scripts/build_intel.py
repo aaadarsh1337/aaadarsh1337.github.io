@@ -46,10 +46,25 @@ def fetch_json(url: str, timeout: int = 20):
         req = urllib.request.Request(url, headers=UA)
         with urllib.request.urlopen(req, timeout=timeout) as r:
             raw = r.read(4_000_000)
-        return json.loads(raw.decode("utf-8", errors="replace")), "live sensor pull"
+        return json.loads(raw.decode("utf-8", errors="replace")), "latest sensor pull"
     except Exception as e:
         print(f"  warning: metrics fetch failed ({e})")
         return None, "fetch-failed"
+
+
+def metrics_usable(value) -> bool:
+    if not isinstance(value, dict):
+        return False
+    totals = value.get("totals")
+    collection = value.get("collection")
+    return (
+        isinstance(totals, dict)
+        and isinstance(totals.get("total_events"), (int, float))
+        and totals.get("total_events", 0) > 0
+        and isinstance(collection, dict)
+        and isinstance(collection.get("per_day_utc"), dict)
+        and bool(collection.get("per_day_utc"))
+    )
 
 
 def fmt(n) -> str:
@@ -136,7 +151,7 @@ def timeline_svg(buckets: list) -> str:
     n = len(vals)
     slot = (W - PAD * 2) / n
     bw = max(3, min(26, slot * 0.62))
-    parts = [f'<svg viewBox="0 0 {W} {H}" role="img" aria-label="Daily event volume, {n} days">']
+    parts = [f'<svg viewBox="0 0 {W} {H}" role="img" aria-label="Daily event volume, {n} days"><title>Daily event volume</title><desc>Event counts for the latest sensor snapshot.</desc>']
     # gridlines with labeled scale (compact: 62.7k)
     def compact(n):
         return f"{n / 1000:.1f}k" if n >= 1000 else f"{n:,}"
@@ -169,20 +184,32 @@ def timeline_svg(buckets: list) -> str:
     return '<div class="timeline">' + "".join(parts) + "</div>"
 
 
-def leader_rows(items: list, max_count: int) -> str:
+def leader_rows(items: list, max_count: int, command: bool = False) -> str:
     rows = []
     for i, it in enumerate(items, 1):
-        name = it.get("value", it.get("input", "?"))
+        raw_name = str(it.get("value", it.get("input", "?")))
+        name = " ".join(raw_name.split())
+        preview = name
+        if command and len(name) > 180:
+            preview = name[:177].rsplit(" ", 1)[0] + "…"
+        details = ""
+        if command and preview != name:
+            details = (
+                '<details class="leader-details"><summary>Show full command</summary>'
+                f'<pre>{html.escape(raw_name)}</pre></details>'
+            )
+        copy_label = "Copy full command" if command else "Copy value"
+        name_class = "leader-name command-name" if command else "leader-name"
         c = it.get("count", 0)
         share = (c / max_count * 100) if max_count else 0
         rows.append(
-            f'<div class="leader-row" data-search="{html.escape(str(name).lower())}">'
+            f'<div class="leader-row" role="listitem" data-search="{html.escape(name.lower())}">'
             f'<span class="leader-rank">{i:02d}</span>'
-            f'<div class="leader-main"><div class="leader-name">{html.escape(str(name))}'
-            f'<button type="button" class="copy-btn" data-copy="{html.escape(str(name))}" aria-label="Copy {html.escape(str(name))}">copy</button></div>'
+            f'<div class="leader-main"><div class="{name_class}"><span class="leader-value">{html.escape(preview)}</span>'
+            f'<button type="button" class="copy-btn" data-copy="{html.escape(raw_name)}" aria-label="{copy_label}">copy</button></div>'
             f'<div class="leader-bar"><span style="width:{share:.1f}%"></span></div></div>'
             f'<span class="leader-count">{c:,} <small>{pct(c, max_count)} of top</small></span>'
-            f"</div>"
+            f"{details}</div>"
         )
     return "".join(rows) or '<p class="dim">No rows in this snapshot.</p>'
 
@@ -209,17 +236,23 @@ def build(out: Path, metrics_url: str, portfolio_url: str):
         raise SystemExit("intel-style.css missing next to build_intel.py")
 
     metrics, prov = fetch_json(metrics_url)
+    if metrics is not None and not metrics_usable(metrics):
+        print("  warning: fetched metrics failed schema validation")
+        metrics = None
     stale_snapshot = False
     if metrics is None:
         prev = out / "data.json"
         if prev.exists():
             try:
-                metrics = json.loads(prev.read_text(encoding="utf-8"))
-                prov = "last good snapshot (live pull unreachable)"
+                previous = json.loads(prev.read_text(encoding="utf-8"))
+                if not metrics_usable(previous):
+                    raise ValueError("previous snapshot failed schema validation")
+                metrics = previous
+                prov = "last good snapshot (latest pull unreachable)"
                 stale_snapshot = True
                 print("  using previous intel/data.json as fallback")
             except Exception:
-                metrics = {}
+                raise SystemExit("No valid metrics snapshot available; refusing to publish an empty dashboard.")
         else:
             raise SystemExit("No metrics available and no previous intel/data.json to fall back on.")
 
@@ -235,6 +268,12 @@ def build(out: Path, metrics_url: str, portfolio_url: str):
     stack = metrics.get("stack", {})
     obs = metrics.get("observation_period", {})
     method = metrics.get("method", "")
+    if isinstance(method, str):
+        method = method.replace(
+            "Aggregates only; raw IPs and payloads not published.",
+            "Raw IPs and file contents are not published; aggregates and command samples are shown.",
+        )
+        metrics["method"] = method
     cutoff_raw = metrics.get("analysis_cutoff_utc") or collection.get("interim_cutoff", "")
     cutoff = parse_cutoff(cutoff_raw)
     now = dt.datetime.now(dt.timezone.utc)
@@ -283,7 +322,7 @@ def build(out: Path, metrics_url: str, portfolio_url: str):
 
     site_base = portfolio_url.rstrip("/") + "/intel"
     canonical = site_base + "/"
-    fresh_label = "STALE SNAPSHOT" if is_stale else "LIVE · AUTO-REFRESHED DAILY"
+    fresh_label = "STALE SNAPSHOT" if is_stale else "SNAPSHOT · REBUILT DAILY"
     cutoff_human = cutoff.strftime("%Y-%m-%d %H:%M UTC") if cutoff else str(cutoff_raw or "unknown")
     delta_cls = "up" if delta >= 0 else "down"
     delta_arrow = "▲" if delta >= 0 else "▼"
@@ -314,13 +353,13 @@ def build(out: Path, metrics_url: str, portfolio_url: str):
     )
     dest_rows = "".join(
         f"<tr><td>{html.escape(x.get('value', '?'))}"
-        f'<button type="button" class="copy-btn" data-copy="{html.escape(x.get("value", ""))}">copy</button></td>'
+        f'<button type="button" class="copy-btn" data-copy="{html.escape(x.get("value", ""))}" aria-label="Copy value">copy</button></td>'
         f'<td class="num">{x.get("count", 0):,}</td></tr>'
         for x in top_dest
     )
     sha_rows = "".join(
         f"<tr><td title=\"{html.escape(x.get('value', ''))}\">{html.escape(x.get('value', '')[:16])}…"
-        f'<button type="button" class="copy-btn" data-copy="{html.escape(x.get("value", ""))}">copy</button></td>'
+        f'<button type="button" class="copy-btn" data-copy="{html.escape(x.get("value", ""))}" aria-label="Copy value">copy</button></td>'
         f'<td class="num">{x.get("count", 0):,}</td></tr>'
         for x in top_sha
     )
@@ -334,10 +373,10 @@ def build(out: Path, metrics_url: str, portfolio_url: str):
     body = f"""
 <div class="page">
   <header class="intel-hero">
-    <p class="fig-label">Threat Harbour · live sensor intel</p>
-    <h1><span class="live-dot">●</span> What is hitting SSH right now</h1>
+    <p class="fig-label">Threat Harbour · daily sensor snapshot</p>
+    <h1><span class="live-dot">●</span> Latest SSH sensor activity</h1>
     <p class="page-sub">Real Cowrie SSH honeypot on Oracle Cloud ({html.escape(str(start))} → {html.escape(str(end))}).
-    Aggregates only — raw IPs and payloads never leave the sensor.</p>
+    Raw IPs and file contents stay on the sensor; this page publishes aggregates and command samples.</p>
     <div class="freshness">
       <span class="fresh-pill{' is-stale' if is_stale else ''}"><span class="pulse"></span>{fresh_label}</span>
       <span class="fresh-meta">cutoff {html.escape(cutoff_human)} · {html.escape(prov)} · window {html.escape(str(start))} → {html.escape(str(end))}</span>
@@ -376,8 +415,8 @@ def build(out: Path, metrics_url: str, portfolio_url: str):
       <span class="count" id="credCount" role="status"></span>
     </div>
     <div class="grid-2">
-      <div><p class="tb-label">Top usernames</p>{leader_rows(top_users, (top_users[0].get("count", 1) if top_users else 1))}</div>
-      <div><p class="tb-label">Top passwords</p>{leader_rows(top_pw, (top_pw[0].get("count", 1) if top_pw else 1))}</div>
+      <div role="group" aria-label="Top usernames"><p class="tb-label">Top usernames</p><div role="list">{leader_rows(top_users, (top_users[0].get("count", 1) if top_users else 1))}</div></div>
+      <div role="group" aria-label="Top passwords"><p class="tb-label">Top passwords</p><div role="list">{leader_rows(top_pw, (top_pw[0].get("count", 1) if top_pw else 1))}</div></div>
     </div>
   </section>
 
@@ -385,7 +424,7 @@ def build(out: Path, metrics_url: str, portfolio_url: str):
     <section class="panel" id="commands">
       <div class="panel__head"><p class="tb-label">Behaviour</p><h2>Top commands</h2></div>
       <p class="panel__note">{disc_share} discovery/fingerprinting — automated recon, not humans.</p>
-      {leader_rows(top_cmd, (top_cmd[0].get("count", 1) if top_cmd else 1))}
+      <div role="group" aria-label="Top commands"><div role="list">{leader_rows(top_cmd, (top_cmd[0].get("count", 1) if top_cmd else 1), command=True)}</div></div>
     </section>
     <section class="panel" id="categories">
       <div class="panel__head"><p class="tb-label">Intent</p><h2>Command categories</h2></div>
@@ -472,8 +511,8 @@ def build(out: Path, metrics_url: str, portfolio_url: str):
 
     page = PAGE_SHELL.format(
         description=html.escape(
-            f"Live SSH honeypot intel: {events:,} events, {ips:,} IPs, top attacker passwords and commands. Refreshed daily {cutoff_human}."
-            if events else "Live SSH honeypot threat intel, refreshed daily."
+            f"Daily SSH honeypot snapshot: {events:,} events, {ips:,} IPs, top attacker passwords and commands. Rebuilt daily; cutoff {cutoff_human}."
+            if events else "Daily SSH honeypot threat-intel snapshot, rebuilt daily."
         ),
         canonical=canonical,
         portfolio_url=portfolio_url.rstrip("/"),
@@ -483,8 +522,8 @@ def build(out: Path, metrics_url: str, portfolio_url: str):
             {
                 "@context": "https://schema.org",
                 "@type": "Dataset",
-                "name": "Threat Harbour — live SSH honeypot intel",
-                "description": "Daily aggregates from a Cowrie SSH sensor: credential leaderboard, commands, sources.",
+                "name": "Threat Harbour — daily SSH honeypot snapshot",
+                "description": "Daily aggregates from a Cowrie SSH sensor: credential leaderboard, command samples, sources.",
                 "url": canonical,
                 "creator": {"@type": "Person", "name": "Adarsh Pillai", "url": portfolio_url},
                 "temporalCoverage": f"{start}/{end}",
@@ -512,18 +551,18 @@ PAGE_SHELL = """<!DOCTYPE html>
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Threat Intel — live SSH honeypot · aaadarsh1337</title>
+<title>Threat Intel — daily SSH honeypot snapshot · aaadarsh1337</title>
 <meta name="description" content="{description}" />
 <meta name="theme-color" content="#16161e" />
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; object-src 'none'; base-uri 'self'; frame-ancestors 'self'" />
 <link rel="canonical" href="{canonical}" />
 <meta property="og:type" content="article" />
-<meta property="og:title" content="Threat Intel — live SSH honeypot" />
+<meta property="og:title" content="Threat Intel — daily SSH honeypot snapshot" />
 <meta property="og:description" content="{description}" />
 <meta property="og:url" content="{canonical}" />
 <meta property="og:image" content="https://aaadarsh1337.github.io/assets/avatar.jpg" />
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="Threat Intel — live SSH honeypot" />
+<meta name="twitter:title" content="Threat Intel — daily SSH honeypot snapshot" />
 <meta name="twitter:description" content="{description}" />
 <meta name="twitter:image" content="https://aaadarsh1337.github.io/assets/avatar.jpg" />
 <script type="application/ld+json">{jsonld}</script>
@@ -535,6 +574,7 @@ PAGE_SHELL = """<!DOCTYPE html>
 <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
+<a class="skip-link" href="#main">Skip to content</a>
 <div class="lab-grid" aria-hidden="true"></div>
 
 <header class="topbar">
@@ -555,7 +595,7 @@ PAGE_SHELL = """<!DOCTYPE html>
   </div>
 </header>
 
-<main>
+<main id="main">
 {body}
 </main>
 </body>
@@ -579,13 +619,13 @@ INTEL_JS = """(function () {
   function apply() {
     var q = input ? norm(input.value) : "";
     var total = 0;
-    document.querySelectorAll("#credentials .leader-row").forEach(function (row) {
+    document.querySelectorAll("#credentials .leader-row, #commands .leader-row").forEach(function (row) {
       var hay = norm(row.getAttribute("data-search") || row.textContent);
       var show = !q || hay.indexOf(q) !== -1;
       row.style.display = show ? "" : "none";
       if (show) total++;
     });
-    if (count) count.textContent = total + " shown";
+    if (count) count.textContent = q ? total + " match" + (total === 1 ? "" : "es") : "";
   }
   if (input) {
     input.addEventListener("input", apply);
@@ -708,7 +748,7 @@ INTEL_JS = """(function () {
     visible.forEach(function (b) { if (b[1] > mx) mx = b[1]; });
     var slot = (W - PAD * 2) / n, bw = Math.max(3, Math.min(26, slot * 0.62));
     var top = H - PAD - (H - PAD * 2), mid = H - PAD - 0.5 * (H - PAD * 2);
-    var s = '<div class="timeline"><svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Event volume, ' + chartState.gran + " view, page " + (page + 1) + " of " + pages.length + '">';
+    var s = '<div class="timeline"><svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Event volume, ' + chartState.gran + " view, page " + (page + 1) + " of " + pages.length + '"><title>Event volume</title><desc>Event counts for the latest sensor snapshot.</desc>';
     s += '<line x1="' + PAD + '" y1="' + top.toFixed(1) + '" x2="' + (W - 8) + '" y2="' + top.toFixed(1) + '" stroke="#292e42" stroke-width="1" stroke-dasharray="4 4"/>';
     s += '<text x="' + (PAD - 8) + '" y="' + (top + 4).toFixed(1) + '" fill="#7d86b0" font-size="11" text-anchor="end" font-family="JetBrains Mono, monospace">' + compact(Math.round(mx)) + "</text>";
     s += '<line x1="' + PAD + '" y1="' + mid.toFixed(1) + '" x2="' + (W - 8) + '" y2="' + mid.toFixed(1) + '" stroke="#292e42" stroke-width="1" stroke-dasharray="4 4"/>';

@@ -31,7 +31,7 @@ window.PORTFOLIO_CONFIG = {
     repo: "threat-harbour",
     badge: "Flagship project",
     name: "Threat Harbour",
-    tagline: "Live SSH honeypot · daily threat-intel leaderboard",
+    tagline: "SSH honeypot · daily threat-intel leaderboard",
     description: "A Cowrie SSH sensor on Oracle Cloud Free Tier that publishes a fresh leaderboard of real attacker credentials every 24 hours — the usernames, passwords, and commands bots actually try against SSH servers in the wild.",
     highlights: [
       "Daily GitHub Actions pipeline parses Cowrie logs on-box, commits aggregates only",

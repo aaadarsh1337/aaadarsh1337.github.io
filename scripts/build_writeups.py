@@ -54,6 +54,13 @@ EVENT_ORDER = [
     "hackerholidays"
 ]
 
+EVENT_LABELS = {
+    "tryhackme": "TryHackMe",
+    "pwnable_kr": "pwnable.kr",
+    "picoctf": "picoCTF",
+    "hackerholidays": "Hacker Holidays",
+}
+
 SKIP_DIRS = {".git", ".github", "node_modules", "__pycache__"}
 
 TEXT_EXT = {
@@ -145,6 +152,10 @@ def display_name(raw: str) -> str:
         else:                                # already mixed/camel → keep
             out.append(w)
     return " ".join(out)
+
+
+def event_label(event: str) -> str:
+    return EVENT_LABELS.get(event, display_name(event))
 
 
 def md_to_html(text: str) -> str:
@@ -394,8 +405,8 @@ def write_pygments_css(dest_css: Path) -> None:
     css = """
 .highlight { color: #c0caf5; background: #1a1b26; }
 .highlight .hll { background: #24283b; }
-.highlight .c  { color: #616a92; font-style: italic; }
-.highlight .ch, .highlight .c1, .highlight .cm, .highlight .cs { color: #616a92; font-style: italic; }
+.highlight .c  { color: #8791b8; font-style: italic; }
+.highlight .ch, .highlight .c1, .highlight .cm, .highlight .cs { color: #8791b8; font-style: italic; }
 .highlight .cp, .highlight .cpf { color: #8b93c0; font-style: italic; }
 .highlight .k, .highlight .kd, .highlight .kn, .highlight .kr, .highlight .kt, .highlight .kc, .highlight .kp { color: #bb9af7; }
 .highlight .n, .highlight .na, .highlight .nb, .highlight .nc, .highlight .no, .highlight .nd, .highlight .ni, .highlight .ne, .highlight .nf, .highlight .nl, .highlight .nn, .highlight .nx, .highlight .py, .highlight .nt, .highlight .nv, .highlight .bp, .highlight .fm, .highlight .vc, .highlight .vg, .highlight .vi, .highlight .vm { color: #c0caf5; }
@@ -407,7 +418,7 @@ def write_pygments_css(dest_css: Path) -> None:
 .highlight .g, .highlight .ge, .highlight .ges, .highlight .gr, .highlight .gh, .highlight .gi, .highlight .go, .highlight .gp, .highlight .gs, .highlight .gu, .highlight .gt, .highlight .gd { color: #c0caf5; }
 .highlight .gi { color: #9ece6a; }
 .highlight .gd { color: #f7768e; }
-.highlight .w { color: #616a92; }
+.highlight .w { color: #8791b8; }
 """
     extra = """
 .highlight {
@@ -537,6 +548,7 @@ PAGE_SHELL = """<!DOCTYPE html>
 <link rel="stylesheet" href="{css_prefix}css/pygments.css" />
 </head>
 <body>
+{skip_link}
 <div class="read-progress" id="readProgress" aria-hidden="true"></div>
 <div class="lab-grid" aria-hidden="true"></div>
 
@@ -557,7 +569,7 @@ PAGE_SHELL = """<!DOCTYPE html>
   </div>
 </header>
 
-<main>
+<main id="{main_id}">
 {body}
 </main>
 {page_scripts}
@@ -567,23 +579,7 @@ PAGE_SHELL = """<!DOCTYPE html>
 
 WRITEUP_BODY = """
 <div class="reader-layout reader-layout--static">
-  <aside class="sidebar">
-    <div class="sidebar__challenge">
-      <p class="tb-label">CHALLENGE</p>
-      <h2>{name}</h2>
-      <p class="side-path">{event}</p>
-      <p class="side-meta">{day_prefix}{reading_time} min read &middot; {file_count} files</p>{diff_block}{tag_block}
-    </div>
-    <div class="sidebar__files">
-      <p class="tb-label">FILES</p>
-      {file_list}
-    </div>
-    <div class="sidebar__foot">
-      <a class="btn btn--ghost btn--small sidebar-gh-btn" href="{folder_github}" target="_blank" rel="noopener noreferrer">Open folder &#8599;</a>
-      <a class="btn btn--ghost btn--small sidebar-gh-btn" href="{md_github}" target="_blank" rel="noopener noreferrer">View markdown &#8599;</a>
-    </div>
-  </aside>
-  <article class="reader">
+  <article class="reader" id="reader" aria-label="Writeup article">
     <div class="reader__toolbar">
       <div class="reader__crumb">
         <span class="tb-label">READING</span>
@@ -599,6 +595,22 @@ WRITEUP_BODY = """
 {pager}
     </div>
   </article>
+  <aside class="sidebar" aria-label="Challenge details and files">
+    <div class="sidebar__challenge">
+      <p class="tb-label">CHALLENGE</p>
+      <p class="sidebar__challenge-title">{name}</p>
+      <p class="side-path">{event}</p>
+      <p class="side-meta">{day_prefix}{reading_time} min read &middot; {file_count}</p>{diff_block}{tag_block}
+    </div>
+    <div class="sidebar__files">
+      <p class="tb-label">FILES</p>
+      {file_list}
+    </div>
+    <div class="sidebar__foot">
+      <a class="btn btn--ghost btn--small sidebar-gh-btn" href="{folder_github}" target="_blank" rel="noopener noreferrer">Open folder &#8599;</a>
+      <a class="btn btn--ghost btn--small sidebar-gh-btn" href="{md_github}" target="_blank" rel="noopener noreferrer">View markdown &#8599;</a>
+    </div>
+  </aside>
 </div>
 """
 
@@ -1119,17 +1131,44 @@ PAGE_JS = """(function () {
   // Click-to-zoom screenshots (native dialog, no deps).
   var dlg = document.createElement("dialog");
   dlg.className = "img-lightbox";
+  dlg.setAttribute("aria-label", "Screenshot preview");
+  var dlgClose = document.createElement("button");
+  dlgClose.type = "button";
+  dlgClose.className = "img-lightbox__close";
+  dlgClose.textContent = "×";
+  dlgClose.setAttribute("aria-label", "Close screenshot preview");
   var dlgImg = document.createElement("img");
   dlgImg.alt = "";
   dlg.appendChild(dlgImg);
+  dlg.appendChild(dlgClose);
   document.body.appendChild(dlg);
-  dlg.addEventListener("click", function () { dlg.close(); });
+  var lastImage = null;
+  dlg.addEventListener("click", function (e) {
+    if (e.target === dlg || e.target === dlgClose) dlg.close();
+  });
+  dlg.addEventListener("close", function () {
+    if (lastImage && lastImage.focus) lastImage.focus();
+  });
   document.querySelectorAll(".md-fig img").forEach(function (im) {
+    lastImage = im;
+    im.tabIndex = 0;
+    im.setAttribute("role", "button");
+    im.setAttribute("aria-label", "Open screenshot: " + (im.alt || "screenshot"));
     im.style.cursor = "zoom-in";
-    im.addEventListener("click", function () {
+    function openPreview() {
       dlgImg.src = im.currentSrc || im.src;
       dlgImg.alt = im.alt || "";
-      if (dlg.showModal) dlg.showModal();
+      if (dlg.showModal) {
+        dlg.showModal();
+        dlgClose.focus();
+      }
+    }
+    im.addEventListener("click", openPreview);
+    im.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        openPreview();
+      }
     });
   });
 
@@ -1284,15 +1323,16 @@ def build(source: Path, out: Path, portfolio_url: str, github_user: str, github_
                     f'<a class="pager-item pager-item--{label.lower()}" href="{html.escape(target_href)}">'
                     f'<span class="pager-label">{label}</span>'
                     f'<span class="pager-name">{html.escape(target["display_name"])}</span>'
-                    f'<span class="pager-event">{html.escape(target["event"])}</span>'
+                    f'<span class="pager-event">{html.escape(event_label(target["event"]))}</span>'
                     f"</a>"
                 )
         pager_html = '<nav class="writeup-pager" aria-label="Writeup navigation">' + "".join(pager) + "</nav>"
 
-        page_title = f"{title} · {w['event']}"
+        event_name = event_label(w["event"])
+        page_title = f"{title} · {event_name}"
         excerpt = meta.get("excerpt") or excerpt_from_html(body_html)
         w["_excerpt"] = excerpt
-        page_desc = excerpt or f"CTF writeup: {title} ({w['event']})"
+        page_desc = excerpt or f"CTF writeup: {title} ({event_name})"
         canonical = canonical_for(w["url_path"])
         # Per-writeup social card; falls back to the avatar when Pillow
         # is unavailable (e.g. minimal CI env).
@@ -1306,10 +1346,10 @@ def build(source: Path, out: Path, portfolio_url: str, github_user: str, github_
         body = WRITEUP_BODY.format(
             home_href=home_href,
             name=html.escape(title),
-            event=html.escape(w["event"]),
+            event=html.escape(event_name),
             day_prefix=day_prefix,
             reading_time=w["_reading_time"],
-            file_count=len(files),
+            file_count=f"{len(files)} file" + ("s" if len(files) != 1 else ""),
             diff_block=diff_block,
             tag_block=tag_block,
             folder_github=folder_gh,
@@ -1330,6 +1370,8 @@ def build(source: Path, out: Path, portfolio_url: str, github_user: str, github_
             portfolio_url=portfolio_url,
             github_repo=gh_base,
             body=body,
+            skip_link='<a class="skip-link" href="#reader">Skip to article</a>',
+            main_id="main",
             topbar_extra="",
             topbar_back=(f'<a class="btn btn--ghost" href="{home_href}">&#8592; All writeups</a>'
                          f'<a class="btn btn--ghost" href="{portfolio_url}">&#8592; Portfolio</a>'),
@@ -1355,7 +1397,7 @@ def build(source: Path, out: Path, portfolio_url: str, github_user: str, github_
         items = by_event[event]
         slug = "sec-" + re.sub(r"[^a-z0-9]+", "-", event.lower()).strip("-")
         jump_links.append(
-            f'<a class="section-jump__link" href="#{slug}">{html.escape(event)} ({len(items)})</a>'
+            f'<a class="section-jump__link" href="#{slug}">{html.escape(event_label(event))} ({len(items)})</a>'
         )
         cards = []
         for w in items:
@@ -1368,7 +1410,7 @@ def build(source: Path, out: Path, portfolio_url: str, github_user: str, github_
             kicker_tags = " · ".join(
                 f'<span class="k-tag">{html.escape(t)}</span>' for t in tags
             )
-            kicker = f"{html.escape(w['event'])} · {kicker_tags}"
+            kicker = f"{html.escape(event_label(w['event']))} · {kicker_tags}"
             meta_bits = []
             if w.get("day") is not None:
                 meta_bits.append(f"Day {w['day']}")
@@ -1394,7 +1436,7 @@ def build(source: Path, out: Path, portfolio_url: str, github_user: str, github_
         sections_html.append(
             f'<section class="writeup-section" id="{slug}">'
             f'<div class="writeup-section__head">'
-            f'<h2 class="writeup-section__title">{html.escape(event)}</h2>'
+            f'<h2 class="writeup-section__title">{html.escape(event_label(event))}</h2>'
             f'<span class="writeup-section__count">{len(items)} writeup{"s" if len(items) != 1 else ""}</span>'
             f"</div>"
             f'<div class="writeup-grid">{"".join(cards)}</div>'
@@ -1419,6 +1461,8 @@ def build(source: Path, out: Path, portfolio_url: str, github_user: str, github_
         portfolio_url=portfolio_url,
         github_repo=gh_base,
         body=index_body,
+        skip_link='<a class="skip-link" href="#main">Skip to content</a>',
+        main_id="main",
         topbar_extra="",
         topbar_back=f'<a class="btn btn--ghost" href="{portfolio_url}">&#8592; Portfolio</a>',
         page_scripts="",
@@ -1430,7 +1474,7 @@ def build(source: Path, out: Path, portfolio_url: str, github_user: str, github_
     search_index = [
         {
             "title": w["display_name"],
-            "event": w["event"],
+            "event": event_label(w["event"]),
             "url": w["url_path"].rstrip("/") + "/",
             "difficulty": w.get("_difficulty"),
             "tags": w.get("_tags", ["misc"]),

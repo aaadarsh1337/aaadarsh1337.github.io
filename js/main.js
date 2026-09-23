@@ -82,7 +82,7 @@
       }
     };
     avatarImg.src = p.avatar;
-    avatarImg.alt = "Portrait of " + p.name;
+    avatarImg.alt = p.name + " avatar";
 
     const bioEl = document.getElementById("heroBio");
     bioEl.innerHTML = "";
@@ -105,10 +105,11 @@
     list.innerHTML = "";
 
     (CFG.linkPanel || []).forEach(function (item) {
+      if (!item.url) return;
       const a = document.createElement("a");
       a.className = "links-panel__item";
-      a.href = item.url || "#";
-      if (item.url && item.url.indexOf("mailto:") !== 0) {
+      a.href = item.url;
+      if (item.url.indexOf("mailto:") !== 0) {
         a.target = "_blank";
         a.rel = "noopener noreferrer";
       }
@@ -127,22 +128,28 @@
     const panel = document.getElementById("linksPanel");
     const backdrop = document.getElementById("linksBackdrop");
     if (!panel || !backdrop) return;
+    let lastFocus = null;
 
+    function setExpanded(expanded) {
+      [openBtn, contactBtn].forEach(function (button) {
+        if (button) button.setAttribute("aria-expanded", expanded ? "true" : "false");
+      });
+    }
     function open() {
+      lastFocus = document.activeElement;
       panel.hidden = false;
       backdrop.hidden = false;
-      if (openBtn) openBtn.setAttribute("aria-expanded", "true");
+      setExpanded(true);
       updateBodyLock();
       closeBtn.focus();
     }
     function close(restoreFocus) {
       panel.hidden = true;
       backdrop.hidden = true;
-      if (openBtn) openBtn.setAttribute("aria-expanded", "false");
+      setExpanded(false);
       updateBodyLock();
-      if (restoreFocus !== false && openBtn && document.activeElement === closeBtn) {
-        // Return focus to the opener when closed via button/backdrop/Escape
-        try { openBtn.focus(); } catch (e) { /* ignore */ }
+      if (restoreFocus !== false && lastFocus && lastFocus.focus) {
+        try { lastFocus.focus(); } catch (e) { /* ignore */ }
       }
     }
     function toggle() {
@@ -152,8 +159,8 @@
 
     if (openBtn) openBtn.addEventListener("click", toggle);
     if (contactBtn) contactBtn.addEventListener("click", toggle);
-    closeBtn.addEventListener("click", close);
-    backdrop.addEventListener("click", close);
+    closeBtn.addEventListener("click", () => close());
+    backdrop.addEventListener("click", () => close());
     document.addEventListener("keydown", function (e) {
       if (e.key === "Escape" && !panel.hidden) close();
     });
@@ -245,7 +252,7 @@
   function loadWriteupsIndex() {
     if (writeupCache || writeupsLoading) return;
     writeupsLoading = true;
-    fetch("writeups/search.json")
+    fetchWithTimeout("writeups/search.json", 9000)
       .then((r) => {
         if (!r.ok) throw new Error("no writeup index");
         return r.json();
@@ -542,7 +549,7 @@
     const live = document.createElement("p");
     live.className = "flagship-live";
     live.id = "flagshipLive";
-    live.innerHTML = '<span class="dot">●</span> live counts load from the sensor leaderboard';
+    live.innerHTML = '<span class="dot">●</span> latest counts load from the daily sensor snapshot';
     card.appendChild(live);
 
     if (Array.isArray(f.stack) && f.stack.length) {
@@ -577,6 +584,7 @@
       intelA.innerHTML = escapeHtml("Live threat intel") + ' <span class="ext">→</span>';
       actions.appendChild(intelA);
     }
+    if (links.docs) addBtn("Read docs", links.docs, false);
     if (links.github) addBtn("View on GitHub", links.github, false);
     const browseBtn = document.createElement("button");
     browseBtn.type = "button";
@@ -622,7 +630,7 @@
     el.appendChild(document.createTextNode("Flagship: "));
     const a = document.createElement("a");
     a.href = "#repositories";
-    a.textContent = (f.name || "Threat Harbour") + " — live SSH honeypot";
+    a.textContent = (f.name || "Threat Harbour") + " — SSH honeypot";
     el.appendChild(a);
   }
 
@@ -654,12 +662,12 @@
             } catch (e) { when = ""; }
           }
           const intelHref = (f.links || {}).intel || "/intel/";
-          live.innerHTML = '<span class="dot">●</span> live sensor counts' + escapeHtml(when) + ' · <a href="' + escapeHtml(intelHref) + '">full dashboard →</a>';
+          live.innerHTML = '<span class="dot">●</span> latest sensor counts' + escapeHtml(when) + ' · <a href="' + escapeHtml(intelHref) + '">full dashboard →</a>';
         }
       })
       .catch(() => {
         const intelHref = ((CFG.flagship || {}).links || {}).intel || "/intel/";
-        if (live) live.innerHTML = '<span class="dot">●</span> snapshot counts · <a href="' + escapeHtml(intelHref) + '">live dashboard →</a>';
+        if (live) live.innerHTML = '<span class="dot">●</span> latest snapshot counts · <a href="' + escapeHtml(intelHref) + '">full dashboard →</a>';
       });
   }
 
@@ -1024,6 +1032,8 @@
 
   let treeLastFocus = null;
   let fileLastFocus = null;
+  let treeRequestId = 0;
+  let fileRequestId = 0;
 
   function anyModalOpen() {
     const linksPanel = document.getElementById("linksPanel");
@@ -1066,6 +1076,7 @@
 
   function openTreeSheet(repo) {
     closeFileSheet(true);
+    const requestId = ++treeRequestId;
     treeLastFocus = document.activeElement;
     document.getElementById("tsRepo").textContent = repo.name;
     document.getElementById("tsGithubLink").href = repo.html_url;
@@ -1086,6 +1097,7 @@
         return r.json();
       })
       .then((data) => {
+        if (requestId !== treeRequestId) return;
         let files = (data.tree || []).filter((n) => n.type === "blob");
         if (files.length === 0) {
           tsBody.innerHTML = `<p class="dim">No files found (empty repo, or API limit reached).</p>`;
@@ -1110,6 +1122,7 @@
         tsBody.appendChild(list);
       })
       .catch((err) => {
+        if (requestId !== treeRequestId) return;
         tsBody.innerHTML = `<p class="dim">Couldn't load the file tree (rate limit or network). <a href="${escapeHtml(repo.html_url)}" target="_blank" rel="noopener noreferrer">Open on GitHub instead ↗</a></p>`;
         console.error(err);
       });
@@ -1118,6 +1131,7 @@
   document.getElementById("tsClose").addEventListener("click", () => closeTreeSheet());
   document.getElementById("treeSheetBackdrop").addEventListener("click", () => closeTreeSheet());
   function closeTreeSheet(keepFocus) {
+    treeRequestId++;
     treeSheet.classList.remove("open");
     treeSheet.setAttribute("aria-hidden", "true");
     updateBodyLock();
@@ -1129,6 +1143,7 @@
   const fsBody = document.getElementById("fsBody");
 
   function openFileSheet(repo, path, branch, readable) {
+    const requestId = ++fileRequestId;
     fileLastFocus = document.activeElement;
     document.getElementById("fsRepo").textContent = repo.name;
     document.getElementById("fsPath").textContent = path;
@@ -1157,6 +1172,7 @@
         return r.text();
       })
       .then((text) => {
+        if (requestId !== fileRequestId) return;
         let truncated = false;
         if (text.length > MAX_RAW_CHARS) {
           text = text.slice(0, MAX_RAW_CHARS);
@@ -1198,6 +1214,7 @@
         }
       })
       .catch((err) => {
+        if (requestId !== fileRequestId) return;
         fsBody.innerHTML = `
           <div class="redirect-card">
             <p>Couldn't load this file inline (rate limit or network hiccup).</p>
@@ -1210,6 +1227,7 @@
   document.getElementById("fsClose").addEventListener("click", () => closeFileSheet());
   document.getElementById("fileSheetBackdrop").addEventListener("click", () => closeFileSheet());
   function closeFileSheet(keepFocus) {
+    fileRequestId++;
     fileSheet.classList.remove("open");
     fileSheet.setAttribute("aria-hidden", "true");
     updateBodyLock();
@@ -1240,16 +1258,35 @@
   function initNav() {
     const toggle = document.getElementById("navToggle");
     const nav = document.getElementById("siteNav");
-    toggle.addEventListener("click", () => {
-      const open = nav.classList.toggle("open");
+    if (!toggle || !nav) return;
+    let navLastFocus = null;
+
+    function setOpen(open, restoreFocus) {
+      nav.classList.toggle("open", open);
       toggle.setAttribute("aria-expanded", open ? "true" : "false");
+      if (!open && restoreFocus && navLastFocus && navLastFocus.focus) navLastFocus.focus();
+    }
+    function closeNav(restoreFocus) {
+      setOpen(false, restoreFocus);
+    }
+    toggle.addEventListener("click", () => {
+      if (nav.classList.contains("open")) {
+        closeNav(true);
+      } else {
+        navLastFocus = document.activeElement;
+        setOpen(true, false);
+      }
     });
 
     nav.querySelectorAll("a").forEach((a) => {
-      a.addEventListener("click", () => {
-        nav.classList.remove("open");
-        toggle.setAttribute("aria-expanded", "false");
-      });
+      a.addEventListener("click", () => closeNav(false));
+    });
+    document.addEventListener("click", (e) => {
+      if (!nav.classList.contains("open")) return;
+      if (!nav.contains(e.target) && !toggle.contains(e.target)) closeNav(false);
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && nav.classList.contains("open")) closeNav(true);
     });
 
     const sections = Array.from(document.querySelectorAll(".sheet[id]"));

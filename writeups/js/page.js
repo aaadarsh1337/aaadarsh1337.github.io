@@ -76,17 +76,44 @@
   // Click-to-zoom screenshots (native dialog, no deps).
   var dlg = document.createElement("dialog");
   dlg.className = "img-lightbox";
+  dlg.setAttribute("aria-label", "Screenshot preview");
+  var dlgClose = document.createElement("button");
+  dlgClose.type = "button";
+  dlgClose.className = "img-lightbox__close";
+  dlgClose.textContent = "×";
+  dlgClose.setAttribute("aria-label", "Close screenshot preview");
   var dlgImg = document.createElement("img");
   dlgImg.alt = "";
   dlg.appendChild(dlgImg);
+  dlg.appendChild(dlgClose);
   document.body.appendChild(dlg);
-  dlg.addEventListener("click", function () { dlg.close(); });
+  var lastImage = null;
+  dlg.addEventListener("click", function (e) {
+    if (e.target === dlg || e.target === dlgClose) dlg.close();
+  });
+  dlg.addEventListener("close", function () {
+    if (lastImage && lastImage.focus) lastImage.focus();
+  });
   document.querySelectorAll(".md-fig img").forEach(function (im) {
+    lastImage = im;
+    im.tabIndex = 0;
+    im.setAttribute("role", "button");
+    im.setAttribute("aria-label", "Open screenshot: " + (im.alt || "screenshot"));
     im.style.cursor = "zoom-in";
-    im.addEventListener("click", function () {
+    function openPreview() {
       dlgImg.src = im.currentSrc || im.src;
       dlgImg.alt = im.alt || "";
-      if (dlg.showModal) dlg.showModal();
+      if (dlg.showModal) {
+        dlg.showModal();
+        dlgClose.focus();
+      }
+    }
+    im.addEventListener("click", openPreview);
+    im.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        openPreview();
+      }
     });
   });
 

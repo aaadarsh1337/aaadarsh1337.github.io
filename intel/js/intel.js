@@ -12,13 +12,13 @@
   function apply() {
     var q = input ? norm(input.value) : "";
     var total = 0;
-    document.querySelectorAll("#credentials .leader-row").forEach(function (row) {
+    document.querySelectorAll("#credentials .leader-row, #commands .leader-row").forEach(function (row) {
       var hay = norm(row.getAttribute("data-search") || row.textContent);
       var show = !q || hay.indexOf(q) !== -1;
       row.style.display = show ? "" : "none";
       if (show) total++;
     });
-    if (count) count.textContent = total + " shown";
+    if (count) count.textContent = q ? total + " match" + (total === 1 ? "" : "es") : "";
   }
   if (input) {
     input.addEventListener("input", apply);
@@ -141,7 +141,7 @@
     visible.forEach(function (b) { if (b[1] > mx) mx = b[1]; });
     var slot = (W - PAD * 2) / n, bw = Math.max(3, Math.min(26, slot * 0.62));
     var top = H - PAD - (H - PAD * 2), mid = H - PAD - 0.5 * (H - PAD * 2);
-    var s = '<div class="timeline"><svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Event volume, ' + chartState.gran + " view, page " + (page + 1) + " of " + pages.length + '">';
+    var s = '<div class="timeline"><svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Event volume, ' + chartState.gran + " view, page " + (page + 1) + " of " + pages.length + '"><title>Event volume</title><desc>Event counts for the latest sensor snapshot.</desc>';
     s += '<line x1="' + PAD + '" y1="' + top.toFixed(1) + '" x2="' + (W - 8) + '" y2="' + top.toFixed(1) + '" stroke="#292e42" stroke-width="1" stroke-dasharray="4 4"/>';
     s += '<text x="' + (PAD - 8) + '" y="' + (top + 4).toFixed(1) + '" fill="#7d86b0" font-size="11" text-anchor="end" font-family="JetBrains Mono, monospace">' + compact(Math.round(mx)) + "</text>";
     s += '<line x1="' + PAD + '" y1="' + mid.toFixed(1) + '" x2="' + (W - 8) + '" y2="' + mid.toFixed(1) + '" stroke="#292e42" stroke-width="1" stroke-dasharray="4 4"/>';

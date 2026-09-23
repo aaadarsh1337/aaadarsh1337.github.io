@@ -310,5 +310,5 @@
   "loki": "2.9.4",
   "promtail": "2.9.4"
  },
- "method": "Parsed Cowrie JSONL on sensor with Python json parser (same source Promtail ships to Loki). Aggregates only; raw IPs and payloads not published."
+ "method": "Parsed Cowrie JSONL on sensor with Python json parser (same source Promtail ships to Loki). Raw IPs and file contents are not published; aggregates and command samples are shown."
 }

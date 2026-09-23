@@ -101,8 +101,8 @@
     <div class="sheet__inner">
       <div class="hero">
         <div class="hero__portrait">
-          <img id="avatarImg" src="assets/avatar.webp" alt="Portrait of Adarsh Pillai" width="176" height="176" decoding="async" fetchpriority="high" />
-          <p class="hero__figcap" aria-hidden="true">fig. 01 — the human</p>
+          <img id="avatarImg" src="assets/avatar.webp" alt="Adarsh Pillai avatar" width="176" height="176" decoding="async" fetchpriority="high" />
+          <p class="hero__figcap" aria-hidden="true">fig. 01 — avatar</p>
         </div>
         <div class="hero__text">
           <p class="fig-label">01 · About<span class="fig-total" aria-hidden="true">/ 06</span></p>
@@ -161,7 +161,7 @@
       <p class="fig-label">04 · Repositories<span class="fig-total" aria-hidden="true">/ 06</span></p>
       <h2 class="sheet__title">Live from GitHub</h2>
       <div class="flagship" id="flagship" aria-label="Flagship project spotlight"></div>
-      <p class="sheet__hint status-line" id="repoStatus">&gt; fetching repository index&hellip;</p>
+      <p class="sheet__hint status-line" id="repoStatus" role="status" aria-live="polite">&gt; fetching repository index&hellip;</p>
       <div class="repo-grid" id="repoGrid"></div>
     </div>
   </section>
@@ -185,7 +185,7 @@
     <div class="sheet__inner">
       <p class="fig-label">06 · Contact<span class="fig-total" aria-hidden="true">/ 06</span></p>
       <h2 class="sheet__title">Get in touch</h2>
-      <p class="sheet__hint">Reach me directly. For my other profiles and platforms, open <button type="button" id="contactLinksBtn" class="btn btn--ghost btn--small">Links</button>.</p>
+      <p class="sheet__hint">Reach me directly. For my other profiles and platforms, open <button type="button" id="contactLinksBtn" class="btn btn--ghost btn--small" aria-controls="linksPanel" aria-expanded="false">Links</button>.</p>
       <div class="contact-list" id="contactList"></div>
     </div>
   </section>
@@ -198,6 +198,13 @@
   </footer>
 
 </main>
+
+<noscript>
+  <div class="noscript-note">
+    <strong>JavaScript is disabled.</strong>
+    <span>You can still browse the <a href="/writeups/">CTF writeups</a>, <a href="/intel/">Threat Intel dashboard</a>, or <a href="https://github.com/aaadarsh1337">GitHub profile</a>.</span>
+  </div>
+</noscript>
 
 <!-- File reader modal -->
 <div class="filesheet" id="fileSheet" aria-hidden="true">
