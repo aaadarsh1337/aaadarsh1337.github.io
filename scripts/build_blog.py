@@ -184,11 +184,11 @@ def page_shell(
 <meta property="og:title" content="{html.escape(title)}" />
 <meta property="og:description" content="{html.escape(description)}" />
 <meta property="og:url" content="{html.escape(canonical)}" />
-<meta property="og:image" content="https://aaadarsh1337.github.io/assets/avatar.jpg" />
+<meta property="og:image" content="https://aaadarsh1337.github.io/assets/og.png" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="{html.escape(title)}" />
 <meta name="twitter:description" content="{html.escape(description)}" />
-<meta name="twitter:image" content="https://aaadarsh1337.github.io/assets/avatar.jpg" />
+<meta name="twitter:image" content="https://aaadarsh1337.github.io/assets/og.png" />
 <script type="application/ld+json">{jsonld}</script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2316161e'/%3E%3Crect x='13' y='4' width='6' height='24' fill='%237DCFFF'/%3E%3Crect x='4' y='13' width='24' height='6' fill='%237DCFFF'/%3E%3Crect x='14' y='6' width='4' height='20' fill='%2316161e'/%3E%3Crect x='6' y='14' width='20' height='4' fill='%2316161e'/%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -236,13 +236,13 @@ def jsonld_for(post: dict, canonical: str) -> str:
     }, ensure_ascii=False)
 
 
-def card_html(post: dict, href_prefix: str = "") -> str:
+def card_html(post: dict, href_prefix: str = "", show_featured: bool = True) -> str:
     tags = "".join(f'<span class="blog-tag">{html.escape(tag)}</span>' for tag in post["tags"])
-    featured = '<span class="blog-featured">Featured</span>' if post.get("featured") else ""
+    featured = '<span class="blog-featured">Featured</span>' if show_featured and post.get("featured") else ""
     search = html.escape(" ".join([post["title"], post["summary"], post["category_label"], *post["tags"]]).lower())
     return f'''<a class="blog-card" href="{html.escape(href_prefix + post["url_path"] + "/")}" data-search="{search}" data-category="{html.escape(post["category"])}" data-tags="{html.escape(" ".join(post["tags"]).lower())}">
   <div class="blog-card__meta"><span class="blog-category">{html.escape(post["category_label"])}</span>{featured}<time datetime="{post["date_iso"]}">{post["date"].strftime("%b %d, %Y")}</time></div>
-  <h3>{html.escape(post["title"])}</h3>
+  <h2>{html.escape(post["title"])}</h2>
   <p>{html.escape(post["summary"])}</p>
   <div class="blog-card__foot"><span>{post["read_time"]} min read</span><span class="blog-card__tags">{tags}</span><span class="blog-card__arrow" aria-hidden="true">→</span></div>
 </a>'''
@@ -260,11 +260,19 @@ def count_label(count: int) -> str:
     return f"{count} post" + ("" if count == 1 else "s")
 
 
-def listing_body(posts: list[dict], categories: list[str], active: str = "", category_description: str = "") -> str:
+def listing_body(posts: list[dict], categories: list[str], active: str = "", category_description: str = "", blog_prefix: str = "../") -> str:
     title = category_label(active) if active else "Security writing, in public."
     subtitle = category_description or "Malware analysis, reverse engineering, defensive notes, and experiments from a working security notebook."
-    cards = "".join(card_html(post, "../" if active else "") for post in posts) or '<div class="blog-empty"><h2>No posts yet</h2><p>The first post will appear here after the next blog build.</p></div>'
+    show_featured = len(posts) > 1
+    cards = "".join(card_html(post, "../" if active else "", show_featured) for post in posts) or '<div class="blog-empty" id="blogEmpty" hidden><h2>No posts match</h2><p>Try a different search or clear the category filter.</p></div>'
+    if posts:
+        cards += '<div class="blog-empty" id="blogEmpty" hidden><h2>No posts match</h2><p>Try a different search or clear the category filter.</p></div>'
+    breadcrumb = (
+        f'<div class="article-breadcrumb"><a href="{blog_prefix}index.html">← All writing</a><span>/</span><span>{html.escape(category_label(active))}</span></div>'
+        if active else ""
+    )
     return f'''<div class="blog-page">
+  {breadcrumb}
   <header class="blog-hero">
     <p class="fig-label">BLOG · {html.escape(category_label(active) if active else "WRITING")}</p>
     <h1>{html.escape(title)}</h1>
@@ -285,6 +293,7 @@ def article_body(post: dict, site_prefix: str, blog_prefix: str, source_href: st
         pager.append(f'<a class="article-pager article-pager--previous" href="{blog_prefix}{previous["url_path"]}/"><span>← Previous</span><strong>{html.escape(previous["title"])}</strong></a>')
     if next_post:
         pager.append(f'<a class="article-pager article-pager--next" href="{blog_prefix}{next_post["url_path"]}/"><span>Next →</span><strong>{html.escape(next_post["title"])}</strong></a>')
+    pager_nav = f'<nav class="article-pager-row" aria-label="Article navigation">{"".join(pager)}</nav>' if pager else ""
     return f'''<div class="article-page">
   <div class="article-breadcrumb"><a href="{blog_prefix}index.html">← All writing</a><span>/</span><span>{html.escape(post["category_label"])}</span></div>
   <header class="article-header">
@@ -298,7 +307,7 @@ def article_body(post: dict, site_prefix: str, blog_prefix: str, source_href: st
     <article class="article-body"><div class="md-render">{post["body"]}</div></article>
     <aside class="article-sidebar"><nav class="article-toc" aria-label="On this page"><p class="tb-label">ON THIS PAGE</p>{toc}</nav></aside>
   </div>
-  <nav class="article-pager-row" aria-label="Article navigation">{''.join(pager)}</nav>
+  {pager_nav}
 </div>'''
 
 
@@ -383,6 +392,8 @@ BLOG_JS = r'''(function () {
       card.hidden = !show;
       if (show) shown++;
     });
+    var empty = document.getElementById("blogEmpty");
+    if (empty) empty.hidden = shown !== 0;
     if (count) count.textContent = shown + (shown === 1 ? " post" : " posts");
   }
   if (search) search.addEventListener("input", apply);
@@ -397,16 +408,6 @@ BLOG_JS = r'''(function () {
       apply();
     });
   });
-  var progress = document.getElementById("readProgress");
-  var ticking = false;
-  function updateProgress() {
-    ticking = false;
-    if (!progress) return;
-    var max = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-    progress.style.width = (max > 0 ? document.documentElement.scrollTop / max * 100 : 0) + "%";
-  }
-  window.addEventListener("scroll", function () { if (!ticking) { ticking = true; requestAnimationFrame(updateProgress); } }, { passive: true });
-  updateProgress();
   var hosts = [];
   document.querySelectorAll(".article-body div.highlight").forEach(function (host) { hosts.push(host); });
   document.querySelectorAll(".article-body pre").forEach(function (pre) {
@@ -422,7 +423,15 @@ BLOG_JS = r'''(function () {
     button.setAttribute("aria-label", "Copy code to clipboard");
     button.addEventListener("click", function () {
       var text = code.innerText;
-      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(function () { button.textContent = "copied"; setTimeout(function () { button.textContent = "copy"; }, 1400); });
+      function done(ok) {
+        button.textContent = ok ? "copied" : "copy failed";
+        setTimeout(function () { button.textContent = "copy"; }, 1400);
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function () { done(true); }, function () { done(false); });
+      } else {
+        done(false);
+      }
     });
     host.appendChild(button);
   });

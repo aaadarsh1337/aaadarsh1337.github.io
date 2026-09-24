@@ -42,7 +42,7 @@ Design: Tokyo Night-inspired (near-black indigo `#16161e`, cyan `#7DCFFF` accent
 ## Project structure
 
 ```
-├── index.html                  # Portfolio single page (sections 01–07, modals, palette)
+├── index.html                  # Portfolio single page (sections 01–08, modals, palette)
 ├── 404.html                    # Styled 404 → Portfolio / Writeups / Blog
 ├── css/style.css               # All portfolio styling
 ├── js/
@@ -50,6 +50,7 @@ Design: Tokyo Night-inspired (near-black indigo `#16161e`, cyan `#7DCFFF` accent
 │   └── main.js                 # Rendering, GitHub API, modals, palette, writeups search
 ├── assets/
 │   ├── avatar.webp / avatar.jpg
+│   ├── og.png                   # 1200×630 social card
 │   └── certificate.png         # Placeholder cert badge
 ├── intel/                      # GENERATED — do not hand-edit (see below)
 │   ├── index.html              # Threat Harbour dashboard (KPIs, timeline, leaderboards)
@@ -244,7 +245,7 @@ python3 -m http.server 8000
 # → http://localhost:8000/writeups/
 ```
 
-SEO/perf notes: canonical URLs, OG/Twitter cards, `Person` + `TechArticle` + `BlogPosting` JSON-LD, `robots.txt`, strict CSP meta tags, SRI-pinned CDN scripts (`marked` + `highlight.js` + `DOMPurify`), preloaded fonts, WebP avatar with JPG fallback. No sitemap is shipped (search engines discover pages via links; avoids daily-churn commits).
+SEO/perf notes: canonical URLs, OG/Twitter cards, `Person` + `TechArticle` + `BlogPosting` JSON-LD, `robots.txt`, strict CSP meta tags, SRI-pinned CDN helpers (`marked` + `highlight.js` + `DOMPurify`, lazy-loaded from `js/main.js`), preloaded fonts, WebP avatar with JPG fallback. No sitemap is shipped (search engines discover pages via links; avoids daily-churn commits).
 
 ---
 

@@ -7,14 +7,35 @@
 <meta name="description" content="Page not found." />
 <meta name="robots" content="noindex" />
 <meta name="theme-color" content="#16161e" />
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'self'; frame-ancestors 'self'" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; object-src 'none'; base-uri 'self'; frame-ancestors 'self'" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2316161e'/%3E%3Crect x='13' y='4' width='6' height='24' fill='%237DCFFF'/%3E%3Crect x='4' y='13' width='24' height='6' fill='%237DCFFF'/%3E%3Crect x='14' y='6' width='4' height='20' fill='%2316161e'/%3E%3Crect x='6' y='14' width='20' height='4' fill='%2316161e'/%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/tokens.css" />
 <link rel="stylesheet" href="/css/style.css" />
 </head>
 <body>
+<a class="skip-link" href="#main">Skip to content</a>
 <div class="lab-grid" aria-hidden="true"></div>
-<main class="not-found" aria-labelledby="not-found-title">
+
+<header class="topbar" id="topbar">
+  <div class="topbar__inner">
+    <a class="topbar__brand" href="/index.html">
+      <span class="brand-mark">AP</span>
+      <span class="brand-text">aaadarsh1337</span>
+    </a>
+    <nav class="topbar__nav" aria-label="Site navigation">
+      <a class="topbar__link" href="/">Portfolio</a>
+      <a class="topbar__link" href="/writeups/">Writeups</a>
+      <a class="topbar__link" href="/blog/">Blog</a>
+      <a class="topbar__link" href="/intel/">Intel</a>
+      <a class="topbar__link" href="https://github.com/aaadarsh1337" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
+    </nav>
+  </div>
+</header>
+
+<main class="not-found" id="main" aria-labelledby="not-found-title">
 <p class="fig-label">404 · Not found</p>
 <h1 id="not-found-title">That page doesn't exist</h1>
 <p class="sheet__hint">The link may be old or mistyped. Try one of the paths below.</p>
@@ -22,7 +43,15 @@
 <a class="btn btn--primary" href="/">← Portfolio</a>
 <a class="btn btn--ghost" href="/writeups/">All writeups</a>
 <a class="btn btn--ghost" href="/blog/">Security blog</a>
+<a class="btn btn--ghost" href="/intel/">Threat intel</a>
 </div>
 </main>
+
+<footer class="site-footer">
+  <p class="footer-note">
+    <span>Adarsh Pillai — cybersecurity portfolio</span>
+    <span><a href="/">aaadarsh1337.github.io</a></span>
+  </p>
+</footer>
 </body>
 </html>

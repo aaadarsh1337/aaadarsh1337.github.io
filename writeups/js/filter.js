@@ -22,6 +22,10 @@
       });
       sec.style.display = any ? "" : "none";
     });
+    var empty = document.getElementById("writeupEmpty");
+    if (empty) empty.hidden = total !== 0;
+    var jump = document.getElementById("sectionJump");
+    if (jump) jump.hidden = total === 0;
     var meta = document.getElementById("searchMeta");
     if (meta) meta.textContent = total + " writeup" + (total === 1 ? "" : "s");
   }

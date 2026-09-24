@@ -15,6 +15,8 @@
       card.hidden = !show;
       if (show) shown++;
     });
+    var empty = document.getElementById("blogEmpty");
+    if (empty) empty.hidden = shown !== 0;
     if (count) count.textContent = shown + (shown === 1 ? " post" : " posts");
   }
   if (search) search.addEventListener("input", apply);
@@ -29,16 +31,6 @@
       apply();
     });
   });
-  var progress = document.getElementById("readProgress");
-  var ticking = false;
-  function updateProgress() {
-    ticking = false;
-    if (!progress) return;
-    var max = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-    progress.style.width = (max > 0 ? document.documentElement.scrollTop / max * 100 : 0) + "%";
-  }
-  window.addEventListener("scroll", function () { if (!ticking) { ticking = true; requestAnimationFrame(updateProgress); } }, { passive: true });
-  updateProgress();
   var hosts = [];
   document.querySelectorAll(".article-body div.highlight").forEach(function (host) { hosts.push(host); });
   document.querySelectorAll(".article-body pre").forEach(function (pre) {
@@ -54,7 +46,15 @@
     button.setAttribute("aria-label", "Copy code to clipboard");
     button.addEventListener("click", function () {
       var text = code.innerText;
-      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(function () { button.textContent = "copied"; setTimeout(function () { button.textContent = "copy"; }, 1400); });
+      function done(ok) {
+        button.textContent = ok ? "copied" : "copy failed";
+        setTimeout(function () { button.textContent = "copy"; }, 1400);
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function () { done(true); }, function () { done(false); });
+      } else {
+        done(false);
+      }
     });
     host.appendChild(button);
   });

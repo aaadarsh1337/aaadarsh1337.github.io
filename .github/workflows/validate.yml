@@ -8,6 +8,9 @@ on:
       - "css/**"
       - "js/**"
       - "blog/**"
+      - "writeups/**"
+      - "intel/**"
+      - "assets/**"
       - "scripts/**"
       - "robots.txt"
       - ".github/workflows/validate.yml"
@@ -44,7 +47,6 @@ jobs:
         run: |
           node --check js/main.js
           node --check js/config.js
-          test -f scripts/writeups-filter.js && node --check scripts/writeups-filter.js || true
           test -f writeups/js/filter.js && node --check writeups/js/filter.js
           test -f writeups/js/page.js && node --check writeups/js/page.js
           test -f intel/js/intel.js && node --check intel/js/intel.js
@@ -55,11 +57,37 @@ jobs:
           diff scripts/style.css writeups/css/style.css
           diff scripts/intel-style.css intel/css/style.css
           diff scripts/blog-style.css blog/css/style.css
+          diff blog/css/pygments.css writeups/css/pygments.css
+
+      - name: Generated JS in sync with builder sources
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import sys
+          sys.path.insert(0, "scripts")
+          import build_writeups as bw
+          import build_blog as bb
+          import build_intel as bi
+          pairs = [
+              (bw.FILTER_JS, Path("writeups/js/filter.js")),
+              (bw.PAGE_JS, Path("writeups/js/page.js")),
+              (bb.BLOG_JS, Path("blog/js/blog.js")),
+              (bi.INTEL_JS, Path("intel/js/intel.js")),
+          ]
+          for expected, path in pairs:
+              actual = path.read_text(encoding="utf-8")
+              if actual != expected:
+                  raise SystemExit(f"out of sync: {path} does not match builder constant")
+              print(f"ok: {path}")
+          PY
 
       - name: Blog artifacts present
         run: |
           test -f blog/index.html
           test -f blog/search.json
+
+      - name: Social card present
+        run: test -f assets/og.png
 
       - name: No sitemaps
         run: |
@@ -70,11 +98,11 @@ jobs:
 
       - name: No inline event handlers
         run: |
-          ! grep -rn "onerror=\|onclick=\|onload=" index.html 404.html scripts/build_writeups.py scripts/build_intel.py || exit 1
+          ! grep -rn "onerror=\|onclick=\|onload=" index.html 404.html scripts/build_writeups.py scripts/build_intel.py scripts/build_blog.py || exit 1
 
-      - name: SRI present on CDN scripts
+      - name: SRI present for lazy CDN helpers
         run: |
-          grep -c 'integrity="sha384-' index.html | grep -q "3"
+          test "$(grep -c 'integrity: "sha384-' js/main.js)" -ge 3
 
       - name: CSP present
         run: |

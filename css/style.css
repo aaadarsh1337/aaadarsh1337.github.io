@@ -109,9 +109,6 @@ html {
 /* Popup / panel scroll areas inherit the same theme */
 .filesheet__body,
 .links-panel,
-.sidebar,
-.sidebar__files,
-.reader__body,
 .filesheet__body pre,
 .md-render pre,
 .tree-list {
@@ -120,30 +117,22 @@ html {
 }
 .filesheet__body::-webkit-scrollbar,
 .links-panel::-webkit-scrollbar,
-.sidebar::-webkit-scrollbar,
-.sidebar__files::-webkit-scrollbar,
-.reader__body::-webkit-scrollbar,
 .filesheet__body pre::-webkit-scrollbar {
   width: 10px;
   height: 10px;
 }
 .filesheet__body::-webkit-scrollbar-track,
-.links-panel::-webkit-scrollbar-track,
-.sidebar::-webkit-scrollbar-track,
-.sidebar__files::-webkit-scrollbar-track {
+.links-panel::-webkit-scrollbar-track {
   background: var(--bg-elev);
 }
 .filesheet__body::-webkit-scrollbar-thumb,
-.links-panel::-webkit-scrollbar-thumb,
-.sidebar::-webkit-scrollbar-thumb,
-.sidebar__files::-webkit-scrollbar-thumb {
+.links-panel::-webkit-scrollbar-thumb {
   background: var(--line-bright);
   border-radius: 2px;
   border: 2px solid var(--bg-elev);
 }
 .filesheet__body::-webkit-scrollbar-thumb:hover,
-.links-panel::-webkit-scrollbar-thumb:hover,
-.sidebar::-webkit-scrollbar-thumb:hover {
+.links-panel::-webkit-scrollbar-thumb:hover {
   background: var(--accent);
 }
 
@@ -311,7 +300,6 @@ html {
   height: 1px;
   background: var(--line-bright);
 }
-.fig-label .fig-idx { color: var(--accent); }
 .fig-label .fig-total {
   margin-left: auto;
   color: var(--faint);
@@ -477,9 +465,8 @@ main {
 }
 .rail__nav a:hover { color: var(--ink); text-decoration: none; background: var(--accent-2-soft); }
 .rail__nav a:hover::before { height: 46%; }
-.rail__nav a.active { color: var(--accent); }
+.rail__nav a.active { color: var(--accent); background: var(--accent-soft); }
 .rail__nav a.active::before { height: 46%; }
-.rail__nav a.active { background: var(--accent-soft); }
 
 .rail__foot {
   margin-top: 26px;
@@ -732,7 +719,7 @@ main {
   background: var(--accent-2-soft);
   color: var(--ink);
 }
-.btn--small { min-height: 30px; padding: 6px 11px; font-size: 12px; }
+.btn--small { min-height: 44px; padding: 6px 11px; font-size: 12px; }
 .btn .ext { color: var(--faint); font-size: 11px; }
 
 /* ---------- Skills ---------- */
@@ -1803,8 +1790,30 @@ main {
   .links-panel,
   .links-backdrop,
   .lab-grid { display: none !important; }
+  html, body { background: #fff !important; color: #111 !important; }
   main { padding: 0; }
   .sheet { padding: 20px 0; }
+  .sheet h1, .sheet h2, .sheet h3, .sheet h4,
+  .sheet p, .sheet li, .sheet dt, .sheet dd,
+  .sheet .rail__name, .hero__tagline, .cm-value { color: #111 !important; }
+  .sheet a, .hero__writing, .flagship-title { color: #111 !important; text-decoration: underline; }
+  .sheet .dim, .sheet .tb-label, .sheet .fig-label,
+  .hero__meta, .cm-label, .cm-note, .footer-note,
+  .status-line, .repo-card .repo-meta, .flagship-live { color: #333 !important; }
+  .skill-card, .repo-card, .cert-card, .contact-method,
+  .achieve-item, .flagship-card, .writing-feature__card,
+  .writing-showcase, .stats-band > div,
+  .skill-card, .repo-card, .cert-card, .contact-method,
+  .achieve-item, .flagship-card {
+    background: #fff !important;
+    border-color: #ccc !important;
+    color: #111 !important;
+    box-shadow: none !important;
+  }
+  .flagship-badge, .repo-card__badge, .tag, .diff { border-color: #111 !important; background: #fff !important; color: #111 !important; }
+  .btn, .btn--primary { background: #fff !important; border-color: #111 !important; color: #111 !important; }
+  .hero__portrait img { filter: none; outline-color: #ccc; }
+  .noscript-note { background: #fff !important; border-color: #ccc !important; color: #111 !important; }
   .repo-card,
   .skill-card,
   .cert-card,

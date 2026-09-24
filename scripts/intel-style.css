@@ -155,7 +155,7 @@ h1, h2, h3, h4 { font-family: var(--display); font-weight: 600; color: var(--ink
   flex: 0 0 auto;
   display: inline-flex;
   align-items: center;
-  min-height: 34px;
+  min-height: 44px;
   border: 1px solid transparent;
   border-radius: var(--radius);
   color: var(--muted);
@@ -189,7 +189,7 @@ h1, h2, h3, h4 { font-family: var(--display); font-weight: 600; color: var(--ink
 }
 .btn:hover { border-color: var(--accent-2); background: var(--accent-2-soft); text-decoration: none; }
 .btn--ghost:hover { border-color: var(--accent-2); color: var(--ink); }
-.btn--small { min-height: 30px; padding: 6px 11px; font-size: 12px; }
+.btn--small { min-height: 44px; padding: 6px 11px; font-size: 12px; }
 .btn--primary { background: var(--accent); border-color: var(--accent); color: #16161e; font-weight: 600; }
 .btn--primary:hover { background: #a5e3ff; border-color: #a5e3ff; color: #16161e; transform: translateY(-1px); }
 
@@ -353,6 +353,7 @@ main { position: relative; z-index: 1; }
 .seg button {
   font-family: var(--mono);
   font-size: 13px;
+  min-height: 44px;
   padding: 8px 16px;
   border: none;
   border-right: 1px solid var(--line);
@@ -382,6 +383,7 @@ main { position: relative; z-index: 1; }
 .pager button {
   font-family: var(--mono);
   font-size: 13px;
+  min-height: 44px;
   padding: 7px 14px;
   border: 1px solid var(--line-bright);
   background: transparent;
@@ -523,6 +525,8 @@ main { position: relative; z-index: 1; }
 .copy-btn {
   font-family: var(--mono);
   font-size: 12px;
+  min-height: 44px;
+  min-width: 44px;
   padding: 4px 10px;
   border: 1px solid var(--line-bright);
   background: transparent;
@@ -605,7 +609,7 @@ main { position: relative; z-index: 1; }
   .cred-filter { flex-direction: column; align-items: stretch; }
   .cred-filter input { max-width: none; }
   .leader-row { grid-template-columns: 24px 1fr auto; gap: 6px 10px; }
-  .leader-name .copy-btn { display: inline-flex; margin-left: 4px; padding: 3px 6px; font-size: 10px; }
+  .leader-name .copy-btn { display: inline-flex; margin-left: 4px; padding: 3px 6px; font-size: 10px; min-height: 36px; }
   .leader-bar { grid-column: 1 / -1; margin-top: 2px; }
   .leader-count { font-size: 13px; }
   .pager { flex-wrap: wrap; gap: 10px; }
@@ -620,7 +624,7 @@ main { position: relative; z-index: 1; }
   .timeline__stats { display: none; }
   .topbar__inner { gap: 8px; padding: 9px 12px; flex-wrap: wrap; }
   .topbar__nav { order: 2; width: 100%; margin-left: 0; justify-content: flex-start; }
-  .topbar__link { min-height: 32px; padding: 7px 9px; font-size: 11px; }
+  .topbar__link { min-height: 44px; padding: 7px 9px; font-size: 11px; }
 }
 
 @media print {

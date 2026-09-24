@@ -203,16 +203,20 @@ def enhance_html(body_html: str, title: str) -> str:
         alt_esc = html.escape(alt.strip())
         if not alt_esc:
             return m.group(0)
-        return (f"<figure class=\"md-fig\"><img{attrs}alt=\"{alt_esc}\" src=\"{src}\">"
+        return (f"<figure class=\"md-fig\"><img{attrs}alt=\"{alt_esc}\" src=\"{src}\" loading=\"lazy\" decoding=\"async\">"
                 f"<figcaption>{alt_esc}</figcaption></figure>")
     body_html = re.sub(
         r"<img((?:(?!\bsrc=)[^>])*)alt=\"([^\"]*)\"[^>]*src=\"([^\"]+)\"[^>]*>",
         _fig, body_html, flags=re.I)
     body_html = re.sub(
         r"<img((?:(?!\balt=)[^>])*)src=\"([^\"]+)\"[^>]*alt=\"([^\"]*)\"[^>]*>",
-        lambda m: (f"<figure class=\"md-fig\"><img{m.group(1)}src=\"{m.group(2)}\">"
+        lambda m: (f"<figure class=\"md-fig\"><img{m.group(1)}src=\"{m.group(2)}\" loading=\"lazy\" decoding=\"async\">"
                    f"<figcaption>{html.escape(m.group(3).strip())}</figcaption></figure>"
                    if m.group(3).strip() else m.group(0)),
+        body_html, flags=re.I)
+    body_html = re.sub(
+        r"<img((?:(?!\bloading=)[^>])*)src=\"([^\"]+)\"([^>]*?)/>",
+        lambda m: f"<img{m.group(1)}src=\"{m.group(2)}\"{m.group(3)} loading=\"lazy\" decoding=\"async\" />",
         body_html, flags=re.I)
     return body_html
 
@@ -453,8 +457,17 @@ def write_pygments_css(dest_css: Path) -> None:
         print(f"  warning: could not write pygments css ({e})")
 
 
-def copy_assets(folder: Path, dest: Path):
+def copy_assets(folder: Path, dest: Path, referenced_html: str = ""):
     dest.mkdir(parents=True, exist_ok=True)
+    # Only ship images the rendered page actually references, so stale
+    # screenshots in the source tree never bloat the published site.
+    refs = set()
+    for m in re.finditer(r'src="([^"]+)"', referenced_html or ""):
+        src = m.group(1)
+        if src.startswith(("http://", "https://", "data:", "//", "/")):
+            continue
+        refs.add(src.split("#", 1)[0].split("?", 1)[0])
+    ref_names = {Path(r).name for r in refs}
     # Copy images anywhere under the challenge folder, preserving structure,
     # so relative image links in markdown keep working after the build.
     for root, dirs, files in os.walk(folder):
@@ -466,6 +479,9 @@ def copy_assets(folder: Path, dest: Path):
             if Path(f).suffix.lower() in {".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg"}:
                 src = root_path / f
                 rel = src.relative_to(folder)
+                rel_posix = rel.as_posix()
+                if referenced_html and rel_posix not in refs and f not in ref_names:
+                    continue
                 target = dest / rel
                 target.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy2(src, target)
@@ -952,9 +968,10 @@ INDEX_BODY = """
     </div>
   </nav>
 
+  <div class="writeup-empty" id="writeupEmpty" hidden>No writeups match that filter. Try a different search or clear the tag.</div>
+
 {sections}
 </div>
-<script src="js/filter.js" defer></script>
 """
 
 
@@ -985,6 +1002,10 @@ FILTER_JS = """(function () {
       });
       sec.style.display = any ? "" : "none";
     });
+    var empty = document.getElementById("writeupEmpty");
+    if (empty) empty.hidden = total !== 0;
+    var jump = document.getElementById("sectionJump");
+    if (jump) jump.hidden = total === 0;
     var meta = document.getElementById("searchMeta");
     if (meta) meta.textContent = total + " writeup" + (total === 1 ? "" : "s");
   }
@@ -1026,7 +1047,7 @@ PAGE_JS = """(function () {
     document.body.removeChild(area);
     flash(btn, ok);
   }
-  document.querySelectorAll(".writeup-content div.highlight.is-code").forEach(function (host) {
+  document.querySelectorAll(".writeup-content div.highlight").forEach(function (host) {
     var code = host.querySelector("code");
     if (!code || host.querySelector(".copy-btn")) return;
     var button = document.createElement("button");
@@ -1126,7 +1147,7 @@ def build(source: Path, out: Path, portfolio_url: str, github_user: str, github_
 
         dest_dir = out / Path(w["url_path"])
         dest_dir.mkdir(parents=True, exist_ok=True)
-        copy_assets(w["folder"], dest_dir)
+        copy_assets(w["folder"], dest_dir, body_html)
 
         depth = len(Path(w["url_path"]).parts)
         css_prefix = "../" * depth
@@ -1167,7 +1188,7 @@ def build(source: Path, out: Path, portfolio_url: str, github_user: str, github_
             if target is None:
                 pager.append('<span class="pager-item pager-item--disabled"></span>')
             else:
-                target_href = css_prefix + target["url_path"].rstrip("/") + "/index.html"
+                target_href = css_prefix + target["url_path"].rstrip("/") + "/"
                 pager.append(
                     f'<a class="pager-item pager-item--{label.lower()}" href="{html.escape(target_href)}">'
                     f'<span class="pager-label">{label}</span>'
@@ -1183,13 +1204,13 @@ def build(source: Path, out: Path, portfolio_url: str, github_user: str, github_
         w["_excerpt"] = excerpt
         page_desc = excerpt or f"CTF writeup: {title} ({event_name})"
         canonical = canonical_for(w["url_path"])
-        # Per-writeup social card; falls back to the avatar when Pillow
-        # is unavailable (e.g. minimal CI env).
+        # Per-writeup social card; falls back to the shared site card when
+        # Pillow/fonts are unavailable (e.g. minimal CI env).
         og_path = f"{site_base}/{w['url_path'].rstrip('/')}/og.png"
         if make_og_image(title, w["event"], dest_dir / "og.png"):
             og_image = og_path
         else:
-            og_image = "https://aaadarsh1337.github.io/assets/avatar.jpg"
+            og_image = "https://aaadarsh1337.github.io/assets/og.png"
         w["_og"] = og_image
         day_prefix = f"Day {w['day']} &middot; " if w.get("day") is not None else ""
         body = WRITEUP_BODY.format(
@@ -1242,7 +1263,7 @@ def build(source: Path, out: Path, portfolio_url: str, github_user: str, github_
         )
         cards = []
         for w in items:
-            href = w["url_path"].rstrip("/") + "/index.html"
+            href = w["url_path"].rstrip("/") + "/"
             tags = w.get("_tags", ["misc"])
             search = html.escape(f"{w['event']} {w['name']} {w['display_name']} {w['url_path']} {' '.join(tags)}")
             read_min = w.get("_reading_time", 1)
@@ -1294,7 +1315,7 @@ def build(source: Path, out: Path, portfolio_url: str, github_user: str, github_
     index_page = PAGE_SHELL.format(
         title="CTF Writeups — aaadarsh1337",
         description="CTF writeups and challenge notes by Adarsh Pillai",
-        og_image="https://aaadarsh1337.github.io/assets/avatar.jpg",
+        og_image="https://aaadarsh1337.github.io/assets/og.png",
         canonical=index_canonical,
         jsonld=jsonld_for("CTF Writeups", "CTF writeups and challenge notes", index_canonical),
         css_prefix="",
@@ -1304,7 +1325,7 @@ def build(source: Path, out: Path, portfolio_url: str, github_user: str, github_
         body=index_body,
         skip_link='<a class="skip-link" href="#main">Skip to content</a>',
         main_id="main",
-        page_scripts="",
+        page_scripts='<script src="js/filter.js" defer></script>',
     )
     (out / "index.html").write_text(index_page, encoding="utf-8")
     print(f"  wrote  index.html ({len(writeups)} writeups)")

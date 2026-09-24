@@ -15,14 +15,14 @@
 <meta property="og:title" content="Adarsh Pillai — Cybersecurity Portfolio" />
 <meta property="og:description" content="Offensive security, reverse engineering, and security tooling — CTF writeups and live projects." />
 <meta property="og:url" content="https://aaadarsh1337.github.io/" />
-<meta property="og:image" content="https://aaadarsh1337.github.io/assets/avatar.jpg" />
-<meta property="og:image:alt" content="Portrait of Adarsh Pillai" />
+<meta property="og:image" content="https://aaadarsh1337.github.io/assets/og.png" />
+<meta property="og:image:alt" content="Adarsh Pillai — Cybersecurity Portfolio" />
 
 <!-- Twitter -->
-<meta name="twitter:card" content="summary" />
+<meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="Adarsh Pillai — Cybersecurity Portfolio" />
 <meta name="twitter:description" content="Offensive security, reverse engineering, and security tooling." />
-<meta name="twitter:image" content="https://aaadarsh1337.github.io/assets/avatar.jpg" />
+<meta name="twitter:image" content="https://aaadarsh1337.github.io/assets/og.png" />
 
 <!-- Favicon (inline SVG, no binary asset needed) -->
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2316161e'/%3E%3Crect x='13' y='4' width='6' height='24' fill='%237DCFFF'/%3E%3Crect x='4' y='13' width='24' height='6' fill='%237DCFFF'/%3E%3Crect x='14' y='6' width='4' height='20' fill='%2316161e'/%3E%3Crect x='6' y='14' width='20' height='4' fill='%2316161e'/%3E%3C/svg%3E" />
@@ -33,11 +33,6 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-
-<!-- Markdown rendering + syntax highlighting (theme styled locally to match) -->
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.0/marked.min.js" integrity="sha384-NNQgBjjuhtXzPmmy4gurS5X7P4uTt1DThyevz4Ua0IVK5+kazYQI1W27JHjbbxQz" crossorigin="anonymous"></script>
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha384-F/bZzf7p3Joyp5psL90p/p89AZJsndkSoGwRpXcZhleCWhd8SnRuoYo4d0yirjJp" crossorigin="anonymous"></script>
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.9/purify.min.js" integrity="sha384-3HPB1XT51W3gGRxAmZ+qbZwRpRlFQL632y8x+adAqCr4Wp3TaWwCLSTAJJKbyWEK" crossorigin="anonymous"></script>
 
 <!-- Structured data (Person) for SEO -->
 <script type="application/ld+json">
@@ -93,7 +88,7 @@
   <button class="rail__toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="siteNav">
     <span></span><span></span><span></span>
   </button>
-  <button class="rail__foot" id="easterEgg" aria-label="Easter egg — try three quick clicks">secrets die here</button>
+  <button class="rail__foot" id="easterEgg" aria-label="secrets die here">secrets die here</button>
 </header>
 
 <main id="main">
@@ -118,17 +113,25 @@
           <div class="hero__actions">
             <a class="btn btn--primary" href="#threat-harbour">View featured work <span class="ext">→</span></a>
             <a class="btn btn--ghost" href="/writeups/">Read writeups <span class="ext">→</span></a>
-            <a class="btn btn--ghost" id="resumeBtn" href="#" target="_blank" rel="noopener noreferrer" aria-label="Open résumé">Résumé <span class="ext">↗</span></a>
+            <a class="btn btn--ghost" id="resumeBtn" href="https://github.com/aaadarsh1337" target="_blank" rel="noopener noreferrer" aria-label="Open résumé">Résumé <span class="ext">↗</span></a>
             <button type="button" class="btn btn--ghost" id="linksOpen" aria-expanded="false" aria-controls="linksPanel" aria-label="Open links panel">Links <span class="ext">→</span></button>
           </div>
-          <a class="hero__writing" id="heroWriting" href="/blog/" hidden>
+          <a class="hero__writing" id="heroWriting" href="/blog/">
             <span class="hero__writing-label">Latest writing</span>
-            <span class="hero__writing-title" id="heroWritingTitle">Security writing is on its way</span>
+            <span class="hero__writing-title" id="heroWritingTitle">How I structure malware-analysis notes</span>
             <span class="hero__writing-arrow" aria-hidden="true">→</span>
           </a>
-          <dl class="stats-band" id="statsBand" aria-label="Highlights at a glance"></dl>
-          <p class="hero__flagship" id="heroFlagship" hidden></p>
-          <div class="hero__bio" id="heroBio"></div>
+          <dl class="stats-band" id="statsBand" aria-label="Highlights at a glance">
+            <div><dt>TryHackMe global</dt><dd>Top 2%</dd></div>
+            <div><dt>THM rooms done</dt><dd>100+</dd></div>
+            <div><dt>CTF writeups</dt><dd>22</dd></div>
+          </dl>
+          <p class="hero__flagship" id="heroFlagship"><a href="#threat-harbour"><span class="star" aria-hidden="true">★</span> Threat Harbour — SSH honeypot case study</a></p>
+          <div class="hero__bio" id="heroBio">
+            <p>I’m Adarsh Pillai — aaadarsh1337 online. Cybersecurity student focused on offensive security and reverse engineering.</p>
+            <p>Co-founder of 404squad; I organize near-weekly CTF participation and mainly work misc and rev challenges.</p>
+            <p>Outside CTFs I dig into reverse engineering and build security projects of my own.</p>
+          </div>
         </div>
       </div>
     </div>
@@ -142,7 +145,12 @@
       <p class="fig-label">02 · Skillset<span class="fig-total" aria-hidden="true">/ 08</span></p>
       <h2 class="sheet__title">What I work with</h2>
       <p class="sheet__hint">Core areas of security and the tools I use to practice them.</p>
-      <div class="skill-grid" id="skillGrid"></div>
+      <div class="skill-grid" id="skillGrid">
+        <article class="skill-card"><h3 class="skill-card__title">Offensive Security</h3><ul class="skill-card__list"><li>Web Exploitation</li><li>Network Security</li><li>Reverse Engineering</li><li>Binary Exploitation</li><li>OSINT</li></ul></article>
+        <article class="skill-card"><h3 class="skill-card__title">Languages</h3><ul class="skill-card__list"><li>Python</li><li>Bash</li><li>C</li><li>SQL</li><li>GoLang</li></ul></article>
+        <article class="skill-card"><h3 class="skill-card__title">Tools</h3><ul class="skill-card__list"><li>Web: Burp Suite, ffuf, Nuclei</li><li>Network: Nmap, Wireshark</li><li>Binary: Ghidra, Binary Ninja, pwntools, pwndbg</li><li>Forensics: Autopsy, Binwalk</li></ul></article>
+        <article class="skill-card"><h3 class="skill-card__title">Currently Learning</h3><ul class="skill-card__list"><li>Forensics</li><li>Blockchain</li><li>Cloud</li><li>Assembly for RE</li></ul></article>
+      </div>
     </div>
   </section>
 
@@ -154,7 +162,11 @@
       <p class="fig-label">03 · Achievements<span class="fig-total" aria-hidden="true">/ 08</span></p>
       <h2 class="sheet__title">Highlights</h2>
       <p class="sheet__hint">CTFs, disclosures, and other results worth showing.</p>
-      <ul class="achieve-list" id="achieveList"></ul>
+      <ul class="achieve-list" id="achieveList">
+        <li class="achieve-item"><div class="achieve-item__top"><span class="achieve-item__title">TFC CTF 2026</span><span class="achieve-item__date">2026</span></div><p class="achieve-item__detail">404squad - #23 Human Division; #172 Overall</p><a class="achieve-item__link" href="https://github.com/aaadarsh1337/cybersecurity-achievements/tree/main/TFCCTF" target="_blank" rel="noopener noreferrer">Proof ↗</a></li>
+        <li class="achieve-item"><div class="achieve-item__top"><span class="achieve-item__title">z0d1ak CTF 2026</span><span class="achieve-item__date">2026</span></div><p class="achieve-item__detail">404squad - #13 Human Division; #75 Overall</p><a class="achieve-item__link" href="https://github.com/aaadarsh1337/cybersecurity-achievements/tree/main/z0d1ak-ctf" target="_blank" rel="noopener noreferrer">Proof ↗</a></li>
+        <li class="achieve-item"><div class="achieve-item__top"><span class="achieve-item__title">TryHackMe</span><span class="achieve-item__date">2026</span></div><p class="achieve-item__detail">Top 2% Global; 100+ Rooms Completed</p><a class="achieve-item__link" href="https://tryhackme.com/p/aaadarsh1337" target="_blank" rel="noopener noreferrer">Profile ↗</a></li>
+      </ul>
     </div>
   </section>
 
@@ -166,7 +178,20 @@
       <p class="fig-label">04 · Case study<span class="fig-total" aria-hidden="true">/ 08</span></p>
       <h2 class="sheet__title">Featured case study</h2>
       <p class="sheet__hint">Threat Harbour turns real SSH sensor activity into a readable, daily threat-intelligence snapshot.</p>
-      <div class="flagship" id="flagship" aria-label="Threat Harbour case study"></div>
+      <div class="flagship" id="flagship" aria-label="Threat Harbour case study">
+        <article class="flagship-card">
+          <p class="flagship-badge"><span class="pulse" aria-hidden="true"></span>Case study</p>
+          <h3 class="flagship-title">Threat Harbour</h3>
+          <p class="flagship-tagline">SSH honeypot · daily threat-intel leaderboard</p>
+          <p class="flagship-desc">A Cowrie SSH sensor on Oracle Cloud Free Tier that publishes a fresh leaderboard of real attacker credentials every 24 hours.</p>
+          <ul class="flagship-points"><li>Daily GitHub Actions pipeline parses Cowrie logs on-box</li><li>Grafana + Loki + Promtail monitor stack</li><li>Reproducible offline analysis with methodology docs</li></ul>
+          <div class="flagship-stack"><span>Cowrie 3.x</span><span>Oracle Cloud</span><span>Grafana + Loki</span><span>GitHub Actions</span><span>Python</span></div>
+          <div class="flagship-actions">
+            <a class="btn btn--primary" href="https://github.com/aaadarsh1337/threat-harbour" target="_blank" rel="noopener noreferrer">View on GitHub <span class="ext">↗</span></a>
+            <a class="btn btn--ghost" href="/intel/">Open intel dashboard <span class="ext">→</span></a>
+          </div>
+        </article>
+      </div>
     </div>
   </section>
 
@@ -185,7 +210,14 @@
           <p>Practical notes that make the reasoning behind the work easier to follow.</p>
           <a class="btn btn--ghost" href="/blog/">Browse all writing <span class="ext">→</span></a>
         </div>
-        <div class="writing-feature" id="latestWriting" aria-live="polite"><span class="dim">Loading latest writing…</span></div>
+        <div class="writing-feature" id="latestWriting" aria-live="polite">
+          <a class="writing-feature__card" href="/blog/malware-analysis/how-i-structure-malware-analysis-notes/">
+            <div class="writing-feature__meta"><span class="writing-feature__latest">Latest</span><span class="writing-feature__category">Malware analysis</span></div>
+            <h3>How I structure malware-analysis notes</h3>
+            <p>A practical, defensive template for turning a sample investigation into useful technical writing without publishing live payloads.</p>
+            <span class="writing-feature__read">Read the note →</span>
+          </a>
+        </div>
       </div>
     </div>
   </section>
@@ -198,8 +230,11 @@
       <p class="fig-label">06 · Repositories<span class="fig-total" aria-hidden="true">/ 08</span></p>
       <h2 class="sheet__title">More repositories</h2>
       <p class="sheet__hint">Public projects, tools, and notes that show the breadth behind the case study.</p>
-      <p class="sheet__hint status-line" id="repoStatus" role="status" aria-live="polite">&gt; fetching repository index&hellip;</p>
-      <div class="repo-grid" id="repoGrid"></div>
+      <p class="sheet__hint status-line" id="repoStatus" role="status" aria-live="polite">&gt; browse repositories on <a href="https://github.com/aaadarsh1337?tab=repositories" target="_blank" rel="noopener noreferrer">GitHub ↗</a></p>
+      <div class="repo-grid" id="repoGrid">
+        <article class="repo-card pinned"><div class="repo-top"><a class="repo-name" href="https://github.com/aaadarsh1337/ctf-writeups" target="_blank" rel="noopener noreferrer">ctf-writeups</a><span class="repo-card__badge">pinned</span></div><p class="repo-desc">CTF writeups and challenge notes by event.</p><div class="repo-foot"><a class="repo-open" href="https://github.com/aaadarsh1337/ctf-writeups" target="_blank" rel="noopener noreferrer">Browse ↗</a></div></article>
+        <article class="repo-card pinned"><div class="repo-top"><a class="repo-name" href="https://github.com/aaadarsh1337/security-automation-toolkit" target="_blank" rel="noopener noreferrer">security-automation-toolkit</a><span class="repo-card__badge">pinned</span></div><p class="repo-desc">Small tools and automation for security work.</p><div class="repo-foot"><a class="repo-open" href="https://github.com/aaadarsh1337/security-automation-toolkit" target="_blank" rel="noopener noreferrer">Browse ↗</a></div></article>
+      </div>
     </div>
   </section>
 
@@ -211,7 +246,11 @@
       <p class="fig-label">07 · Certificates<span class="fig-total" aria-hidden="true">/ 08</span></p>
       <h2 class="sheet__title">Certificate library</h2>
       <p class="sheet__hint">Copies hosted on GitHub (cybersecurity-achievements) in case original links are unavailable.</p>
-      <div class="cert-grid" id="certGrid"></div>
+      <div class="cert-grid" id="certGrid">
+        <div class="cert-card"><img src="assets/certificate.png" alt="TFC CTF badge" width="44" height="44" loading="lazy" /><div><h3>TFC CTF</h3><div class="cert-meta">TFC · 2026</div><a href="https://github.com/aaadarsh1337/cybersecurity-achievements/blob/main/TFCCTF/tfc-ctf-26-diploma-adarsh-pillai.png" target="_blank" rel="noopener noreferrer">View certificate <span class="ext">↗</span></a></div></div>
+        <div class="cert-card"><img src="assets/certificate.png" alt="z0d1ak CTF badge" width="44" height="44" loading="lazy" /><div><h3>z0d1ak CTF</h3><div class="cert-meta">z0d1ak · 2026</div><a href="https://github.com/aaadarsh1337/cybersecurity-achievements/blob/main/z0d1ak-ctf/z0d1ak-certificate-adarsh-pillai.pdf" target="_blank" rel="noopener noreferrer">View certificate <span class="ext">↗</span></a></div></div>
+        <div class="cert-card"><img src="assets/certificate.png" alt="Hacker Holidays badge" width="44" height="44" loading="lazy" /><div><h3>Hacker Holidays</h3><div class="cert-meta">TryHackMe · 2026</div><a href="https://tryhackme-certificates.s3-eu-west-1.amazonaws.com/THM-THCFDTXKFZ.pdf" target="_blank" rel="noopener noreferrer">View certificate <span class="ext">↗</span></a></div></div>
+      </div>
     </div>
   </section>
 
@@ -223,7 +262,21 @@
       <p class="fig-label">08 · Contact<span class="fig-total" aria-hidden="true">/ 08</span></p>
       <h2 class="sheet__title">Get in touch</h2>
       <p class="sheet__hint">Reach me directly. For my other profiles and platforms, open <button type="button" id="contactLinksBtn" class="btn btn--ghost btn--small" aria-controls="linksPanel" aria-expanded="false">Links</button>.</p>
-      <div class="contact-list" id="contactList"></div>
+      <div class="contact-list" id="contactList">
+        <div class="contact-method contact-method--email">
+          <span class="cm-label">Email</span>
+          <div class="cm-row">
+            <a class="cm-value" href="mailto:adarshpillai1337@gmail.com">adarshpillai1337@gmail.com</a>
+            <button type="button" class="btn btn--ghost btn--small cm-copy" data-copy-email data-label="Copy" title="Copy email">Copy</button>
+          </div>
+          <span class="cm-note">Best for longer conversations &amp; opportunities</span>
+        </div>
+        <div class="contact-method">
+          <span class="cm-label">Discord</span>
+          <a class="cm-value" href="https://discord.com/users/15248404499301847090" target="_blank" rel="noopener noreferrer">@aaadarsh1337</a>
+          <span class="cm-note">Fastest for a quick chat</span>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -293,8 +346,8 @@
   <div class="cmdk-foot"><span><kbd>↑↓</kbd> navigate</span><span><kbd>↵</kbd> run</span><span><kbd>esc</kbd> close</span></div>
 </div>
 
-<script src="js/config.js"></script>
-<script src="js/main.js"></script>
+<script defer src="js/config.js"></script>
+<script defer src="js/main.js"></script>
 
 <!-- Links panel -->
 <div class="links-backdrop" id="linksBackdrop" hidden></div>

@@ -203,7 +203,7 @@ def leader_rows(items: list, max_count: int, command: bool = False) -> str:
         c = it.get("count", 0)
         share = (c / max_count * 100) if max_count else 0
         rows.append(
-            f'<div class="leader-row" role="listitem" data-search="{html.escape(name.lower())}">'
+            f'<div class="leader-row" role="listitem">'
             f'<span class="leader-rank">{i:02d}</span>'
             f'<div class="leader-main"><div class="{name_class}"><span class="leader-value">{html.escape(preview)}</span>'
             f'<button type="button" class="copy-btn" data-copy="{html.escape(raw_name)}" aria-label="{copy_label}">copy</button></div>'
@@ -560,11 +560,11 @@ PAGE_SHELL = """<!DOCTYPE html>
 <meta property="og:title" content="Threat Harbour case study — daily SSH honeypot snapshot" />
 <meta property="og:description" content="{description}" />
 <meta property="og:url" content="{canonical}" />
-<meta property="og:image" content="https://aaadarsh1337.github.io/assets/avatar.jpg" />
+<meta property="og:image" content="https://aaadarsh1337.github.io/assets/og.png" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="Threat Harbour case study — daily SSH honeypot snapshot" />
 <meta name="twitter:description" content="{description}" />
-<meta name="twitter:image" content="https://aaadarsh1337.github.io/assets/avatar.jpg" />
+<meta name="twitter:image" content="https://aaadarsh1337.github.io/assets/og.png" />
 <script type="application/ld+json">{jsonld}</script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2316161e'/%3E%3Crect x='13' y='4' width='6' height='24' fill='%237DCFFF'/%3E%3Crect x='4' y='13' width='24' height='6' fill='%237DCFFF'/%3E%3Crect x='14' y='6' width='4' height='20' fill='%2316161e'/%3E%3Crect x='6' y='14' width='20' height='4' fill='%2316161e'/%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -776,7 +776,7 @@ INTEL_JS = """(function () {
       if (pages.length > 1) {
         pager.hidden = false;
         if (prev) prev.disabled = page === 0;
-        if (next) next.disabled = page === pages - 1;
+        if (next) next.disabled = page === pages.length - 1;
         if (pageLabel) pageLabel.textContent = visible[0][0] + " → " + visible[n - 1][0] + " · " + (page + 1) + "/" + pages.length;
       } else {
         pager.hidden = true;

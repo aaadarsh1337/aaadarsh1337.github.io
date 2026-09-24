@@ -6,6 +6,10 @@
    ===================================================================== */
 
 :root {
+  /* Site is intentionally dark-only: tell the browser so form controls,
+     scrollbars, and caret match instead of forcing light UI. */
+  color-scheme: dark;
+
   /* palette — Tokyo Night, darker */
   --bg: #16161e;
   --bg-elev: #1a1b26;

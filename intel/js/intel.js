@@ -170,7 +170,7 @@
       if (pages.length > 1) {
         pager.hidden = false;
         if (prev) prev.disabled = page === 0;
-        if (next) next.disabled = page === pages - 1;
+        if (next) next.disabled = page === pages.length - 1;
         if (pageLabel) pageLabel.textContent = visible[0][0] + " → " + visible[n - 1][0] + " · " + (page + 1) + "/" + pages.length;
       } else {
         pager.hidden = true;

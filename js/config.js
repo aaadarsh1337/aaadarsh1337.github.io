@@ -41,9 +41,9 @@ window.PORTFOLIO_CONFIG = {
     stack: ["Cowrie 3.x", "Oracle Cloud", "Grafana + Loki", "GitHub Actions", "Python"],
     metricsUrl: "https://raw.githubusercontent.com/aaadarsh1337/threat-harbour/main/analysis/metrics.json",
     fallbackStats: [
-      { value: "357,922", label: "events captured" },
-      { value: "3,302", label: "unique source IPs" },
-      { value: "55,975", label: "sessions" },
+      { value: "496,133", label: "events captured" },
+      { value: "3,772", label: "unique source IPs" },
+      { value: "74,797", label: "sessions" },
       { value: "daily", label: "leaderboard refresh" }
     ],
     links: {

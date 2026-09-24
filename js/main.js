@@ -190,8 +190,15 @@
     const el = document.getElementById(id);
     const reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (el && el.scrollIntoView) el.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
-    try { window.history.replaceState(null, "", "#" + id); } catch (e) { /* ignore */ }
+    try { window.history.pushState(null, "", "#" + id); } catch (e) { /* ignore */ }
   }
+
+  window.addEventListener("popstate", () => {
+    const hash = (location.hash || "").replace(/^#/, "");
+    if (!hash) return;
+    const el = document.getElementById(hash);
+    if (el && el.scrollIntoView) el.scrollIntoView({ block: "start" });
+  });
 
   function openLinksPanel() {
     const panel = document.getElementById("linksPanel");
@@ -213,7 +220,11 @@
       { label: "Read the blog", detail: "page · malware analysis + security notes", run: () => { window.location.href = "/blog/"; } },
       { label: "Open threat intel", detail: "page · daily sensor dashboard", run: () => { window.location.href = "/intel/"; } },
       { label: "Open Links", detail: "action", run: openLinksPanel },
-      { label: "Copy email", detail: "action", run: () => copyText((CFG.contact || {}).email || "", null) },
+      { label: "Copy email", detail: "action", run: () => {
+        const email = (CFG.contact || {}).email || "";
+        copyText(email, null);
+        toast("Email copied to clipboard");
+      } },
     ];
     if (CFG.flagship && CFG.flagship.repo) {
       const fl = CFG.flagship.links || {};
@@ -806,6 +817,7 @@
 
   function renderCerts() {
     const grid = document.getElementById("certGrid");
+    if (!grid) return;
     grid.innerHTML = "";
     (CFG.certificates || []).forEach((c, i) => {
       const card = document.createElement("div");
@@ -847,8 +859,28 @@
     }
   }
 
+  function toast(message) {
+    let el = document.getElementById("siteToast");
+    if (!el) {
+      el = document.createElement("div");
+      el.id = "siteToast";
+      el.setAttribute("role", "status");
+      el.setAttribute("aria-live", "polite");
+      el.style.cssText = "position:fixed;right:16px;bottom:72px;z-index:400;max-width:min(320px,calc(100vw - 32px));padding:10px 14px;border:1px solid var(--line-bright);border-top:2px solid var(--accent);border-radius:var(--radius);background:var(--panel);color:var(--ink);font:12px var(--mono);box-shadow:0 12px 32px rgba(0,0,0,.4);opacity:0;transform:translateY(6px);transition:opacity .18s ease,transform .18s ease;pointer-events:none;";
+      document.body.appendChild(el);
+    }
+    el.textContent = message;
+    requestAnimationFrame(() => { el.style.opacity = "1"; el.style.transform = "none"; });
+    clearTimeout(el._hideT);
+    el._hideT = setTimeout(() => {
+      el.style.opacity = "0";
+      el.style.transform = "translateY(6px)";
+    }, 1800);
+  }
+
   function renderContact() {
     const list = document.getElementById("contactList");
+    if (!list) return;
     const c = CFG.contact || {};
     const methods = [];
     if (c.email) {
@@ -873,7 +905,10 @@
     list.innerHTML = methods.join("");
     const copyBtn = list.querySelector("[data-copy-email]");
     if (copyBtn && c.email) {
-      copyBtn.addEventListener("click", () => copyText(c.email, copyBtn));
+      copyBtn.addEventListener("click", () => {
+        copyText(c.email, copyBtn);
+        toast("Email copied to clipboard");
+      });
     }
   }
 
@@ -1159,6 +1194,43 @@
     return escapeHtml(dirty);
   }
 
+  const RENDER_LIBS = [
+    {
+      test: () => window.marked,
+      src: "https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.0/marked.min.js",
+      integrity: "sha384-NNQgBjjuhtXzPmmy4gurS5X7P4uTt1DThyevz4Ua0IVK5+kazYQI1W27JHjbbxQz"
+    },
+    {
+      test: () => window.hljs,
+      src: "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js",
+      integrity: "sha384-F/bZzf7p3Joyp5psL90p/p89AZJsndkSoGwRpXcZhleCWhd8SnRuoYo4d0yirjJp"
+    },
+    {
+      test: () => window.DOMPurify,
+      src: "https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.9/purify.min.js",
+      integrity: "sha384-3HPB1XT51W3gGRxAmZ+qbZwRpRlFQL632y8x+adAqCr4Wp3TaWwCLSTAJJKbyWEK"
+    }
+  ];
+  let libsPromise = null;
+  function ensureRenderLibs() {
+    if (!libsPromise) {
+      libsPromise = Promise.all(RENDER_LIBS.map((lib) => {
+        if (lib.test()) return Promise.resolve();
+        return new Promise((resolve) => {
+          const s = document.createElement("script");
+          s.src = lib.src;
+          s.integrity = lib.integrity;
+          s.crossOrigin = "anonymous";
+          s.async = true;
+          s.onload = () => resolve();
+          s.onerror = () => resolve();
+          document.head.appendChild(s);
+        });
+      }));
+    }
+    return libsPromise;
+  }
+
   function openTreeSheet(repo) {
     closeFileSheet(true);
     const requestId = ++treeRequestId;
@@ -1265,28 +1337,32 @@
         }
         const e = ext(path.split("/").pop());
         if (e === "md" || e === "markdown") {
-          const wrap = document.createElement("div");
-          wrap.className = "md-render";
-          const rawHtml = window.marked ? window.marked.parse(text) : escapeHtml(text);
-          wrap.innerHTML = sanitizeHtml(rawHtml);
-          // Harden links inside rendered markdown
-          wrap.querySelectorAll("a").forEach((a) => {
-            const href = a.getAttribute("href") || "";
-            if (/^https?:\/\//i.test(href)) {
-              a.target = "_blank";
-              a.rel = "noopener noreferrer";
+          return ensureRenderLibs().then(() => {
+            if (requestId !== fileRequestId) return;
+            const wrap = document.createElement("div");
+            wrap.className = "md-render";
+            const rawHtml = window.marked ? window.marked.parse(text) : escapeHtml(text);
+            wrap.innerHTML = sanitizeHtml(rawHtml);
+            wrap.querySelectorAll("a").forEach((a) => {
+              const href = a.getAttribute("href") || "";
+              if (/^https?:\/\//i.test(href)) {
+                a.target = "_blank";
+                a.rel = "noopener noreferrer";
+              }
+            });
+            fsBody.innerHTML = "";
+            if (truncated) {
+              const note = document.createElement("p");
+              note.className = "dim";
+              note.textContent = "Truncated preview (file too large) — open on GitHub for the full file.";
+              fsBody.appendChild(note);
             }
+            fsBody.appendChild(wrap);
+            if (window.hljs) fsBody.querySelectorAll("pre code").forEach((b) => window.hljs.highlightElement(b));
           });
-          fsBody.innerHTML = "";
-          if (truncated) {
-            const note = document.createElement("p");
-            note.className = "dim";
-            note.textContent = "Truncated preview (file too large) — open on GitHub for the full file.";
-            fsBody.appendChild(note);
-          }
-          fsBody.appendChild(wrap);
-          if (window.hljs) fsBody.querySelectorAll("pre code").forEach((b) => window.hljs.highlightElement(b));
-        } else {
+        }
+        return ensureRenderLibs().then(() => {
+          if (requestId !== fileRequestId) return;
           const pre = document.createElement("pre");
           const code = document.createElement("code");
           const lang = LANG_HINT[e];
@@ -1296,7 +1372,7 @@
           fsBody.innerHTML = "";
           fsBody.appendChild(pre);
           if (window.hljs) window.hljs.highlightElement(code);
-        }
+        });
       })
       .catch((err) => {
         if (requestId !== fileRequestId) return;
@@ -1444,24 +1520,28 @@
     }
     foot.addEventListener("click", activate);
     // Native <button>: Enter/Space already fire click — no manual key handler.
-    foot.setAttribute("title", "psst… try three quick clicks");
   }
 
   // ---------------- Init ----------------
   document.addEventListener("DOMContentLoaded", () => {
-    renderProfile();
-    renderStats();
-    renderSkills();
-    renderAchievements();
-    renderFlagship();
-    renderCerts();
-    renderContact();
-    initNav();
-    loadRepos();
-    loadBlogIndex();
-    renderLinkPanel();
-    initLinkPanel();
-    initPalette();
-    initEasterEgg();
+    const steps = [
+      renderProfile,
+      renderStats,
+      renderSkills,
+      renderAchievements,
+      renderFlagship,
+      renderCerts,
+      renderContact,
+      initNav,
+      loadRepos,
+      loadBlogIndex,
+      renderLinkPanel,
+      initLinkPanel,
+      initPalette,
+      initEasterEgg
+    ];
+    steps.forEach((fn) => {
+      try { fn(); } catch (err) { console.error("init failed:", fn.name, err); }
+    });
   });
 })();

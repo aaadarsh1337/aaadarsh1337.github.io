@@ -19,7 +19,7 @@
     document.body.removeChild(area);
     flash(btn, ok);
   }
-  document.querySelectorAll(".writeup-content div.highlight.is-code").forEach(function (host) {
+  document.querySelectorAll(".writeup-content div.highlight").forEach(function (host) {
     var code = host.querySelector("code");
     if (!code || host.querySelector(".copy-btn")) return;
     var button = document.createElement("button");
