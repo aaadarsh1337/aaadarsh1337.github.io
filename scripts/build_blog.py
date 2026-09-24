@@ -92,7 +92,15 @@ def excerpt_from_html(value: str, limit: int = 190) -> str:
 def discover_posts(source: Path) -> list[dict]:
     posts_root = source / "posts"
     if not posts_root.is_dir():
-        raise SystemExit(f"Blog source has no posts directory: {posts_root}")
+        raise SystemExit(
+            f"Blog source has no posts directory: {posts_root}\n"
+            "Expected layout:\n"
+            f"  {source}/\n"
+            "  └── posts/\n"
+            "      └── malware-analysis/\n"
+            "          └── your-post.md\n"
+            "Create posts/ in the security-blog repo (even if empty) and rebuild."
+        )
     posts = []
     seen = set()
     for path in sorted(posts_root.rglob("*.md")):

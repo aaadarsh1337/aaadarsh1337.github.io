@@ -194,32 +194,17 @@ python3 -m http.server 8000
 
 The generator creates the writing hub, category archives, article pages, and `search.json`. Images placed beside a Markdown post are copied into that article’s output directory.
 
-### Optional instant publishing
+### Instant publishing (automatic on security-blog push)
 
-The daily workflow is the simplest setup. For instant rebuilds, add a workflow to `security-blog` that dispatches `blog-updated` to this repository. Store a token as the `PORTFOLIO_DISPATCH_TOKEN` secret in the source repository; do not put it in Markdown or commit it.
+Add a repository secret in `security-blog`:
 
-```yaml
-name: Notify portfolio blog
-on:
-  push:
-    branches: [main]
-    paths: ["posts/**"]
-jobs:
-  dispatch:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Dispatch portfolio rebuild
-        env:
-          DISPATCH_TOKEN: ${{ secrets.PORTFOLIO_DISPATCH_TOKEN }}
-        run: |
-          curl --fail-with-body -X POST \
-            -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer $DISPATCH_TOKEN" \
-            https://api.github.com/repos/aaadarsh1337/aaadarsh1337.github.io/dispatches \
-            -d '{"event_type":"blog-updated"}'
-```
+| Secret | Value |
+|--------|--------|
+| `PORTFOLIO_DISPATCH_TOKEN` | Classic PAT with `repo` scope |
 
-Use a classic personal access token with the `repo` scope, stored only as the `PORTFOLIO_DISPATCH_TOKEN` secret in `security-blog`. The scheduled build remains the fallback if the dispatch secret is unavailable.
+`security-blog/.github/workflows/deploy.yml` runs on every push to `main` that touches `posts/**` and sends a `blog-updated` repository dispatch to this repo. The **Build security blog** workflow then regenerates `/blog/` and commits the result. The daily schedule and manual run remain as fallbacks.
+
+Do not put the token in Markdown or commit it.
 
 ### Writing safely
 
