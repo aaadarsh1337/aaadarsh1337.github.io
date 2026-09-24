@@ -373,9 +373,9 @@ def build(out: Path, metrics_url: str, portfolio_url: str):
     body = f"""
 <div class="page">
   <header class="intel-hero">
-    <p class="fig-label">Threat Harbour · daily sensor snapshot</p>
+    <p class="fig-label">Case study · Threat Harbour</p>
     <h1><span class="live-dot">●</span> Latest SSH sensor activity</h1>
-    <p class="page-sub">Real Cowrie SSH honeypot on Oracle Cloud ({html.escape(str(start))} → {html.escape(str(end))}).
+    <p class="page-sub">A daily SSH honeypot case study built from a Cowrie sensor on Oracle Cloud ({html.escape(str(start))} → {html.escape(str(end))}).
     Raw IPs and file contents stay on the sensor; this page publishes aggregates and command samples.</p>
     <div class="freshness">
       <span class="fresh-pill{' is-stale' if is_stale else ''}"><span class="pulse"></span>{fresh_label}</span>
@@ -511,8 +511,8 @@ def build(out: Path, metrics_url: str, portfolio_url: str):
 
     page = PAGE_SHELL.format(
         description=html.escape(
-            f"Daily SSH honeypot snapshot: {events:,} events, {ips:,} IPs, top attacker passwords and commands. Rebuilt daily; cutoff {cutoff_human}."
-            if events else "Daily SSH honeypot threat-intel snapshot, rebuilt daily."
+            f"Threat Harbour case study: a daily SSH honeypot snapshot with {events:,} events, {ips:,} IPs, top attacker passwords and commands. Rebuilt daily; cutoff {cutoff_human}."
+            if events else "Threat Harbour case study: a daily SSH honeypot threat-intel snapshot, rebuilt daily."
         ),
         canonical=canonical,
         portfolio_url=portfolio_url.rstrip("/"),
@@ -522,8 +522,8 @@ def build(out: Path, metrics_url: str, portfolio_url: str):
             {
                 "@context": "https://schema.org",
                 "@type": "Dataset",
-                "name": "Threat Harbour — daily SSH honeypot snapshot",
-                "description": "Daily aggregates from a Cowrie SSH sensor: credential leaderboard, command samples, sources.",
+                "name": "Threat Harbour — SSH honeypot case study",
+                "description": "A daily Cowrie SSH sensor case study: credential leaderboard, command samples, sources, and defensive takeaways.",
                 "url": canonical,
                 "creator": {"@type": "Person", "name": "Adarsh Pillai", "url": portfolio_url},
                 "temporalCoverage": f"{start}/{end}",
@@ -551,18 +551,18 @@ PAGE_SHELL = """<!DOCTYPE html>
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Threat Intel — daily SSH honeypot snapshot · aaadarsh1337</title>
+<title>Threat Harbour case study — daily SSH honeypot snapshot · aaadarsh1337</title>
 <meta name="description" content="{description}" />
 <meta name="theme-color" content="#16161e" />
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; object-src 'none'; base-uri 'self'; frame-ancestors 'self'" />
 <link rel="canonical" href="{canonical}" />
 <meta property="og:type" content="article" />
-<meta property="og:title" content="Threat Intel — daily SSH honeypot snapshot" />
+<meta property="og:title" content="Threat Harbour case study — daily SSH honeypot snapshot" />
 <meta property="og:description" content="{description}" />
 <meta property="og:url" content="{canonical}" />
 <meta property="og:image" content="https://aaadarsh1337.github.io/assets/avatar.jpg" />
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="Threat Intel — daily SSH honeypot snapshot" />
+<meta name="twitter:title" content="Threat Harbour case study — daily SSH honeypot snapshot" />
 <meta name="twitter:description" content="{description}" />
 <meta name="twitter:image" content="https://aaadarsh1337.github.io/assets/avatar.jpg" />
 <script type="application/ld+json">{jsonld}</script>
@@ -583,15 +583,14 @@ PAGE_SHELL = """<!DOCTYPE html>
       <span class="brand-mark">INTEL</span>
       <span class="brand-text">Threat Harbour</span>
     </a>
-    <div class="topbar__back">
-      <a class="btn btn--ghost" href="../index.html">&#8592; Portfolio</a>
-      <a class="btn btn--ghost" href="../writeups/">&#8592; Writeups</a>
-    </div>
-    <div class="topbar__spacer"></div>
-    <div class="topbar__actions">
-      <a class="btn btn--ghost" href="data.json">data.json</a>
-      <a class="btn btn--ghost" href="{github_repo}" target="_blank" rel="noopener noreferrer">Repo &#8599;</a>
-    </div>
+    <nav class="topbar__nav" aria-label="Site navigation">
+      <a class="topbar__link" href="../index.html">Portfolio</a>
+      <a class="topbar__link" href="../writeups/">Writeups</a>
+      <a class="topbar__link" href="../blog/">Blog</a>
+      <a class="topbar__link" href="../intel/" aria-current="page">Intel</a>
+      <a class="topbar__link" href="data.json">Data</a>
+      <a class="topbar__link" href="{github_repo}" target="_blank" rel="noopener noreferrer">GitHub &#8599;</a>
+    </nav>
   </div>
 </header>
 

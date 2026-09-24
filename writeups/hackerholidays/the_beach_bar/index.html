@@ -27,8 +27,7 @@
 <link rel="stylesheet" href="../../css/pygments.css" />
 </head>
 <body>
-<a class="skip-link" href="#reader">Skip to article</a>
-<div class="read-progress" id="readProgress" aria-hidden="true"></div>
+<a class="skip-link" href="#writeup-article">Skip to article</a>
 <div class="lab-grid" aria-hidden="true"></div>
 
 <header class="topbar">
@@ -37,33 +36,33 @@
       <span class="brand-mark">CTF</span>
       <span class="brand-text">Writeups</span>
     </a>
-    <div class="topbar__back">
-      <a class="btn btn--ghost" href="../../index.html">&#8592; All writeups</a><a class="btn btn--ghost" href="https://aaadarsh1337.github.io/">&#8592; Portfolio</a>
-    </div>
-    <div class="topbar__spacer"></div>
-    <div class="topbar__actions">
-      
-      <a class="btn btn--ghost" href="https://github.com/aaadarsh1337/ctf-writeups" target="_blank" rel="noopener noreferrer">Repo &#8599;</a>
-    </div>
+    <nav class="topbar__nav" aria-label="Site navigation">
+      <a class="topbar__link" href="../../../index.html">Portfolio</a>
+      <a class="topbar__link" href="../../../writeups/" aria-current="page">Writeups</a>
+      <a class="topbar__link" href="../../../blog/">Blog</a>
+      <a class="topbar__link" href="../../../intel/">Intel</a>
+      <a class="topbar__link" href="https://github.com/aaadarsh1337/ctf-writeups" target="_blank" rel="noopener noreferrer">GitHub &#8599;</a>
+    </nav>
   </div>
 </header>
 
 <main id="main">
 
-<div class="reader-layout reader-layout--static">
-  <article class="reader" id="reader" aria-label="Writeup article">
-    <div class="reader__toolbar">
-      <div class="reader__crumb">
-        <span class="tb-label">READING</span>
-        <span>notes.md</span>
+<div class="writeup-page">
+  <article class="writeup-article" id="writeup-article" aria-label="Writeup article">
+    <header class="writeup-hero">
+      <p class="fig-label">Hacker Holidays &middot; CTF writeup</p>
+      <h1>The Beach Bar</h1>
+      <div class="writeup-meta">
+        <span>Day 5 &middot; 1 min read</span>
+        <span class="writeup-meta__separator">&middot;</span>
+        <span class="writeup-meta__difficulty"><span class="diff diff-easy">Beginner</span></span><span class="writeup-meta__tags"><span class="tag tag-web">web</span></span>
+        <a class="writeup-source" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/the_beach_bar/notes.md" target="_blank" rel="noopener noreferrer">Source &#8599;</a>
       </div>
-      <button type="button" class="btn btn--ghost btn--small" id="copyLinkBtn">Copy link</button>
-      <a class="btn btn--ghost btn--small" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/the_beach_bar/notes.md" target="_blank" rel="noopener noreferrer">Source &#8599;</a>
-    </div>
-    <div class="reader__body">
+    </header>
+    <div class="writeup-content">
       <div class="md-render">
-<h1 id="day-5-the-beach-bar">Day 5 - The Beach Bar</h1>
-<h2 id="room-httpstryhackmecomroomhh-thebeachbar-7d3c9e21">Room: <a href="https://tryhackme.com/room/hh-thebeachbar-7d3c9e21">https://tryhackme.com/room/hh-thebeachbar-7d3c9e21</a></h2>
+<h2 id="room-httpstryhackmecomroomhh-thebeachbar-7d3c9e21" class="challenge-link">Room: <a href="https://tryhackme.com/room/hh-thebeachbar-7d3c9e21">https://tryhackme.com/room/hh-thebeachbar-7d3c9e21</a></h2>
 <p>Hello Hackers!</p>
 <p>Welcome to Day 5 of the TryHackMe Hacker Holidays 2026 writeups.</p>
 <p>This challenge starts with a staff login page. Inspecting the page source reveals a staff note containing default credentials for the demo DJ account:</p>
@@ -96,22 +95,6 @@
 <nav class="writeup-pager" aria-label="Writeup navigation"><a class="pager-item pager-item--previous" href="../../hackerholidays/packed_light/index.html"><span class="pager-label">Previous</span><span class="pager-name">Packed Light</span><span class="pager-event">Hacker Holidays</span></a><a class="pager-item pager-item--next" href="../../hackerholidays/overheard_at_breakfast/index.html"><span class="pager-label">Next</span><span class="pager-name">Overheard At Breakfast</span><span class="pager-event">Hacker Holidays</span></a></nav>
     </div>
   </article>
-  <aside class="sidebar" aria-label="Challenge details and files">
-    <div class="sidebar__challenge">
-      <p class="tb-label">CHALLENGE</p>
-      <p class="sidebar__challenge-title">The Beach Bar</p>
-      <p class="side-path">Hacker Holidays</p>
-      <p class="side-meta">Day 5 &middot; 1 min read &middot; 4 files</p><span class="side-diffwrap"><span class="diff diff-easy">Beginner</span></span><span class="side-tagwrap"><span class="tag tag-web">web</span></span>
-    </div>
-    <div class="sidebar__files">
-      <p class="tb-label">FILES</p>
-      <div class="file-list"><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/the_beach_bar/basicscan" target="_blank" rel="noopener noreferrer"><span class="name">basicscan</span><span class="kind">github</span></a><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/the_beach_bar/fullscan" target="_blank" rel="noopener noreferrer"><span class="name">fullscan</span><span class="kind">github</span></a><a class="file-item readable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/the_beach_bar/notes.md" target="_blank" rel="noopener noreferrer"><span class="name">notes.md</span><span class="kind">md</span></a><a class="file-item readable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/the_beach_bar/playlist.yml" target="_blank" rel="noopener noreferrer"><span class="name">playlist.yml</span><span class="kind">yml</span></a></div>
-    </div>
-    <div class="sidebar__foot">
-      <a class="btn btn--ghost btn--small sidebar-gh-btn" href="https://github.com/aaadarsh1337/ctf-writeups/tree/main/hackerholidays/the_beach_bar" target="_blank" rel="noopener noreferrer">Open folder &#8599;</a>
-      <a class="btn btn--ghost btn--small sidebar-gh-btn" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/the_beach_bar/notes.md" target="_blank" rel="noopener noreferrer">View markdown &#8599;</a>
-    </div>
-  </aside>
 </div>
 
 </main>

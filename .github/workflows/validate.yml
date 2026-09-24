@@ -7,6 +7,7 @@ on:
       - "404.html"
       - "css/**"
       - "js/**"
+      - "blog/**"
       - "scripts/**"
       - "robots.txt"
       - ".github/workflows/validate.yml"
@@ -36,6 +37,7 @@ jobs:
         run: |
           python3 -m py_compile scripts/build_writeups.py
           python3 -m py_compile scripts/build_intel.py
+          python3 -m py_compile scripts/build_blog.py
           rm -rf scripts/__pycache__
 
       - name: JS syntax check
@@ -46,11 +48,18 @@ jobs:
           test -f writeups/js/filter.js && node --check writeups/js/filter.js
           test -f writeups/js/page.js && node --check writeups/js/page.js
           test -f intel/js/intel.js && node --check intel/js/intel.js
+          test -f blog/js/blog.js && node --check blog/js/blog.js
 
       - name: Generated CSS in sync
         run: |
           diff scripts/style.css writeups/css/style.css
           diff scripts/intel-style.css intel/css/style.css
+          diff scripts/blog-style.css blog/css/style.css
+
+      - name: Blog artifacts present
+        run: |
+          test -f blog/index.html
+          test -f blog/search.json
 
       - name: No sitemaps
         run: |
@@ -73,6 +82,8 @@ jobs:
           grep -q "Content-Security-Policy" 404.html
           grep -q "Content-Security-Policy" scripts/build_writeups.py
           grep -q "Content-Security-Policy" scripts/build_intel.py
+          grep -q "Content-Security-Policy" scripts/build_blog.py
+          grep -q "Content-Security-Policy" blog/index.html
 
       - name: No committed token / no __pycache__
         run: |

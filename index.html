@@ -84,9 +84,11 @@
     <a href="#about" data-nav="about"><span class="num">01</span>About</a>
     <a href="#skillset" data-nav="skillset"><span class="num">02</span>Skillset</a>
     <a href="#achievements" data-nav="achievements"><span class="num">03</span>Achievements</a>
-    <a href="#repositories" data-nav="repositories"><span class="num">04</span>Repositories</a>
-    <a href="#certificates" data-nav="certificates"><span class="num">05</span>Certificates</a>
-    <a href="#contact" data-nav="contact"><span class="num">06</span>Contact</a>
+    <a href="#threat-harbour" data-nav="threat-harbour"><span class="num">04</span>Case study</a>
+    <a href="#writing" data-nav="writing"><span class="num">05</span>Writing</a>
+    <a href="#repositories" data-nav="repositories"><span class="num">06</span>Repositories</a>
+    <a href="#certificates" data-nav="certificates"><span class="num">07</span>Certificates</a>
+    <a href="#contact" data-nav="contact"><span class="num">08</span>Contact</a>
   </nav>
   <button class="rail__toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="siteNav">
     <span></span><span></span><span></span>
@@ -105,25 +107,28 @@
           <p class="hero__figcap" aria-hidden="true">fig. 01 — avatar</p>
         </div>
         <div class="hero__text">
-          <p class="fig-label">01 · About<span class="fig-total" aria-hidden="true">/ 06</span></p>
+          <p class="fig-label">01 · About<span class="fig-total" aria-hidden="true">/ 08</span></p>
           <h1 id="heroName">ADARSH PILLAI</h1>
           <p class="hero__tagline" id="heroTagline">Offensive security · reverse engineering · CTF</p>
           <div class="hero__meta">
+            <span id="heroFocus">Focus: —</span>
+            <span class="sep" aria-hidden="true">·</span>
             <span id="heroLocation">— Location —</span>
           </div>
-          <div class="hero__bio" id="heroBio"></div>
           <div class="hero__actions">
-            <a class="btn btn--primary" href="/writeups/">
-              Read my CTF writeups <span class="ext">→</span>
-            </a>
-            <a class="btn btn--ghost" id="resumeBtn" href="#" target="_blank" rel="noopener noreferrer">Résumé <span class="ext">↗</span></a>
-            <button type="button" class="btn btn--ghost" id="linksOpen" aria-expanded="false" aria-controls="linksPanel">
-              Links <span class="ext">→</span>
-            </button>
-            <a class="btn btn--ghost" href="#contact">Get in touch <span class="ext">→</span></a>
+            <a class="btn btn--primary" href="#threat-harbour">View featured work <span class="ext">→</span></a>
+            <a class="btn btn--ghost" href="/writeups/">Read writeups <span class="ext">→</span></a>
+            <a class="btn btn--ghost" id="resumeBtn" href="#" target="_blank" rel="noopener noreferrer" aria-label="Open résumé">Résumé <span class="ext">↗</span></a>
+            <button type="button" class="btn btn--ghost" id="linksOpen" aria-expanded="false" aria-controls="linksPanel" aria-label="Open links panel">Links <span class="ext">→</span></button>
           </div>
-          <p class="hero__flagship" id="heroFlagship" hidden></p>
+          <a class="hero__writing" id="heroWriting" href="/blog/" hidden>
+            <span class="hero__writing-label">Latest writing</span>
+            <span class="hero__writing-title" id="heroWritingTitle">Security writing is on its way</span>
+            <span class="hero__writing-arrow" aria-hidden="true">→</span>
+          </a>
           <dl class="stats-band" id="statsBand" aria-label="Highlights at a glance"></dl>
+          <p class="hero__flagship" id="heroFlagship" hidden></p>
+          <div class="hero__bio" id="heroBio"></div>
         </div>
       </div>
     </div>
@@ -134,7 +139,7 @@
   <!-- 02 · SKILLSET -->
   <section class="sheet" id="skillset">
     <div class="sheet__inner">
-      <p class="fig-label">02 · Skillset<span class="fig-total" aria-hidden="true">/ 06</span></p>
+      <p class="fig-label">02 · Skillset<span class="fig-total" aria-hidden="true">/ 08</span></p>
       <h2 class="sheet__title">What I work with</h2>
       <p class="sheet__hint">Core areas of security and the tools I use to practice them.</p>
       <div class="skill-grid" id="skillGrid"></div>
@@ -146,7 +151,7 @@
   <!-- 03 · ACHIEVEMENTS -->
   <section class="sheet" id="achievements">
     <div class="sheet__inner">
-      <p class="fig-label">03 · Achievements<span class="fig-total" aria-hidden="true">/ 06</span></p>
+      <p class="fig-label">03 · Achievements<span class="fig-total" aria-hidden="true">/ 08</span></p>
       <h2 class="sheet__title">Highlights</h2>
       <p class="sheet__hint">CTFs, disclosures, and other results worth showing.</p>
       <ul class="achieve-list" id="achieveList"></ul>
@@ -155,12 +160,44 @@
 
   <div class="reg-rule" aria-hidden="true"></div>
 
-  <!-- 04 · REPOSITORIES -->
+  <!-- 04 · CASE STUDY -->
+  <section class="sheet" id="threat-harbour">
+    <div class="sheet__inner">
+      <p class="fig-label">04 · Case study<span class="fig-total" aria-hidden="true">/ 08</span></p>
+      <h2 class="sheet__title">Featured case study</h2>
+      <p class="sheet__hint">Threat Harbour turns real SSH sensor activity into a readable, daily threat-intelligence snapshot.</p>
+      <div class="flagship" id="flagship" aria-label="Threat Harbour case study"></div>
+    </div>
+  </section>
+
+  <div class="reg-rule" aria-hidden="true"></div>
+
+  <!-- 05 · WRITING -->
+  <section class="sheet" id="writing">
+    <div class="sheet__inner">
+      <p class="fig-label">05 · Writing<span class="fig-total" aria-hidden="true">/ 08</span></p>
+      <h2 class="sheet__title">Security writing</h2>
+      <p class="sheet__hint">Malware analysis, reverse engineering, and defensive notes from ongoing work.</p>
+      <div class="writing-showcase">
+        <div class="writing-showcase__intro">
+          <p class="writing-showcase__eyebrow">Writing archive</p>
+          <h3>Ideas from the lab.</h3>
+          <p>Practical notes that make the reasoning behind the work easier to follow.</p>
+          <a class="btn btn--ghost" href="/blog/">Browse all writing <span class="ext">→</span></a>
+        </div>
+        <div class="writing-feature" id="latestWriting" aria-live="polite"><span class="dim">Loading latest writing…</span></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="reg-rule" aria-hidden="true"></div>
+
+  <!-- 06 · REPOSITORIES -->
   <section class="sheet" id="repositories">
     <div class="sheet__inner">
-      <p class="fig-label">04 · Repositories<span class="fig-total" aria-hidden="true">/ 06</span></p>
-      <h2 class="sheet__title">Live from GitHub</h2>
-      <div class="flagship" id="flagship" aria-label="Flagship project spotlight"></div>
+      <p class="fig-label">06 · Repositories<span class="fig-total" aria-hidden="true">/ 08</span></p>
+      <h2 class="sheet__title">More repositories</h2>
+      <p class="sheet__hint">Public projects, tools, and notes that show the breadth behind the case study.</p>
       <p class="sheet__hint status-line" id="repoStatus" role="status" aria-live="polite">&gt; fetching repository index&hellip;</p>
       <div class="repo-grid" id="repoGrid"></div>
     </div>
@@ -168,10 +205,10 @@
 
   <div class="reg-rule" aria-hidden="true"></div>
 
-  <!-- 05 · CERTIFICATES -->
+  <!-- 07 · CERTIFICATES -->
   <section class="sheet" id="certificates">
     <div class="sheet__inner">
-      <p class="fig-label">05 · Certificates<span class="fig-total" aria-hidden="true">/ 06</span></p>
+      <p class="fig-label">07 · Certificates<span class="fig-total" aria-hidden="true">/ 08</span></p>
       <h2 class="sheet__title">Certificate library</h2>
       <p class="sheet__hint">Copies hosted on GitHub (cybersecurity-achievements) in case original links are unavailable.</p>
       <div class="cert-grid" id="certGrid"></div>
@@ -180,10 +217,10 @@
 
   <div class="reg-rule" aria-hidden="true"></div>
 
-  <!-- 06 · CONTACT -->
+  <!-- 08 · CONTACT -->
   <section class="sheet" id="contact">
     <div class="sheet__inner">
-      <p class="fig-label">06 · Contact<span class="fig-total" aria-hidden="true">/ 06</span></p>
+      <p class="fig-label">08 · Contact<span class="fig-total" aria-hidden="true">/ 08</span></p>
       <h2 class="sheet__title">Get in touch</h2>
       <p class="sheet__hint">Reach me directly. For my other profiles and platforms, open <button type="button" id="contactLinksBtn" class="btn btn--ghost btn--small" aria-controls="linksPanel" aria-expanded="false">Links</button>.</p>
       <div class="contact-list" id="contactList"></div>
@@ -202,7 +239,7 @@
 <noscript>
   <div class="noscript-note">
     <strong>JavaScript is disabled.</strong>
-    <span>You can still browse the <a href="/writeups/">CTF writeups</a>, <a href="/intel/">Threat Intel dashboard</a>, or <a href="https://github.com/aaadarsh1337">GitHub profile</a>.</span>
+    <span>You can still browse the <a href="/writeups/">CTF writeups</a>, <a href="/blog/">security blog</a>, <a href="/intel/">Threat Intel dashboard</a>, or <a href="https://github.com/aaadarsh1337">GitHub profile</a>.</span>
   </div>
 </noscript>
 
@@ -261,7 +298,7 @@
 
 <!-- Links panel -->
 <div class="links-backdrop" id="linksBackdrop" hidden></div>
-<div class="links-panel" id="linksPanel" role="dialog" aria-modal="true" aria-label="Links" hidden>
+<div class="links-panel" id="linksPanel" role="dialog" aria-modal="true" aria-label="Links" aria-hidden="true" hidden>
   <div class="links-panel__head">
     <span class="tb-label">Links</span>
     <button type="button" class="links-panel__close" id="linksClose" aria-label="Close">×</button>

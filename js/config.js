@@ -29,7 +29,7 @@ window.PORTFOLIO_CONFIG = {
   // (with the fallbackStats below shown if the fetch fails/offline).
   flagship: {
     repo: "threat-harbour",
-    badge: "Flagship project",
+    badge: "Case study",
     name: "Threat Harbour",
     tagline: "SSH honeypot · daily threat-intel leaderboard",
     description: "A Cowrie SSH sensor on Oracle Cloud Free Tier that publishes a fresh leaderboard of real attacker credentials every 24 hours — the usernames, passwords, and commands bots actually try against SSH servers in the wild.",
@@ -75,6 +75,7 @@ window.PORTFOLIO_CONFIG = {
 // --- Links (button-based reveal) -----------------------------------
   // All profile, social, and platform handles. Shown in the "Links" panel.
   linkPanel: [
+    { label: "Blog",        detail: "Security writing", url: "/blog/" },
     { label: "GitHub",      detail: "@aaadarsh1337",  url: "https://github.com/aaadarsh1337" },
     { label: "TryHackMe", detail: "THM", url: "https://tryhackme.com/p/aaadarsh1337" },
     { label: "PicoCTF", detail: "PICO", url: "https://learn.cylabacademy.org/users/jackthereaper1337" },

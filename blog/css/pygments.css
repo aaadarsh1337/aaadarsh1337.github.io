@@ -1,0 +1,43 @@
+
+.highlight { color: #c0caf5; background: #1a1b26; }
+.highlight .hll { background: #24283b; }
+.highlight .c  { color: #8791b8; font-style: italic; }
+.highlight .ch, .highlight .c1, .highlight .cm, .highlight .cs { color: #8791b8; font-style: italic; }
+.highlight .cp, .highlight .cpf { color: #8b93c0; font-style: italic; }
+.highlight .k, .highlight .kd, .highlight .kn, .highlight .kr, .highlight .kt, .highlight .kc, .highlight .kp { color: #bb9af7; }
+.highlight .n, .highlight .na, .highlight .nb, .highlight .nc, .highlight .no, .highlight .nd, .highlight .ni, .highlight .ne, .highlight .nf, .highlight .nl, .highlight .nn, .highlight .nx, .highlight .py, .highlight .nt, .highlight .nv, .highlight .bp, .highlight .fm, .highlight .vc, .highlight .vg, .highlight .vi, .highlight .vm { color: #c0caf5; }
+.highlight .nf { color: #7dcfff; }
+.highlight .s, .highlight .sa, .highlight .sb, .highlight .sc, .highlight .dl, .highlight .sd, .highlight .s2, .highlight .se, .highlight .sh, .highlight .si, .highlight .sx, .highlight .sr, .highlight .s1, .highlight .ss { color: #9ece6a; }
+.highlight .m, .highlight .mb, .highlight .mf, .highlight .mh, .highlight .mi, .highlight .mo, .highlight .il { color: #ff9e64; }
+.highlight .o, .highlight .ow { color: #8b93c0; }
+.highlight .err { color: #c0caf5; background: transparent; }
+.highlight .g, .highlight .ge, .highlight .ges, .highlight .gr, .highlight .gh, .highlight .gi, .highlight .go, .highlight .gp, .highlight .gs, .highlight .gu, .highlight .gt, .highlight .gd { color: #c0caf5; }
+.highlight .gi { color: #9ece6a; }
+.highlight .gd { color: #f7768e; }
+.highlight .w { color: #8791b8; }
+
+
+.highlight {
+  background: #1a1b26 !important;
+  border: 1px solid #292e42;
+  padding: 14px 16px;
+  overflow-x: auto;
+  margin: 0 0 1.3em;
+  border-radius: 2px;
+}
+.highlight pre {
+  background: transparent !important;
+  border: none !important;
+  margin: 0;
+  padding: 0;
+  white-space: pre;
+  word-break: normal;
+}
+.highlight code {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  font-family: "JetBrains Mono", "SF Mono", ui-monospace, monospace;
+  font-size: 13.5px;
+  line-height: 1.65;
+}

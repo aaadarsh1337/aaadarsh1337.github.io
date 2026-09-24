@@ -115,17 +115,18 @@ h1, h2, h3, h4 { font-family: var(--display); font-weight: 600; color: var(--ink
   border-bottom: 1px solid var(--line);
 }
 .topbar__inner {
-  max-width: none;
+  max-width: 1500px;
   margin: 0 auto;
-  padding: 12px 36px;
+  padding: 12px 32px;
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 20px;
 }
 .topbar__brand {
   display: flex;
   align-items: center;
   gap: 10px;
+  flex-shrink: 0;
   text-decoration: none;
   font-family: var(--mono);
 }
@@ -140,14 +141,38 @@ h1, h2, h3, h4 { font-family: var(--display); font-weight: 600; color: var(--ink
   border-radius: 1px;
 }
 .brand-text { color: var(--ink); font-size: 15px; font-family: var(--display); font-weight: 600; }
-.topbar__spacer { flex: 1; }
-.topbar__back { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-.topbar__actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+.topbar__nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  margin-left: auto;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.topbar__nav::-webkit-scrollbar { display: none; }
+.topbar__link {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  color: var(--muted);
+  font: 12px var(--mono);
+  padding: 8px 10px;
+  text-decoration: none;
+}
+.topbar__link:hover,
+.topbar__link:focus-visible { color: var(--ink); border-color: var(--line-bright); background: var(--accent-2-soft); text-decoration: none; }
+.topbar__link[aria-current="page"] { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
 
 /* ---------- Buttons ---------- */
 .btn {
   font-family: var(--mono);
   font-size: 13px;
+  line-height: 1.2;
+  min-height: 36px;
   padding: 9px 14px;
   border: 1px solid var(--line-bright);
   background: transparent;
@@ -155,14 +180,16 @@ h1, h2, h3, h4 { font-family: var(--display); font-weight: 600; color: var(--ink
   cursor: pointer;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
+  white-space: nowrap;
   transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease), transform var(--dur) var(--ease);
   text-decoration: none;
   border-radius: var(--radius);
 }
 .btn:hover { border-color: var(--accent-2); background: var(--accent-2-soft); text-decoration: none; }
 .btn--ghost:hover { border-color: var(--accent-2); color: var(--ink); }
-.btn--small { padding: 6px 11px; font-size: 12px; }
+.btn--small { min-height: 30px; padding: 6px 11px; font-size: 12px; }
 .btn--primary { background: var(--accent); border-color: var(--accent); color: #16161e; font-weight: 600; }
 .btn--primary:hover { background: #a5e3ff; border-color: #a5e3ff; color: #16161e; transform: translateY(-1px); }
 
@@ -586,15 +613,14 @@ main { position: relative; z-index: 1; }
   .pager button { flex: 1; }
   /* Mobile declutter: eyebrows, KPI subs, share %s, and stats duplicates go —
      bars, counts, and h2s carry the meaning on small screens. */
-  .topbar__back a:last-child { display: none; }
   .panel__head { margin-bottom: 2px; }
   .panel__head .tb-label { display: none; }
   .kpi__sub { display: none; }
   .leader-count small { display: none; }
   .timeline__stats { display: none; }
   .topbar__inner { gap: 8px; padding: 9px 12px; flex-wrap: wrap; }
-  .topbar__actions { flex-wrap: wrap; gap: 8px; width: 100%; justify-content: flex-start; }
-  .topbar__actions .btn { padding: 8px 12px; font-size: 12px; flex: none; }
+  .topbar__nav { order: 2; width: 100%; margin-left: 0; justify-content: flex-start; }
+  .topbar__link { min-height: 32px; padding: 7px 9px; font-size: 11px; }
 }
 
 @media print {

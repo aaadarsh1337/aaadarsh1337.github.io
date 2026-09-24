@@ -251,7 +251,15 @@ html {
 }
 @media (max-width: 560px) {
   .cmdk { top: 6vh; }
-  .cmdk-fab { right: 12px; bottom: 12px; }
+  .cmdk-fab {
+    right: 10px;
+    bottom: 10px;
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    justify-content: center;
+    font-size: 12px;
+  }
   .cmdk-fab .fab-label { display: none; }
 }
 
@@ -266,6 +274,15 @@ html {
   margin: 0 0 30px;
   max-width: 60ch;
 }
+.not-found {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 120px 32px 96px;
+  text-align: left;
+}
+.not-found h1 { max-width: 620px; margin-bottom: 12px; font-size: clamp(2.2rem, 1.6rem + 2.4vw, 3.6rem); }
+.not-found .sheet__hint { margin-bottom: 26px; }
+.not-found__actions { display: flex; flex-wrap: wrap; gap: 12px; }
 
 /* Mono data label (used in breadcrumbs + panel heads) */
 .tb-label {
@@ -311,6 +328,7 @@ main {
 
 .sheet {
   padding: 40px 0 48px;
+  scroll-margin-top: 24px;
 }
 .sheet__inner {
   max-width: var(--content);
@@ -561,7 +579,9 @@ main {
   gap: 6px 12px;
 }
 .hero__meta .sep { color: var(--faint); }
+.hero__meta #heroFocus { color: var(--accent-2); }
 
+.hero__bio { margin-top: 26px; }
 .hero__bio p {
   margin: 0 0 14px;
   color: var(--muted);
@@ -577,6 +597,45 @@ main {
   flex-wrap: wrap;
   align-items: center;
 }
+.hero__writing {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  max-width: 64ch;
+  margin-top: 18px;
+  padding: 11px 13px;
+  border: 1px solid var(--line);
+  border-left: 2px solid var(--accent);
+  background: linear-gradient(100deg, rgba(125,207,255,.08), transparent 62%), var(--panel);
+  color: inherit;
+  transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease), transform var(--dur) var(--ease);
+}
+.hero__writing:hover {
+  border-color: var(--line-bright);
+  border-left-color: var(--accent);
+  background: linear-gradient(100deg, rgba(125,207,255,.13), transparent 62%), var(--panel-2);
+  text-decoration: none;
+  transform: translateY(-1px);
+}
+.hero__writing[hidden] { display: none; }
+.hero__writing-label {
+  color: var(--accent);
+  font: 10px var(--mono);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.hero__writing-title {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--ink);
+  font: 600 13px var(--display);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.hero__writing-arrow { color: var(--accent-2); font: 15px var(--mono); }
+.hero__writing:hover .hero__writing-arrow { color: var(--accent); }
 
 /* Stats band — glanceable recruiter numbers under the hero CTAs.
    Shows exactly what config.js `stats` lists (3-4 rows ideal). */
@@ -634,14 +693,18 @@ main {
 .btn {
   font-family: var(--mono);
   font-size: 13px;
-  padding: 10px 16px;
+  line-height: 1.2;
+  min-height: 36px;
+  padding: 9px 14px;
   border: 1px solid var(--line-bright);
   background: transparent;
   color: var(--ink);
   cursor: pointer;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
+  white-space: nowrap;
   transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease), transform var(--dur) var(--ease);
   text-decoration: none;
   border-radius: var(--radius);
@@ -669,7 +732,7 @@ main {
   background: var(--accent-2-soft);
   color: var(--ink);
 }
-.btn--small { padding: 6px 12px; font-size: 12px; }
+.btn--small { min-height: 30px; padding: 6px 11px; font-size: 12px; }
 .btn .ext { color: var(--faint); font-size: 11px; }
 
 /* ---------- Skills ---------- */
@@ -805,6 +868,81 @@ main {
   border-top: 2px solid var(--accent);
   background: linear-gradient(180deg, rgba(125,207,255,0.06), transparent 42%), var(--panel);
 }
+
+.writing-showcase {
+  display: grid;
+  grid-template-columns: minmax(220px, .72fr) minmax(0, 1.28fr);
+  gap: 24px;
+  align-items: stretch;
+  margin-top: 28px;
+  padding: 24px;
+  border: 1px solid var(--line-bright);
+  border-top: 2px solid var(--accent);
+  background: linear-gradient(110deg, rgba(125,207,255,.07), transparent 58%), var(--panel);
+  box-shadow: 0 18px 44px rgba(0,0,0,.22);
+}
+.writing-showcase__intro {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 8px 12px 8px 4px;
+}
+.writing-showcase__eyebrow {
+  margin: 0 0 10px;
+  color: var(--accent);
+  font: 10px var(--mono);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+.writing-showcase__intro h3 {
+  margin: 0 0 8px;
+  font-size: 24px;
+  letter-spacing: -.02em;
+}
+.writing-showcase__intro p:not(.writing-showcase__eyebrow) {
+  max-width: 38ch;
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.65;
+}
+.writing-showcase__intro .btn { margin-top: 18px; }
+.writing-feature { min-width: 0; }
+.writing-feature__card {
+  display: block;
+  height: 100%;
+  min-height: 184px;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--accent-2);
+  background: linear-gradient(120deg, rgba(122,162,247,.11), transparent 62%), var(--panel-2);
+  padding: 24px;
+  color: inherit;
+  transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease), transform var(--dur) var(--ease);
+}
+.writing-feature__card:hover {
+  border-color: var(--accent-2);
+  border-left-color: var(--accent);
+  background: linear-gradient(120deg, rgba(122,162,247,.17), transparent 62%), var(--panel);
+  text-decoration: none;
+  transform: translateY(-2px);
+}
+.writing-feature__meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 10px;
+  color: var(--dim);
+  font: 11px var(--mono);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+.writing-feature__latest { color: var(--accent); }
+.writing-feature__category { color: var(--accent-2); }
+.writing-feature__card h3 { margin: 12px 0 7px; font-size: 23px; letter-spacing: -.02em; }
+.writing-feature__card p { max-width: 62ch; margin: 0 0 18px; color: var(--muted); font-size: 14px; line-height: 1.65; }
+.writing-feature__read { color: var(--accent-2); font: 12px var(--mono); }
+.writing-feature__card:hover .writing-feature__read { color: var(--accent); }
 
 /* ---------- Flagship spotlight ---------- */
 .hero__flagship {
@@ -999,6 +1137,18 @@ main {
   text-decoration: none;
 }
 .repo-card .repo-name:hover { color: var(--accent-2); text-decoration: none; }
+.repo-card__badge {
+  flex-shrink: 0;
+  border: 1px solid var(--accent-2);
+  background: var(--accent-2-soft);
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 3px 7px;
+  border-radius: var(--radius);
+}
 .repo-card .repo-desc {
   color: var(--muted);
   font-size: 14px;
@@ -1531,6 +1681,7 @@ main {
 /* ---------- Responsive ---------- */
 @media (max-width: 960px) {
   main { padding: 96px 20px 48px; }
+  .sheet { scroll-margin-top: 88px; }
   .rail {
     top: 0; left: 0; right: 0; bottom: auto;
     width: auto; height: auto;
@@ -1624,8 +1775,16 @@ main {
   .skill-grid { grid-template-columns: 1fr; gap: 14px; }
   .skill-card { padding: 18px 18px; }
   .hero__text h1 { font-size: 1.9rem; }
-  .hero__bio { font-size: 15px; }
+  .hero__bio { margin-top: 22px; font-size: 15px; }
+  .not-found { padding: 96px 18px 72px; }
   .repo-grid, .cert-grid { grid-template-columns: 1fr; }
+  .hero__writing { grid-template-columns: 1fr auto; gap: 8px 12px; }
+  .hero__writing-label { grid-column: 1 / -1; }
+  .hero__writing-title { white-space: normal; }
+  .writing-showcase { grid-template-columns: 1fr; gap: 18px; padding: 18px; }
+  .writing-showcase__intro { padding: 0 4px 18px; border-bottom: 1px solid var(--line); }
+  .writing-showcase__intro h3 { font-size: 22px; }
+  .writing-feature__card { min-height: 0; padding: 18px; }
   .contact-list { grid-template-columns: 1fr; }
   .filesheet__panel { width: 100%; max-height: 98vh; margin: 1vh auto; border-radius: 0; }
   .filesheet__body { padding: 12px; }

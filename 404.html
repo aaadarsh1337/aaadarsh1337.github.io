@@ -13,14 +13,16 @@
 <link rel="stylesheet" href="/css/style.css" />
 </head>
 <body>
-<main style="max-width:640px;margin:0 auto;padding:96px 24px;text-align:left;position:relative">
+<div class="lab-grid" aria-hidden="true"></div>
+<main class="not-found" aria-labelledby="not-found-title">
 <p class="fig-label">404 · Not found</p>
-<h1>That page doesn't exist</h1>
-<p class="sheet__hint">The link may be old or mistyped.</p>
-<p>
+<h1 id="not-found-title">That page doesn't exist</h1>
+<p class="sheet__hint">The link may be old or mistyped. Try one of the paths below.</p>
+<div class="not-found__actions">
 <a class="btn btn--primary" href="/">← Portfolio</a>
 <a class="btn btn--ghost" href="/writeups/">All writeups</a>
-</p>
+<a class="btn btn--ghost" href="/blog/">Security blog</a>
+</div>
 </main>
 </body>
 </html>

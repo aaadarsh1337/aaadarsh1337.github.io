@@ -28,7 +28,6 @@
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
-<div class="read-progress" id="readProgress" aria-hidden="true"></div>
 <div class="lab-grid" aria-hidden="true"></div>
 
 <header class="topbar">
@@ -37,14 +36,13 @@
       <span class="brand-mark">CTF</span>
       <span class="brand-text">Writeups</span>
     </a>
-    <div class="topbar__back">
-      <a class="btn btn--ghost" href="https://aaadarsh1337.github.io/">&#8592; Portfolio</a>
-    </div>
-    <div class="topbar__spacer"></div>
-    <div class="topbar__actions">
-      
-      <a class="btn btn--ghost" href="https://github.com/aaadarsh1337/ctf-writeups" target="_blank" rel="noopener noreferrer">Repo &#8599;</a>
-    </div>
+    <nav class="topbar__nav" aria-label="Site navigation">
+      <a class="topbar__link" href="../index.html">Portfolio</a>
+      <a class="topbar__link" href="../writeups/" aria-current="page">Writeups</a>
+      <a class="topbar__link" href="../blog/">Blog</a>
+      <a class="topbar__link" href="../intel/">Intel</a>
+      <a class="topbar__link" href="https://github.com/aaadarsh1337/ctf-writeups" target="_blank" rel="noopener noreferrer">GitHub &#8599;</a>
+    </nav>
   </div>
 </header>
 
@@ -61,14 +59,14 @@
       <span class="search-meta" id="searchMeta" role="status">22 writeups</span>
     </div>
     <div class="tag-filters" id="tagFilters" role="group" aria-label="Filter by category">
-<button type="button" class="tag-chip tag-rev" data-tag="rev" aria-pressed="false">rev <span class="tag-chip__count">3</span></button>
-<button type="button" class="tag-chip tag-pwn" data-tag="pwn" aria-pressed="false">pwn <span class="tag-chip__count">7</span></button>
-<button type="button" class="tag-chip tag-web" data-tag="web" aria-pressed="false">web <span class="tag-chip__count">7</span></button>
-<button type="button" class="tag-chip tag-crypto" data-tag="crypto" aria-pressed="false">crypto <span class="tag-chip__count">3</span></button>
-<button type="button" class="tag-chip tag-forensics" data-tag="forensics" aria-pressed="false">forensics <span class="tag-chip__count">1</span></button>
-<button type="button" class="tag-chip tag-cloud" data-tag="cloud" aria-pressed="false">cloud <span class="tag-chip__count">2</span></button>
-<button type="button" class="tag-chip tag-osint" data-tag="osint" aria-pressed="false">osint <span class="tag-chip__count">2</span></button>
-<button type="button" class="tag-chip tag-misc" data-tag="misc" aria-pressed="false">misc <span class="tag-chip__count">1</span></button>
+<button type="button" class="tag-chip" data-tag="rev" aria-pressed="false">rev <span class="tag-chip__count">3</span></button>
+<button type="button" class="tag-chip" data-tag="pwn" aria-pressed="false">pwn <span class="tag-chip__count">7</span></button>
+<button type="button" class="tag-chip" data-tag="web" aria-pressed="false">web <span class="tag-chip__count">7</span></button>
+<button type="button" class="tag-chip" data-tag="crypto" aria-pressed="false">crypto <span class="tag-chip__count">3</span></button>
+<button type="button" class="tag-chip" data-tag="forensics" aria-pressed="false">forensics <span class="tag-chip__count">1</span></button>
+<button type="button" class="tag-chip" data-tag="cloud" aria-pressed="false">cloud <span class="tag-chip__count">2</span></button>
+<button type="button" class="tag-chip" data-tag="osint" aria-pressed="false">osint <span class="tag-chip__count">2</span></button>
+<button type="button" class="tag-chip" data-tag="misc" aria-pressed="false">misc <span class="tag-chip__count">1</span></button>
     </div>
   </header>
 

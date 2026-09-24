@@ -6,7 +6,7 @@ build_writeups.py
 Converts ctf-writeups markdown into static HTML matching the portfolio
 blueprint theme.
 
-Includes a sidebar file list (each file links to GitHub).
+Generates a clean editorial article page for each challenge.
 
 Usage (local):
     pip install markdown pygments
@@ -62,18 +62,6 @@ EVENT_LABELS = {
 }
 
 SKIP_DIRS = {".git", ".github", "node_modules", "__pycache__"}
-
-TEXT_EXT = {
-    "md", "markdown", "txt", "py", "c", "h", "cpp", "hpp", "js", "ts",
-    "json", "html", "css", "sh", "bash", "yml", "yaml", "toml", "ini",
-    "cfg", "conf", "xml", "sql", "rs", "go", "java", "rb", "pl", "asm",
-    "s", "makefile", "dockerfile", "log", "csv",
-    # kept in sync with READABLE_EXT in js/main.js
-    "mjs", "cjs", "tsx", "jsx", "htm", "scss", "sass", "less",
-    "cc", "cs", "zsh", "ps1", "tsv", "r", "lua", "swift", "kt",
-    "kts", "vue", "svelte", "graphql", "proto", "env",
-}
-
 
 def find_writeups(source: Path):
     results = []
@@ -185,6 +173,11 @@ def md_to_html(text: str) -> str:
 FLAG_RE = re.compile(r"(THM\{[^}]*\}|flag\{[^}]*\}|picoCTF\{[^}]*\}|HTB\{[^}]*\})", re.IGNORECASE)
 
 
+def strip_leading_h1(value: str) -> str:
+    value = re.sub(r"^\s*<h1[^>]*>.*?</h1>\s*", "", value, count=1, flags=re.S | re.I)
+    return re.sub(r"<h1([^>]*)>(.*?)</h1>", r"<h2\1>\2</h2>", value, flags=re.S | re.I)
+
+
 def enhance_html(body_html: str, title: str) -> str:
     """Reader upgrades, Tokyo Night tokens intact. Headings untouched.
     - flag blockquotes -> <blockquote class="flag">
@@ -196,6 +189,14 @@ def enhance_html(body_html: str, title: str) -> str:
             return f"<blockquote class=\"flag\">{inner}</blockquote>"
         return m.group(0)
     body_html = re.sub(r"<blockquote>(.*?)</blockquote>", _flag_bq, body_html, flags=re.S | re.I)
+
+    def _challenge_heading(match):
+        attrs, inner = match.group(1), match.group(2)
+        if "href=" in inner and "challenge-link" not in attrs:
+            attrs += ' class="challenge-link"'
+        return f"<h2{attrs}>{inner}</h2>"
+
+    body_html = re.sub(r"<h2([^>]*)>(.*?)</h2>", _challenge_heading, body_html, count=1, flags=re.S | re.I)
 
     def _fig(m):
         attrs, alt, src = m.group(1), m.group(2), m.group(3)
@@ -256,7 +257,7 @@ def tag_code_blocks(body_html: str, langs: list) -> str:
 
 
 def excerpt_from_html(body_html: str, limit: int = 180) -> str:
-    """First substantial paragraph as card/SEO excerpt. Skips the tiny
+    """First substantial paragraph as an SEO/search excerpt. Skips the tiny
     challenge-link line and empty intros."""
     import html as _html
     for m in re.finditer(r"<p[^>]*>(.*?)</p>", body_html, re.S | re.I):
@@ -490,35 +491,6 @@ def list_files_recursive(folder: Path, source: Path):
     return out
 
 
-def file_kind(entry: dict) -> str:
-    ext = entry["ext"]
-    name = entry["name"].lower()
-    if ext in ("md", "markdown") or name in WRITEUP_NAMES:
-        return "md"
-    if ext in TEXT_EXT or name in ("makefile", "dockerfile", "procfile", "license"):
-        return ext or "text"
-    return "bin"
-
-
-def render_file_list(files: list, gh_base: str, branch: str) -> str:
-    if not files:
-        return '<p class="dim">No files.</p>'
-    rows = []
-    for f in files:
-        kind = file_kind(f)
-        label = "md" if kind == "md" else ("github" if kind == "bin" else kind)
-        kind_class = "readable" if kind != "bin" else "unreadable"
-        url = f"{gh_base}/blob/{branch}/{f['rel_repo']}"
-        rows.append(
-            f'<a class="file-item {kind_class}" href="{html.escape(url)}" '
-            f'target="_blank" rel="noopener noreferrer">'
-            f'<span class="name">{html.escape(f["rel_local"])}</span>'
-            f'<span class="kind">{html.escape(label)}</span>'
-            f"</a>"
-        )
-    return '<div class="file-list">' + "".join(rows) + "</div>"
-
-
 PAGE_SHELL = """<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -549,7 +521,6 @@ PAGE_SHELL = """<!DOCTYPE html>
 </head>
 <body>
 {skip_link}
-<div class="read-progress" id="readProgress" aria-hidden="true"></div>
 <div class="lab-grid" aria-hidden="true"></div>
 
 <header class="topbar">
@@ -558,14 +529,13 @@ PAGE_SHELL = """<!DOCTYPE html>
       <span class="brand-mark">CTF</span>
       <span class="brand-text">Writeups</span>
     </a>
-    <div class="topbar__back">
-      {topbar_back}
-    </div>
-    <div class="topbar__spacer"></div>
-    <div class="topbar__actions">
-      {topbar_extra}
-      <a class="btn btn--ghost" href="{github_repo}" target="_blank" rel="noopener noreferrer">Repo &#8599;</a>
-    </div>
+    <nav class="topbar__nav" aria-label="Site navigation">
+      <a class="topbar__link" href="{site_prefix}index.html">Portfolio</a>
+      <a class="topbar__link" href="{site_prefix}writeups/" aria-current="page">Writeups</a>
+      <a class="topbar__link" href="{site_prefix}blog/">Blog</a>
+      <a class="topbar__link" href="{site_prefix}intel/">Intel</a>
+      <a class="topbar__link" href="{github_repo}" target="_blank" rel="noopener noreferrer">GitHub &#8599;</a>
+    </nav>
   </div>
 </header>
 
@@ -578,39 +548,25 @@ PAGE_SHELL = """<!DOCTYPE html>
 """
 
 WRITEUP_BODY = """
-<div class="reader-layout reader-layout--static">
-  <article class="reader" id="reader" aria-label="Writeup article">
-    <div class="reader__toolbar">
-      <div class="reader__crumb">
-        <span class="tb-label">READING</span>
-        <span>{md_name}</span>
+<div class="writeup-page">
+  <article class="writeup-article" id="writeup-article" aria-label="Writeup article">
+    <header class="writeup-hero">
+      <p class="fig-label">{event} &middot; CTF writeup</p>
+      <h1>{name}</h1>
+      <div class="writeup-meta">
+        <span>{day_prefix}{reading_time} min read</span>
+        <span class="writeup-meta__separator">&middot;</span>
+        {diff_block}{tag_block}
+        <a class="writeup-source" href="{md_github}" target="_blank" rel="noopener noreferrer">Source &#8599;</a>
       </div>
-      <button type="button" class="btn btn--ghost btn--small" id="copyLinkBtn">Copy link</button>
-      <a class="btn btn--ghost btn--small" href="{md_github}" target="_blank" rel="noopener noreferrer">Source &#8599;</a>
-    </div>
-    <div class="reader__body">
+    </header>
+    <div class="writeup-content">
       <div class="md-render">
 {content}
       </div>
 {pager}
     </div>
   </article>
-  <aside class="sidebar" aria-label="Challenge details and files">
-    <div class="sidebar__challenge">
-      <p class="tb-label">CHALLENGE</p>
-      <p class="sidebar__challenge-title">{name}</p>
-      <p class="side-path">{event}</p>
-      <p class="side-meta">{day_prefix}{reading_time} min read &middot; {file_count}</p>{diff_block}{tag_block}
-    </div>
-    <div class="sidebar__files">
-      <p class="tb-label">FILES</p>
-      {file_list}
-    </div>
-    <div class="sidebar__foot">
-      <a class="btn btn--ghost btn--small sidebar-gh-btn" href="{folder_github}" target="_blank" rel="noopener noreferrer">Open folder &#8599;</a>
-      <a class="btn btn--ghost btn--small sidebar-gh-btn" href="{md_github}" target="_blank" rel="noopener noreferrer">View markdown &#8599;</a>
-    </div>
-  </aside>
 </div>
 """
 
@@ -1049,143 +1005,44 @@ FILTER_JS = """(function () {
 """
 
 
-# Reader enhancements for challenge pages: scroll progress bar + copy
-# buttons on code blocks. External file (like filter.js) so pages keep a
-# strict Content-Security-Policy without 'unsafe-inline'.
-# build() writes this to writeups/js/page.js.
 PAGE_JS = """(function () {
-  // Thin reading-progress bar under the topbar.
-  var bar = document.getElementById("readProgress");
-  var ticking = false;
-  function updateBar() {
-    ticking = false;
-    if (!bar) return;
-    var h = document.documentElement;
-    var max = h.scrollHeight - h.clientHeight;
-    bar.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + "%";
-  }
-  window.addEventListener("scroll", function () {
-    if (!ticking) { ticking = true; requestAnimationFrame(updateBar); }
-  }, { passive: true });
-  window.addEventListener("resize", updateBar);
-  updateBar();
-
-  // Copy buttons on every code block (highlighted or plain <pre>).
   function flash(btn, ok) {
-    var orig = btn.getAttribute("data-label") || "copy";
-    btn.textContent = ok ? "copied \\u2713" : "copy failed";
-    setTimeout(function () { btn.textContent = orig; }, 1600);
+    var original = btn.getAttribute("data-label") || "copy";
+    btn.textContent = ok ? "copied" : "copy failed";
+    setTimeout(function () { btn.textContent = original; }, 1400);
   }
   function copyText(text, btn) {
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(text).then(function () { flash(btn, true); }, function () { flash(btn, false); });
-    } else {
-      try {
-        var ta = document.createElement("textarea");
-        ta.value = text;
-        ta.style.position = "fixed";
-        ta.style.opacity = "0";
-        document.body.appendChild(ta);
-        ta.select();
-        var ok = document.execCommand("copy");
-        document.body.removeChild(ta);
-        flash(btn, ok);
-      } catch (e) { flash(btn, false); }
+      return;
     }
+    var area = document.createElement("textarea");
+    area.value = text;
+    area.style.position = "fixed";
+    area.style.opacity = "0";
+    document.body.appendChild(area);
+    area.select();
+    var ok = document.execCommand("copy");
+    document.body.removeChild(area);
+    flash(btn, ok);
   }
-  var hosts = [];
-  document.querySelectorAll("div.highlight").forEach(function (el) { hosts.push(el); });
-  document.querySelectorAll(".reader__body pre").forEach(function (pre) {
-    if (!pre.closest("div.highlight")) hosts.push(pre);
-  });
-  hosts.forEach(function (host) {
+  document.querySelectorAll(".writeup-content div.highlight.is-code").forEach(function (host) {
     var code = host.querySelector("code");
-    if (!code) return;
-    var btn = document.createElement("button");
-    btn.type = "button";
-    btn.className = "copy-btn";
-    btn.textContent = "copy";
-    btn.setAttribute("data-label", "copy");
-    btn.setAttribute("aria-label", "Copy code to clipboard");
-    btn.addEventListener("click", function () { copyText(code.innerText, btn); });
-    host.appendChild(btn);
+    if (!code || host.querySelector(".copy-btn")) return;
+    var button = document.createElement("button");
+    button.type = "button";
+    button.className = "copy-btn";
+    button.textContent = "copy";
+    button.setAttribute("data-label", "copy");
+    button.setAttribute("aria-label", "Copy code to clipboard");
+    button.addEventListener("click", function () { copyText(code.innerText, button); });
+    host.appendChild(button);
   });
-
-  // Line-number gutter on real code only (never terminal/output).
-  // Gutter is a separate element so copy still grabs clean code.
-  document.querySelectorAll("div.highlight.is-code").forEach(function (host) {
-    var code = host.querySelector("code");
-    if (!code) return;
-    var n = code.innerText.replace(/\\n$/, "").split("\\n").length;
-    if (n < 2) return;
-    var gut = document.createElement("div");
-    gut.className = "line-nos";
-    gut.setAttribute("aria-hidden", "true");
-    var s = "";
-    for (var i = 1; i <= n; i++) s += "<span>" + i + "</span>";
-    gut.innerHTML = s;
-    host.appendChild(gut);
-    host.classList.add("has-lines");
-  });
-
-  // Click-to-zoom screenshots (native dialog, no deps).
-  var dlg = document.createElement("dialog");
-  dlg.className = "img-lightbox";
-  dlg.setAttribute("aria-label", "Screenshot preview");
-  var dlgClose = document.createElement("button");
-  dlgClose.type = "button";
-  dlgClose.className = "img-lightbox__close";
-  dlgClose.textContent = "×";
-  dlgClose.setAttribute("aria-label", "Close screenshot preview");
-  var dlgImg = document.createElement("img");
-  dlgImg.alt = "";
-  dlg.appendChild(dlgImg);
-  dlg.appendChild(dlgClose);
-  document.body.appendChild(dlg);
-  var lastImage = null;
-  dlg.addEventListener("click", function (e) {
-    if (e.target === dlg || e.target === dlgClose) dlg.close();
-  });
-  dlg.addEventListener("close", function () {
-    if (lastImage && lastImage.focus) lastImage.focus();
-  });
-  document.querySelectorAll(".md-fig img").forEach(function (im) {
-    lastImage = im;
-    im.tabIndex = 0;
-    im.setAttribute("role", "button");
-    im.setAttribute("aria-label", "Open screenshot: " + (im.alt || "screenshot"));
-    im.style.cursor = "zoom-in";
-    function openPreview() {
-      dlgImg.src = im.currentSrc || im.src;
-      dlgImg.alt = im.alt || "";
-      if (dlg.showModal) {
-        dlg.showModal();
-        dlgClose.focus();
-      }
-    }
-    im.addEventListener("click", openPreview);
-    im.addEventListener("keydown", function (e) {
-      if (e.key === "Enter" || e.key === " ") {
-        e.preventDefault();
-        openPreview();
-      }
-    });
-  });
-
-  // Copy-link button (page URL, no query).
-  var linkBtn = document.getElementById("copyLinkBtn");
-  if (linkBtn) {
-    linkBtn.addEventListener("click", function () {
-      copyText(window.location.href.split("?")[0], linkBtn);
-    });
-  }
 })();
 """
 
 
 def tag_filter_chips(writeups: list) -> list:
-    """One toggle chip per tag present in this build (with counts), ordered
-    by TAG_ORDER. Recomputed every build, so new categories appear automatically."""
     counts: dict = {}
     for w in writeups:
         for t in w.get("_tags", ["misc"]):
@@ -1194,9 +1051,8 @@ def tag_filter_chips(writeups: list) -> list:
     ordered += sorted([t for t in counts if t not in TAG_ORDER])
     chips = []
     for t in ordered:
-        cls = t if t in TAG_ORDER else "misc"
         chips.append(
-            f'<button type="button" class="tag-chip tag-{html.escape(cls)}" '
+            f'<button type="button" class="tag-chip" '
             f'data-tag="{html.escape(t)}" aria-pressed="false">'
             f'{html.escape(t)} <span class="tag-chip__count">{counts[t]}</span></button>'
         )
@@ -1264,9 +1120,9 @@ def build(source: Path, out: Path, portfolio_url: str, github_user: str, github_
         text = w["md_path"].read_text(encoding="utf-8", errors="replace")
         meta, body_md = parse_frontmatter(text)
         title = meta.get("title") or w["display_name"]
-        body_html = tag_code_blocks(
+        body_html = strip_leading_h1(tag_code_blocks(
             enhance_html(sanitize_html(md_to_html(body_md)), title),
-            extract_fence_langs(body_md))
+            extract_fence_langs(body_md)))
 
         dest_dir = out / Path(w["url_path"])
         dest_dir.mkdir(parents=True, exist_ok=True)
@@ -1277,16 +1133,9 @@ def build(source: Path, out: Path, portfolio_url: str, github_user: str, github_
         home_href = css_prefix + "index.html"
 
         rel_md = w["md_path"].relative_to(source).as_posix()
-        folder_gh = (
-            f"{gh_base}/tree/{branch}/{w['url_path']}"
-            if w["url_path"]
-            else f"{gh_base}/tree/{branch}"
-        )
         md_gh = f"{gh_base}/blob/{branch}/{rel_md}"
 
         files = list_files_recursive(w["folder"], source)
-        file_list_html = render_file_list(files, gh_base, branch)
-        w["_file_count"] = len(files)
         words = len(re.findall(r"\w+", body_md))
         w["_reading_time"] = max(1, round(words / 200))
         slug = w["url_path"].rstrip("/").split("/")[-1]
@@ -1296,7 +1145,7 @@ def build(source: Path, out: Path, portfolio_url: str, github_user: str, github_
         w["_tier"] = diff_tier or "medium"
         if diff_label:
             diff_badge = f'<span class="diff diff-{w["_tier"]}">{html.escape(diff_label)}</span>'
-            diff_block = f'<span class="side-diffwrap">{diff_badge}</span>'
+            diff_block = f'<span class="writeup-meta__difficulty">{diff_badge}</span>'
         else:
             diff_badge = ""
             diff_block = ""
@@ -1306,7 +1155,7 @@ def build(source: Path, out: Path, portfolio_url: str, github_user: str, github_
             f'<span class="tag tag-{html.escape(t) if t in TAG_ORDER else "misc"}">{html.escape(t)}</span>'
             for t in w["_tags"]
         )
-        tag_block = f'<span class="side-tagwrap">{tag_badges}</span>' if tag_badges else ""
+        tag_block = f'<span class="writeup-meta__tags">{tag_badges}</span>' if tag_badges else ""
 
         # Previous / next writeup navigation (same event only).
         siblings = [x for x in writeups if x["event"] == w["event"]]
@@ -1344,19 +1193,14 @@ def build(source: Path, out: Path, portfolio_url: str, github_user: str, github_
         w["_og"] = og_image
         day_prefix = f"Day {w['day']} &middot; " if w.get("day") is not None else ""
         body = WRITEUP_BODY.format(
-            home_href=home_href,
             name=html.escape(title),
             event=html.escape(event_name),
             day_prefix=day_prefix,
             reading_time=w["_reading_time"],
-            file_count=f"{len(files)} file" + ("s" if len(files) != 1 else ""),
             diff_block=diff_block,
             tag_block=tag_block,
-            folder_github=folder_gh,
             md_github=md_gh,
-            md_name=html.escape(w["md_path"].name),
             content=body_html,
-            file_list=file_list_html,
             pager=pager_html,
         )
         page = PAGE_SHELL.format(
@@ -1366,15 +1210,12 @@ def build(source: Path, out: Path, portfolio_url: str, github_user: str, github_
             canonical=canonical,
             jsonld=jsonld_for(page_title, page_desc, canonical),
             css_prefix=css_prefix,
+            site_prefix=css_prefix + "../",
             home_href=home_href,
-            portfolio_url=portfolio_url,
             github_repo=gh_base,
             body=body,
-            skip_link='<a class="skip-link" href="#reader">Skip to article</a>',
+            skip_link='<a class="skip-link" href="#writeup-article">Skip to article</a>',
             main_id="main",
-            topbar_extra="",
-            topbar_back=(f'<a class="btn btn--ghost" href="{home_href}">&#8592; All writeups</a>'
-                         f'<a class="btn btn--ghost" href="{portfolio_url}">&#8592; Portfolio</a>'),
             page_scripts=f'<script src="{css_prefix}js/page.js" defer></script>',
         )
         (dest_dir / "index.html").write_text(page, encoding="utf-8")
@@ -1457,14 +1298,12 @@ def build(source: Path, out: Path, portfolio_url: str, github_user: str, github_
         canonical=index_canonical,
         jsonld=jsonld_for("CTF Writeups", "CTF writeups and challenge notes", index_canonical),
         css_prefix="",
+        site_prefix="../",
         home_href="index.html",
-        portfolio_url=portfolio_url,
         github_repo=gh_base,
         body=index_body,
         skip_link='<a class="skip-link" href="#main">Skip to content</a>',
         main_id="main",
-        topbar_extra="",
-        topbar_back=f'<a class="btn btn--ghost" href="{portfolio_url}">&#8592; Portfolio</a>',
         page_scripts="",
     )
     (out / "index.html").write_text(index_page, encoding="utf-8")

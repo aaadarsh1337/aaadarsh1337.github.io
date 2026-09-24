@@ -27,8 +27,7 @@
 <link rel="stylesheet" href="../../css/pygments.css" />
 </head>
 <body>
-<a class="skip-link" href="#reader">Skip to article</a>
-<div class="read-progress" id="readProgress" aria-hidden="true"></div>
+<a class="skip-link" href="#writeup-article">Skip to article</a>
 <div class="lab-grid" aria-hidden="true"></div>
 
 <header class="topbar">
@@ -37,33 +36,33 @@
       <span class="brand-mark">CTF</span>
       <span class="brand-text">Writeups</span>
     </a>
-    <div class="topbar__back">
-      <a class="btn btn--ghost" href="../../index.html">&#8592; All writeups</a><a class="btn btn--ghost" href="https://aaadarsh1337.github.io/">&#8592; Portfolio</a>
-    </div>
-    <div class="topbar__spacer"></div>
-    <div class="topbar__actions">
-      
-      <a class="btn btn--ghost" href="https://github.com/aaadarsh1337/ctf-writeups" target="_blank" rel="noopener noreferrer">Repo &#8599;</a>
-    </div>
+    <nav class="topbar__nav" aria-label="Site navigation">
+      <a class="topbar__link" href="../../../index.html">Portfolio</a>
+      <a class="topbar__link" href="../../../writeups/" aria-current="page">Writeups</a>
+      <a class="topbar__link" href="../../../blog/">Blog</a>
+      <a class="topbar__link" href="../../../intel/">Intel</a>
+      <a class="topbar__link" href="https://github.com/aaadarsh1337/ctf-writeups" target="_blank" rel="noopener noreferrer">GitHub &#8599;</a>
+    </nav>
   </div>
 </header>
 
 <main id="main">
 
-<div class="reader-layout reader-layout--static">
-  <article class="reader" id="reader" aria-label="Writeup article">
-    <div class="reader__toolbar">
-      <div class="reader__crumb">
-        <span class="tb-label">READING</span>
-        <span>notes.md</span>
+<div class="writeup-page">
+  <article class="writeup-article" id="writeup-article" aria-label="Writeup article">
+    <header class="writeup-hero">
+      <p class="fig-label">picoCTF &middot; CTF writeup</p>
+      <h1>Tea Cash</h1>
+      <div class="writeup-meta">
+        <span>1 min read</span>
+        <span class="writeup-meta__separator">&middot;</span>
+        <span class="writeup-meta__difficulty"><span class="diff diff-medium">Medium</span></span><span class="writeup-meta__tags"><span class="tag tag-pwn">pwn</span></span>
+        <a class="writeup-source" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/picoctf/tea_cash/notes.md" target="_blank" rel="noopener noreferrer">Source &#8599;</a>
       </div>
-      <button type="button" class="btn btn--ghost btn--small" id="copyLinkBtn">Copy link</button>
-      <a class="btn btn--ghost btn--small" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/picoctf/tea_cash/notes.md" target="_blank" rel="noopener noreferrer">Source &#8599;</a>
-    </div>
-    <div class="reader__body">
+    </header>
+    <div class="writeup-content">
       <div class="md-render">
-<h1 id="tea-cash">tea-cash</h1>
-<h2 id="challenge-httpslearncylabacademyorglibrary746">Challenge: <a href="https://learn.cylabacademy.org/library/746">https://learn.cylabacademy.org/library/746</a></h2>
+<h2 id="challenge-httpslearncylabacademyorglibrary746" class="challenge-link">Challenge: <a href="https://learn.cylabacademy.org/library/746">https://learn.cylabacademy.org/library/746</a></h2>
 <p>Hello Hackers!
 Welcome to my writeup on the challenge <code>tea-cash</code> from picoCTF
 It is a medium challenge and in the category Binary Exploitation</p>
@@ -94,22 +93,6 @@ Writing the exploit using pwntools, </p>
 <nav class="writeup-pager" aria-label="Writeup navigation"><span class="pager-item pager-item--disabled"></span><a class="pager-item pager-item--next" href="../../picoctf/the_add_on_trap/index.html"><span class="pager-label">Next</span><span class="pager-name">The Add On Trap</span><span class="pager-event">picoCTF</span></a></nav>
     </div>
   </article>
-  <aside class="sidebar" aria-label="Challenge details and files">
-    <div class="sidebar__challenge">
-      <p class="tb-label">CHALLENGE</p>
-      <p class="sidebar__challenge-title">Tea Cash</p>
-      <p class="side-path">picoCTF</p>
-      <p class="side-meta">1 min read &middot; 2 files</p><span class="side-diffwrap"><span class="diff diff-medium">Medium</span></span><span class="side-tagwrap"><span class="tag tag-pwn">pwn</span></span>
-    </div>
-    <div class="sidebar__files">
-      <p class="tb-label">FILES</p>
-      <div class="file-list"><a class="file-item readable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/picoctf/tea_cash/exploit.py" target="_blank" rel="noopener noreferrer"><span class="name">exploit.py</span><span class="kind">py</span></a><a class="file-item readable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/picoctf/tea_cash/notes.md" target="_blank" rel="noopener noreferrer"><span class="name">notes.md</span><span class="kind">md</span></a></div>
-    </div>
-    <div class="sidebar__foot">
-      <a class="btn btn--ghost btn--small sidebar-gh-btn" href="https://github.com/aaadarsh1337/ctf-writeups/tree/main/picoctf/tea_cash" target="_blank" rel="noopener noreferrer">Open folder &#8599;</a>
-      <a class="btn btn--ghost btn--small sidebar-gh-btn" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/picoctf/tea_cash/notes.md" target="_blank" rel="noopener noreferrer">View markdown &#8599;</a>
-    </div>
-  </aside>
 </div>
 
 </main>

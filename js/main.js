@@ -73,7 +73,7 @@
     document.getElementById("heroTagline").textContent = p.tagline;
     document.getElementById("heroLocation").textContent = p.location;
     var heroFocusEl = document.getElementById("heroFocus");
-    if (heroFocusEl) heroFocusEl.textContent = p.currentFocus;
+    if (heroFocusEl) heroFocusEl.textContent = "Focus: " + (p.currentFocus || "—");
     const avatarImg = document.getElementById("avatarImg");
     avatarImg.onerror = function () {
       if (!avatarImg.dataset.fb) {
@@ -134,6 +134,7 @@
       [openBtn, contactBtn].forEach(function (button) {
         if (button) button.setAttribute("aria-expanded", expanded ? "true" : "false");
       });
+      panel.setAttribute("aria-hidden", expanded ? "false" : "true");
     }
     function open() {
       lastFocus = document.activeElement;
@@ -187,8 +188,9 @@
 
   function goSection(id) {
     const el = document.getElementById(id);
-    if (el && el.scrollIntoView) el.scrollIntoView({ behavior: "smooth", block: "start" });
-    try { window.location.hash = id; } catch (e) { /* ignore */ }
+    const reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (el && el.scrollIntoView) el.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
+    try { window.history.replaceState(null, "", "#" + id); } catch (e) { /* ignore */ }
   }
 
   function openLinksPanel() {
@@ -199,14 +201,17 @@
 
   function paletteEntries() {
     const entries = [
-      { label: "Go to About", detail: "section", run: () => goSection("about") },
-      { label: "Go to Skillset", detail: "section", run: () => goSection("skillset") },
-      { label: "Go to Achievements", detail: "section", run: () => goSection("achievements") },
-      { label: "Go to Repositories", detail: "section", run: () => goSection("repositories") },
-      { label: "Go to Certificates", detail: "section", run: () => goSection("certificates") },
-      { label: "Go to Contact", detail: "section", run: () => goSection("contact") },
+       { label: "Go to About", detail: "section", run: () => goSection("about") },
+       { label: "Go to Skillset", detail: "section", run: () => goSection("skillset") },
+       { label: "Go to Achievements", detail: "section", run: () => goSection("achievements") },
+       { label: "Go to Threat Harbour", detail: "case study", run: () => goSection("threat-harbour") },
+       { label: "Go to Writing", detail: "section", run: () => goSection("writing") },
+       { label: "Go to Repositories", detail: "section", run: () => goSection("repositories") },
+       { label: "Go to Certificates", detail: "section", run: () => goSection("certificates") },
+       { label: "Go to Contact", detail: "section", run: () => goSection("contact") },
       { label: "Read CTF writeups", detail: "page", run: () => { window.location.href = "/writeups/"; } },
-      { label: "Open live threat intel", detail: "page · daily sensor dashboard", run: () => { window.location.href = "/intel/"; } },
+      { label: "Read the blog", detail: "page · malware analysis + security notes", run: () => { window.location.href = "/blog/"; } },
+      { label: "Open threat intel", detail: "page · daily sensor dashboard", run: () => { window.location.href = "/intel/"; } },
       { label: "Open Links", detail: "action", run: openLinksPanel },
       { label: "Copy email", detail: "action", run: () => copyText((CFG.contact || {}).email || "", null) },
     ];
@@ -220,6 +225,13 @@
         label: w.title,
         detail: w.event + tagPart + " · " + (w.difficulty ? w.difficulty + " writeup" : "writeup"),
         run: () => { window.location.href = "/writeups/" + w.url; },
+      });
+    });
+    (blogCache || []).forEach((post) => {
+      entries.push({
+        label: post.title,
+        detail: (post.category || "writing") + " · security note",
+        run: () => { window.location.href = "/blog/" + post.url; },
       });
     });
     repoCache.forEach((repo) => {
@@ -264,6 +276,77 @@
         if (panel && !panel.hidden && input) renderPalette(input.value);
       })
       .catch(() => { writeupCache = []; });
+  }
+
+  let blogCache = null;
+  let blogsLoading = false;
+
+  function renderLatestWriting() {
+    const host = document.getElementById("latestWriting");
+    const heroLink = document.getElementById("heroWriting");
+    const heroTitle = document.getElementById("heroWritingTitle");
+    const post = blogCache && blogCache.length ? blogCache[0] : null;
+    const postUrl = post ? "/blog/" + post.url : "/blog/";
+    const titleText = post ? post.title : "Security writing is on its way";
+
+    if (heroLink && heroTitle) {
+      heroLink.hidden = false;
+      heroLink.href = postUrl;
+      heroTitle.textContent = titleText;
+      heroLink.setAttribute("aria-label", titleText + " — open latest writing");
+    }
+
+    if (!host) return;
+    host.innerHTML = "";
+    const card = document.createElement("a");
+    card.className = "writing-feature__card";
+    card.href = postUrl;
+    const meta = document.createElement("div");
+    meta.className = "writing-feature__meta";
+    const latest = document.createElement("span");
+    latest.className = "writing-feature__latest";
+    latest.textContent = "Latest";
+    meta.appendChild(latest);
+    const category = document.createElement("span");
+    category.className = "writing-feature__category";
+    category.textContent = post ? (post.category || "Security note") : "Security writing";
+    meta.appendChild(category);
+    if (post && post.date) {
+      const date = document.createElement("time");
+      date.dateTime = post.date;
+      date.textContent = new Date(post.date + "T00:00:00").toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+      meta.appendChild(date);
+    }
+    const title = document.createElement("h3");
+    title.textContent = titleText;
+    const summary = document.createElement("p");
+    summary.textContent = post ? (post.summary || "Read the latest security note.") : "The first defensive research note will appear here soon.";
+    const read = document.createElement("span");
+    read.className = "writing-feature__read";
+    read.textContent = post ? "Read note →" : "Browse the blog →";
+    card.append(meta, title, summary, read);
+    host.appendChild(card);
+  }
+
+  function loadBlogIndex() {
+    if (blogCache || blogsLoading) return;
+    blogsLoading = true;
+    fetchWithTimeout("blog/search.json", 9000)
+      .then((r) => {
+        if (!r.ok) throw new Error("no blog index");
+        return r.json();
+      })
+      .then((data) => {
+        blogCache = Array.isArray(data) ? data : [];
+        renderLatestWriting();
+        const panel = document.getElementById("cmdk");
+        const input = document.getElementById("cmdkInput");
+        if (panel && !panel.hidden && input) renderPalette(input.value);
+      })
+      .catch(() => {
+        blogCache = [];
+        renderLatestWriting();
+      });
   }
 
   function renderPalette(q) {
@@ -360,6 +443,7 @@
     fab.addEventListener("click", togglePalette);
     backdrop.addEventListener("click", () => closePalette());
     loadWriteupsIndex();
+    loadBlogIndex();
     input.addEventListener("input", () => renderPalette(input.value));
     input.addEventListener("keydown", (e) => {
       if (e.key === "ArrowDown") { e.preventDefault(); setPalActive(palActive + 1); }
@@ -532,7 +616,7 @@
     // Stats (fallback first, live values swap in when fetched).
     const statsDl = document.createElement("dl");
     statsDl.className = "flagship-stats";
-    statsDl.setAttribute("aria-label", "Live sensor statistics");
+    statsDl.setAttribute("aria-label", "Threat Harbour sensor statistics");
     (f.fallbackStats || []).slice(0, 4).forEach((s, i) => {
       const wrap = document.createElement("div");
       const dt = document.createElement("dt");
@@ -581,7 +665,7 @@
       const intelA = document.createElement("a");
       intelA.className = "btn btn--primary";
       intelA.href = links.intel;
-      intelA.innerHTML = escapeHtml("Live threat intel") + ' <span class="ext">→</span>';
+      intelA.innerHTML = escapeHtml("View case study") + ' <span class="ext">→</span>';
       actions.appendChild(intelA);
     }
     if (links.docs) addBtn("Read docs", links.docs, false);
@@ -627,9 +711,9 @@
     star.className = "star";
     star.textContent = "★ ";
     el.appendChild(star);
-    el.appendChild(document.createTextNode("Flagship: "));
+    el.appendChild(document.createTextNode("Case study: "));
     const a = document.createElement("a");
-    a.href = "#repositories";
+    a.href = "#threat-harbour";
     a.textContent = (f.name || "Threat Harbour") + " — SSH honeypot";
     el.appendChild(a);
   }
@@ -940,6 +1024,7 @@
         <a class="repo-name" href="${escapeHtml(repo.html_url)}" target="_blank" rel="noopener noreferrer">
           ${escapeHtml(repo.name)}
         </a>
+        ${isPinned ? '<span class="repo-card__badge">Featured</span>' : ''}
       </div>
       <p class="repo-desc">${escapeHtml(repo.description || "No description provided.")}</p>
       ${lang ? `<div class="repo-lang"><span class="lang-dot" style="background:${langColor(lang)}"></span>${escapeHtml(lang)}</div>` : ""}
@@ -1373,6 +1458,7 @@
     renderContact();
     initNav();
     loadRepos();
+    loadBlogIndex();
     renderLinkPanel();
     initLinkPanel();
     initPalette();

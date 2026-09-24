@@ -1,0 +1,66 @@
+name: Build security blog
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "scripts/build_blog.py"
+      - "scripts/blog-style.css"
+      - ".github/workflows/deploy-blog.yml"
+  repository_dispatch:
+    types: [blog-updated]
+  schedule:
+    - cron: "15 5 * * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: deploy-blog
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout portfolio site
+        uses: actions/checkout@v4
+        with:
+          path: site
+
+      - name: Checkout security blog
+        uses: actions/checkout@v4
+        with:
+          repository: aaadarsh1337/security-blog
+          ref: main
+          path: blog-src
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install build dependencies
+        run: pip install "markdown==3.7" "Pygments==2.19.1"
+
+      - name: Build static blog
+        run: |
+          python3 site/scripts/build_blog.py \
+            --source blog-src \
+            --out site/blog \
+            --portfolio-url "https://aaadarsh1337.github.io/" \
+            --github-user "aaadarsh1337" \
+            --github-repo "security-blog"
+
+      - name: Commit and push
+        working-directory: site
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add blog
+          if git diff --staged --quiet; then
+            echo "No changes to blog."
+            exit 0
+          fi
+          git commit -m "chore: rebuild blog from security-blog"
+          git push

@@ -27,8 +27,7 @@
 <link rel="stylesheet" href="../../css/pygments.css" />
 </head>
 <body>
-<a class="skip-link" href="#reader">Skip to article</a>
-<div class="read-progress" id="readProgress" aria-hidden="true"></div>
+<a class="skip-link" href="#writeup-article">Skip to article</a>
 <div class="lab-grid" aria-hidden="true"></div>
 
 <header class="topbar">
@@ -37,33 +36,33 @@
       <span class="brand-mark">CTF</span>
       <span class="brand-text">Writeups</span>
     </a>
-    <div class="topbar__back">
-      <a class="btn btn--ghost" href="../../index.html">&#8592; All writeups</a><a class="btn btn--ghost" href="https://aaadarsh1337.github.io/">&#8592; Portfolio</a>
-    </div>
-    <div class="topbar__spacer"></div>
-    <div class="topbar__actions">
-      
-      <a class="btn btn--ghost" href="https://github.com/aaadarsh1337/ctf-writeups" target="_blank" rel="noopener noreferrer">Repo &#8599;</a>
-    </div>
+    <nav class="topbar__nav" aria-label="Site navigation">
+      <a class="topbar__link" href="../../../index.html">Portfolio</a>
+      <a class="topbar__link" href="../../../writeups/" aria-current="page">Writeups</a>
+      <a class="topbar__link" href="../../../blog/">Blog</a>
+      <a class="topbar__link" href="../../../intel/">Intel</a>
+      <a class="topbar__link" href="https://github.com/aaadarsh1337/ctf-writeups" target="_blank" rel="noopener noreferrer">GitHub &#8599;</a>
+    </nav>
   </div>
 </header>
 
 <main id="main">
 
-<div class="reader-layout reader-layout--static">
-  <article class="reader" id="reader" aria-label="Writeup article">
-    <div class="reader__toolbar">
-      <div class="reader__crumb">
-        <span class="tb-label">READING</span>
-        <span>notes.md</span>
+<div class="writeup-page">
+  <article class="writeup-article" id="writeup-article" aria-label="Writeup article">
+    <header class="writeup-hero">
+      <p class="fig-label">Hacker Holidays &middot; CTF writeup</p>
+      <h1>After Hours</h1>
+      <div class="writeup-meta">
+        <span>Day 12 &middot; 1 min read</span>
+        <span class="writeup-meta__separator">&middot;</span>
+        <span class="writeup-meta__difficulty"><span class="diff diff-medium">Intermediate</span></span><span class="writeup-meta__tags"><span class="tag tag-rev">rev</span></span>
+        <a class="writeup-source" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/after_hours/notes.md" target="_blank" rel="noopener noreferrer">Source &#8599;</a>
       </div>
-      <button type="button" class="btn btn--ghost btn--small" id="copyLinkBtn">Copy link</button>
-      <a class="btn btn--ghost btn--small" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/after_hours/notes.md" target="_blank" rel="noopener noreferrer">Source &#8599;</a>
-    </div>
-    <div class="reader__body">
+    </header>
+    <div class="writeup-content">
       <div class="md-render">
-<h1 id="day-12-after-hours">Day 12 - After Hours</h1>
-<h2 id="room-httpstryhackmecomroomhh-afterhours-b090d1f0">Room: <a href="https://tryhackme.com/room/hh-afterhours-b090d1f0">https://tryhackme.com/room/hh-afterhours-b090d1f0</a></h2>
+<h2 id="room-httpstryhackmecomroomhh-afterhours-b090d1f0" class="challenge-link">Room: <a href="https://tryhackme.com/room/hh-afterhours-b090d1f0">https://tryhackme.com/room/hh-afterhours-b090d1f0</a></h2>
 <p>Hello Hackers!</p>
 <p>Welcome to Day 12 of the TryHackMe Hacker Holidays 2026 writeups.</p>
 <p>This challenge involved analysing a suspicious <code>OBJECTS.DATA</code> file and identifying data hidden inside it.</p>
@@ -85,22 +84,6 @@
 <nav class="writeup-pager" aria-label="Writeup navigation"><a class="pager-item pager-item--previous" href="../../hackerholidays/infinity_pool/index.html"><span class="pager-label">Previous</span><span class="pager-name">Infinity Pool</span><span class="pager-event">Hacker Holidays</span></a><a class="pager-item pager-item--next" href="../../hackerholidays/the_guestbook/index.html"><span class="pager-label">Next</span><span class="pager-name">The Guestbook</span><span class="pager-event">Hacker Holidays</span></a></nav>
     </div>
   </article>
-  <aside class="sidebar" aria-label="Challenge details and files">
-    <div class="sidebar__challenge">
-      <p class="tb-label">CHALLENGE</p>
-      <p class="sidebar__challenge-title">After Hours</p>
-      <p class="side-path">Hacker Holidays</p>
-      <p class="side-meta">Day 12 &middot; 1 min read &middot; 13 files</p><span class="side-diffwrap"><span class="diff diff-medium">Intermediate</span></span><span class="side-tagwrap"><span class="tag tag-rev">rev</span></span>
-    </div>
-    <div class="sidebar__files">
-      <p class="tb-label">FILES</p>
-      <div class="file-list"><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/after_hours/INDEX.BTR" target="_blank" rel="noopener noreferrer"><span class="name">INDEX.BTR</span><span class="kind">github</span></a><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/after_hours/MAPPING1.MAP" target="_blank" rel="noopener noreferrer"><span class="name">MAPPING1.MAP</span><span class="kind">github</span></a><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/after_hours/MAPPING2.MAP" target="_blank" rel="noopener noreferrer"><span class="name">MAPPING2.MAP</span><span class="kind">github</span></a><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/after_hours/MAPPING3.MAP" target="_blank" rel="noopener noreferrer"><span class="name">MAPPING3.MAP</span><span class="kind">github</span></a><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/after_hours/OBJECTS.DATA" target="_blank" rel="noopener noreferrer"><span class="name">OBJECTS.DATA</span><span class="kind">github</span></a><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/after_hours/attachments-1784136288483.zip" target="_blank" rel="noopener noreferrer"><span class="name">attachments-1784136288483.zip</span><span class="kind">github</span></a><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/after_hours/configdata.b64" target="_blank" rel="noopener noreferrer"><span class="name">configdata.b64</span><span class="kind">github</span></a><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/after_hours/configdata.deflate" target="_blank" rel="noopener noreferrer"><span class="name">configdata.deflate</span><span class="kind">github</span></a><a class="file-item readable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/after_hours/convert.py" target="_blank" rel="noopener noreferrer"><span class="name">convert.py</span><span class="kind">py</span></a><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/after_hours/final.png" target="_blank" rel="noopener noreferrer"><span class="name">final.png</span><span class="kind">github</span></a><a class="file-item readable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/after_hours/notes.md" target="_blank" rel="noopener noreferrer"><span class="name">notes.md</span><span class="kind">md</span></a><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/after_hours/payload.exe" target="_blank" rel="noopener noreferrer"><span class="name">payload.exe</span><span class="kind">github</span></a><a class="file-item unreadable" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/after_hours/somebase64" target="_blank" rel="noopener noreferrer"><span class="name">somebase64</span><span class="kind">github</span></a></div>
-    </div>
-    <div class="sidebar__foot">
-      <a class="btn btn--ghost btn--small sidebar-gh-btn" href="https://github.com/aaadarsh1337/ctf-writeups/tree/main/hackerholidays/after_hours" target="_blank" rel="noopener noreferrer">Open folder &#8599;</a>
-      <a class="btn btn--ghost btn--small sidebar-gh-btn" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/hackerholidays/after_hours/notes.md" target="_blank" rel="noopener noreferrer">View markdown &#8599;</a>
-    </div>
-  </aside>
 </div>
 
 </main>
