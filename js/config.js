@@ -70,7 +70,7 @@ window.PORTFOLIO_CONFIG = {
       "As one of the three co-founders and a core member of 404squad, I organize our near-weekly CTF participation and primarily work on misc and rev challenges. Building a team that consistently shows up, learns together, and enjoys the process matters to me as much as the competition itself.",
       "Outside CTFs, I’m usually digging further into reverse engineering or working on security projects of my own. I enjoy having something unfamiliar to figure out, whether that means tracing a binary, testing an approach, or writing a tool to make progress. This site collects that work, along with the notes and writeups I produce along the way."
     ],
-    resumeUrl: "https://github.com/aaadarsh1337"   // Stand-in until a hosted PDF resume exists — button links to GitHub profile.
+    resumeUrl: "assets/resume.pdf"   // Hosted PDF résumé (built from assets/resume.tex)
   },
 // --- Links (button-based reveal) -----------------------------------
   // All profile, social, and platform handles. Shown in the "Links" panel.
