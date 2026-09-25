@@ -1,1 +1,1 @@
-[]
+[{"title": "Honeypot Worm — bendi.py", "category": "Malware analysis", "url": "malware-analysis/bendi/", "summary": "A plaintext Python SSH worm from my Threat Harbour honeypot that recruits VPS hosts into a Komari-based botnet", "tags": ["malware-analysis", "threat-intelligence"], "date": "2026-09-24"}]
