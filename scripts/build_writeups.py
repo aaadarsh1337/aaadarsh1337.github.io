@@ -565,6 +565,7 @@ PAGE_SHELL = """<!DOCTYPE html>
 
 WRITEUP_BODY = """
 <div class="writeup-page">
+  {breadcrumb}
   <article class="writeup-article" id="writeup-article" aria-label="Writeup article">
     <header class="writeup-hero">
       <p class="fig-label">{event} &middot; CTF writeup</p>
@@ -1213,6 +1214,15 @@ def build(source: Path, out: Path, portfolio_url: str, github_user: str, github_
             og_image = "https://aaadarsh1337.github.io/assets/og.png"
         w["_og"] = og_image
         day_prefix = f"Day {w['day']} &middot; " if w.get("day") is not None else ""
+        # Back-link to the writeups index, mirroring the blog's "All writing" crumb.
+        # home_href already resolves to the writeups index at any nesting depth.
+        breadcrumb = (
+            '<div class="writeup-breadcrumb">'
+            f'<a href="{html.escape(home_href)}">← All writeups</a>'
+            "<span>/</span>"
+            f"<span>{html.escape(event_name)}</span>"
+            "</div>"
+        )
         body = WRITEUP_BODY.format(
             name=html.escape(title),
             event=html.escape(event_name),
@@ -1223,6 +1233,7 @@ def build(source: Path, out: Path, portfolio_url: str, github_user: str, github_
             md_github=md_gh,
             content=body_html,
             pager=pager_html,
+            breadcrumb=breadcrumb,
         )
         page = PAGE_SHELL.format(
             title=html.escape(page_title),
