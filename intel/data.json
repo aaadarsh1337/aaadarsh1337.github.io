@@ -1,21 +1,21 @@
 {
- "analysis_cutoff_utc": "2026-10-03T04:14:14Z",
+ "analysis_cutoff_utc": "2026-10-04T04:46:05Z",
  "observation_period": {
   "start": "2026-08-27",
   "end": "ongoing",
-  "interim_cutoff": "2026-10-03"
+  "interim_cutoff": "2026-10-04"
  },
  "totals": {
-  "total_events": 683446,
-  "bad_json_lines": 5
+  "total_events": 721245,
+  "bad_json_lines": 6
  },
  "sources": {
-  "unique_source_ips": 4684,
+  "unique_source_ips": 4800,
   "ipv6_events": 0,
   "top_source_net16_by_event_volume": [
    {
     "cidr": "109.160.0.0/16",
-    "events": 441836
+    "events": 465860
    },
    {
     "cidr": "91.92.0.0/16",
@@ -27,155 +27,155 @@
    },
    {
     "cidr": "138.68.0.0/16",
-    "events": 24557
+    "events": 25149
+   },
+   {
+    "cidr": "77.239.0.0/16",
+    "events": 17603
    },
    {
     "cidr": "179.61.0.0/16",
-    "events": 15001
+    "events": 15306
    },
    {
     "cidr": "139.59.0.0/16",
-    "events": 13236
+    "events": 13259
    },
    {
     "cidr": "94.154.0.0/16",
-    "events": 10305
-   },
-   {
-    "cidr": "2.57.0.0/16",
-    "events": 9757
+    "events": 10896
    }
   ]
  },
  "sessions": {
-  "unique_session_ids": 100546,
-  "session_connect_events": 100541,
+  "unique_session_ids": 105502,
+  "session_connect_events": 105497,
   "session_duration_seconds": {
-   "n_closed_matched": 100322,
-   "median": 2.3757645,
+   "n_closed_matched": 105278,
+   "median": 2.3695795,
    "max": 18022.218617,
-   "under_10s": 79176,
-   "unmatched_closes": 6
+   "under_10s": 83553,
+   "unmatched_closes": 5
   }
  },
  "protocols": {
-  "ssh": 683446
+  "ssh": 721245
  },
  "logins": {
-  "success_fake": 77787,
-  "failed": 435,
+  "success_fake": 82471,
+  "failed": 451,
   "top_usernames": [
    {
     "value": "root",
-    "count": 32941
+    "count": 33703
    },
    {
     "value": "admin",
-    "count": 2802
+    "count": 2888
    },
    {
     "value": "ubuntu",
-    "count": 1988
+    "count": 2029
    },
    {
     "value": "user",
-    "count": 1812
+    "count": 1865
    },
    {
     "value": "deploy",
-    "count": 1108
+    "count": 1133
    },
    {
     "value": "test",
-    "count": 889
+    "count": 913
    },
    {
     "value": "user1",
-    "count": 559
+    "count": 572
    },
    {
     "value": "claude",
-    "count": 509
+    "count": 521
    },
    {
     "value": "debian",
-    "count": 456
+    "count": 466
    },
    {
     "value": "postgres",
-    "count": 407
+    "count": 417
    }
   ],
   "top_passwords": [
    {
     "value": "123456",
-    "count": 4074
+    "count": 4166
    },
    {
     "value": "1234",
-    "count": 2122
+    "count": 2187
    },
    {
     "value": "123",
-    "count": 1961
+    "count": 2009
    },
    {
     "value": "admin",
-    "count": 1117
+    "count": 1168
    },
    {
     "value": "12345678",
-    "count": 1082
+    "count": 1112
    },
    {
     "value": "1",
-    "count": 982
+    "count": 1005
    },
    {
     "value": "password",
-    "count": 855
+    "count": 878
    },
    {
     "value": "root",
-    "count": 807
+    "count": 830
    },
    {
     "value": "12345",
-    "count": 786
+    "count": 810
    },
    {
     "value": "123456789",
-    "count": 633
+    "count": 651
    }
   ]
  },
  "commands": {
-  "input_events": 73298,
-  "failed_command_events": 454,
+  "input_events": 77723,
+  "failed_command_events": 492,
   "top_commands": [
    {
     "input": "uname -s -v -n -r -m",
-    "count": 60828
+    "count": 64924
    },
    {
     "input": "hostname",
-    "count": 1659
+    "count": 1668
    },
    {
     "input": "export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$PATH\nuname=$(uname -s -v -n -m 2>/dev/null || /bin/uname -s -v -n -m 2>/dev/null || /usr/bin/uname -s -v -n -m 2>/dev/null || busybox uname -s -v -n -m 2>/dev/null || ( [ -f /proc/version ] && head -1 /proc/version | cut -d' ' -f1 ) || ( [ -f /etc/os-release ] && grep '^ID=' /etc/os-release | cut -d= -f2 | tr -d '\"' ) || echo \"\")\narch=$(uname -m 2>/dev/null || /bin/uname -m 2>/dev/null || /usr/bin/uname -m 2>/dev/null || busybox uname -m 2>/dev/null || ( [ -f /proc/cpuinfo ] && grep -q \"lm\" /proc/cpuinfo && echo x86_64 ) || ( [ -f /proc/cpuinfo ] && grep -q \"CPU architecture: 8\" /proc/cpuinfo && echo aarch64 ) || ( [ -f /proc/cpuinfo ] && grep -q \"CPU architecture: 7\" /proc/cpuinfo && echo armv7l ) || echo \"\")\nuptime=$(cat /proc/uptime 2>/dev/null || busybox cat /proc/uptime 2>/dev/null)\ncpus=$(nproc 2>/dev/null || /usr/bin/nproc 2>/dev/null || busybox nproc 2>/dev/null || grep -c \"^processor\" /proc/cpuinfo 2>/dev/null)\ncpu_model=$( { lscpu 2>/dev/null | awk -F: '/Model name/ {print $2}'; grep -m1 -E \"^model name\" /proc/cpuinfo 2>/dev/null | cut -d: -f2-; grep -m1 -E \"^Hardware\" /proc/cpuinfo 2>/dev/null | cut -d: -f2-; cat /proc/device-tree/model 2>/dev/null; } | sed '/^$/d; /unknown/d; s/^[[:space:]]*//; s/[[:space:]]*$//; s/ AArch64 Processor$//; s/ Processor$//; s/ CPU$//' | head -1 )\ngpu_info=$( (lspci 2>/dev/null | grep -i vga; lspci 2>/dev/null | grep -i nvidia; busybox lspci 2>/dev/null | grep -i vga; busybox lspci 2>/dev/null | grep -i nvidia) 2>/dev/null )\nlast_output=$(last 2>/dev/null)\nfilter_output=$( ( export LANG=C LC_ALL=C; echo '===SHELL_BEHAVIOR==='; printf 'path_err='; ( ./xxxxxx 2>&1 || true ) | ( head -c 250 2>/dev/null || busybox head -c 250 2>/dev/null || dd bs=250 count=1 2>/dev/null ) | ( tr -d '\\n' 2>/dev/null || busybox tr -d '\\n' 2>/dev/null || cat ); printf '\\n'; printf 'cmd_err='; ( xxxxxx 2>&1 || true ) | ( head -c 250 2>/dev/null || busybox head -c 250 2>/dev/null || dd bs=250 count=1 2>/dev/null ) | ( tr -d '\\n' 2>/dev/null || busybox tr -d '\\n' 2>/dev/null || cat ); printf '\\n'; printf 'execute_err='; out=$(bash -c 'printf \"#!/bin/bash\\necho \\\"xxxxxx\\\"\\n\" > filter && chmod +x filter && ./filter && rm -rf filter' 2>&1); case \"$out\" in *xxxxxx*) ;; *) out=$(/bin/bash -c 'printf \"#!/bin/bash\\necho \\\"xxxxxx\\\"\\n\" > filter && chmod +x filter && ./filter && rm -rf filter' 2>&1); case \"$out\" in *xxxxxx*) ;; *) out=$(/usr/bin/bash -c 'printf \"#!/bin/bash\\necho \\\"xxxxxx\\\"\\n\" > filter && chmod +x filter && ./filter && rm -rf filter' 2>&1); case \"$out\" in *xxxxxx*) ;; *) out=$(busybox sh -c 'printf \"#!/bin/sh\\necho \\\"xxxxxx\\\"\\n\" > filter && chmod +x filter && ./filter && rm -rf filter' 2>&1 || sh -c 'printf \"#!/bin/sh\\necho \\\"xxxxxx\\\"\\n\" > filter && chmod +x filter && ./filter && rm -rf filter' 2>&1); esac; esac; esac; printf '%s' \"$out\" | ( head -c 250 2>/dev/null || busybox head -c 250 2>/dev/null || dd bs=250 count=1 2>/dev/null ) | ( tr -d '\\n' 2>/dev/null || busybox tr -d '\\n' 2>/dev/null || cat ); printf '\\n'; echo '===DONE===' ) 2>&1 )\necho \"UNAME:$uname\"\necho \"ARCH:$arch\"\necho \"UPTIME:$uptime\"\necho \"CPUS:$cpus\"\necho \"CPU_MODEL:$cpu_model\"\necho \"GPU:$gpu_info\"\necho \"LAST:$last_output\"\necho \"FILTER:$filter_output\"",
-    "count": 1394
+    "count": 1511
    },
    {
     "input": "/bin/./uname -s -v -n -r -m",
-    "count": 1329
+    "count": 1364
    },
    {
     "input": "uname -a",
-    "count": 917
+    "count": 924
    },
    {
     "input": "whoami",
-    "count": 727
+    "count": 738
    },
    {
     "input": "export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:${PATH:-} LC_ALL=C LANG=C\nuname=$(for c in uname /bin/uname /usr/bin/uname 'busybox uname' 'toybox uname'; do v=$($c -s -v -n -m 2>/dev/null) && [ -n \"$v\" ] && { printf '%s\\n' \"$v\"; exit; }; done; IFS= read -r v < /proc/version && printf '%s\\n' \"$v\") 2>/dev/null\narch=$(for c in uname /bin/uname /usr/bin/uname 'busybox uname' 'toybox uname'; do v=$($c -m 2>/dev/null) && [ -n \"$v\" ] && { printf '%s\\n' \"$v\"; exit; }; done; for c in arch 'busybox arch' 'toybox arch'; do v=$($c 2>/dev/null) && [ -n \"$v\" ] && { printf '%s\\n' \"$v\"; exit; }; done; printf '%s\\n' unknown)\nuptime=$(IFS= read -r v < /proc/uptime && printf '%s\\n' \"$v\" || cat /proc/uptime 2>/dev/null || busybox cat /proc/uptime 2>/dev/null || toybox cat /proc/uptime 2>/dev/null) 2>/dev/null\ncpus=$(unset OMP_NUM_THREADS OMP_THREAD_LIMIT; for c in nproc /usr/bin/nproc 'busybox nproc' 'toybox nproc'; do v=$($c 2>/dev/null) || continue; case $v in ''|*[!0-9]*) continue ;; esac; [ \"$v\" -gt 0 ] 2>/dev/null && { printf '%s\\n' \"$v\"; exit; }; done; for a in awk 'busybox awk' 'toybox awk'; do $a 'BEGIN { exit 0 }' </dev/null 2>/dev/null && break; done; v=$($a 'function count(s, a,b,n,i,t,m) { gsub(/[[:space:]]/,\"\",s); n=split(s,a,\",\"); for(i=1;i<=n;i++) { if(a[i]!~/^[0-9]+(-[0-9]+)?$/) return 0; m=split(a[i],b,\"-\"); if(m==2 && b[2]+0<b[1]+0) return 0; t+=(m==2?b[2]-b[1]+1:1) } return t } BEGIN { while((getline s < \"/proc/self/status\")>0) if(s~/^Cpus_allowed_list:/) { sub(/^[^:]*:/,\"\",s); n=count(s); if(n>0) { print n; exit } } }' 2>/dev/null); [ -n \"$v\" ] && { printf '%s\\n' \"$v\"; exit; }; for c in getconf 'busybox getconf' 'toybox getconf'; do v=$($c _NPROCESSORS_ONLN 2>/dev/null) || continue; case $v in ''|*[!0-9]*) continue ;; esac; [ \"$v\" -gt 0 ] 2>/dev/null && { printf '%s\\n' \"$v\"; exit; }; done; v=$($a 'BEGIN { if((getline s < \"/sys/devices/system/cpu/online\")>0 && s~/^[0-9]+(-[0-9]+)?(,[0-9]+(-[0-9]+)?)*$/) { k=split(s,a,\",\"); for(i=1;i<=k;i++) { m=split(a[i],b,\"-\"); if(m==2 && b[2]+0<b[1]+0) { n=0; break } n+=(m==2?b[2]-b[1]+1:1) } if(n>0) { print n; exit } } while((getline s < \"/proc/cpuinfo\")>0) { if(s~/^[[:space:]]*processor[[:space:]]*:[[:space:]]*[0-9]+[[:space:]]*$/ || s~/^[[:space:]]*processor[[:space:]]+[0-9]+:/) n++; if(s~/^[[:space:]]*#[[:space:]]*processors[[:space:]]*:/) { sub(/^[^:]*:/,\"\",s); p=s+0 } } if(n>0) print n; else if(p>0) print p }' 2>/dev/null); printf '%s\\n' \"${v:-unknown}\")\ncpu_model=$(for a in awk 'busybox awk' 'toybox awk'; do $a 'BEGIN { exit 0 }' </dev/null 2>/dev/null && break; done; r() { [ -r \"$1\" ] || return; while IFS= read -r s || [ -n \"$s\" ]; do printf '%s\\n' \"$s\"; done < \"$1\"; }; v=$({ lscpu 2>/dev/null || busybox lscpu 2>/dev/null || toybox lscpu 2>/dev/null; printf '\\n@@CPUINFO@@\\n'; r /proc/cpuinfo; printf '\\n@@MIDR@@\\n'; for f in /sys/devices/system/cpu/cpu[0-9]*/regs/identification/midr_el1; do r \"$f\"; done; } | $a 'function trim(s) { gsub(/^[[:space:]]+|[[:space:]]+$/, \"\", s); return s } function useful(s, t) { t=tolower(trim(s)); return t!=\"\" && t!~/^(unknown|undefined|unspecified|not specified|not available|not present|not installed|default string|to be filled by o\\.e\\.m\\.|n\\/a|none|null|\\(null\\)|-|(0x)?[0-9a-f]+)$/ && t!~/^(unknown|unidentified|unrecognized)([[:space:]]|$)/ && t!~/^(armv[0-9]+(-compatible)?|aarch64|arm64|arm)([[:space:]]+processor|[[:space:]]*\\(|$)/ && t!~/^(armv[0-9]+|aarch64|arm64|arm|processor|cpu|riscv(32|64)?|risc-v|x86_64|amd64|i[3-6]86|ppc64(le)?|powerpc|loongarch64|s390x)$/; } function number(s, n,i,d) { s=tolower(trim(s)); n=0; if(s~/^0x[0-9a-f]+$/) { for(i=3;i<=length(s);i++) { d=index(\"0123456789abcdef\",substr(s,i,1))-1; n=n*16+d } return n; } return s~/^[0-9]+$/ ? s+0 : -1; } function addname(s) { if(useful(s) && !names[s]++) name[++nn]=s } function arm(impl,part, id,s) { impl=number(impl); part=number(part); if(impl<0 || impl>255 || part<0 || part>4095) return; id=sprintf(\"%02x:%03x\",impl,part); if(ids[id]++) return; s=parts[id]; if(s==\"\") s=\"ARM implementer=0x\" substr(id,1,2) \" part=0x\" substr(id,4); core[++nc]=s; } function addraw(s) { if(s!=\"\" && !rawseen[s]++) raw[++nr]=s } function flush() { addname(model); if(implementer!=\"\" && part!=\"\") arm(implementer,part); if(mvendor!=\"\" || march!=\"\" || mimp!=\"\") addraw(\"RISC-V mvendorid=\" mvendor \" marchid=\" march \" mimpid=\" mimp); model=implementer=part=\"\"; mvendor=march=mimp=\"\"; } function table(impl,s, a,b,n,i) { n=split(s,a,\" \"); for(i=1;i<=n;i++) { split(a[i],b,\"=\"); parts[impl \":\" b[1]]=b[2] } } function output(a,n, i) { for(i=1;i<=n;i++) printf \"%s%s\",(i>1?\" + \":\"\"),a[i] } BEGIN { table(\"41\",\"b76=ARM1176 c05=Cortex-A5 c07=Cortex-A7 c08=Cortex-A8 c09=Cortex-A9 c0d=Cortex-A17 c0e=Cortex-A17 c0f=Cortex-A15 d01=Cortex-A32 d02=Cortex-A34 d03=Cortex-A53 d04=Cortex-A35 d05=Cortex-A55 d06=Cortex-A65 d07=Cortex-A57 d08=Cortex-A72 d09=Cortex-A73 d0a=Cortex-A75 d0b=Cortex-A76 d0c=Neoverse-N1 d0d=Cortex-A77 d0e=Cortex-A76AE d40=Neoverse-V1 d41=Cortex-A78 d42=Cortex-A78AE d44=Cortex-X1 d46=Cortex-A510 d47=Cortex-A710 d48=Cortex-X2 d49=Neoverse-N2 d4a=Neoverse-E1 d4b=Cortex-A78C d4d=Cortex-A715 d4e=Cortex-X3 d4f=Neoverse-V2 d80=Cortex-A520 d81=Cortex-A720 d82=Cortex-X4 d84=Neoverse-V3 d85=Cortex-X925 d87=Cortex-A725\"); table(\"42\",\"00f=Brahma-B15 100=Brahma-B53 516=ThunderX2\"); table(\"43\",\"0a0=ThunderX 0a1=ThunderX-88XX 0a2=ThunderX-81XX 0a3=ThunderX-83XX 0af=ThunderX2-99xx\"); table(\"46\",\"001=A64FX\"); table(\"4e\",\"000=Denver 003=Denver-2 004=Carmel\"); table(\"50\",\"000=X-Gene\"); table(\"51\",\"001=Oryon 00f=Scorpion 02d=Scorpion 04d=Krait 06f=Krait 201=Kryo 205=Kryo 211=Kryo 800=Falkor-V1/Kryo 801=Kryo-V2 802=Kryo-3XX-Gold 803=Kryo-3XX-Silver 804=Kryo-4XX-Gold 805=Kryo-4XX-Silver c00=Falkor c01=Saphira\"); table(\"c0\",\"ac3=Ampere-1 ac4=Ampere-1a\"); } /^@@CPUINFO@@$/ { section=1; next } /^@@MIDR@@$/ { flush(); section=2; next } section==2 { s=tolower(trim($0)); sub(/^0x/,\"\",s); if(s!~/^[0-9a-f]+$/ || length(s)<8) next; s=substr(s,length(s)-7); arm(\"0x\" substr(s,1,2),\"0x\" substr(s,5,3)); next; } section==1 && /^[[:space:]]*$/ { flush(); next } { pos=index($0,\":\"); if(!pos) next; key=tolower(trim(substr($0,1,pos-1))); value=trim(substr($0,pos+1)); if(section==0) { if(key==\"model name\" && useful(value) && !lsseen[value]++) ls[++nl]=value; if(key==\"bios model name\" && useful(value) && !biosseen[value]++) bios[++nb]=value; next; } if(key==\"processor\" && value~/^[0-9]+$/) flush(); if(key==\"cpu implementer\") implementer=value; if(key==\"cpu part\") part=value; if(key==\"mvendorid\") mvendor=value; if(key==\"marchid\") march=value; if(key==\"mimpid\") mimp=value; if(key~/^(model name|cpu model|cpu|uarch|cpu type|processor)$/ && useful(value)) { if(model==\"\" || key==\"model name\" || key==\"uarch\") model=value; } if(key~/^processor[[:space:]]+[0-9]+$/ && value~/machine[[:space:]]*=/) { s=value; sub(/^.*machine[[:space:]]*=[[:space:]]*/,\"\",s); sub(/[,[:space:]].*$/,\"\",s); if(s!=\"\") addraw(\"IBM S/390 machine \" s); } } END { flush(); if(nn>0) { output(name,nn); if(nc>1) { printf \" [cores: \"; output(core,nc); printf \"]\" } } else if(nc>1) { output(core,nc); } else if(nl>0) { output(ls,nl); } else if(nb>0) { output(bios,nb); } else if(nc>0) { output(core,nc); } else if(nr>0) { output(raw,nr); } if(nn+nc+nl+nb+nr>0) print \"\"; }' 2>/dev/null); [ -n \"$v\" ] && { printf '%s\\n' \"$v\"; exit; }; if ! $a 'BEGIN { exit 0 }' </dev/null 2>/dev/null; then v=$(emit() { [ -n \"$1\" ] || return; case \"$seen\" in *\"|$1|\"*) return ;; esac; printf '%s%s' \"$sep\" \"$1\"; sep=' + '; seen=\"$seen|$1|\"; }; rec() { if [ -n \"$n\" ]; then emit \"$n\"; elif [ -n \"$i\" ] && [ -n \"$p\" ]; then emit \"ARM implementer=$i part=$p\"; fi; n= i= p=; }; n= i= p= seen= sep=; if [ -r /proc/cpuinfo ]; then while IFS=: read -r k x || [ -n \"$k$x\" ]; do k=${k#\"${k%%[![:space:]]*}\"}; k=${k%\"${k##*[![:space:]]}\"}; x=${x#\"${x%%[![:space:]]*}\"}; x=${x%\"${x##*[![:space:]]}\"}; case \"$k\" in '') rec ;; processor) case \"$x\" in *[!0-9]*) ;; *) rec ;; esac ;; 'CPU implementer') i=$x ;; 'CPU part') p=$x ;; 'model name'|'Model Name'|'cpu model'|cpu|uarch|'cpu type'|Processor) case \"$x\" in ''|[Uu][Nn][Kk][Nn][Oo][Ww][Nn]*|[Nn]/[Aa]|[Aa][Rr][Mm]*[Pp]rocessor*|[Aa][Aa][Rr][Cc][Hh]64*) ;; *) case \"$x\" in *[!0-9]*) n=$x ;; esac ;; esac ;; esac; done < /proc/cpuinfo; rec; fi); [ -n \"$v\" ] && { printf '%s\\n' \"$v\"; exit; }; fi; v=$(for d in /sys/firmware/devicetree/base /proc/device-tree; do [ -d \"$d/cpus\" ] || continue; for f in \"$d\"/cpus/*/compatible; do [ -r \"$f\" ] || continue; tr '\\000' '\\n' < \"$f\" 2>/dev/null || busybox tr '\\000' '\\n' < \"$f\" 2>/dev/null || toybox tr '\\000' '\\n' < \"$f\" 2>/dev/null; done; break; done | $a 'NF && !seen[$0]++ { printf \"%s%s\",n++?\" + \":\"CPU compatible: \",$0 } END { if(n) print \"\" }' 2>/dev/null); printf '%s\\n' \"${v:-unknown ($arch)}\")\ngpu_info=$(for a in awk 'busybox awk' 'toybox awk'; do $a 'BEGIN { exit 0 }' </dev/null 2>/dev/null && break; done; r() { [ -r \"$1\" ] || return; while IFS= read -r s || [ -n \"$s\" ]; do printf '%s\\n' \"$s\"; done < \"$1\"; }; v=$(for c in lspci 'busybox lspci' 'toybox lspci'; do p=$($c -Dnn 2>/dev/null) || p=; [ -n \"$p\" ] || { p=$($c -nn 2>/dev/null) || p=; }; [ -n \"$p\" ] || { p=$($c 2>/dev/null) || p=; }; p=$(printf '%s\\n' \"$p\" | $a '{ s=tolower($0) } s~/\\[03[0-9a-f][0-9a-f]\\]/ || s~/(vga compatible|3d|display) controller/ || s~/(^|[[:space:]])(class[[:space:]]+)?03[0-9a-f][0-9a-f]:[[:space:]]/ { if(!seen[$0]++) print }' 2>/dev/null); [ -n \"$p\" ] && { printf '%s\\n' \"$p\"; break; }; done); if [ -n \"$v\" ]; then printf '%s\\n' \"$v\"; else for d in /sys/bus/pci/devices/*; do c=$(r \"$d/class\"); case $c in 0x03????) x=$(r \"$d/vendor\"); y=$(r \"$d/device\"); printf '%s display controller [%s:%s]\\n' \"${d##*/}\" \"${x#0x}\" \"${y#0x}\" ;; esac; done; fi; for d in /sys/class/drm/card[0-9]* /sys/class/drm/renderD[0-9]*; do [ -d \"$d/device\" ] || continue; case ${d##*/} in *-*) continue ;; esac; e=$(r \"$d/device/uevent\"); case $e in *PCI_SLOT_NAME=*) continue ;; esac; p=$(CDPATH= cd -P \"$d/device\" 2>/dev/null && pwd -P); [ -n \"$p\" ] || continue; x=$(printf '%s\\n' \"$e\" | $a '/^DRIVER=/ { sub(/^DRIVER=/,\"\"); print; exit }' 2>/dev/null); printf '%s DRM device: %s\\n' \"$p\" \"${x:-unknown}\"; done | $a '!seen[$0]++' 2>/dev/null)\nlast_output=$(last 2>/dev/null)\nfilter_output=$( ( export LANG=C LC_ALL=C; echo '===SHELL_BEHAVIOR==='; printf 'path_err='; ( ./xxxxxx 2>&1 || true ) | ( head -c 250 2>/dev/null || busybox head -c 250 2>/dev/null || dd bs=250 count=1 2>/dev/null ) | ( tr -d '\\n' 2>/dev/null || busybox tr -d '\\n' 2>/dev/null || cat ); printf '\\n'; printf 'cmd_err='; ( xxxxxx 2>&1 || true ) | ( head -c 250 2>/dev/null || busybox head -c 250 2>/dev/null || dd bs=250 count=1 2>/dev/null ) | ( tr -d '\\n' 2>/dev/null || busybox tr -d '\\n' 2>/dev/null || cat ); printf '\\n'; printf 'execute_err='; out=$(bash -c 'printf \"#!/bin/bash\\necho \\\"xxxxxx\\\"\\n\" > filter && chmod +x filter && ./filter && rm -rf filter' 2>&1); case \"$out\" in *xxxxxx*) ;; *) out=$(/bin/bash -c 'printf \"#!/bin/bash\\necho \\\"xxxxxx\\\"\\n\" > filter && chmod +x filter && ./filter && rm -rf filter' 2>&1); case \"$out\" in *xxxxxx*) ;; *) out=$(/usr/bin/bash -c 'printf \"#!/bin/bash\\necho \\\"xxxxxx\\\"\\n\" > filter && chmod +x filter && ./filter && rm -rf filter' 2>&1); case \"$out\" in *xxxxxx*) ;; *) out=$(busybox sh -c 'printf \"#!/bin/sh\\necho \\\"xxxxxx\\\"\\n\" > filter && chmod +x filter && ./filter && rm -rf filter' 2>&1 || sh -c 'printf \"#!/bin/sh\\necho \\\"xxxxxx\\\"\\n\" > filter && chmod +x filter && ./filter && rm -rf filter' 2>&1); esac; esac; esac; printf '%s' \"$out\" | ( head -c 250 2>/dev/null || busybox head -c 250 2>/dev/null || dd bs=250 count=1 2>/dev/null ) | ( tr -d '\\n' 2>/dev/null || busybox tr -d '\\n' 2>/dev/null || cat ); printf '\\n'; echo '===DONE===' ) 2>&1 )\nprintf 'UNAME:%s\\n' \"$uname\"\nprintf 'ARCH:%s\\n' \"$arch\"\nprintf 'UPTIME:%s\\n' \"$uptime\"\nprintf 'CPUS:%s\\n' \"$cpus\"\nprintf 'CPU_MODEL:%s\\n' \"$cpu_model\"\nprintf 'GPU:%s\\n' \"$gpu_info\"\nprintf 'LAST:%s\\n' \"$last_output\"\nprintf 'FILTER:%s\\n' \"$filter_output\"",
@@ -183,47 +183,47 @@
    },
    {
     "input": "pwd",
-    "count": 582
+    "count": 591
    },
    {
     "input": "ls -la /",
-    "count": 563
+    "count": 568
    },
    {
     "input": "ps aux | head -10",
-    "count": 514
+    "count": 522
    }
   ]
  },
  "behavioral_command_categories": {
-  "discovery": 69266,
-  "other": 824,
-  "destructive": 2545,
-  "shell-exec": 596,
-  "persistence-privilege": 28,
+  "discovery": 73480,
+  "other": 862,
+  "destructive": 2700,
+  "shell-exec": 611,
+  "persistence-privilege": 29,
   "empty": 7,
-  "downloader": 32
+  "downloader": 34
  },
  "downloads_uploads": {
-  "file_download_events": 434,
+  "file_download_events": 472,
   "file_download_failed_events": 0,
-  "file_upload_events": 78,
+  "file_upload_events": 90,
   "top_destfiles": [
    {
     "value": "/root/.ssh/authorized_keys",
-    "count": 157
-   },
-   {
-    "value": "/tmp/key.ppk",
-    "count": 30
+    "count": 167
    },
    {
     "value": "/tmp/sshcfg",
-    "count": 30
+    "count": 32
+   },
+   {
+    "value": "/tmp/key.ppk",
+    "count": 32
    },
    {
     "value": "/home/ubuntu/.ssh/authorized_keys",
-    "count": 9
+    "count": 10
    },
    {
     "value": "/home/admin/.ssh/authorized_keys",
@@ -233,43 +233,43 @@
   "top_shasums": [
    {
     "value": "a8460f446be540410004b1a8db4083773fa46f7fe76fa84219c93daa1669f8f2",
-    "count": 364
-   },
-   {
-    "value": "43728fbfb98bb39ff61a2db0fc2905bd6937997062b05b9ab8b186fdee18c09a",
-    "count": 30
+    "count": 397
    },
    {
     "value": "00b6f15c2274420217ed3098a9f5f00545bf1793d7a324fd18a7809cbbf5b12b",
-    "count": 30
+    "count": 32
+   },
+   {
+    "value": "43728fbfb98bb39ff61a2db0fc2905bd6937997062b05b9ab8b186fdee18c09a",
+    "count": 32
    }
   ]
  },
  "event_ids": {
-  "cowrie.log.closed": 73268,
-  "cowrie.session.closed": 100328,
-  "cowrie.session.connect": 100541,
-  "cowrie.client.version": 92821,
-  "cowrie.client.kex": 84927,
-  "cowrie.login.success": 77787,
-  "cowrie.direct-tcpip.request": 2355,
-  "cowrie.direct-tcpip.ja4": 1287,
-  "cowrie.direct-tcpip.data": 1683,
-  "cowrie.session.params": 73277,
-  "cowrie.command.input": 73298,
-  "cowrie.command.failed": 454,
-  "cowrie.session.file_download": 434,
-  "cowrie.login.failed": 435,
+  "cowrie.session.connect": 105497,
+  "cowrie.client.version": 97631,
+  "cowrie.client.kex": 89701,
+  "cowrie.login.success": 82471,
+  "cowrie.session.params": 77702,
+  "cowrie.command.input": 77723,
+  "cowrie.log.closed": 77693,
+  "cowrie.session.closed": 105283,
+  "cowrie.direct-tcpip.request": 2466,
+  "cowrie.direct-tcpip.ja4": 1349,
+  "cowrie.direct-tcpip.data": 1748,
+  "cowrie.command.failed": 492,
+  "cowrie.session.file_download": 472,
+  "cowrie.session.file_upload": 90,
+  "cowrie.login.failed": 451,
+  "cowrie.direct-tcpip.ja4h": 323,
   "cowrie.client.size": 10,
   "cowrie.client.var": 25,
   "cowrie.command.chpasswd": 5,
-  "cowrie.session.file_upload": 78,
   "cowrie.client.fingerprint": 110,
-  "cowrie.client.malformed_packet": 3,
-  "cowrie.direct-tcpip.ja4h": 320
+  "cowrie.client.malformed_packet": 3
  },
  "collection": {
-  "files": 38,
+  "files": 39,
   "log_path_on_sensor": "/home/jack/honeypot/var/log/cowrie/cowrie.json*",
   "per_day_utc": {
    "2026-08-27": 964,
@@ -309,10 +309,11 @@
    "2026-09-30": 3990,
    "2026-10-01": 2353,
    "2026-10-02": 18424,
-   "2026-10-03": 12938
+   "2026-10-03": 41555,
+   "2026-10-04": 9182
   },
-  "sensor_uptime_note": "Continuous daily log files 2026-08-27 through 2026-10-03, no missing days observed",
-  "bad_json_lines": 5
+  "sensor_uptime_note": "Continuous daily log files 2026-08-27 through 2026-10-04, no missing days observed",
+  "bad_json_lines": 6
  },
  "stack": {
   "cowrie": "3.0.13",
