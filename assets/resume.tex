@@ -86,6 +86,17 @@
 
 \newcommand{\resumeSubItem}[1]{\resumeItem{#1}\vspace{-4pt}}
 
+% One-line entry: label on the left, link flush right. Used for the ranked
+% results and certificate rows so every line sits on the same baseline --
+% \hfill inside a wrapped \resumeItem drops the link onto its own line and
+% leaves a ragged gap.
+\newcommand{\resumeEntry}[2]{%
+  \item
+  \begin{tabular*}{\linewidth}{@{}l@{\extracolsep{\fill}}r@{}}
+    #1 & \textit{\small #2} \\
+  \end{tabular*}\vspace{-6pt}%
+}
+
 \renewcommand\labelitemii{$\vcenter{\hbox{\tiny$\bullet$}}$}
 
 \newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=0.15in, label={}]}
@@ -119,7 +130,7 @@
 \section{Profile}
   \resumeSubHeadingListStart
     \resumeItem{Cybersecurity student focused on offensive security and reverse engineering. Co-founder of the \textbf{404squad} CTF team; I~organize our near-weekly competitions and mainly solve misc and rev challenges. \textbf{TryHackMe top 2\% globally} \mbox{(100+ rooms completed)}.}
-    \resumeItem{Built and operate \textbf{Threat Harbour}, a live Cowrie SSH honeypot on Oracle Cloud that has logged \textbf{496K+~attack~events from 3,772~unique~IPs} and republishes an aggregate threat-intel leaderboard every 24h. Author of \textbf{22~published~CTF~writeups} plus public lab notes and security tooling.}
+    \resumeItem{Built and operate \textbf{Threat Harbour}, a live Cowrie SSH honeypot on Oracle Cloud that has logged \textbf{760K+~attack~events from 4,923~unique~IPs} and republishes an aggregate threat-intel leaderboard every 24h. Author of \textbf{22~published~CTF~writeups} plus public lab notes and security tooling.}
   \resumeSubHeadingListEnd
 
 
@@ -130,7 +141,7 @@
       {Placid Vidya Vihar Senior Secondary School}{Changanassery, Kerala}
       {Class XII, CBSE (Classes XI--XII) -- expected completion Mar. 2027}{2025 -- 2027}
     \resumeSubheading
-      {Amrita Vidyalayam, Changanassery}{Vazhappally West, Kottayam, Kerala}
+      {Amrita Vidyalayam}{Vazhappally West, Kottayam, Kerala}
       {Class X, CBSE (Classes IX--X)}{2023 -- 2025}
     \resumeItem{\textbf{Earlier schooling:} \emph{Bharatiya Vidya Bhavan Senior Secondary School}, Thirunavaya, Malappuram (Class VIII, 2022--23); \emph{Raja Narayanlal Lahoti English School (RNLES)}, Latur, Maharashtra (Classes I--VII, to 2022)}
   \resumeSubHeadingListEnd
@@ -145,8 +156,8 @@
       {Competitive Capture The Flag}{Remote, India}
       \resumeItemListStart
         \resumeItem{One of three co-founders of 404squad; run the team's near-weekly competition cycle --- scheduling, challenge triage across web/pwn/rev/crypto/forensics, and post-event writeup reviews.}
-        \resumeItem{Primary solver on misc and reverse-engineering tracks; cross-train teammates and keep a shared methodology~so~results are repeatable, \mbox{not one-off}.}
-        \resumeItem{Document every competition in public writeups (github.com/aaadarsh1337/ctf-writeups) so teammates and readers can reproduce each solve step by step.}
+        \resumeItem{Primary solver on misc and reverse engineering; cross-train teammates and keep a shared methodology so results repeat.}
+        \resumeItem{Write up every competition publicly so teammates and readers can reproduce each solve step by step.}
       \resumeItemListEnd
 
     \resumeSubheading
@@ -170,15 +181,14 @@
             \resumeItem{Deployed and hardened a \textbf{Cowrie 3.0.13 SSH honeypot} on an OCI Free Tier VM (ap-hyderabad-1): single~exposed~port, NSG rules, restricted read-only SSH operator account, localhost-bound monitoring never exposed publicly.}
             \resumeItem{Built a \textbf{daily 00:00 UTC pipeline} that SSHes to the sensor, runs a stdlib-only parser on-box and commits \mbox{only aggregates} --- raw logs, source IPs, payloads and keys never leave the machine; out-of-band OCI API reboot handles a wedged sshd.}
             \resumeItem{Instrumented the sensor with \textbf{Grafana + Loki + Promtail} (SSH-tunnel only) \mbox{and gated every publish on a fail-loud \textbf{pytest} suite} with GitHub Actions CI.}
-            \resumeItem{\textbf{496,133 events / 3,772 unique IPs / 74,794 sessions} analysed to date: median session 2.4s, 94\%~of~commands are discovery/fingerprinting, repeated persistence probes toward authorized\_keys --- findings written up in the research docs.}
+            \resumeItem{\textbf{760,104 events / 4,923 unique IPs / 110,633 sessions} analyzed to date. Median session 2.4s; 94\%~of~commands are recon or fingerprinting, with repeated persistence attempts against authorized\_keys. Findings are written up in the research docs.}
             \resumeItem{Published a public \textbf{intel dashboard} (KPIs, timeline, credential/command leaderboards) rebuilt daily \mbox{from the same metrics}, plus machine-readable \texttt{metrics.json} feed.}
           \resumeItemListEnd
       \resumeProjectHeading
           {\textbf{Security Automation Toolkit} $|$ \emph{Python, Bash}}{Jul. 2026 -- Present}
           \resumeItemListStart
             \resumeItem{Wrote a set of small CLI utilities for repetitive assessment work: port scanner, subdomain hunter, hash cracker, DNS scanner, host-to-IP resolver, IP tracker and WordPress content discovery.}
-            \resumeItem{Shell tooling for \textbf{recon and web-app enumeration} (service/version sweeps, content brute-forcing) documented with usage examples for CTF and lab use.}
-            \resumeItem{Readable, explicit CLI usage keeps each classic tool's workflow understandable, not black-boxed.}
+            \resumeItem{Shell tooling for \textbf{recon and web application enumeration} (service and version sweeps, content brute-forcing), documented with usage examples for CTF and lab use.}
           \resumeItemListEnd
       \resumeProjectHeading
           {\textbf{Security Portfolio \& Publishing Platform} $|$ \emph{HTML, CSS, JS, Python}}{Aug. 2026 -- Present}
@@ -193,12 +203,14 @@
 %-----------COMPETITIVE RESULTS-----------
 \section{Competitive Results}
   \resumeSubHeadingListStart
-    \resumeItem{\textbf{z0d1ak CTF 2026} --- 404squad: \textbf{\#13 Human Division}, \#75 Overall \hfill \href{https://github.com/aaadarsh1337/cybersecurity-achievements/tree/main/z0d1ak-ctf}{\underline{proof}}}
-    \resumeItem{\textbf{TFC CTF 2026} --- 404squad: \textbf{\#23 Human Division}, \#172 Overall \hfill \href{https://github.com/aaadarsh1337/cybersecurity-achievements/tree/main/TFCCTF}{\underline{proof}}}
-    \resumeItem{\textbf{TryHackMe} --- \textbf{Top 2\% globally}, 100+ rooms completed (pwn, web, RE, cloud, forensics tracks) \hfill \href{https://tryhackme.com/p/aaadarsh1337}{\underline{profile}}}
-    \resumeItem{\textbf{Hacker Holidays 2026 (TryHackMe)} --- full 15-room event written up, Beginner through Advanced, spanning OSINT, web, cloud, forensics, crypto and rev.}
-    \resumeItem{\textbf{pwnable.kr} --- Toddler's Bottle (BOF, Collision, FD, Passcode); \textbf{picoCTF} --- heap/pwn and rev+crypto challenges\\
-      \hspace*{\fill}\href{https://ctftime.org/user/265799}{\underline{CTFtime}}}
+    \resumeEntry{\textbf{Lun4R CTF 2026} \emph{qualifiers} --- 404squad: \textbf{\#2} overall}{\href{https://github.com/aaadarsh1337/cybersecurity-achievements/tree/main/Lun4R-quals}{proof}}
+    \resumeEntry{\textbf{PwnSec CTF 2026} --- 404squad: \textbf{\#6} human division, 237 teams}{\href{https://github.com/aaadarsh1337/cybersecurity-achievements/tree/main/PwnSec}{proof}}
+    \resumeEntry{\textbf{Lun4R CTF 2026} \emph{finals} --- 404squad: \textbf{\#9} overall}{\href{https://github.com/aaadarsh1337/cybersecurity-achievements/tree/main/Lun4R-finals}{proof}}
+    \resumeEntry{\textbf{z0d1ak CTF 2026} --- 404squad: \textbf{\#13} human, \#75 overall}{\href{https://github.com/aaadarsh1337/cybersecurity-achievements/tree/main/z0d1ak-ctf}{proof}}
+    \resumeEntry{\textbf{TFC CTF 2026} --- 404squad: \textbf{\#23} human, \#172 overall}{\href{https://github.com/aaadarsh1337/cybersecurity-achievements/tree/main/TFCCTF}{proof}}
+    \resumeEntry{\textbf{H7CTF 2026} --- 404squad: \textbf{\#58} overall}{\href{https://github.com/aaadarsh1337/cybersecurity-achievements/tree/main/H7CTF}{proof}}
+    \resumeEntry{\textbf{TryHackMe} --- top 2\% globally, 100+ rooms completed}{\href{https://tryhackme.com/p/aaadarsh1337}{profile}}
+    \resumeItem{\textbf{pwnable.kr} --- Toddler's Bottle; \textbf{picoCTF} --- heap and rev; \textbf{Hacker Holidays 2026} --- all 15 rooms}
   \resumeSubHeadingListEnd
 
 
@@ -206,12 +218,11 @@
 \section{Technical Skills}
  \begin{itemize}[leftmargin=0.15in, label={}]
     \small{\item{
-     \textbf{Security}{: Web Exploitation, Network Security, Reverse Engineering, Binary Exploitation (pwn), OSINT, Threat~Intelligence \& Honeypot Operations, Vulnerability Research} \\
-     \textbf{Tools}{: Burp Suite, ffuf, Nuclei, Nikto, sqlmap, Nmap, Wireshark, Ghidra,}\\
-     Binary Ninja, pwntools, pwndbg, Autopsy, Binwalk \\
+     \textbf{Security}{: Web Exploitation, Network Security, Reverse Engineering, Binary Exploitation (pwn), OSINT, Threat~Intelligence, Honeypot Operations} \\
+     \textbf{Tools}{: Burp Suite, ffuf, Nuclei, Nikto, sqlmap, Nmap, Wireshark, Ghidra, Binary Ninja, pwntools, pwndbg, Autopsy, Binwalk} \\
      \textbf{Languages}{: Python, Bash, C, SQL, Go} \\
-     \textbf{Platforms}{: Linux, Docker, Git, GitHub Actions, GitHub Pages, Oracle Cloud (OCI), Grafana + Loki + Promtail} \\
-     \textbf{Currently Learning}{: Forensics, Cloud, Assembly for RE, Blockchain}
+     \textbf{Platforms}{: Linux, Docker, Git, GitHub Actions, Oracle Cloud (OCI), Grafana, Loki} \\
+     \textbf{Currently Learning}{: Forensics, Cloud, Assembly, Blockchain}
     }}
  \end{itemize}
 
@@ -219,11 +230,15 @@
 %-----------CERTIFICATIONS-----------
 \section{Certificates \& Training}
   \resumeSubHeadingListStart
-    \resumeItem{\textbf{Practical Ethical Hacking} --- TCM Security \& Udemy, 2021 \hfill \href{https://www.udemy.com/certificate/UC-17b88a43-ad89-4b6a-a73a-ce3f22cdc753/}{\underline{verify}}}
-    \resumeItem{\textbf{Advent of Cyber 3} --- TryHackMe, 2021 \hfill \href{https://tryhackme-certificates.s3-eu-west-1.amazonaws.com/THM-KMESEDNQTS.pdf}{\underline{verify}}}
-    \resumeItem{\textbf{Hacker Holidays} --- TryHackMe, 2026 \hfill \href{https://tryhackme-certificates.s3-eu-west-1.amazonaws.com/THM-THCFDTXKFZ.pdf}{\underline{verify}}}
-    \resumeItem{\textbf{z0d1ak CTF 2026} --- Participant certificate \hfill \href{https://github.com/aaadarsh1337/cybersecurity-achievements/blob/main/z0d1ak-ctf/z0d1ak-certificate-adarsh-pillai.pdf}{\underline{verify}}}
-    \resumeItem{\textbf{TFC CTF 2026} --- Participant diploma \hfill \href{https://github.com/aaadarsh1337/cybersecurity-achievements/blob/main/TFCCTF/tfc-ctf-26-diploma-adarsh-pillai.png}{\underline{verify}}}
+    \resumeEntry{\textbf{PwnSec CTF 2026} --- 6th, human division of 237 teams}{\href{https://github.com/aaadarsh1337/cybersecurity-achievements/blob/main/PwnSec/006_404squad.pdf}{verify}}
+    \resumeEntry{\textbf{Lun4R CTF 2026} \emph{finals} --- 404squad, 9th}{\href{https://github.com/aaadarsh1337/cybersecurity-achievements/blob/main/Lun4R-finals/Adarsh\%20Pillai\%20(404squad).pdf}{verify}}
+    \resumeEntry{\textbf{Lun4R CTF 2026} \emph{qualifiers} --- 404squad, 2nd}{\href{https://github.com/aaadarsh1337/cybersecurity-achievements/blob/main/Lun4R-quals/LUN4R_CTF_2026_Certificate_Adarsh_Pillai.jpg}{verify}}
+    \resumeEntry{\textbf{H7CTF 2026} --- 404squad, 58th}{\href{https://github.com/aaadarsh1337/cybersecurity-achievements/blob/main/H7CTF/certificate_H7CTF26-46VN-V3V2-32HK.png}{verify}}
+    \resumeEntry{\textbf{z0d1ak CTF 2026} --- 404squad, 75th}{\href{https://github.com/aaadarsh1337/cybersecurity-achievements/blob/main/z0d1ak-ctf/z0d1ak-certificate-adarsh-pillai.pdf}{verify}}
+    \resumeEntry{\textbf{TFC CTF 2026} --- 404squad, 172nd}{\href{https://github.com/aaadarsh1337/cybersecurity-achievements/blob/main/TFCCTF/tfc-ctf-26-diploma-adarsh-pillai.png}{verify}}
+    \resumeEntry{\textbf{Hacker Holidays} --- TryHackMe, 2026}{\href{https://tryhackme-certificates.s3-eu-west-1.amazonaws.com/THM-THCFDTXKFZ.pdf}{verify}}
+    \resumeEntry{\textbf{Advent of Cyber 3} --- TryHackMe, 2021}{\href{https://tryhackme-certificates.s3-eu-west-1.amazonaws.com/THM-KMESEDNQTS.pdf}{verify}}
+    \resumeEntry{\textbf{Practical Ethical Hacking} --- TCM Security, 2021}{\href{https://www.udemy.com/certificate/UC-17b88a43-ad89-4b6a-a73a-ce3f22cdc753/}{verify}}
   \resumeSubHeadingListEnd
 
 \end{document}

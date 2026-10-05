@@ -17,7 +17,7 @@ Static site on GitHub Pages. No backend and no build step for the main site; Pyt
 |---------|--------|--------------|
 | **01 · About / Hero** | `js/config.js` → `profile`, `stats` | Bio, tagline, location, résumé button, stats band |
 | **02 · Skillset** | `js/config.js` → `skills` | Offensive sec / languages / tools / currently learning |
-| **03 · Achievements** | `js/config.js` → `achievements` | CTF placements, THM rank, with proof links |
+| **03 · CTF Highlights** | `js/config.js` → `achievements` | 404squad placements per event, in the order played, with proof links |
 | **04 · Case study** | `js/config.js` → `flagship` | Threat Harbour SSH honeypot case study with live sensor metrics and links |
 | **05 · Writing** | `blog/search.json` | Latest security note + link to the full writing archive |
 | **06 · Repositories** | GitHub REST API + `js/config.js` → `github` | Supporting public repos sorted by recent push, with language / stars / push date |

@@ -210,7 +210,7 @@
     const entries = [
        { label: "Go to About", detail: "section", run: () => goSection("about") },
        { label: "Go to Skillset", detail: "section", run: () => goSection("skillset") },
-       { label: "Go to Achievements", detail: "section", run: () => goSection("achievements") },
+       { label: "Go to CTF Highlights", detail: "section", run: () => goSection("achievements") },
        { label: "Go to Threat Harbour", detail: "case study", run: () => goSection("threat-harbour") },
        { label: "Go to Writing", detail: "section", run: () => goSection("writing") },
        { label: "Go to Repositories", detail: "section", run: () => goSection("repositories") },

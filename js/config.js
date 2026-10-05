@@ -40,10 +40,12 @@ window.PORTFOLIO_CONFIG = {
     ],
     stack: ["Cowrie 3.x", "Oracle Cloud", "Grafana + Loki", "GitHub Actions", "Python"],
     metricsUrl: "https://raw.githubusercontent.com/aaadarsh1337/threat-harbour/main/analysis/metrics.json",
+    // Shown only if the metrics.json fetch fails; main.js swaps in the live
+    // numbers on success. Keep in step with the latest analysis/metrics.json.
     fallbackStats: [
-      { value: "496,133", label: "events captured" },
-      { value: "3,772", label: "unique source IPs" },
-      { value: "74,797", label: "sessions" },
+      { value: "760,104", label: "events captured" },
+      { value: "4,923", label: "unique source IPs" },
+      { value: "110,633", label: "sessions" },
       { value: "daily", label: "leaderboard refresh" }
     ],
     links: {
@@ -108,7 +110,34 @@ window.PORTFOLIO_CONFIG = {
     }
   ],
 
+  // --- CTF Highlights (03) ---------------------------------------------
+  // Team placements, best event first. Order is the sequence played, not
+  // sorted by rank. No link = text only.
   achievements: [
+    {
+      title: "Lun4R CTF 2026 - Finals",
+      detail: "404squad - #9 Overall",
+      date: "2026",
+      url: "https://github.com/aaadarsh1337/cybersecurity-achievements/tree/main/Lun4R-finals"
+    },
+    {
+      title: "H7CTF 2026",
+      detail: "404squad - #58 Overall",
+      date: "2026",
+      url: "https://github.com/aaadarsh1337/cybersecurity-achievements/tree/main/H7CTF"
+    },
+    {
+      title: "Lun4R CTF 2026 - Qualifiers",
+      detail: "404squad - #2 Overall",
+      date: "2026",
+      url: "https://github.com/aaadarsh1337/cybersecurity-achievements/tree/main/Lun4R-quals"
+    },
+    {
+      title: "PwnSec CTF 2026",
+      detail: "404squad - #6 Human Division of 237 teams",
+      date: "2026",
+      url: "https://github.com/aaadarsh1337/cybersecurity-achievements/tree/main/PwnSec"
+    },
     {
       title: "TFC CTF 2026",
       detail: "404squad - #23 Human Division; #172 Overall",
@@ -120,12 +149,6 @@ window.PORTFOLIO_CONFIG = {
       detail: "404squad - #13 Human Division; #75 Overall",
       date: "2026",
       url: "https://github.com/aaadarsh1337/cybersecurity-achievements/tree/main/z0d1ak-ctf"
-    },
-    {
-      title: "TryHackMe",
-      detail: "Top 2% Global; 100+ Rooms Completed",
-      date: "2026",
-      url: "https://tryhackme.com/p/aaadarsh1337"                               // no link = text only
     }
   ],
 
@@ -141,6 +164,34 @@ window.PORTFOLIO_CONFIG = {
   // Duplicate the object below for each certificate. Order = display order.
   certificates: [
     {
+      name: "PwnSec CTF",
+      issuer: "PwnSec",
+      date: "2026",
+      credentialUrl: "https://github.com/aaadarsh1337/cybersecurity-achievements/blob/main/PwnSec/006_404squad.pdf",
+      image: "assets/certificate.png"
+    },
+    {
+      name: "Lun4R CTF - Finals",
+      issuer: "ROOT RIET",
+      date: "2026",
+      credentialUrl: "https://github.com/aaadarsh1337/cybersecurity-achievements/blob/main/Lun4R-finals/Adarsh%20Pillai%20(404squad).pdf",
+      image: "assets/certificate.png"
+    },
+    {
+      name: "Lun4R CTF - Qualifiers",
+      issuer: "ROOT RIET",
+      date: "2026",
+      credentialUrl: "https://github.com/aaadarsh1337/cybersecurity-achievements/blob/main/Lun4R-quals/LUN4R_CTF_2026_Certificate_Adarsh_Pillai.jpg",
+      image: "assets/certificate.png"
+    },
+    {
+      name: "H7CTF",
+      issuer: "H7CTF / ABU",
+      date: "2026",
+      credentialUrl: "https://github.com/aaadarsh1337/cybersecurity-achievements/blob/main/H7CTF/certificate_H7CTF26-46VN-V3V2-32HK.png",
+      image: "assets/certificate.png"
+    },
+    {
       name: "TFC CTF",
       issuer: "TFC",
       date: "2026",
@@ -155,21 +206,21 @@ window.PORTFOLIO_CONFIG = {
       image: "assets/certificate.png"        // drop a real badge into assets/ and point here
     },
     {
-      name: "HACKER HOLIDAYS",
+      name: "Hacker Holidays",
       issuer: "TryHackMe",
       date: "2026",
       credentialUrl: "https://tryhackme-certificates.s3-eu-west-1.amazonaws.com/THM-THCFDTXKFZ.pdf",                          // verification link (optional)
       image: "assets/certificate.png"        // drop a real badge into assets/ and point here
     },
     {
-      name: "ADVENT OF CYBER 3",
+      name: "Advent of Cyber 3",
       issuer: "TryHackMe",
       date: "2021",
       credentialUrl: "https://tryhackme-certificates.s3-eu-west-1.amazonaws.com/THM-KMESEDNQTS.pdf",                          // verification link (optional)
       image: "assets/certificate.png"        // drop a real badge into assets/ and point here
     },
     {
-      name: "PRACTICAL ETHICAL HACKING",
+      name: "Practical Ethical Hacking",
       issuer: "TCM Security & Udemy",
       date: "2021",
       credentialUrl: "https://www.udemy.com/certificate/UC-17b88a43-ad89-4b6a-a73a-ce3f22cdc753/",                          // verification link (optional)
