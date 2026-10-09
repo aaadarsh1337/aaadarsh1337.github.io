@@ -234,6 +234,7 @@ html {
 }
 .cmdk-fab:hover { border-color: var(--accent); transform: translateY(-1px); }
 .cmdk-fab .fab-label { font-size: 12px; letter-spacing: 0.04em; }
+.cmdk-fab .fab-icon { display: none; align-items: center; justify-content: center; }
 @keyframes fabPulse {
   0% { box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 0 0 rgba(125, 207, 255, 0.45); }
   100% { box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 0 16px rgba(125, 207, 255, 0); }
@@ -243,13 +244,18 @@ html {
   .cmdk-fab {
     right: 10px;
     bottom: 10px;
-    width: 42px;
-    height: 42px;
+    width: 44px;
+    height: 44px;
     padding: 0;
     justify-content: center;
     font-size: 12px;
   }
   .cmdk-fab .fab-label { display: none; }
+  /* Touch devices have no ⌘K chord, so the glyph is swapped for a search
+     mark. The aria-label/title still describe the real shortcut. */
+  .cmdk-fab .fab-glyph { display: none; }
+  .cmdk-fab .fab-icon { display: inline-flex; }
+  .cmdk-fab .fab-icon svg { width: 17px; height: 17px; }
 }
 
 /* ---------- Typographic scale ---------- */
@@ -262,6 +268,71 @@ html {
   font-size: 15px;
   margin: 0 0 30px;
   max-width: 60ch;
+}
+/* ---------- 404 topbar ----------
+   Only the 404 page uses these classes; the portfolio itself uses .rail.
+   Kept here so /404.html needs no separate stylesheet. */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-bottom: 1px solid var(--line);
+  background: rgba(26, 27, 38, .93);
+  backdrop-filter: blur(10px);
+}
+.topbar__inner {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 12px 32px;
+}
+.topbar__brand {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 10px;
+  color: var(--ink);
+  font-family: var(--mono);
+}
+.topbar__brand:hover { text-decoration: none; }
+.brand-mark {
+  padding: 4px 8px;
+  border-radius: 1px;
+  background: var(--accent);
+  color: var(--bg);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .08em;
+}
+.brand-text { font: 600 15px var(--display); }
+.topbar__nav {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.topbar__nav::-webkit-scrollbar { display: none; }
+.topbar__link {
+  display: inline-flex;
+  flex: 0 0 auto;
+  min-height: 44px;
+  align-items: center;
+  padding: 8px 10px;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  color: var(--muted);
+  font: 12px var(--mono);
+}
+.topbar__link:hover, .topbar__link:focus-visible {
+  border-color: var(--line-bright);
+  background: var(--accent-2-soft);
+  color: var(--ink);
+  text-decoration: none;
 }
 .not-found {
   max-width: 720px;
@@ -283,6 +354,13 @@ html {
 }
 
 /* Section label — a precise eyebrow anchored by registration crosshairs */
+/* Dim mono de-emphasis for placeholders/empty states. Defined here because the
+   generated sub-sites inherit this file for tokens but ship their own copy of
+   this rule; without it these strings render as full-brightness body text. */
+.dim {
+  color: var(--dim);
+  font-family: var(--mono);
+}
 .fig-label {
   font-family: var(--mono);
   font-size: 12px;
@@ -1685,10 +1763,13 @@ main {
   .rail__brand {
     margin: 0;
     min-width: 0;
-    flex: 0 1 auto;
+    flex: 0 0 auto;
+    /* The brand slug duplicates the handle, so on phones it yields its space
+       to the name. font-size:0 hides the text but keeps the ::before marker
+       square as the visual anchor. */
     overflow: hidden;
     white-space: nowrap;
-    text-overflow: ellipsis;
+    font-size: 0;
   }
   .rail__identity {
     display: flex;
@@ -1735,8 +1816,8 @@ main {
     align-items: center;
     justify-content: center;
     gap: 5px;
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
     background: var(--panel);
     border: 1px solid var(--line);
     cursor: pointer;
@@ -1750,21 +1831,33 @@ main {
   .hero__portrait img { width: 128px; height: 128px; }
 }
 
+@media (max-width: 480px) {
+  /* Name + handle need ~200px plus the toggle; below this the handle is the
+     one that yields, so the name never truncates. */
+  .rail__handle { display: none; }
+}
+
 @media (max-width: 380px) {
   .rail { gap: 6px; padding-left: 10px; padding-right: 10px; }
-  .rail__brand { font-size: 9px; letter-spacing: 0.14em; }
+  .rail__brand { font-size: 0; letter-spacing: 0.14em; }
   .rail__identity { gap: 5px; }
   .rail__handle { display: none; }
 }
 
 @media (max-width: 560px) {
   main { padding: 88px 16px 40px; }
+  /* Comfortable touch targets: 44px minimum on phones. */
+  .btn { min-height: 44px; }
+  .achieve-item__link { display: inline-block; min-height: 44px; padding: 12px 0; }
   .sheet { padding: 32px 0 40px; }
   .skill-grid { grid-template-columns: 1fr; gap: 14px; }
   .skill-card { padding: 18px 18px; }
   .hero__text h1 { font-size: 1.9rem; }
   .hero__bio { margin-top: 22px; font-size: 15px; }
   .not-found { padding: 96px 18px 72px; }
+  .topbar__inner { flex-wrap: wrap; gap: 8px; padding: 9px 12px; }
+  .topbar__nav { width: 100%; margin-left: 0; justify-content: flex-start; }
+  .topbar__link { min-height: 44px; padding: 7px 9px; font-size: 11px; }
   .repo-grid, .cert-grid { grid-template-columns: 1fr; }
   .hero__writing { grid-template-columns: 1fr auto; gap: 8px 12px; }
   .hero__writing-label { grid-column: 1 / -1; }
@@ -1784,6 +1877,7 @@ main {
 /* ---------- Print (clean one-pager, no app chrome) ---------- */
 @media print {
   .rail,
+  .topbar,
   .cmdk-fab,
   .cmdk,
   .cmdk-backdrop,

@@ -998,7 +998,11 @@
         return;
       }
 
-      status.textContent = `${repos.length} repositor${repos.length === 1 ? "y" : "ies"} — browse a repo to view its files (or press Ctrl+K)`;
+      // Touch devices have no ⌘K chord, so don't advertise one there.
+        var cmdHint = matchMedia("(hover: none)").matches
+          ? "tap ⌘K for search"
+          : "press Ctrl+K";
+        status.textContent = `${repos.length} repositor${repos.length === 1 ? "y" : "ies"} — browse a repo to view its files (or ${cmdHint})`;
       grid.innerHTML = "";
       repoCache = repos;
       repos.forEach((repo) => grid.appendChild(renderRepoCard(repo, pinned)));

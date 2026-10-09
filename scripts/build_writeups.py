@@ -31,7 +31,7 @@ import shutil
 import urllib.request
 from html.parser import HTMLParser
 from pathlib import Path
-from urllib.parse import urlparse
+from urllib.parse import quote, urlparse
 
 try:
     import markdown
@@ -62,6 +62,88 @@ EVENT_LABELS = {
 }
 
 SKIP_DIRS = {".git", ".github", "node_modules", "__pycache__"}
+
+# Extensions the file drawer shows a language chip for. Anything outside this
+# set is still listed, but rendered as a generic binary/download entry.
+FILE_LANG = {
+    "py": "python", "c": "c", "h": "c", "cpp": "cpp", "cc": "cpp", "sh": "bash",
+    "bash": "bash", "zsh": "bash", "rb": "ruby", "pl": "perl", "php": "php",
+    "js": "javascript", "ts": "typescript", "go": "go", "rs": "rust",
+    "java": "java", "kt": "kotlin", "cs": "csharp", "ps1": "powershell",
+    "sql": "sql", "lua": "lua", "r": "r", "asm": "asm", "s": "asm",
+    "md": "markdown", "txt": "text", "log": "text", "out": "text",
+    "json": "json", "yml": "yaml", "yaml": "yaml", "toml": "toml",
+    "xml": "xml", "html": "html", "htm": "html", "css": "css",
+    "pcap": "pcap", "pcapng": "pcap", "csv": "csv", "env": "shell",
+    "conf": "config", "cfg": "config", "ini": "config", "pyc": "binary",
+}
+# Whole-extension-less files. Some are known tools/commands (nmap dumps, docker
+# files); the rest are probed by content at build time, since CTF folders are
+# full of extension-less payload names like "somebase64" or "fullscan".
+NOEXT_LANG = {"fullscan": "scan", "basicscan": "scan", "dockerfile": "dockerfile"}
+# Extensions that are genuinely not renderable as text on GitHub.
+BINARY_EXT = {"zip", "exe", "dll", "so", "bin", "7z", "rar", "tar", "gz", "bz2",
+              "xz", "png", "jpg", "jpeg", "gif", "webp", "pdf", "pcap", "pcapng",
+              "obj", "class", "jar", "iso", "img", "msi", "dmg", "pyc", "o", "a"}
+
+_TEXT_SNIFF_BYTES = 1024
+
+
+def sniff_noext(path: Path) -> str:
+    """Classify an extension-less file by sampling its bytes."""
+    try:
+        with path.open("rb") as fh:
+            chunk = fh.read(_TEXT_SNIFF_BYTES)
+    except OSError:
+        return "file"
+    if not chunk:
+        return "file"
+    # A NUL byte in the first block means binary (heuristic used widely).
+    if b"\x00" in chunk:
+        return "binary"
+    printable = sum(
+        1 for b in chunk if b in (9, 10, 13) or 32 <= b < 127 or b >= 128
+    )
+    if printable / len(chunk) < 0.85:
+        return "binary"
+    # base64 / hex blobs are text but not source; label them accordingly.
+    stripped = b"".join(chunk.split())
+    if stripped and all(c in b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=" for c in stripped):
+        return "base64"
+    if stripped and all(c in b"0123456789abcdefABCDEF" for c in stripped):
+        return "hex"
+    return "text"
+
+
+def file_lang(name: str, abs_path: Path | None = None) -> str:
+    ext = Path(name).suffix.lower().lstrip(".")
+    if ext in BINARY_EXT:
+        return ext
+    if ext:
+        lang = FILE_LANG.get(ext)
+        if lang:
+            return lang
+        # Unknown extension (.DATA, .BTR, .MAP): let content decide, so a
+        # 23 MB blob isn't labelled as if it were source.
+        return sniff_noext(abs_path) if abs_path is not None and abs_path.is_file() else ext
+    known = NOEXT_LANG.get(name.lower())
+    if known:
+        return known
+    if abs_path is not None and abs_path.is_file():
+        return sniff_noext(abs_path)
+    return "file"
+
+
+def file_is_viewable(name: str, lang: str) -> bool:
+    """True when GitHub renders this file as text (so it is worth linking to)."""
+    return lang not in {"binary"} and Path(name).suffix.lower().lstrip(".") not in BINARY_EXT
+
+def human_size(n: int) -> str:
+    if n < 1024:
+        return f"{n} B"
+    if n < 1024 * 1024:
+        return f"{n / 1024:.0f} KB"
+    return f"{n / (1024 * 1024):.1f} MB"
 
 def find_writeups(source: Path):
     results = []
@@ -496,15 +578,138 @@ def list_files_recursive(folder: Path, source: Path):
             if f.startswith("."):
                 continue
             p = Path(root) / f
+            if p.is_symlink() or not p.is_file():
+                continue
+            try:
+                size = p.stat().st_size
+            except OSError:
+                size = 0
             rel = p.relative_to(source).as_posix()
             rel_to_challenge = p.relative_to(folder).as_posix()
             out.append({
                 "name": f,
                 "rel_repo": rel,
                 "rel_local": rel_to_challenge,
-                "ext": p.suffix.lstrip(".").lower() or p.name.lower(),
+                "size": size,
+                "path": p,
+                "lang": file_lang(f, p),
             })
     return out
+
+
+def build_file_tree(files: list) -> list:
+    """Fold a flat rel_local file list into a nested tree of dir/file nodes."""
+    root: dict = {"dirs": {}, "files": []}
+    for entry in files:
+        parts = Path(entry["rel_local"]).parts
+        node = root
+        for part in parts[:-1]:
+            node = node["dirs"].setdefault(part, {"dirs": {}, "files": []})
+        node["files"].append(entry)
+    return root
+
+
+def _tree_sort_key(node: dict) -> tuple:
+    """Dirs first, then case-insensitive name — stable and predictable."""
+    return (0 if node.get("is_dir") else 1, str(node.get("name", "")).lower())
+
+
+def count_files(nodes: dict) -> int:
+    """Total files under a dir node, counting nested subdirs too."""
+    return len(nodes["files"]) + sum(count_files(d) for d in nodes["dirs"].values())
+
+
+def render_file_tree(files: list, md_rel: str, gh_base: str, branch: str) -> str:
+    """Collapsible per-challenge attachments drawer.
+
+    Links out to GitHub rather than inlining: challenge folders hold multi-MB
+    payloads (a single OBJECTS.DATA here is 24 MB), so shipping contents would
+    be pointless. The drawer is closed by default so the reading column stays
+    exactly as wide as before.
+    """
+    if not files:
+        return ""
+    tree = build_file_tree(files)
+    total = len(files)
+    md_quoted = "/".join(quote(seg) for seg in md_rel.split("/"))
+
+    def render(nodes: dict, depth: int, path: tuple) -> str:
+        rows = []
+        built = []
+        for name, node in nodes["dirs"].items():
+            built.append({"name": name, "is_dir": True, "node": node})
+        for f in nodes["files"]:
+            built.append({"name": f["name"], "is_dir": False, "file": f})
+        built.sort(key=_tree_sort_key)
+
+        for item in built:
+            pad = 10 + depth * 17
+            if item["is_dir"]:
+                name = item["name"]
+                here = path + (name,)
+                # Stable, collision-free across the whole page: the full
+                # ancestor path is part of the key, so sibling branches that
+                # share a leaf name still get distinct ids.
+                slug = "-".join(re.sub(r"[^A-Za-z0-9]+", "-", s).strip("-").lower() for s in here)
+                gid = f"fd-{len(slug)}-{slug}"[:90]
+                inner = render(item["node"], depth + 1, here)
+                count = count_files(item["node"])
+                rows.append(
+                    f'<li class="fnode fnode--dir" style="--fd:{pad}px">'
+                    f'<button type="button" class="fnode__row fnode__row--dir" '
+                    f'aria-expanded="false" aria-controls="{gid}">'
+                    f'<span class="fnode__arrow" aria-hidden="true"></span>'
+                    f'<span class="fnode__name">{html.escape(name)}</span>'
+                    f'<span class="fnode__meta">{count} file{"s" if count != 1 else ""}</span>'
+                    f"</button>"
+                    f'<ul class="fnode__children" id="{gid}" hidden>{inner}</ul>'
+                    f"</li>"
+                )
+            else:
+                f = item["file"]
+                is_md = f["rel_repo"] == md_rel
+                url = f"{gh_base}/blob/{branch}/" + "/".join(
+                    quote(seg) for seg in f["rel_repo"].split("/")
+                )
+                chip = f["lang"]
+                viewable = file_is_viewable(f["name"], chip)
+                cls = "fnode--md" if is_md else ("fnode--bin" if not viewable else "fnode--src")
+                # The writeup's own markdown is this page, not a GitHub link.
+                name_html = (
+                    f'<span class="fnode__name">{html.escape(f["name"])}</span>'
+                    f'<span class="fnode__here">this page</span>'
+                    if is_md else
+                    f'<span class="fnode__name">{html.escape(f["name"])}</span>'
+                )
+                rows.append(
+                    f'<li class="fnode {cls}" style="--fd:{pad}px">'
+                    + (
+                        f'<div class="fnode__row">{name_html}'
+                        f'<span class="fnode__chip">{html.escape(chip)}</span>'
+                        f'<span class="fnode__meta">{html.escape(human_size(f["size"]))}</span>'
+                        f"</div>"
+                        if is_md else
+                        f'<a class="fnode__row" href="{html.escape(url)}" '
+                        f'target="_blank" rel="noopener noreferrer">{name_html}'
+                        f'<span class="fnode__chip">{html.escape(chip)}</span>'
+                        f'<span class="fnode__meta">{html.escape(human_size(f["size"]))}</span>'
+                        f"</a>"
+                    )
+                    + "</li>"
+                )
+        return "".join(rows)
+
+    inner = render(tree, 0, ())
+    label = "item" if total == 1 else "items"
+    return (
+        '<details class="writeup-files" id="challengeFiles">'
+        "<summary>"
+        '<span class="fig-label writeup-files__label">Attachments</span>'
+        f'<span class="writeup-files__count">{total} {label}</span>'
+        "</summary>"
+        f'<ul class="fnode__root">{inner}</ul>'
+        "</details>"
+    )
 
 
 PAGE_SHELL = """<!DOCTYPE html>
@@ -581,6 +786,7 @@ WRITEUP_BODY = """
       <div class="md-render">
 {content}
       </div>
+{files_block}
 {pager}
     </div>
   </article>
@@ -1048,6 +1254,20 @@ PAGE_JS = """(function () {
     document.body.removeChild(area);
     flash(btn, ok);
   }
+  // File drawer: folders expand/collapse; kept CSS-first so it degrades to a
+  // plain list when this script fails to load.
+  var drawer = document.getElementById("challengeFiles");
+  if (drawer) {
+    drawer.addEventListener("click", function (ev) {
+      var btn = ev.target.closest(".fnode__row--dir");
+      if (!btn || !drawer.contains(btn)) return;
+      var panel = document.getElementById(btn.getAttribute("aria-controls"));
+      if (!panel) return;
+      var open = btn.getAttribute("aria-expanded") === "true";
+      btn.setAttribute("aria-expanded", open ? "false" : "true");
+      panel.hidden = open;
+    });
+  }
   document.querySelectorAll(".writeup-content div.highlight").forEach(function (host) {
     var code = host.querySelector("code");
     if (!code || host.querySelector(".copy-btn")) return;
@@ -1223,6 +1443,10 @@ def build(source: Path, out: Path, portfolio_url: str, github_user: str, github_
             f"<span>{html.escape(event_name)}</span>"
             "</div>"
         )
+        # Collapsible per-challenge attachments drawer (solve scripts, payloads,
+        # screenshots). Built from whatever the source folder happens to hold,
+        # so newly pushed writeups get it with no template change.
+        files_block = render_file_tree(files, rel_md, gh_base, branch)
         body = WRITEUP_BODY.format(
             name=html.escape(title),
             event=html.escape(event_name),
@@ -1232,6 +1456,7 @@ def build(source: Path, out: Path, portfolio_url: str, github_user: str, github_
             tag_block=tag_block,
             md_github=md_gh,
             content=body_html,
+            files_block=files_block,
             pager=pager_html,
             breadcrumb=breadcrumb,
         )

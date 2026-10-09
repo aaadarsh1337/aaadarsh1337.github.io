@@ -23,7 +23,7 @@ Static site on GitHub Pages. No backend and no build step for the main site; Pyt
 | **06 · Repositories** | GitHub REST API + `js/config.js` → `github` | Supporting public repos sorted by recent push, with language / stars / push date |
 | **07 · Certificates** | `js/config.js` → `certificates` | Card grid, verification links, local copies in `cybersecurity-achievements` as fallback |
 | **08 · Contact** | `js/config.js` → `contact` | Email / Discord only (socials live in Links panel) |
-| **CTF Writeups** | Generated `/writeups/` | 22+ static pages grouped by event (TryHackMe, pwnable.kr, picoCTF, HackerHolidays), with search + category tag filter + difficulty badges |
+| **CTF Writeups** | Generated `/writeups/` | 23+ static pages grouped by event (TryHackMe, pwnable.kr, picoCTF, HackerHolidays), with search + category tag filter + difficulty badges + a per-challenge attachments drawer |
 | **Security Blog** | Generated `/blog/` | Editorial writing hub with malware-analysis category pages, search, tags, article TOC, and related-post navigation |
 | **Threat Intel** | Generated `/intel/` | Daily Threat Harbour dashboard (KPIs, timeline, credential/command leaderboards, takeaways) + vendored `data.json` |
 
@@ -112,8 +112,12 @@ What the build does:
 - Finds writeups (`notes.md` / `writeup.md` / `README.md` / single `*.md` per folder)
 - Renders Markdown → HTML with fenced code, tables, TOC, Tokyo Night Pygments theme
 - Emits per-challenge pages with a clean editorial reading layout, challenge metadata, source link, code-copy controls, prev/next pager, JSON-LD `TechArticle` + canonical/OG tags
+- Adds a collapsible **Attachments** drawer to every page, built from whatever the source folder contains — `notes.md` is marked *this page*, everything else links out to the GitHub blob
+  - Nested folders are rendered as collapsible tree rows; the drawer is closed by default so the reading column is unchanged
+  - Each row shows a language chip and human-readable size; extension-less and unknown-extension files (`.DATA`, `.BTR`, `.b64`, nmap dumps) are classified by content sniffing, and true binaries are marked so they aren't mistaken for source
+  - Fully source-driven — a newly pushed writeup gets it automatically, including any subfolders and new file types. No template or config change needed
 - Builds `writeups/index.html` (event sections, live filter), `search.json`, `js/filter.js`
-- Copies challenge images preserving relative paths; articles keep the reading surface focused without a file drawer or reader chrome
+- Copies challenge images preserving relative paths; articles keep the reading surface focused without a sidebar or reader chrome
 - Difficulty badges are **source-grounded only**: frontmatter `difficulty:` wins → live platform pull (pwnable.kr bottle list, THM room JSON-LD `educationalLevel`, other pages' JSON-LD) → `difficulty_cache.json` → author-stated in text → no badge
 - Category tags are **automatic**: frontmatter `tags: [rev]` wins → keyword + filename + event scoring (`rev` / `pwn` / `web` / `crypto` / `forensics` / `cloud` / `osint`, else `misc`) → index filter chips + article metadata badges + `search.json` refresh every build, so new writeups (and new categories) appear with zero template changes
 

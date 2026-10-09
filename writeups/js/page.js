@@ -19,6 +19,20 @@
     document.body.removeChild(area);
     flash(btn, ok);
   }
+  // File drawer: folders expand/collapse; kept CSS-first so it degrades to a
+  // plain list when this script fails to load.
+  var drawer = document.getElementById("challengeFiles");
+  if (drawer) {
+    drawer.addEventListener("click", function (ev) {
+      var btn = ev.target.closest(".fnode__row--dir");
+      if (!btn || !drawer.contains(btn)) return;
+      var panel = document.getElementById(btn.getAttribute("aria-controls"));
+      if (!panel) return;
+      var open = btn.getAttribute("aria-expanded") === "true";
+      btn.setAttribute("aria-expanded", open ? "false" : "true");
+      panel.hidden = open;
+    });
+  }
   document.querySelectorAll(".writeup-content div.highlight").forEach(function (host) {
     var code = host.querySelector("code");
     if (!code || host.querySelector(".copy-btn")) return;
