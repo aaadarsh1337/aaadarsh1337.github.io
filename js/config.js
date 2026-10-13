@@ -94,7 +94,7 @@ window.PORTFOLIO_CONFIG = {
   skills: [
     {
       category: "Offensive Security",
-      items: ["Web Exploitation", "Network Security", "Reverse Engineering", "Binary Exploitation", "OSINT"]
+      items: ["Reverse Engineering", "Binary Exploitation", "OSINT", "Web Exploitation", "Network Security"]
     },
     {
       category: "Languages",
