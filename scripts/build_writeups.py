@@ -818,7 +818,7 @@ def parse_frontmatter(text: str):
 # ---------------------------------------------------------------------------
 # Source-grounded difficulty.
 # Labels come from the challenge platforms themselves, never guessed:
-# - pwnable.kr  -> bottle category, parsed live from https://pwnable.kr/play.php
+# - pwnable.kr  -> bottle category, parsed live from https://pwnable.kr/play
 # - TryHackMe   -> room educationalLevel (Beginner/Intermediate/Advanced),
 #                  parsed live from the room page's schema.org JSON-LD
 # - any site    -> schema.org educationalLevel/difficulty from the challenge
@@ -912,24 +912,23 @@ def challenge_urls(body_md: str):
     return sorted(urls, key=platform_rank)
 
 
-def pwnable_bottles(play_html: str):
-    """Map challenge slug -> bottle from the live pwnable.kr listing."""
-    text = re.sub(r"<[^>]+>", " ", play_html)
-    m = re.search(r"catches the bug(.*)images from", text, re.S)
-    region = m.group(1) if m else text
-    parts = re.split(r"\[(Toddler's Bottle|Rookiss|Grotesque|Hacker's Secret)\]", region)
-    bottles = {}
-    for i in range(1, len(parts), 2):
-        bottles[parts[i]] = parts[i + 1] if i + 1 < len(parts) else ""
-    return bottles
+def pwnable_bottles():
+    """Map challenge slug -> bottle from the live pwnable.kr JSON API."""
+    try:
+        req = urllib.request.Request("https://pwnable.kr/api/challenges", headers=UA)
+        with urllib.request.urlopen(req, timeout=10) as r:
+            data = json.loads(r.read().decode("utf-8", errors="replace"))
+    except Exception:
+        return {}
+    cats = {c["id"]: c["name"] for c in data.get("categories", [])}
+    return {ch["name"]: cats.get(ch["categoryId"], "") for ch in data.get("challenges", [])}
 
 
 def bottle_for_slug(bottles: dict, slug: str):
-    """Find the single bottle whose listing contains this challenge slug."""
+    """Find the bottle for this challenge slug."""
     if not bottles or not slug:
         return None
-    hits = [b for b, content in bottles.items() if slug.lower() in content.lower()]
-    return hits[0] if len(hits) == 1 else None
+    return bottles.get(slug)
 
 
 def tier_for(label: str) -> str:
@@ -975,7 +974,7 @@ def resolve_difficulty(meta: dict, body_md: str, url_path: str, slug: str,
         if "pwnable.kr" in host:
             label = bottle_for_slug(play_bottles or {}, slug)
             if label:
-                return label, tier_for(label), "pwnable.kr/play.php"
+                return label, tier_for(label), "pwnable.kr/play"
         elif "tryhackme.com" in host and "/room/" in u:
             html = fetch_html(u)
             if html:
@@ -1337,8 +1336,7 @@ def build(source: Path, out: Path, portfolio_url: str, github_user: str, github_
         cache = {}
 
     # pwnable.kr bottle listing, fetched once per build.
-    play_html = fetch_html("https://pwnable.kr/play.php")
-    play_bottles = pwnable_bottles(play_html) if play_html else {}
+    play_bottles = pwnable_bottles()
     if play_bottles:
         print(f"  live pwnable.kr bottles: {len(play_bottles)} categories")
     else:
