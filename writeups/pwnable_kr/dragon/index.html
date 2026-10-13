@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Dragon · pwnable.kr</title>
+<meta name="description" content="Welcome back to another writeup. Today, we&#x27;ll be exploring the dragon from pwnable.kr So let&#x27;s begin" />
+<meta name="theme-color" content="#16161e" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; object-src 'none'; base-uri 'self'; frame-ancestors 'self'" />
+<link rel="canonical" href="https://aaadarsh1337.github.io/writeups/pwnable_kr/dragon/" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Dragon · pwnable.kr" />
+<meta property="og:description" content="Welcome back to another writeup. Today, we&#x27;ll be exploring the dragon from pwnable.kr So let&#x27;s begin" />
+<meta property="og:url" content="https://aaadarsh1337.github.io/writeups/pwnable_kr/dragon/" />
+<meta property="og:image" content="https://aaadarsh1337.github.io/writeups/pwnable_kr/dragon/og.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Dragon · pwnable.kr" />
+<meta name="twitter:description" content="Welcome back to another writeup. Today, we&#x27;ll be exploring the dragon from pwnable.kr So let&#x27;s begin" />
+<meta name="twitter:image" content="https://aaadarsh1337.github.io/writeups/pwnable_kr/dragon/og.png" />
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Dragon · pwnable.kr", "description": "Welcome back to another writeup. Today, we'll be exploring the dragon from pwnable.kr So let's begin", "url": "https://aaadarsh1337.github.io/writeups/pwnable_kr/dragon/", "author": {"@type": "Person", "name": "Adarsh Pillai", "url": "https://aaadarsh1337.github.io/"}}</script>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2316161e'/%3E%3Crect x='13' y='4' width='6' height='24' fill='%237DCFFF'/%3E%3Crect x='4' y='13' width='24' height='6' fill='%237DCFFF'/%3E%3Crect x='14' y='6' width='4' height='20' fill='%2316161e'/%3E%3Crect x='6' y='14' width='20' height='4' fill='%2316161e'/%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../../css/tokens.css" />
+<link rel="stylesheet" href="../../css/style.css" />
+<link rel="stylesheet" href="../../css/pygments.css" />
+</head>
+<body>
+<a class="skip-link" href="#writeup-article">Skip to article</a>
+<div class="lab-grid" aria-hidden="true"></div>
+
+<header class="topbar">
+  <div class="topbar__inner">
+    <a class="topbar__brand" href="../../index.html">
+      <span class="brand-mark">CTF</span>
+      <span class="brand-text">Writeups</span>
+    </a>
+    <nav class="topbar__nav" aria-label="Site navigation">
+      <a class="topbar__link" href="../../../index.html">Portfolio</a>
+      <a class="topbar__link" href="../../../writeups/" aria-current="page">Writeups</a>
+      <a class="topbar__link" href="../../../blog/">Blog</a>
+      <a class="topbar__link" href="../../../intel/">Intel</a>
+      <a class="topbar__link" href="https://github.com/aaadarsh1337/ctf-writeups" target="_blank" rel="noopener noreferrer">GitHub &#8599;</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+<div class="writeup-page">
+  <div class="writeup-breadcrumb"><a href="../../index.html">← All writeups</a><span>/</span><span>pwnable.kr</span></div>
+  <article class="writeup-article" id="writeup-article" aria-label="Writeup article">
+    <header class="writeup-hero">
+      <p class="fig-label">pwnable.kr &middot; CTF writeup</p>
+      <h1>Dragon</h1>
+      <div class="writeup-meta">
+        <span>2 min read</span>
+        <span class="writeup-meta__separator">&middot;</span>
+        <span class="writeup-meta__tags"><span class="tag tag-pwn">pwn</span></span>
+        <a class="writeup-source" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/pwnable_kr/dragon/notes.md" target="_blank" rel="noopener noreferrer">Source &#8599;</a>
+      </div>
+    </header>
+    <div class="writeup-content">
+      <div class="md-render">
+<h2 id="challenge-link-httpspwnablekrplayphp">Challenge link: <a href="https://pwnable.kr/play.php">https://pwnable.kr/play.php</a></h2>
+<p>Hello Hackers!</p>
+<p>Welcome back to another writeup. Today, we'll be exploring the <strong>dragon</strong> from pwnable.kr
+So let's begin</p>
+<p>Running the binary, we see that it is a game where we have to choose a character and then fight a dragon
+Further, it can be observed that there are 2 players and 2 dragons, each having different characteristics. 
+Also, it is impossible to normally beat either dragons</p>
+<p>Inspecting the binary using <strong>BinaryNinja</strong>, we observe some very interesting things</p>
+<p>There exists a secret level, that can be triggered by inputting <strong>3</strong> as the character number</p>
+<p>Analysing the function, </p>
+<p><figure class="md-fig"><img alt="Secret Level" src="SecretLevel.png" loading="lazy" decoding="async"><figcaption>Secret Level</figcaption></figure></p>
+<p>We can see that there occurs a string comparison between the input and <strong>Nice_Try_But_The_Dragons_Won't_Let_You!</strong>
+If this test is passed, it executes <strong>system('/bin/sh')</strong>
+But, there is a problem
+The input length is 10 but the input we need to provide is much longer
+There seems to be no way to bypass this as secure methods are being used</p>
+<p>But, we should keep a note of the system call as it might come in handy later. </p>
+<p>Analysing the binary further, we observe something
+The HP of dragon is allocated 1 byte, and it is a signed int</p>
+<p><figure class="md-fig"><img alt="HP size" src="HPlen.png" loading="lazy" decoding="async"><figcaption>HP size</figcaption></figure></p>
+<p>So its value cannot exceed 127
+--&gt; Possible integer overflow</p>
+<p>After some tinkering, it can be seen that if you use a particular sequence of attacks, (as shown in exploit.py), we can have Mama Dragon's HP be greater than 127 and hence we defeat the dragon</p>
+<p>But we still need our shell. </p>
+<p>Reading the code further, we can see some issues with the usage of free() and malloc()</p>
+<p>At the end of the Attack functions, <strong>arg2</strong> is being freed, which is structure of Dragon</p>
+<p><figure class="md-fig"><img alt="arg2 being freed" src="free.png" loading="lazy" decoding="async"><figcaption>arg2 being freed</figcaption></figure></p>
+<p>After we win, malloc() is used, ie, the freed memory is now used to store the name of the player.</p>
+<p><figure class="md-fig"><img alt="player name using the freed memory" src="malloc.png" loading="lazy" decoding="async"><figcaption>player name using the freed memory</figcaption></figure></p>
+<p>And at the end, this input pointer is called. </p>
+<p>We can see a <strong>UAF</strong> (Use-After-Free) bug here. So if we put the adress of the system call, technically, when the variable is called again, it should jump there and give us a shell. </p>
+<p>Address we need to jump to: <strong>0x08048dbf</strong></p>
+<p>Writing an exploit on the basis of this, we get a shell</p>
+<p><figure class="md-fig"><img alt="flag" src="flag.png" loading="lazy" decoding="async"><figcaption>flag</figcaption></figure></p>
+<p>Overall, this was a very fun challenge. We learnt about analyzing binaries with multiple functions, integer overflow attacks and finally heap exploitation, specifically, UAF. </p>
+<p>I will see you soon with another writeup, until then,</p>
+<p>Happy Hacking!</p>
+      </div>
+<details class="writeup-files" id="challengeFiles"><summary><span class="fig-label writeup-files__label">Attachments</span><span class="writeup-files__count">7 items</span></summary><ul class="fnode__root"><li class="fnode fnode--src" style="--fd:10px"><a class="fnode__row" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/pwnable_kr/dragon/exploit.py" target="_blank" rel="noopener noreferrer"><span class="fnode__name">exploit.py</span><span class="fnode__chip">python</span><span class="fnode__meta">285 B</span></a></li><li class="fnode fnode--bin" style="--fd:10px"><a class="fnode__row" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/pwnable_kr/dragon/flag.png" target="_blank" rel="noopener noreferrer"><span class="fnode__name">flag.png</span><span class="fnode__chip">png</span><span class="fnode__meta">40 KB</span></a></li><li class="fnode fnode--bin" style="--fd:10px"><a class="fnode__row" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/pwnable_kr/dragon/free.png" target="_blank" rel="noopener noreferrer"><span class="fnode__name">free.png</span><span class="fnode__chip">png</span><span class="fnode__meta">144 KB</span></a></li><li class="fnode fnode--bin" style="--fd:10px"><a class="fnode__row" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/pwnable_kr/dragon/HPlen.png" target="_blank" rel="noopener noreferrer"><span class="fnode__name">HPlen.png</span><span class="fnode__chip">png</span><span class="fnode__meta">64 KB</span></a></li><li class="fnode fnode--bin" style="--fd:10px"><a class="fnode__row" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/pwnable_kr/dragon/malloc.png" target="_blank" rel="noopener noreferrer"><span class="fnode__name">malloc.png</span><span class="fnode__chip">png</span><span class="fnode__meta">28 KB</span></a></li><li class="fnode fnode--md" style="--fd:10px"><div class="fnode__row"><span class="fnode__name">notes.md</span><span class="fnode__here">this page</span><span class="fnode__chip">markdown</span><span class="fnode__meta">2 KB</span></div></li><li class="fnode fnode--bin" style="--fd:10px"><a class="fnode__row" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/pwnable_kr/dragon/SecretLevel.png" target="_blank" rel="noopener noreferrer"><span class="fnode__name">SecretLevel.png</span><span class="fnode__chip">png</span><span class="fnode__meta">86 KB</span></a></li></ul></details>
+<nav class="writeup-pager" aria-label="Writeup navigation"><a class="pager-item pager-item--previous" href="../../pwnable_kr/collision/"><span class="pager-label">Previous</span><span class="pager-name">Collision</span><span class="pager-event">pwnable.kr</span></a><a class="pager-item pager-item--next" href="../../pwnable_kr/fd/"><span class="pager-label">Next</span><span class="pager-name">FD</span><span class="pager-event">pwnable.kr</span></a></nav>
+    </div>
+  </article>
+</div>
+
+</main>
+<script src="../../js/page.js" defer></script>
+</body>
+</html>
