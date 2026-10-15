@@ -23,6 +23,7 @@ Output:
 from __future__ import annotations
 
 import argparse
+import datetime as dt
 import html
 import json
 import os
@@ -776,7 +777,7 @@ WRITEUP_BODY = """
       <p class="fig-label">{event} &middot; CTF writeup</p>
       <h1>{name}</h1>
       <div class="writeup-meta">
-        <span>{day_prefix}{reading_time} min read</span>
+        <span>{date_block}{day_prefix}{reading_time} min read</span>
         <span class="writeup-meta__separator">&middot;</span>
         {diff_block}{tag_block}
         <a class="writeup-source" href="{md_github}" target="_blank" rel="noopener noreferrer">Source &#8599;</a>
@@ -813,6 +814,23 @@ def parse_frontmatter(text: str):
         elif k == "tags":
             meta[k] = [t.strip() for t in v.strip("[]").split(",") if t.strip()]
     return meta, body.lstrip("\n")
+
+
+def parse_date(value: str, path: Path) -> "dt.date | None":
+    """Frontmatter `date:` first (authoritative), file mtime as last resort.
+
+    Returns None when neither yields a usable date so callers can omit the
+    date from the UI rather than show a bogus one. (Local builds fall back to
+    mtime; CI checkouts share the checkout timestamp, so frontmatter is what
+    actually ships.)"""
+    try:
+        return dt.date.fromisoformat(str(value or "")[:10])
+    except ValueError:
+        pass
+    try:
+        return dt.date.fromtimestamp(path.stat().st_mtime)
+    except (OSError, OverflowError, ValueError):
+        return None
 
 
 # ---------------------------------------------------------------------------
@@ -1346,19 +1364,25 @@ def build(source: Path, out: Path, portfolio_url: str, github_user: str, github_
         url_path = (url_path or "").rstrip("/")
         return f"{site_base}/{url_path}/" if url_path else f"{site_base}/"
 
-    def jsonld_for(title: str, description: str, url: str) -> str:
-        return json.dumps({
+    def jsonld_for(title: str, description: str, url: str, date_iso: str | None = None) -> str:
+        obj = {
             "@context": "https://schema.org",
             "@type": "TechArticle",
             "headline": title,
             "description": description,
             "url": url,
             "author": {"@type": "Person", "name": "Adarsh Pillai", "url": portfolio_url},
-        }, ensure_ascii=False)
+        }
+        if date_iso:
+            obj["datePublished"] = date_iso
+        return json.dumps(obj, ensure_ascii=False)
 
     for i, w in enumerate(writeups):
         text = w["md_path"].read_text(encoding="utf-8", errors="replace")
         meta, body_md = parse_frontmatter(text)
+        w["_date"] = parse_date(meta.get("date", ""), w["md_path"])
+        w["_date_iso"] = w["_date"].isoformat() if w["_date"] else None
+        w["_date_short"] = w["_date"].strftime("%b %d, %Y") if w["_date"] else None
         title = meta.get("title") or w["display_name"]
         body_html = strip_leading_h1(tag_code_blocks(
             enhance_html(sanitize_html(md_to_html(body_md)), title),
@@ -1432,6 +1456,10 @@ def build(source: Path, out: Path, portfolio_url: str, github_user: str, github_
             og_image = "https://aaadarsh1337.github.io/assets/og.png"
         w["_og"] = og_image
         day_prefix = f"Day {w['day']} &middot; " if w.get("day") is not None else ""
+        date_block = (
+            f'<time datetime="{w["_date_iso"]}">{html.escape(w["_date_short"])}</time> &middot; '
+            if w.get("_date") else ""
+        )
         # Back-link to the writeups index, mirroring the blog's "All writing" crumb.
         # home_href already resolves to the writeups index at any nesting depth.
         breadcrumb = (
@@ -1449,6 +1477,7 @@ def build(source: Path, out: Path, portfolio_url: str, github_user: str, github_
             name=html.escape(title),
             event=html.escape(event_name),
             day_prefix=day_prefix,
+            date_block=date_block,
             reading_time=w["_reading_time"],
             diff_block=diff_block,
             tag_block=tag_block,
@@ -1463,7 +1492,7 @@ def build(source: Path, out: Path, portfolio_url: str, github_user: str, github_
             description=html.escape(page_desc),
             og_image=og_image,
             canonical=canonical,
-            jsonld=jsonld_for(page_title, page_desc, canonical),
+            jsonld=jsonld_for(page_title, page_desc, canonical, w.get("_date_iso")),
             css_prefix=css_prefix,
             site_prefix=css_prefix + "../",
             home_href=home_href,
@@ -1499,7 +1528,10 @@ def build(source: Path, out: Path, portfolio_url: str, github_user: str, github_
         for w in items:
             href = w["url_path"].rstrip("/") + "/"
             tags = w.get("_tags", ["misc"])
-            search = html.escape(f"{w['event']} {w['name']} {w['display_name']} {w['url_path']} {' '.join(tags)}")
+            search = html.escape(
+                f"{w['event']} {w['name']} {w['display_name']} {w['url_path']} "
+                f"{w.get('_date_short') or ''} {' '.join(tags)}"
+            )
             read_min = w.get("_reading_time", 1)
             diff = w.get("_difficulty")
             tier = w.get("_tier", "medium")
@@ -1508,10 +1540,14 @@ def build(source: Path, out: Path, portfolio_url: str, github_user: str, github_
             )
             kicker = f"{html.escape(event_label(w['event']))} · {kicker_tags}"
             meta_bits = []
+            if w.get("_date"):
+                meta_bits.append(
+                    f'<time datetime="{w["_date_iso"]}">{html.escape(w["_date_short"])}</time>'
+                )
             if w.get("day") is not None:
                 meta_bits.append(f"Day {w['day']}")
             meta_bits.append(f"{read_min} min read")
-            meta = html.escape(" · ".join(meta_bits))
+            meta = " · ".join(meta_bits)
             if diff:
                 sub = (
                     f'<p class="writeup-card__foot">'
@@ -1573,6 +1609,7 @@ def build(source: Path, out: Path, portfolio_url: str, github_user: str, github_
             "difficulty": w.get("_difficulty"),
             "tags": w.get("_tags", ["misc"]),
             "day": w.get("day"),
+            "date": w.get("_date_iso"),
             "excerpt": w.get("_excerpt", ""),
         }
         for w in writeups
