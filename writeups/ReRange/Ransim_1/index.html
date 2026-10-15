@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Ransim 1 · ReRange</title>
+<meta name="description" content="Welcome back to another writeup. Today we will be looking at &#x27;Ransim 1&#x27; from ReRange." />
+<meta name="theme-color" content="#16161e" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; object-src 'none'; base-uri 'self'; frame-ancestors 'self'" />
+<link rel="canonical" href="https://aaadarsh1337.github.io/writeups/ReRange/Ransim_1/" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Ransim 1 · ReRange" />
+<meta property="og:description" content="Welcome back to another writeup. Today we will be looking at &#x27;Ransim 1&#x27; from ReRange." />
+<meta property="og:url" content="https://aaadarsh1337.github.io/writeups/ReRange/Ransim_1/" />
+<meta property="og:image" content="https://aaadarsh1337.github.io/writeups/ReRange/Ransim_1/og.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Ransim 1 · ReRange" />
+<meta name="twitter:description" content="Welcome back to another writeup. Today we will be looking at &#x27;Ransim 1&#x27; from ReRange." />
+<meta name="twitter:image" content="https://aaadarsh1337.github.io/writeups/ReRange/Ransim_1/og.png" />
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Ransim 1 · ReRange", "description": "Welcome back to another writeup. Today we will be looking at 'Ransim 1' from ReRange.", "url": "https://aaadarsh1337.github.io/writeups/ReRange/Ransim_1/", "author": {"@type": "Person", "name": "Adarsh Pillai", "url": "https://aaadarsh1337.github.io/"}}</script>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2316161e'/%3E%3Crect x='13' y='4' width='6' height='24' fill='%237DCFFF'/%3E%3Crect x='4' y='13' width='24' height='6' fill='%237DCFFF'/%3E%3Crect x='14' y='6' width='4' height='20' fill='%2316161e'/%3E%3Crect x='6' y='14' width='20' height='4' fill='%2316161e'/%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../../css/tokens.css" />
+<link rel="stylesheet" href="../../css/style.css" />
+<link rel="stylesheet" href="../../css/pygments.css" />
+</head>
+<body>
+<a class="skip-link" href="#writeup-article">Skip to article</a>
+<div class="lab-grid" aria-hidden="true"></div>
+
+<header class="topbar">
+  <div class="topbar__inner">
+    <a class="topbar__brand" href="../../index.html">
+      <span class="brand-mark">CTF</span>
+      <span class="brand-text">Writeups</span>
+    </a>
+    <nav class="topbar__nav" aria-label="Site navigation">
+      <a class="topbar__link" href="../../../index.html">Portfolio</a>
+      <a class="topbar__link" href="../../../writeups/" aria-current="page">Writeups</a>
+      <a class="topbar__link" href="../../../blog/">Blog</a>
+      <a class="topbar__link" href="../../../intel/">Intel</a>
+      <a class="topbar__link" href="https://github.com/aaadarsh1337/ctf-writeups" target="_blank" rel="noopener noreferrer">GitHub &#8599;</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+<div class="writeup-page">
+  <div class="writeup-breadcrumb"><a href="../../index.html">← All writeups</a><span>/</span><span>ReRange</span></div>
+  <article class="writeup-article" id="writeup-article" aria-label="Writeup article">
+    <header class="writeup-hero">
+      <p class="fig-label">ReRange &middot; CTF writeup</p>
+      <h1>Ransim 1</h1>
+      <div class="writeup-meta">
+        <span>2 min read</span>
+        <span class="writeup-meta__separator">&middot;</span>
+        <span class="writeup-meta__difficulty"><span class="diff diff-medium">Medium</span></span><span class="writeup-meta__tags"><span class="tag tag-rev">rev</span><span class="tag tag-crypto">crypto</span></span>
+        <a class="writeup-source" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/ReRange/Ransim_1/notes.md" target="_blank" rel="noopener noreferrer">Source &#8599;</a>
+      </div>
+    </header>
+    <div class="writeup-content">
+      <div class="md-render">
+<h2 id="challenge-httpsrerangeorgchallenges" class="challenge-link">Challenge: <a href="https://rerange.org/challenges/">https://rerange.org/challenges/</a></h2>
+<p>Hello Hackers!</p>
+<p>Welcome back to another writeup. Today we will be looking at 'Ransim 1' from ReRange.</p>
+<blockquote>
+<p>Reverse this ransomware sim and derive the key for the decryptor. Use it to decrypt the flag file.</p>
+</blockquote>
+<p>Seems clear enough. </p>
+<p>When we download the files, we get a .zip file that contains:</p>
+<ul>
+<li>ransim_1</li>
+<li>decryptor.py</li>
+<li>readme.txt</li>
+<li>flag.txt.locked</li>
+</ul>
+<p>So what we need to do is extract the key from <code>ransim_1</code> and provide that key to <code>decryptor.py</code> along with <code>flag.txt.locked</code>
+The syntax has been provided in the .py file.</p>
+<div class="highlight is-terminal lang-bash" data-lang="bash"><pre><span></span><code>Usage:
+<span class="w">  </span>pip3<span class="w"> </span>install<span class="w"> </span>pycryptodome
+<span class="w">  </span>python3<span class="w"> </span>decryptor.py<span class="w"> </span>--key<span class="w"> </span>&lt;<span class="m">64</span>-hex-or-32-ascii&gt;<span class="w"> </span>--file<span class="w"> </span>./ctf_sandbox/flag.txt.locked
+</code></pre></div>
+
+<p>Running <code>file</code> on the binary, we see it is a</p>
+<div class="highlight is-terminal lang-bash" data-lang="bash"><pre><span></span><code>ransim_1:<span class="w"> </span>ELF<span class="w"> </span><span class="m">64</span>-bit<span class="w"> </span>LSB<span class="w"> </span>pie<span class="w"> </span>executable,<span class="w"> </span>x86-64,<span class="w"> </span>version<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="o">(</span>SYSV<span class="o">)</span>,<span class="w"> </span>dynamically<span class="w"> </span>linked,<span class="w"> </span>interpreter<span class="w"> </span>/lib64/ld-linux-x86-64.so.2,<span class="w"> </span>BuildID<span class="o">[</span>sha1<span class="o">]=</span>c6293ae44e95b1ccfddc159ad77092378b2088b1,<span class="w"> </span><span class="k">for</span><span class="w"> </span>GNU/Linux<span class="w"> </span><span class="m">3</span>.2.0,<span class="w"> </span>stripped
+</code></pre></div>
+
+<p>Running <code>strings</code> on it, the only interesting strings we find are:</p>
+<div class="highlight is-output lang-text" data-lang="text"><pre><span></span><code>ctf_sandbox
+ctf_sandbox/flag.txt
+ctf_sandbox/flag.txt.locked
+err: cannot open %s: %s
+random fail
+err create %s: %s
+created %s
+</code></pre></div>
+
+<p>Let's fire up <code>ghidra</code> and see whats happening. </p>
+<p>Okay so we can clearly see the keygen logic in the decompiled code. </p>
+<p>Let's write a mirror in python. </p>
+<p>Some key notes:
+- It uses 'ctf-sandbox' as one of the parameters for the keygen, which many people might ignore as it is the directory name as well
+- The math is pretty straight forward which can directly be taken line by line from the decompiled code
+- Use <code>0xffffffff</code> for C to python memory conversion issues</p>
+<p>keyextractor.py:</p>
+<div class="highlight is-code lang-py" data-lang="py"><pre><span></span><code><span class="n">local_c</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="n">local_18</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">param_1</span> <span class="o">=</span> <span class="s2">&quot;ctf_sandbox&quot;</span>
+
+<span class="k">while</span> <span class="n">local_18</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">param_1</span><span class="p">):</span>
+  <span class="n">local_c</span> <span class="o">=</span> <span class="n">local_c</span> <span class="o">+</span> <span class="nb">int</span><span class="p">(</span><span class="nb">ord</span><span class="p">(</span><span class="n">param_1</span><span class="p">[</span><span class="n">local_18</span><span class="p">]))</span>
+  <span class="n">local_18</span> <span class="o">+=</span> <span class="mi">1</span>
+
+
+<span class="n">local_34</span> <span class="o">=</span> <span class="n">local_c</span> <span class="o">+</span> <span class="mh">0x1a2b3c4d</span><span class="p">;</span>
+<span class="n">uVar1</span> <span class="o">=</span> <span class="mi">2780222772</span>
+<span class="n">local_34</span> <span class="o">=</span> <span class="n">local_34</span> <span class="o">^</span> <span class="n">uVar1</span><span class="p">;</span>
+<span class="n">local_1c</span> <span class="o">=</span> <span class="n">local_34</span><span class="p">;</span>
+
+<span class="n">local_2c</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">local_28</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">]</span><span class="o">*</span><span class="mi">32</span>
+
+<span class="k">while</span> <span class="n">local_2c</span> <span class="o">&lt;</span> <span class="mi">32</span><span class="p">:</span>
+  <span class="n">local_3c</span> <span class="o">=</span> <span class="p">(</span><span class="n">local_1c</span> <span class="o">*</span> <span class="mh">0x41c64e6d</span> <span class="o">+</span> <span class="mh">0x3039</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0xffffffff</span>
+  <span class="n">local_1c</span> <span class="o">=</span> <span class="n">local_3c</span>
+  <span class="n">local_28</span><span class="p">[</span><span class="n">local_2c</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">local_3c</span> <span class="o">&gt;&gt;</span> <span class="mh">0x18</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0xff</span>
+  <span class="n">local_28</span><span class="p">[</span><span class="n">local_2c</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">local_3c</span> <span class="o">&gt;&gt;</span> <span class="mh">0x10</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0xff</span>
+  <span class="n">local_28</span><span class="p">[</span><span class="n">local_2c</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">local_3c</span> <span class="o">&gt;&gt;</span> <span class="mi">8</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0xff</span>
+  <span class="n">local_28</span><span class="p">[</span><span class="n">local_2c</span><span class="o">+</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">local_3c</span> <span class="o">&amp;</span> <span class="mh">0xff</span>
+  <span class="n">local_2c</span> <span class="o">+=</span> <span class="mi">4</span>
+
+<span class="n">param_2</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">]</span><span class="o">*</span><span class="mh">0x20</span>
+<span class="n">local_30</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="k">while</span> <span class="n">local_30</span> <span class="o">&lt;</span> <span class="mh">0x20</span><span class="p">:</span>
+  <span class="n">param_2</span><span class="p">[</span><span class="n">local_30</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">local_28</span><span class="p">[</span><span class="n">local_30</span><span class="p">]</span> <span class="o">^</span> <span class="p">(</span><span class="n">uVar1</span> <span class="o">&gt;&gt;</span> <span class="p">((</span><span class="n">local_30</span> <span class="o">&amp;</span> <span class="mi">3</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mi">3</span><span class="p">)))</span> <span class="o">&amp;</span> <span class="mh">0xff</span>
+  <span class="n">local_30</span> <span class="o">+=</span> <span class="mi">1</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="n">param_2</span><span class="p">)</span><span class="o">.</span><span class="n">hex</span><span class="p">())</span>
+</code></pre></div>
+
+<p>Running the script gives us the hex key we need. Now running</p>
+<div class="highlight is-terminal lang-bash" data-lang="bash"><pre><span></span><code>python3<span class="w"> </span>decryptor.py<span class="w"> </span>--key<span class="w"> </span>&lt;4e9b5bWorkForItLol30021&gt;<span class="w"> </span>--file<span class="w"> </span>./ctf-sandbox/flag.txt.locked
+</code></pre></div>
+
+<p>Creates a file flag.txt which contains our flag :))</p>
+<blockquote>
+<p>ReRange{...}</p>
+</blockquote>
+<p>This was a very interesting challenge since it had elements of cryptography and also showcased the working of a ransomware. This was not too bad and took me about 1 hour to document everything and reverse the binary itself. Overall, a medium-high difficulty challenge that was fun to take a shot at. </p>
+<p>I will see you with another writeup soon, until then, </p>
+<p>Happy Hacking!</p>
+      </div>
+<details class="writeup-files" id="challengeFiles"><summary><span class="fig-label writeup-files__label">Attachments</span><span class="writeup-files__count">2 items</span></summary><ul class="fnode__root"><li class="fnode fnode--src" style="--fd:10px"><a class="fnode__row" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/ReRange/Ransim_1/keyextract.py" target="_blank" rel="noopener noreferrer"><span class="fnode__name">keyextract.py</span><span class="fnode__chip">python</span><span class="fnode__meta">782 B</span></a></li><li class="fnode fnode--md" style="--fd:10px"><div class="fnode__row"><span class="fnode__name">notes.md</span><span class="fnode__here">this page</span><span class="fnode__chip">markdown</span><span class="fnode__meta">3 KB</span></div></li></ul></details>
+<nav class="writeup-pager" aria-label="Writeup navigation"><a class="pager-item pager-item--previous" href="../../ReRange/Dropper_1/"><span class="pager-label">Previous</span><span class="pager-name">Dropper 1</span><span class="pager-event">ReRange</span></a><a class="pager-item pager-item--next" href="../../ReRange/Steganography/"><span class="pager-label">Next</span><span class="pager-name">Steganography</span><span class="pager-event">ReRange</span></a></nav>
+    </div>
+  </article>
+</div>
+
+</main>
+<script src="../../js/page.js" defer></script>
+</body>
+</html>

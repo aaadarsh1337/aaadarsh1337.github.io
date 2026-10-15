@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Virtualized 1 · ReRange</title>
+<meta name="description" content="Hello hackers! Welcome back to another writeup. Today we will be looking at something that is new to me as well. We will be reversing a VM to retrieve a flag. This is a challenge…" />
+<meta name="theme-color" content="#16161e" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; object-src 'none'; base-uri 'self'; frame-ancestors 'self'" />
+<link rel="canonical" href="https://aaadarsh1337.github.io/writeups/ReRange/Virtualized_1/" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Virtualized 1 · ReRange" />
+<meta property="og:description" content="Hello hackers! Welcome back to another writeup. Today we will be looking at something that is new to me as well. We will be reversing a VM to retrieve a flag. This is a challenge…" />
+<meta property="og:url" content="https://aaadarsh1337.github.io/writeups/ReRange/Virtualized_1/" />
+<meta property="og:image" content="https://aaadarsh1337.github.io/writeups/ReRange/Virtualized_1/og.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Virtualized 1 · ReRange" />
+<meta name="twitter:description" content="Hello hackers! Welcome back to another writeup. Today we will be looking at something that is new to me as well. We will be reversing a VM to retrieve a flag. This is a challenge…" />
+<meta name="twitter:image" content="https://aaadarsh1337.github.io/writeups/ReRange/Virtualized_1/og.png" />
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Virtualized 1 · ReRange", "description": "Hello hackers! Welcome back to another writeup. Today we will be looking at something that is new to me as well. We will be reversing a VM to retrieve a flag. This is a challenge…", "url": "https://aaadarsh1337.github.io/writeups/ReRange/Virtualized_1/", "author": {"@type": "Person", "name": "Adarsh Pillai", "url": "https://aaadarsh1337.github.io/"}}</script>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2316161e'/%3E%3Crect x='13' y='4' width='6' height='24' fill='%237DCFFF'/%3E%3Crect x='4' y='13' width='24' height='6' fill='%237DCFFF'/%3E%3Crect x='14' y='6' width='4' height='20' fill='%2316161e'/%3E%3Crect x='6' y='14' width='20' height='4' fill='%2316161e'/%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../../css/tokens.css" />
+<link rel="stylesheet" href="../../css/style.css" />
+<link rel="stylesheet" href="../../css/pygments.css" />
+</head>
+<body>
+<a class="skip-link" href="#writeup-article">Skip to article</a>
+<div class="lab-grid" aria-hidden="true"></div>
+
+<header class="topbar">
+  <div class="topbar__inner">
+    <a class="topbar__brand" href="../../index.html">
+      <span class="brand-mark">CTF</span>
+      <span class="brand-text">Writeups</span>
+    </a>
+    <nav class="topbar__nav" aria-label="Site navigation">
+      <a class="topbar__link" href="../../../index.html">Portfolio</a>
+      <a class="topbar__link" href="../../../writeups/" aria-current="page">Writeups</a>
+      <a class="topbar__link" href="../../../blog/">Blog</a>
+      <a class="topbar__link" href="../../../intel/">Intel</a>
+      <a class="topbar__link" href="https://github.com/aaadarsh1337/ctf-writeups" target="_blank" rel="noopener noreferrer">GitHub &#8599;</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+<div class="writeup-page">
+  <div class="writeup-breadcrumb"><a href="../../index.html">← All writeups</a><span>/</span><span>ReRange</span></div>
+  <article class="writeup-article" id="writeup-article" aria-label="Writeup article">
+    <header class="writeup-hero">
+      <p class="fig-label">ReRange &middot; CTF writeup</p>
+      <h1>Virtualized 1</h1>
+      <div class="writeup-meta">
+        <span>3 min read</span>
+        <span class="writeup-meta__separator">&middot;</span>
+        <span class="writeup-meta__tags"><span class="tag tag-rev">rev</span><span class="tag tag-pwn">pwn</span></span>
+        <a class="writeup-source" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/ReRange/Virtualized_1/notes.md" target="_blank" rel="noopener noreferrer">Source &#8599;</a>
+      </div>
+    </header>
+    <div class="writeup-content">
+      <div class="md-render">
+<h2 id="challenge-httpsrerangeorgchallenges" class="challenge-link">Challenge: <a href="https://rerange.org/challenges/">https://rerange.org/challenges/</a></h2>
+<p>Hello hackers! Welcome back to another writeup. Today we will be looking at something that is new to me as well. We will be reversing a VM to retrieve a flag. This is a challenge from ReRange. So lets begin. </p>
+<p>We download the elf file first and run it. It shows nothing interesting. It just says:</p>
+<div class="highlight is-output lang-text" data-lang="text"><pre><span></span><code>VM execution finished.
+</code></pre></div>
+
+<p>Let's try to analyze the function using <code>Ghidra</code>.
+We notice that the main function is smtg like this:</p>
+<div class="highlight is-code lang-c" data-lang="c"><pre><span></span><code><span class="n">undefined8</span><span class="w"> </span><span class="nf">FUN_00101240</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+
+<span class="p">{</span>
+<span class="w">  </span><span class="n">FUN_00101186</span><span class="p">(</span><span class="o">&amp;</span><span class="n">DAT_00102020</span><span class="p">,</span><span class="mh">0x54</span><span class="p">);</span>
+<span class="w">  </span><span class="n">puts</span><span class="p">(</span><span class="s">&quot;VM execution finished.&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>This has reference to the output we recieved earlier. The interesting part here is the <code>FUN_00101186(&amp;DAT_00102020,0x54);</code>
+Lets analyse that. </p>
+<p>We can see from the <code>bytes</code> view that <code>&amp;DAT_00102020</code> points to these bytes</p>
+<div class="highlight is-code lang-bytes" data-lang="bytes"><pre><span></span><code>01 00 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01 07 03 01 30 03 03 01 07 01 34 01 3b 03 01 32 01 30 03 03 01 2e 01 23 01 38 03 03 01 0a 01 60 03 01 21 01 34 01 21 01 66 03 03 03 01 0a 01 3b 03 01 65 01 62 01 0a 01 60 03 01 21 01 31 03 03 01 65 01 20 01 21 01 0a 03 03 01 31 01 60 01 03 37 01 28 00
+</code></pre></div>
+
+<p>Now lets look at what the function actually does. </p>
+<div class="highlight is-code lang-c" data-lang="c"><pre><span></span><code><span class="kt">void</span><span class="w"> </span><span class="nf">FUN_00101186</span><span class="p">(</span><span class="kt">long</span><span class="w"> </span><span class="n">param_1</span><span class="p">,</span><span class="n">ulong</span><span class="w"> </span><span class="n">param_2</span><span class="p">)</span>
+
+<span class="p">{</span>
+<span class="w">  </span><span class="n">ulong</span><span class="w"> </span><span class="n">uVar1</span><span class="p">;</span>
+<span class="w">  </span><span class="n">undefined1</span><span class="w"> </span><span class="n">local_118</span><span class="w"> </span><span class="p">[</span><span class="mi">261</span><span class="p">];</span>
+<span class="w">  </span><span class="n">byte</span><span class="w"> </span><span class="n">local_13</span><span class="p">;</span>
+<span class="w">  </span><span class="n">byte</span><span class="w"> </span><span class="n">local_12</span><span class="p">;</span>
+<span class="w">  </span><span class="n">byte</span><span class="w"> </span><span class="n">local_11</span><span class="p">;</span>
+<span class="w">  </span><span class="n">ulong</span><span class="w"> </span><span class="n">local_10</span><span class="p">;</span>
+
+<span class="w">  </span><span class="n">FUN_00101139</span><span class="p">(</span><span class="n">local_118</span><span class="p">);</span>
+<span class="w">  </span><span class="n">local_10</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="n">uVar1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">local_10</span><span class="p">;</span>
+<span class="w">  </span><span class="k">while</span><span class="p">(</span><span class="w"> </span><span class="nb">true</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">do</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">local_10</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">uVar1</span><span class="p">;</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">param_2</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">local_10</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="p">;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">      </span><span class="n">uVar1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">local_10</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">      </span><span class="n">local_11</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">*</span><span class="p">(</span><span class="n">byte</span><span class="w"> </span><span class="o">*</span><span class="p">)(</span><span class="n">local_10</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">param_1</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">local_11</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="mi">3</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">local_11</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">return</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">local_11</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">return</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">local_11</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="k">break</span><span class="p">;</span>
+<span class="w">    </span><span class="n">local_10</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">local_10</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span>
+<span class="w">    </span><span class="n">local_12</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">*</span><span class="p">(</span><span class="n">byte</span><span class="w"> </span><span class="o">*</span><span class="p">)(</span><span class="n">uVar1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">param_1</span><span class="p">);</span>
+<span class="w">    </span><span class="n">local_13</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">local_12</span><span class="w"> </span><span class="o">^</span><span class="w"> </span><span class="mh">0x55</span><span class="p">;</span>
+<span class="w">    </span><span class="n">FUN_00101152</span><span class="p">(</span><span class="n">local_118</span><span class="p">,</span><span class="n">local_13</span><span class="p">);</span>
+<span class="w">    </span><span class="n">uVar1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">local_10</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="k">return</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>The function accepts our bytes and does some operations on it using the loops. The overall idea is that:
+- If the byte is 0: skip
+- If the byte is 1: skip (Move ahead by 2)
+- If the byte is &lt;= 3: skip
+- All the other bytes are being XORed with <code>0x55</code></p>
+<p>The other function references just do checks of how many bytes to parse and clearing memory. Not very interesting for us. </p>
+<p>Let's write a solve script based on these conditions in python. </p>
+<ol>
+<li><code>rawbytes</code> is a string that has all the bytes we have from the &amp;DAT_00102020 reference. </li>
+<li>The bytes are split and converted to a format that python can properly work with</li>
+<li>Then we run conditional checks that we discussed about. </li>
+<li>The rest of the bytes are XORed with <code>0x55</code></li>
+</ol>
+<div class="highlight is-code lang-py" data-lang="py"><pre><span></span><code><span class="n">rawbytes</span> <span class="o">=</span> <span class="s1">&#39;01 00 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01 07 03 01 30 03 03 01 07 01 34 01 3b 03 01 32 01 30 03 03 01 2e 01 23 01 38 03 03 01 0a 01 60 03 01 21 01 34 01 21 01 66 03 03 03 01 0a 01 3b 03 01 65 01 62 01 0a 01 60 03 01 21 01 31 03 03 01 65 01 20 01 21 01 0a 03 03 01 31 01 60 01 03 37 01 28 00&#39;</span>
+
+<span class="n">bytelist</span> <span class="o">=</span> <span class="n">rawbytes</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">bytelist</span><span class="p">)):</span>
+  <span class="n">bytelist</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;0x&#39;</span> <span class="o">+</span> <span class="n">bytelist</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="mi">16</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">bytelist</span><span class="p">:</span>
+  <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+    <span class="k">continue</span>
+  <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="k">continue</span>
+  <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="mi">3</span><span class="p">:</span>
+    <span class="k">continue</span>
+  <span class="nb">print</span><span class="p">(</span><span class="nb">chr</span><span class="p">(</span><span class="n">i</span><span class="o">^</span><span class="mh">0x55</span><span class="p">),</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">()</span>
+</code></pre></div>
+
+<p>Running this solver, we retrieve our flag. </p>
+<blockquote>
+<p>ReRange{***}</p>
+</blockquote>
+<p>That is it for today's writeup. We learnt new concepts like bytecode, XOR, byte selection conditions, etc. </p>
+<p>I will see you soon with another writeup, until then, </p>
+<p>Happy Hacking!</p>
+      </div>
+<details class="writeup-files" id="challengeFiles"><summary><span class="fig-label writeup-files__label">Attachments</span><span class="writeup-files__count">3 items</span></summary><ul class="fnode__root"><li class="fnode fnode--dir" style="--fd:10px"><button type="button" class="fnode__row fnode__row--dir" aria-expanded="false" aria-controls="fd-4-dist"><span class="fnode__arrow" aria-hidden="true"></span><span class="fnode__name">dist</span><span class="fnode__meta">1 file</span></button><ul class="fnode__children" id="fd-4-dist" hidden><li class="fnode fnode--bin" style="--fd:27px"><a class="fnode__row" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/ReRange/Virtualized_1/dist/virtualized_1" target="_blank" rel="noopener noreferrer"><span class="fnode__name">virtualized_1</span><span class="fnode__chip">binary</span><span class="fnode__meta">14 KB</span></a></li></ul></li><li class="fnode fnode--md" style="--fd:10px"><div class="fnode__row"><span class="fnode__name">notes.md</span><span class="fnode__here">this page</span><span class="fnode__chip">markdown</span><span class="fnode__meta">4 KB</span></div></li><li class="fnode fnode--src" style="--fd:10px"><a class="fnode__row" href="https://github.com/aaadarsh1337/ctf-writeups/blob/main/ReRange/Virtualized_1/solve.py" target="_blank" rel="noopener noreferrer"><span class="fnode__name">solve.py</span><span class="fnode__chip">python</span><span class="fnode__meta">591 B</span></a></li></ul></details>
+<nav class="writeup-pager" aria-label="Writeup navigation"><a class="pager-item pager-item--previous" href="../../ReRange/Steganography/"><span class="pager-label">Previous</span><span class="pager-name">Steganography</span><span class="pager-event">ReRange</span></a><a class="pager-item pager-item--next" href="../../ReRange/Virtualized_2/"><span class="pager-label">Next</span><span class="pager-name">Virtualized 2</span><span class="pager-event">ReRange</span></a></nav>
+    </div>
+  </article>
+</div>
+
+</main>
+<script src="../../js/page.js" defer></script>
+</body>
+</html>
