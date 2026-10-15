@@ -67,7 +67,7 @@ main { position: relative; z-index: 1; }
 .writeup-card__kicker { display: -webkit-box; overflow: hidden; margin: 0; padding-right: 24px; color: var(--faint); font: 11px var(--mono); letter-spacing: .12em; line-height: 1.45; text-transform: uppercase; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
 .writeup-card h3 { margin: 0 0 6px; font-size: 19px; word-break: break-word; }
 .writeup-card:hover h3 { color: var(--accent); }
-.writeup-card__foot { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 9px; margin: auto 0 0; padding-top: 12px; border-top: 1px solid var(--line); color: var(--dim); font: 12px var(--mono); }
+.writeup-card__foot { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; margin: auto 0 0; padding-top: 12px; border-top: 1px solid var(--line); color: var(--dim); font: 12px var(--mono); line-height: 1.5; }
 .writeup-card__foot .w-tier { font-weight: 600; }
 .tier-easy .w-tier { color: #9ece6a; }
 .tier-medium .w-tier { color: var(--accent-2); }
