@@ -489,7 +489,20 @@ def write_pygments_css(dest_css: Path) -> None:
     for errors. This keeps code blocks reading as part of the site rather
     than a jarring third-party theme.
     """
-    # foreground, background (unused tokens keep the default foreground)
+    # Token palette ONLY. The panel chrome (border, gradient, padding, the
+    # data-lang pill, the header hairline) belongs to the page stylesheets:
+    #   .md-render div.highlight            (scripts/style.css)
+    #   .article-body .md-render div.highlight (scripts/blog-style.css)
+    # An earlier revision of this file re-declared the panel here with
+    # !important, which flattened the gradient and stacked an extra 14px of
+    # padding on top of the 56px reserved for the pill — misaligning every
+    # code block on both sections. Do not reintroduce box rules here.
+    #
+    # The bare `background` on the base `.highlight` rule is only a fallback
+    # for the hypothetical highlight outside a .md-render; the panel chrome
+    # always out-specifies it, so it never wins.
+    #
+    # foreground (unused tokens keep the default foreground)
     css = """
 .highlight { color: #c0caf5; background: #1a1b26; }
 .highlight .hll { background: #24283b; }
@@ -508,34 +521,9 @@ def write_pygments_css(dest_css: Path) -> None:
 .highlight .gd { color: #f7768e; }
 .highlight .w { color: #8791b8; }
 """
-    extra = """
-.highlight {
-  background: #1a1b26 !important;
-  border: 1px solid #292e42;
-  padding: 14px 16px;
-  overflow-x: auto;
-  margin: 0 0 1.3em;
-  border-radius: 2px;
-}
-.highlight pre {
-  background: transparent !important;
-  border: none !important;
-  margin: 0;
-  padding: 0;
-  white-space: pre;
-  word-break: normal;
-}
-.highlight code {
-  background: transparent !important;
-  border: none !important;
-  padding: 0 !important;
-  font-family: "JetBrains Mono", "SF Mono", ui-monospace, monospace;
-  font-size: 13.5px;
-  line-height: 1.65;
-}
-"""
+    # No structural/box rules: see the note above the palette.
     try:
-        dest_css.write_text(css + "\n" + extra, encoding="utf-8")
+        dest_css.write_text(css, encoding="utf-8")
     except Exception as e:
         print(f"  warning: could not write pygments css ({e})")
 
@@ -764,6 +752,7 @@ PAGE_SHELL = """<!DOCTYPE html>
 <main id="{main_id}">
 {body}
 </main>
+<footer class="writeup-footer"><span>Adarsh Pillai &mdash; CTF writeups</span><span><a href="{site_prefix}index.html">Portfolio</a></span></footer>
 {page_scripts}
 </body>
 </html>
@@ -931,15 +920,34 @@ def challenge_urls(body_md: str):
 
 
 def pwnable_bottles():
-    """Map challenge slug -> bottle from the live pwnable.kr JSON API."""
+    """Map challenge slug -> bottle from the live pwnable.kr JSON API.
+
+    Every shape assumption is validated inside the same try that did the
+    fetch: the API returning `null`, a bare list, or a payload missing
+    `categories`/`categoryId`/`name` must degrade to the verified cache,
+    not abort the whole writeups build. Key access uses `.get` throughout.
+    """
     try:
         req = urllib.request.Request("https://pwnable.kr/api/challenges", headers=UA)
         with urllib.request.urlopen(req, timeout=10) as r:
             data = json.loads(r.read().decode("utf-8", errors="replace"))
+        if not isinstance(data, dict):
+            return {}
+        cats = {}
+        for c in data.get("categories") or []:
+            if isinstance(c, dict) and c.get("name") and isinstance(c.get("id"), (str, int)):
+                cats[c["id"]] = str(c["name"])
+        bottles = {}
+        for ch in data.get("challenges") or []:
+            if not isinstance(ch, dict):
+                continue
+            name = ch.get("name")
+            if not isinstance(name, str) or not name:
+                continue
+            bottles[name] = cats.get(ch.get("categoryId"), "")
+        return bottles
     except Exception:
         return {}
-    cats = {c["id"]: c["name"] for c in data.get("categories", [])}
-    return {ch["name"]: cats.get(ch["categoryId"], "") for ch in data.get("challenges", [])}
 
 
 def bottle_for_slug(bottles: dict, slug: str):
@@ -1007,8 +1015,9 @@ def resolve_difficulty(meta: dict, body_md: str, url_path: str, slug: str,
                     return levels[0], tier_for(levels[0]), "page JSON-LD"
 
     key = (url_path or "").rstrip("/")
-    if key in cache and cache[key].get("label"):
-        return cache[key]["label"], tier_for(cache[key]["label"]), "verified cache"
+    entry = cache.get(key)
+    if isinstance(entry, dict) and entry.get("label"):
+        return entry["label"], tier_for(entry["label"]), "verified cache"
 
     stated = author_stated_level(body_md)
     if stated:
@@ -1351,6 +1360,10 @@ def build(source: Path, out: Path, portfolio_url: str, github_user: str, github_
     try:
         cache = json.loads(cache_path.read_text(encoding="utf-8"))
     except Exception:
+        cache = {}
+    # Same crash class as pwnable_bottles: a hand-edited cache that parses to
+    # a list/str/number would raise on the `.get("label")` lookups below.
+    if not isinstance(cache, dict):
         cache = {}
 
     # pwnable.kr bottle listing, fetched once per build.

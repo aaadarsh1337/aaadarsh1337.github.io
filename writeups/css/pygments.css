@@ -15,29 +15,3 @@
 .highlight .gi { color: #9ece6a; }
 .highlight .gd { color: #f7768e; }
 .highlight .w { color: #8791b8; }
-
-
-.highlight {
-  background: #1a1b26 !important;
-  border: 1px solid #292e42;
-  padding: 14px 16px;
-  overflow-x: auto;
-  margin: 0 0 1.3em;
-  border-radius: 2px;
-}
-.highlight pre {
-  background: transparent !important;
-  border: none !important;
-  margin: 0;
-  padding: 0;
-  white-space: pre;
-  word-break: normal;
-}
-.highlight code {
-  background: transparent !important;
-  border: none !important;
-  padding: 0 !important;
-  font-family: "JetBrains Mono", "SF Mono", ui-monospace, monospace;
-  font-size: 13.5px;
-  line-height: 1.65;
-}

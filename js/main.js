@@ -1,53 +1,15 @@
 // =====================================================================
 // PORTFOLIO LOGIC
-// Reads window.PORTFOLIO_CONFIG and renders every section. Repos and
-// files are fetched live from the GitHub REST/raw APIs — no build step,
-// no backend. Update config.js and refresh to see changes.
+// Reads window.PORTFOLIO_CONFIG and renders every section. The repo grid
+// is fetched live from the GitHub REST API — no build step, no backend.
+// Every card links straight to github.com; we never render repo content
+// inline. Update config.js and refresh to see changes.
 // =====================================================================
 
 (function () {
   "use strict";
 
   const CFG = window.PORTFOLIO_CONFIG;
-
-  // File extensions we render inline. Anything else redirects to GitHub.
-  // Kept in sync with TEXT_EXT in scripts/build_writeups.py.
-  const READABLE_EXT = new Set([
-    "md", "markdown", "txt", "py", "js", "mjs", "cjs", "ts", "tsx", "jsx",
-    "json", "html", "htm", "css", "scss", "sass", "less", "yml", "yaml",
-    "java", "c", "h", "cpp", "hpp", "cc", "cs", "go", "rs", "rb", "php",
-    "sh", "bash", "zsh", "ps1", "sql", "xml", "ini", "cfg", "conf", "toml",
-    "csv", "tsv", "log", "r", "pl", "lua", "swift", "kt", "kts", "vue",
-    "svelte", "graphql", "proto", "env", "asm", "s"
-  ]);
-  const READABLE_NO_EXT = new Set([
-    "readme", "license", "makefile", "dockerfile", "gemfile", "procfile",
-    "changelog", "contributing", "authors", "notice"
-  ]);
-
-  const LANG_HINT = {
-    py: "python", js: "javascript", ts: "typescript", jsx: "javascript",
-    tsx: "typescript", sh: "bash", bash: "bash", md: "markdown",
-    yml: "yaml", yaml: "yaml", html: "html", htm: "html", css: "css",
-    java: "java", c: "c", cpp: "cpp", h: "cpp", hpp: "cpp", go: "go",
-    rs: "rust", rb: "ruby", php: "php", sql: "sql", json: "json",
-    xml: "xml", kt: "kotlin", swift: "swift", cs: "csharp"
-  };
-
-  function ext(filename) {
-    const parts = filename.split(".");
-    return parts.length > 1 ? parts.pop().toLowerCase() : "";
-  }
-
-  function isReadable(filename) {
-    const base = (filename || "").split("/").pop();
-    const e = ext(base);
-    if (e && READABLE_EXT.has(e)) return true;
-    if (!e && READABLE_NO_EXT.has(base.toLowerCase())) return true;
-    // Dockerfile / Makefile with extension-like suffixes or exact names
-    if (/^(dockerfile|makefile)(\..*)?$/i.test(base)) return true;
-    return false;
-  }
 
   function escapeHtml(str) {
     return String(str).replace(/[&<>"']/g, (c) => ({
@@ -246,7 +208,7 @@
       });
     });
     repoCache.forEach((repo) => {
-      entries.push({ label: repo.name, detail: "repo · browse files", run: () => openTreeSheet(repo) });
+      entries.push({ label: repo.name, detail: "repo · open on GitHub", run: () => window.open(repo.html_url, "_blank", "noopener") });
     });
     entries.push({ label: "View GitHub profile", detail: "external", run: () => window.open("https://github.com/" + CFG.github.username, "_blank", "noopener") });
     return entries;
@@ -680,23 +642,11 @@
       actions.appendChild(intelA);
     }
     if (links.docs) addBtn("Read docs", links.docs, false);
-    if (links.github) addBtn("View on GitHub", links.github, false);
-    const browseBtn = document.createElement("button");
-    browseBtn.type = "button";
-    browseBtn.className = "btn btn--ghost";
-    browseBtn.textContent = "Browse files →";
-    browseBtn.addEventListener("click", () => {
-      const found = (repoCache || []).find((r) => (r.name || "").toLowerCase() === String(f.repo || "").toLowerCase());
-      if (found) { openTreeSheet(found); return; }
-      const ref = flagshipRepoRef();
-      openTreeSheet({
-        name: f.repo,
-        html_url: (f.links || {}).github || ("https://github.com/" + ref.owner + "/" + ref.repo),
-        default_branch: "main",
-        owner: { login: ref.owner },
-      });
-    });
-    actions.appendChild(browseBtn);
+    // The flagship card always links out to its repo — we no longer render
+    // repository contents inline, so this is the card's file affordance.
+    const ghUrl = links.github ||
+      ("https://github.com/" + CFG.github.username + "/" + String(f.repo || ""));
+    addBtn("View on GitHub", ghUrl, false);
     card.appendChild(actions);
 
     const meta = document.createElement("p");
@@ -766,6 +716,11 @@
       });
   }
 
+  // The flagship repo sits in config's hiddenRepos, so it never lands in
+  // repoCache — without a shared promise every caller (renderFlagship at
+  // init, then loadRepos) would fire the identical request again.
+  let flagshipRepoFetch = null;
+
   function enrichFlagshipRepo() {
     const f = CFG.flagship || {};
     if (!f.repo) return;
@@ -782,11 +737,12 @@
     };
     const cached = (repoCache || []).find((r) => (r.name || "").toLowerCase() === String(f.repo).toLowerCase());
     if (cached) { apply(cached); return; }
-    const ref = flagshipRepoRef();
-    fetchWithTimeout("https://api.github.com/repos/" + ref.owner + "/" + ref.repo, 9000, { headers: githubHeaders() })
-      .then((r) => { if (!r.ok) throw new Error("repo " + r.status); return r.json(); })
-      .then(apply)
-      .catch(() => { /* keep meta empty — card already stands alone */ });
+    if (!flagshipRepoFetch) {
+      const ref = flagshipRepoRef();
+      flagshipRepoFetch = fetchWithTimeout("https://api.github.com/repos/" + ref.owner + "/" + ref.repo, 9000, { headers: githubHeaders() })
+        .then((r) => { if (!r.ok) throw new Error("repo " + r.status); return r.json(); });
+    }
+    flagshipRepoFetch.then(apply).catch(() => { /* keep meta empty — card already stands alone */ });
   }
 
   // ---------------- Certificates ----------------
@@ -913,10 +869,10 @@
   }
 
   // ---------------- Repositories (GitHub API) ----------------
+  // One call per cold page view; the grid only renders metadata and links
+  // each card out to github.com. Nothing is read from a repo's contents.
   const REPO_CACHE_KEY = "portfolio.repos";
   const REPO_CACHE_TTL = 10 * 60 * 1000; // 10 minutes
-  const MAX_RAW_CHARS = 300000; // ~300KB — truncate larger files inline
-  const MAX_TREE_FILES = 2000;
 
   function githubHeaders() {
     // Anonymous requests only. A token committed here would ship to every
@@ -1002,7 +958,7 @@
         var cmdHint = matchMedia("(hover: none)").matches
           ? "tap ⌘K for search"
           : "press Ctrl+K";
-        status.textContent = `${repos.length} repositor${repos.length === 1 ? "y" : "ies"} — browse a repo to view its files (or ${cmdHint})`;
+        status.textContent = `${repos.length} repositor${repos.length === 1 ? "y" : "ies"} — every card opens its GitHub repo (or ${cmdHint})`;
       grid.innerHTML = "";
       repoCache = repos;
       repos.forEach((repo) => grid.appendChild(renderRepoCard(repo, pinned)));
@@ -1073,98 +1029,16 @@
         <span class="updated">Updated ${formatDate(repo.updated_at)}</span>
       </div>
       <div class="repo-foot">
-        <button class="btn btn--ghost btn--small repo-browse">Browse files</button>
-        <a class="repo-open" href="${escapeHtml(repo.html_url)}" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
+        <a class="repo-open" href="${escapeHtml(repo.html_url)}" target="_blank" rel="noopener noreferrer">Browse ↗</a>
       </div>
     `;
-    card.querySelector(".repo-browse").addEventListener("click", () => openTreeSheet(repo));
     return card;
   }
-
-  // ---------------- Repo file tree modal ----------------
-  const treeSheet = document.getElementById("treeSheet");
-  const tsBody = document.getElementById("tsBody");
-
-  function buildTree(files) {
-    const root = { dirs: {}, files: [] };
-    files.forEach((f) => {
-      const parts = f.path.split("/");
-      let node = root;
-      parts.forEach((part, i) => {
-        const isFile = i === parts.length - 1;
-        if (isFile) {
-          node.files.push({ name: part, path: f.path });
-        } else {
-          if (!node.dirs[part]) node.dirs[part] = { dirs: {}, files: [] };
-          node = node.dirs[part];
-        }
-      });
-    });
-    return root;
-  }
-
-  function makeActivatable(el, fn, label) {
-    el.tabIndex = 0;
-    el.setAttribute("role", "button");
-    if (label) el.setAttribute("aria-label", label);
-    el.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" || e.key === " ") {
-        e.preventDefault();
-        fn();
-      }
-    });
-  }
-
-  function renderTreeNode(node, container, depth, repo, branch) {
-    const indent = 14 + depth * 18;
-
-    Object.keys(node.dirs).sort((a, b) => a.localeCompare(b)).forEach((dirName) => {
-      const dirRow = document.createElement("div");
-      dirRow.className = "tree-item tree-dir";
-      dirRow.style.paddingLeft = indent + "px";
-      dirRow.innerHTML = `<span class="path"><span class="dir-arrow">▸</span>${escapeHtml(dirName)}/</span>`;
-
-      const childWrap = document.createElement("div");
-      childWrap.className = "tree-children";
-
-      const toggleDir = () => {
-        const isOpen = childWrap.classList.toggle("open");
-        dirRow.querySelector(".dir-arrow").textContent = isOpen ? "▾" : "▸";
-        dirRow.setAttribute("aria-expanded", isOpen ? "true" : "false");
-      };
-      dirRow.setAttribute("aria-expanded", "false");
-      dirRow.addEventListener("click", toggleDir);
-      makeActivatable(dirRow, toggleDir);
-
-      container.appendChild(dirRow);
-      container.appendChild(childWrap);
-      renderTreeNode(node.dirs[dirName], childWrap, depth + 1, repo, branch);
-    });
-
-    node.files.sort((a, b) => a.name.localeCompare(b.name)).forEach((f) => {
-      const readable = isReadable(f.name);
-      const row = document.createElement("div");
-      row.className = "tree-item " + (readable ? "readable" : "unreadable");
-      row.style.paddingLeft = indent + "px";
-      row.innerHTML = `<span class="path">${escapeHtml(f.name)}</span><span class="kind">${readable ? "inline" : "github ↗"}</span>`;
-      const openFile = () => openFileSheet(repo, f.path, branch, readable);
-      row.addEventListener("click", openFile);
-      makeActivatable(row, openFile, "Open " + f.name);
-      container.appendChild(row);
-    });
-  }
-
-  let treeLastFocus = null;
-  let fileLastFocus = null;
-  let treeRequestId = 0;
-  let fileRequestId = 0;
 
   function anyModalOpen() {
     const linksPanel = document.getElementById("linksPanel");
     const cmdk = document.getElementById("cmdk");
-    return (
-      treeSheet.classList.contains("open") ||
-      fileSheet.classList.contains("open") ||
+    return Boolean(
       (linksPanel && !linksPanel.hidden) ||
       (cmdk && !cmdk.hidden)
     );
@@ -1190,233 +1064,14 @@
     }
   }
 
-  function sanitizeHtml(dirty) {
-    if (window.DOMPurify && window.DOMPurify.sanitize) {
-      return window.DOMPurify.sanitize(dirty, { USE_PROFILES: { html: true } });
-    }
-    // Fail closed: without DOMPurify, never inject raw HTML.
-    return escapeHtml(dirty);
-  }
-
-  const RENDER_LIBS = [
-    {
-      test: () => window.marked,
-      src: "https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.0/marked.min.js",
-      integrity: "sha384-NNQgBjjuhtXzPmmy4gurS5X7P4uTt1DThyevz4Ua0IVK5+kazYQI1W27JHjbbxQz"
-    },
-    {
-      test: () => window.hljs,
-      src: "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js",
-      integrity: "sha384-F/bZzf7p3Joyp5psL90p/p89AZJsndkSoGwRpXcZhleCWhd8SnRuoYo4d0yirjJp"
-    },
-    {
-      test: () => window.DOMPurify,
-      src: "https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.9/purify.min.js",
-      integrity: "sha384-3HPB1XT51W3gGRxAmZ+qbZwRpRlFQL632y8x+adAqCr4Wp3TaWwCLSTAJJKbyWEK"
-    }
-  ];
-  let libsPromise = null;
-  function ensureRenderLibs() {
-    if (!libsPromise) {
-      libsPromise = Promise.all(RENDER_LIBS.map((lib) => {
-        if (lib.test()) return Promise.resolve();
-        return new Promise((resolve) => {
-          const s = document.createElement("script");
-          s.src = lib.src;
-          s.integrity = lib.integrity;
-          s.crossOrigin = "anonymous";
-          s.async = true;
-          s.onload = () => resolve();
-          s.onerror = () => resolve();
-          document.head.appendChild(s);
-        });
-      }));
-    }
-    return libsPromise;
-  }
-
-  function openTreeSheet(repo) {
-    closeFileSheet(true);
-    const requestId = ++treeRequestId;
-    treeLastFocus = document.activeElement;
-    document.getElementById("tsRepo").textContent = repo.name;
-    document.getElementById("tsGithubLink").href = repo.html_url;
-    tsBody.innerHTML = `<p class="dim">&gt; fetching file tree_</p>`;
-    treeSheet.classList.add("open");
-    treeSheet.setAttribute("aria-hidden", "false");
-    updateBodyLock();
-    document.getElementById("tsClose").focus();
-
-    const branch = repo.default_branch || "main";
-    fetchWithTimeout(
-      `https://api.github.com/repos/${repo.owner.login}/${repo.name}/git/trees/${branch}?recursive=1`,
-      9000,
-      { headers: githubHeaders() }
-    )
-      .then((r) => {
-        if (!r.ok) throw new Error("tree fetch failed " + r.status);
-        return r.json();
-      })
-      .then((data) => {
-        if (requestId !== treeRequestId) return;
-        let files = (data.tree || []).filter((n) => n.type === "blob");
-        if (files.length === 0) {
-          tsBody.innerHTML = `<p class="dim">No files found (empty repo, or API limit reached).</p>`;
-          return;
-        }
-        let truncated = false;
-        if (files.length > MAX_TREE_FILES) {
-          files = files.slice(0, MAX_TREE_FILES);
-          truncated = true;
-        }
-        const root = buildTree(files);
-        const list = document.createElement("div");
-        list.className = "tree-list";
-        renderTreeNode(root, list, 0, repo, branch);
-        tsBody.innerHTML = "";
-        if (truncated) {
-          const note = document.createElement("p");
-          note.className = "dim";
-          note.textContent = `Showing first ${MAX_TREE_FILES} files — open on GitHub for the full tree.`;
-          tsBody.appendChild(note);
-        }
-        tsBody.appendChild(list);
-      })
-      .catch((err) => {
-        if (requestId !== treeRequestId) return;
-        tsBody.innerHTML = `<p class="dim">Couldn't load the file tree (rate limit or network). <a href="${escapeHtml(repo.html_url)}" target="_blank" rel="noopener noreferrer">Open on GitHub instead ↗</a></p>`;
-        console.error(err);
-      });
-  }
-
-  document.getElementById("tsClose").addEventListener("click", () => closeTreeSheet());
-  document.getElementById("treeSheetBackdrop").addEventListener("click", () => closeTreeSheet());
-  function closeTreeSheet(keepFocus) {
-    treeRequestId++;
-    treeSheet.classList.remove("open");
-    treeSheet.setAttribute("aria-hidden", "true");
-    updateBodyLock();
-    if (!keepFocus && !fileSheet.classList.contains("open") && treeLastFocus && treeLastFocus.focus) treeLastFocus.focus();
-  }
-
-  // ---------------- File viewer modal ----------------
-  const fileSheet = document.getElementById("fileSheet");
-  const fsBody = document.getElementById("fsBody");
-
-  function openFileSheet(repo, path, branch, readable) {
-    const requestId = ++fileRequestId;
-    fileLastFocus = document.activeElement;
-    document.getElementById("fsRepo").textContent = repo.name;
-    document.getElementById("fsPath").textContent = path;
-    const githubBlobUrl = `${repo.html_url}/blob/${branch}/${path}`;
-    document.getElementById("fsGithubLink").href = githubBlobUrl;
-    document.getElementById("fsMeta").textContent = readable ? "rendered inline" : "not renderable inline — opens on GitHub";
-    fsBody.innerHTML = `<p class="dim">&gt; loading file_</p>`;
-    fileSheet.classList.add("open");
-    fileSheet.setAttribute("aria-hidden", "false");
-    updateBodyLock();
-    document.getElementById("fsClose").focus();
-
-    if (!readable) {
-      fsBody.innerHTML = `
-        <div class="redirect-card">
-          <p>This file type isn't rendered inline (binary, image, or otherwise not source/text).</p>
-          <a class="btn btn--primary" href="${escapeHtml(githubBlobUrl)}" target="_blank" rel="noopener noreferrer">Open on GitHub ↗</a>
-        </div>`;
-      return;
-    }
-
-    const rawUrl = `https://raw.githubusercontent.com/${repo.owner.login}/${repo.name}/${branch}/${path}`;
-    fetchWithTimeout(rawUrl, 9000)
-      .then((r) => {
-        if (!r.ok) throw new Error("raw fetch failed " + r.status);
-        return r.text();
-      })
-      .then((text) => {
-        if (requestId !== fileRequestId) return;
-        let truncated = false;
-        if (text.length > MAX_RAW_CHARS) {
-          text = text.slice(0, MAX_RAW_CHARS);
-          truncated = true;
-        }
-        const e = ext(path.split("/").pop());
-        if (e === "md" || e === "markdown") {
-          return ensureRenderLibs().then(() => {
-            if (requestId !== fileRequestId) return;
-            const wrap = document.createElement("div");
-            wrap.className = "md-render";
-            const rawHtml = window.marked ? window.marked.parse(text) : escapeHtml(text);
-            wrap.innerHTML = sanitizeHtml(rawHtml);
-            wrap.querySelectorAll("a").forEach((a) => {
-              const href = a.getAttribute("href") || "";
-              if (/^https?:\/\//i.test(href)) {
-                a.target = "_blank";
-                a.rel = "noopener noreferrer";
-              }
-            });
-            fsBody.innerHTML = "";
-            if (truncated) {
-              const note = document.createElement("p");
-              note.className = "dim";
-              note.textContent = "Truncated preview (file too large) — open on GitHub for the full file.";
-              fsBody.appendChild(note);
-            }
-            fsBody.appendChild(wrap);
-            if (window.hljs) fsBody.querySelectorAll("pre code").forEach((b) => window.hljs.highlightElement(b));
-          });
-        }
-        return ensureRenderLibs().then(() => {
-          if (requestId !== fileRequestId) return;
-          const pre = document.createElement("pre");
-          const code = document.createElement("code");
-          const lang = LANG_HINT[e];
-          if (lang) code.className = "language-" + lang;
-          code.textContent = truncated ? text + "\n\n… truncated …" : text;
-          pre.appendChild(code);
-          fsBody.innerHTML = "";
-          fsBody.appendChild(pre);
-          if (window.hljs) window.hljs.highlightElement(code);
-        });
-      })
-      .catch((err) => {
-        if (requestId !== fileRequestId) return;
-        fsBody.innerHTML = `
-          <div class="redirect-card">
-            <p>Couldn't load this file inline (rate limit or network hiccup).</p>
-            <a class="btn btn--primary" href="${escapeHtml(githubBlobUrl)}" target="_blank" rel="noopener noreferrer">Open on GitHub ↗</a>
-          </div>`;
-        console.error(err);
-      });
-  }
-
-  document.getElementById("fsClose").addEventListener("click", () => closeFileSheet());
-  document.getElementById("fileSheetBackdrop").addEventListener("click", () => closeFileSheet());
-  function closeFileSheet(keepFocus) {
-    fileRequestId++;
-    fileSheet.classList.remove("open");
-    fileSheet.setAttribute("aria-hidden", "true");
-    updateBodyLock();
-    if (!keepFocus && !treeSheet.classList.contains("open") && fileLastFocus && fileLastFocus.focus) fileLastFocus.focus();
-  }
-
+  // Focus trap for the two remaining overlays. Escape is handled by each
+  // overlay's own listener (see initLinkPanel / initPalette).
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") {
-      if (fileSheet.classList.contains("open")) closeFileSheet();
-      else if (treeSheet.classList.contains("open")) closeTreeSheet();
-      return;
-    }
-    if (e.key === "Tab") {
-      if (fileSheet.classList.contains("open")) trapTab(fileSheet, e);
-      else if (treeSheet.classList.contains("open")) trapTab(treeSheet, e);
-      else {
-        const linksPanel = document.getElementById("linksPanel");
-        if (linksPanel && !linksPanel.hidden) trapTab(linksPanel, e);
-        else {
-          const cmdk = document.getElementById("cmdk");
-          if (cmdk && !cmdk.hidden) trapTab(cmdk, e);
-        }
-      }
-    }
+    if (e.key !== "Tab") return;
+    const linksPanel = document.getElementById("linksPanel");
+    const cmdk = document.getElementById("cmdk");
+    if (linksPanel && !linksPanel.hidden) trapTab(linksPanel, e);
+    else if (cmdk && !cmdk.hidden) trapTab(cmdk, e);
   });
 
   // ---------------- Nav: mobile toggle + scrollspy ----------------
