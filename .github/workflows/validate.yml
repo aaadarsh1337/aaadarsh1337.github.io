@@ -100,9 +100,13 @@ jobs:
         run: |
           ! grep -rn "onerror=\|onclick=\|onload=" index.html 404.html scripts/build_writeups.py scripts/build_intel.py scripts/build_blog.py || exit 1
 
-      - name: SRI present for lazy CDN helpers
+      - name: No third-party scripts
         run: |
-          test "$(grep -c 'integrity: "sha384-' js/main.js)" -ge 3
+          # The site ships zero remote scripts and every CSP pins script-src to 'self'.
+          # Adding a CDN script now requires changing this gate on purpose, which forces
+          # a decision about SRI instead of silently trusting a third party.
+          ! grep -rn '<script[^>]*src="https\?://' index.html 404.html scripts/build_writeups.py scripts/build_intel.py scripts/build_blog.py || exit 1
+          ! grep -rn 'script-src[^;]*https\?://' index.html 404.html blog/index.html scripts/build_writeups.py scripts/build_intel.py scripts/build_blog.py || exit 1
 
       - name: CSP present
         run: |
