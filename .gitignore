@@ -1,3 +1,8 @@
-scripts/__pycache__/
-__pycache__/
-*.pyc
+.astro/
+content-src/
+dist/
+node_modules/
+public/blog/
+public/intel/
+public/writeups/
+.taste-skill/

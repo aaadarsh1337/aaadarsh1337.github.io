@@ -1,0 +1,82 @@
+# Builds the whole site (pages + writeups + blog + intel) and deploys it to
+# GitHub Pages. Nothing generated is committed back to the repo.
+#
+# One-time setup: Settings → Pages → Build and deployment → Source: "GitHub Actions".
+name: Build and deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  # Sent by ctf-writeups / security-blog / threat-harbour when they change.
+  # The event names are the ones those repos already send.
+  repository_dispatch:
+    types: [writeups-updated, blog-updated, threat-harbour-updated, intel-updated]
+  # Daily: picks up the honeypot's fresh metrics.json (sensor publishes ~06:00 UTC).
+  schedule:
+    - cron: "17 7 * * *"
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Pull content (writeups, blog, sensor metrics, repo list)
+        run: npm run content
+
+      - run: npm run build
+
+      - name: Guard rails
+        run: |
+          test -f dist/index.html
+          test -f dist/writeups/index.html
+          test -f dist/blog/index.html
+          test -f dist/intel/index.html
+          test -f dist/writeups/search.json
+          test -f dist/blog/search.json
+          test -f dist/intel/data.json
+          test -f dist/assets/resume.pdf
+          # The CSP allows same-origin script files plus one hashed inline snippet
+          # (the theme). Fail if any page grows another inline or remote script.
+          node -e '
+            const fs = require("fs"), path = require("path");
+            const walk = (d) => fs.readdirSync(d, { withFileTypes: true }).flatMap((e) => e.isDirectory() ? walk(path.join(d, e.name)) : e.name.endsWith(".html") ? [path.join(d, e.name)] : []);
+            let bad = 0;
+            for (const f of walk("dist")) {
+              const tags = fs.readFileSync(f, "utf8").match(/<script\b[^>]*>/g) ?? [];
+              const inline = tags.filter((t) => !/\bsrc=/.test(t) && !/application\/(ld\+)?json/.test(t));
+              const remote = tags.filter((t) => /src="https?:/.test(t));
+              if (inline.length > 1 || remote.length) { console.error(f, inline.length, remote.length); bad++; }
+            }
+            process.exit(bad ? 1 : 0);'
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

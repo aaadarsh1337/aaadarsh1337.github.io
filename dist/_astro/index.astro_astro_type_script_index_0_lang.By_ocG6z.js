@@ -1,1 +1,0 @@
-document.querySelectorAll(`[data-copy-text]`).forEach(e=>e.addEventListener(`click`,async()=>{try{await navigator.clipboard.writeText(e.dataset.copyText),e.textContent=`copied`}catch{e.textContent=`⌘C it`}setTimeout(()=>e.textContent=`copy`,1600)}));
