@@ -1,0 +1,24 @@
+---
+import Base from "../../../layouts/Base.astro";
+import PageHead from "../../../components/PageHead.astro";
+import PostList from "../../../components/PostList.astro";
+import BlogCats from "../../../components/BlogCats.astro";
+import { getPosts, type Post } from "../../../lib/blog";
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return [...new Set(posts.map((p) => p.category))].map((category) => ({
+    params: { category },
+    props: { posts: posts.filter((p) => p.category === category) },
+  }));
+}
+const { posts } = Astro.props as { posts: Post[] };
+const label = posts[0].categoryLabel;
+---
+<Base title={`${label} · Blog`} section="blog">
+  <PageHead crumbs={[{ label: "blog", href: "/blog/" }, { label: label.toLowerCase() }]} title={label} count={posts.length}>
+    <BlogCats current={posts[0].category} />
+  </PageHead>
+  <div class="wrap"><PostList posts={posts} /></div>
+</Base>
+<style>.wrap { margin-top: var(--s7); }</style>

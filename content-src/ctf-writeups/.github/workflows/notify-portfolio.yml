@@ -1,0 +1,24 @@
+# Place this file in your WRITEUPS repo at:
+#   ctf-writeups/.github/workflows/notify-portfolio.yml
+#
+# On every push to main, tells the portfolio repo to rebuild /writeups/.
+
+name: Notify portfolio to rebuild writeups
+
+on:
+  push:
+    branches: [main, master]
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger portfolio workflow
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          # Personal access token with "repo" scope (or fine-grained:
+          # Contents read on ctf-writeups not needed here; needs
+          # permission to dispatch workflows on the portfolio repo)
+          token: ${{ secrets.PORTFOLIO_DISPATCH_TOKEN }}
+          repository: aaadarsh1337/aaadarsh1337.github.io
+          event-type: writeups-updated

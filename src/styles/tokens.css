@@ -1,0 +1,133 @@
+/* ==========================================================================
+   Lunar — design tokens
+   Night is the default. Dawn is the light theme (toggle, persisted).
+   Accents are low-chroma and carry fixed meanings across the whole site:
+     lily     hard · pwn · "you are here"
+     lantern  medium · crypto · writing
+     tide     rev · threat harbour · live data
+     dusk     links · writeups
+     sage     easy · results · verified
+     bone     moonlight: the moon itself, highlights, primary actions
+   ========================================================================== */
+
+:root {
+  color-scheme: dark;
+
+  /* ground → raised surfaces */
+  --bg: #0b0e13;
+  --bg-1: #0f1318;
+  --bg-2: #141920;
+  --bg-3: #1a2029;
+  /* hairlines */
+  --rule: #1d232c;
+  --rule-2: #29303a;
+  /* ink */
+  --fg: #e1e5ea;      /* body text            15.6:1 */
+  --fg-2: #b6bec8;    /* secondary            10.0:1 */
+  --muted: #939eab;   /* metadata              7.1:1 */
+  --faint: #84909c;   /* decoration and small marks; still 5:1 on the ground */
+  --bone: #eef0f3;
+  --bone-dim: #cfcabd;
+  /* the moon is always moonlight, whatever the theme */
+  --moon: #ece8de;
+  --moon-shade: color-mix(in srgb, #ece8de 9%, #0b0e13);
+  --moon-edge: rgb(236 232 222 / 0.22);
+
+  --lily: #cf7c71;
+  --lantern: #d2b177;
+  --tide: #8bb3ad;
+  --blue: #8fb3e8;     /* the site's accent: moonlit blue (8.9:1) */
+  --dusk: var(--blue);
+  --sage: #a8b893;
+
+  --lily-wash: rgb(207 124 113 / 0.10);
+  --tide-wash: rgb(139 179 173 / 0.08);
+  --dusk-wash: rgb(143 179 232 / 0.12);
+  --bone-wash: rgb(236 232 222 / 0.05);
+  --glow: rgb(236 232 222 / 0.035);
+
+  /* syntax: moonlit, never neon */
+  --sh-keyword: #98abcd;
+  --sh-string: #a8b893;
+  --sh-constant: #d2b177;
+  --sh-function: #ddd8cc;
+  --sh-comment: #7f8a97;
+  --sh-punctuation: #8a95a2;
+  --sh-parameter: #cfcabd;
+  --sh-link: #8bb3ad;
+  --sh-number: #d2b177;
+
+  /* type */
+  --serif: "Shippori Mincho", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  --sans: "Instrument Sans Variable", "Instrument Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "Sometype Mono", /* taste-skill-ignore: code blocks only */ ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+
+  --t-micro: 0.75rem;     /* 12 — only for uppercase-free tiny marks */
+  --t-meta: 0.875rem;     /* 14 — small */
+  --t-small: 0.875rem;    /* 14 — small, UI */
+  --t-ui: 1rem;           /* 16 */
+  --t-body: 1.125rem;     /* 18 — prose */
+  --t-lede: 1.375rem;     /* 22 */
+  --t-h3: 1.25rem;        /* 20 */
+  --t-h2: clamp(1.75rem, 1.3rem + 1.6vw, 2.25rem);   /* 28 → 36 section headings */
+  --t-statement: clamp(1.375rem, 0.8rem + 2.2vw, 2.25rem);  /* large-set statements: ≤24 phone, ≤32 tablet, 36 desktop */
+  --t-title: clamp(2.25rem, 1.5rem + 2.6vw, 3.5rem);    /* 36 → 56 page titles */
+  --t-name: clamp(2.75rem, 1.8rem + 3.6vw, 4.25rem);    /* 44 → 68 home name */
+
+  --lh-tight: 1.15;
+  --lh-ui: 1.45;
+  --lh-prose: 1.72;
+
+  /* space: 4px base */
+  --s1: 0.25rem; --s2: 0.5rem; --s3: 0.75rem; --s4: 1rem; --s5: 1.5rem;
+  --s6: 2rem; --s7: 3rem; --s8: 4rem; --s9: 6rem; --s10: 8rem;
+
+  --gap: var(--s9);          /* between sections; tighter on phones (global.css) */
+  --measure: 40rem;          /* ≈ 68ch of 18px Instrument Sans */
+  --content: 48rem;          /* listings, tables, page furniture */
+  --margin: clamp(1.25rem, 2.2vw, 2rem);   /* the page's one pair of outer margins */
+  --radius: 6px;
+  --ease: cubic-bezier(.2, .7, .2, 1);
+}
+
+:root[data-theme="dawn"] {
+  color-scheme: light;
+  --bg: #edeff1;
+  --bg-1: #e6e9ec;
+  --bg-2: #dfe3e7;
+  --bg-3: #d6dbe0;
+  --rule: #d3d8de;
+  --rule-2: #bfc6ce;
+  --fg: #141920;
+  --fg-2: #39424d;
+  --muted: #535d69;
+  --faint: #626c78;
+  --bone: #2a2f36;
+  --bone-dim: #3d434b;
+  --moon: #fbf8ef;
+  --moon-shade: #c9d0d8;
+  --moon-edge: rgb(20 25 32 / 0.28);
+
+  --lily: #a23f35;
+  --lantern: #6a4e12;
+  --tide: #2f6660;
+  --blue: #28508a;
+  --dusk: var(--blue);
+  --sage: #4f6236;
+
+  --lily-wash: rgb(162 63 53 / 0.08);
+  --tide-wash: rgb(47 102 96 / 0.07);
+  --dusk-wash: rgb(61 88 134 / 0.08);
+  --bone-wash: rgb(20 25 32 / 0.04);
+  --glow: rgb(255 255 255 / 0.5);
+
+  --sh-keyword: #3d5886;
+  --sh-string: #4f6236;
+  --sh-constant: #7a5a17;
+  --sh-function: #141920;
+  --sh-comment: #5c6672;
+  --sh-punctuation: #535d69;
+  --sh-parameter: #2a2f36;
+  --sh-link: #2f6660;
+  --sh-number: #7a5a17;
+}

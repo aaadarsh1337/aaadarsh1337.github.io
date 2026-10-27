@@ -1,0 +1,177 @@
+---
+// Shared long-form layout for writeups and blog posts:
+// path crumbs · title · spec rows · prose + files · pager.
+import type { Rendered } from "../lib/markdown";
+import type { Attachment } from "../lib/writeups";
+import { size } from "../lib/format";
+
+interface Crumb { label: string; href?: string }
+interface Spec { k: string; v: string; href?: string; accent?: string }
+interface Near { title: string; url: string }
+interface Props {
+  crumbs: Crumb[];
+  title: string;
+  kicker?: string;
+  specs: Spec[];
+  body: Rendered;
+  attachments?: Attachment[];
+  prev?: Near;
+  next?: Near;
+  series?: string;
+  /** One plain sentence under the title saying what this is. */
+  standfirst?: string;
+}
+const { crumbs, title, kicker, specs, body, attachments = [], prev, next, series, standfirst } = Astro.props;
+
+const dirs = [...new Set(attachments.map((a) => a.dir))];
+---
+<article class="article">
+  <header class="head rise">
+    <nav class="crumbs meta" aria-label="Breadcrumb">
+      <a href="/">~</a>
+      {crumbs.map((c) => <><span class="crumbs__sep">/</span>{c.href ? <a href={c.href}>{c.label.toLowerCase()}</a> : <span aria-current="page">{c.label.toLowerCase()}</span>}</>)}
+    </nav>
+    {kicker && <p class="head__kicker meta">{kicker}</p>}
+    <h1 class="head__title page-title">{title}</h1>
+    {standfirst && <p class="head__stand">{standfirst}</p>}
+    <dl class:list={["specs", { "specs--rail": attachments.length === 0 }]}>
+      {specs.map((s) => (
+        <div class="spec" style={s.accent ? `--c: var(--${s.accent})` : undefined}>
+          <dt>{s.k}</dt>
+          <dd>{s.href ? <a class="link" href={s.href} rel={/^https?:/.test(s.href) ? "external" : undefined}>{s.v}</a> : <span set:html={s.v} />}</dd>
+        </div>
+      ))}
+    </dl>
+  </header>
+
+  <div class="layout">
+    <div class="prose body" set:html={body.html} />
+
+    <aside class="rail" aria-label={attachments.length ? "Files in this challenge" : "About this post"}>
+      <div class="rail__inner">
+
+
+        {attachments.length > 0 && (
+          <section class="files">
+            <h2 class="rail__label">Files <span class="files__n">{attachments.length}</span></h2>
+            <ul>
+              {dirs.map((d) => (
+                <>
+                  {d && <li class="files__dir meta">{d}/</li>}
+                  {attachments.filter((a) => a.dir === d).map((a) => (
+                    <li>
+                      <a class:list={["file", { "file--self": a.self }]} href={a.url} rel="external" title={`${a.path} · ${a.kind}`}>
+                        <span class="file__size">{size(a.size)}</span>
+                        <span class="file__name">{a.name}</span>
+                        <span class="file__kind">{a.self ? "this page" : a.kind}</span>
+                      </a>
+                    </li>
+                  ))}
+                </>
+              ))}
+            </ul>
+          </section>
+        )}
+        {attachments.length === 0 && (
+          <dl class="railspecs">
+            {specs.map((sp) => <div><dt>{sp.k}</dt><dd>{sp.href ? <a class="link" href={sp.href} rel={/^https?:/.test(sp.href) ? "external" : undefined}>{sp.v}</a> : <span set:html={sp.v} />}</dd></div>)}
+          </dl>
+        )}
+      </div>
+    </aside>
+  </div>
+
+  {(prev || next) && (
+    <nav class="pager" aria-label={series ? `More from ${series}` : "More"}>
+      {prev ? <a class="pager__a" href={prev.url} rel="prev"><span class="meta">← earlier{series && ` on ${series}`}</span><span class="pager__t">{prev.title}</span></a> : <span />}
+      {next ? <a class="pager__a pager__a--next" href={next.url} rel="next"><span class="meta">later{series && ` on ${series}`} →</span><span class="pager__t">{next.title}</span></a> : <span />}
+    </nav>
+  )}
+  <slot name="after" />
+</article>
+
+<style>
+  .head { max-width: none; }
+  .crumbs { display: flex; flex-wrap: wrap; gap: 0 .45em; color: var(--muted); }
+  .crumbs a { color: var(--fg-2); transition: color .2s; }
+  .crumbs a:hover { color: var(--bone); }
+  .crumbs__sep { color: var(--faint); }
+  .crumbs [aria-current] { color: var(--muted); }
+  .head__kicker { margin-top: var(--s5); }
+  .head__title { margin-top: var(--s5); overflow-wrap: anywhere; }
+  .head__stand { margin-top: var(--s5); max-width: 38rem; font-size: var(--t-lede); line-height: 1.45; color: var(--fg); }
+  .specs { margin: var(--s6) 0 0; display: flex; flex-wrap: wrap; gap: var(--s5) var(--s6); padding: var(--s5); background: var(--bg-1); }
+  .spec { display: grid; gap: 5px; min-width: 0; }
+  .specs--rail { display: none; }
+  .railspecs { margin: 0; display: grid; gap: var(--s4); padding: var(--s5); background: var(--bg-1); }
+  .railspecs dt { font-size: var(--t-small); color: var(--fg-2); }
+  .railspecs dd { margin: 2px 0 0; font-size: var(--t-body); color: var(--bone); }
+  .railspecs :global(.tag) { display: inline-block; margin-right: .6em; font-size: var(--t-body); }
+  .spec dt { font: 400 var(--t-small)/1 var(--sans); color: var(--muted); }
+  .spec dd { margin: 0; font: 400 var(--t-small)/1.35 var(--sans); color: var(--c, var(--fg)); overflow-wrap: anywhere; }
+  .spec dd :global(.tag) { font-size: var(--t-small); }
+
+  .layout {
+    margin-top: var(--s7);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 15rem);
+    gap: var(--s8);
+  }
+  .body { font-size: 1.15625rem; }
+  .body > :global(:first-child) { margin-top: 0; }
+  .body :global(.listing), .body :global(.figure), .body :global(.table) { max-width: none; }
+
+  .rail__inner { position: sticky; top: var(--s7); display: grid; gap: var(--s6); max-height: calc(100vh - var(--s8)); overflow-y: auto; scrollbar-width: none; padding-bottom: var(--s4); }
+  .rail__label { font: 400 var(--t-body)/1.3 var(--sans); color: var(--bone); margin-bottom: var(--s3); }
+  .files { padding-top: var(--s2); }
+  .spec dd :global(.tag + .tag) { margin-left: .7em; }
+
+
+  .files ul { list-style: none; display: grid; gap: 1px; }
+  .files__n { color: var(--muted); }
+  .files__dir { padding: var(--s2) 0 2px; color: var(--faint); }
+  .file { display: grid; grid-template-columns: 3.4rem minmax(0, 1fr) auto; gap: var(--s3); padding: .45rem 0; font: 400 .875rem/1.45 var(--sans); color: var(--muted); transition: color .2s; }
+  .file__size { text-align: right; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .file__name { color: var(--fg-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .file__kind { color: var(--muted); }
+  .file:hover .file__name { color: var(--bone); }
+  .file--self .file__kind { color: var(--lily); }
+
+  .pager { margin-top: var(--gap); display: grid; grid-template-columns: 1fr 1fr; gap: var(--s5); }
+  .pager__a { display: grid; gap: var(--s2); padding: var(--s5); background: var(--bg-1); transition: background-color .2s; }
+  .pager__a:hover { background: var(--bg-2); }
+  .pager__a--next { text-align: right; }
+  .pager__t { font: 500 1.25rem/1.3 var(--sans); color: var(--fg); transition: color .2s; }
+  .pager__a:hover .pager__t { color: var(--bone); }
+
+  @media (max-width: 1180px) {
+    .layout { grid-template-columns: minmax(0, 1fr); gap: var(--s6); }
+    .rail__inner { position: static; max-height: none; overflow: visible; gap: var(--s5); }
+    .body { max-width: var(--measure); }
+  }
+  @media (max-width: 640px) {
+    .body { font-size: 1.0625rem; }
+    .specs { gap: var(--s4) var(--s5); }
+    .pager { grid-template-columns: 1fr; gap: 0; }
+    .pager__a--next { text-align: left; }
+  }
+</style>
+
+<script>
+  // listings and figures arrive as they scroll in
+  if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("is-in"); io.unobserve(e.target); } }), { rootMargin: "0px 0px -8% 0px" });
+    document.querySelectorAll(".body > .listing, .body > .figure, .body > h2, .file, .pager__a").forEach((el) => { el.classList.add("will-rise"); io.observe(el); });
+  }
+
+  // copy buttons on listings
+  document.querySelectorAll<HTMLButtonElement>("[data-copy]").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const code = btn.closest(".listing")?.querySelector("code")?.textContent ?? "";
+      try { await navigator.clipboard.writeText(code); btn.textContent = "copied"; btn.dataset.done = ""; }
+      catch { btn.textContent = "select + copy"; }
+      setTimeout(() => { btn.textContent = "copy"; delete btn.dataset.done; }, 1600);
+    });
+  });
+
+</script>

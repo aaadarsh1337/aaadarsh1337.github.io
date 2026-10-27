@@ -1,0 +1,65 @@
+---
+// One moon component for the whole site.
+//   <Moon live />            tonight's phase, recomputed in the visitor's browser
+//   <Moon phase={0.25} />    fixed phase (difficulty marks, decoration)
+import { litPath, moonPhase } from "../lib/moon";
+
+interface Props {
+  phase?: number;
+  live?: boolean;
+  size?: number;
+  halo?: boolean;
+  class?: string;
+  label?: string;
+}
+const { live = false, size = 24, halo = false, class: cls, label } = Astro.props;
+const now = moonPhase(new Date());
+const phase = Astro.props.phase ?? now.phase;
+const title = label === "" ? undefined : label ?? (live ? `${now.name} · ${Math.round(now.illumination * 100)}% lit` : undefined);
+---
+<svg
+  class:list={["moon", cls, { "moon--halo": halo }]}
+  viewBox="0 0 24 24"
+  width={size}
+  height={size}
+  data-moon-live={live ? "" : undefined}
+  role={title ? "img" : undefined}
+  aria-label={title}
+  aria-hidden={title ? undefined : "true"}
+>
+  {title && <title>{title}</title>}
+  {halo && <circle class="moon__halo" cx="12" cy="12" r="11.6" />}
+  <circle class="moon__dark" cx="12" cy="12" r="10" />
+  <path class="moon__lit" d={litPath(phase)} />
+
+</svg>
+
+<style>
+  .moon { flex: none; overflow: visible; }
+  .moon__dark { fill: var(--moon-dark, var(--moon-shade)); stroke: var(--moon-edge); stroke-width: .6; }
+  .moon__lit { fill: var(--moon-lit, var(--moon)); transition: d .6s var(--ease); }
+  .moon__halo { fill: none; stroke: var(--moon-lit, var(--moon)); stroke-opacity: .14; stroke-width: .5; }
+  .moon--halo { filter: drop-shadow(0 0 6px color-mix(in srgb, var(--moon-lit, var(--moon)) 18%, transparent)); }
+</style>
+
+<script>
+  import { litPath, moonPhase, nextPhase } from "../lib/moon";
+  // The build renders the phase of build day; correct it to the visitor's now.
+  function update() {
+    const p = moonPhase(new Date());
+    const text = `${p.name} · ${Math.round(p.illumination * 100)}% lit`;
+    for (const svg of document.querySelectorAll<SVGSVGElement>("svg[data-moon-live]")) {
+      svg.querySelector(".moon__lit")?.setAttribute("d", litPath(p.phase));
+      if (svg.getAttribute("role") === "img") svg.setAttribute("aria-label", text);
+      const t = svg.querySelector("title");
+      if (t) t.textContent = text;
+    }
+    for (const el of document.querySelectorAll<HTMLElement>("[data-moon-name]")) el.textContent = p.name;
+    for (const el of document.querySelectorAll<HTMLElement>("[data-moon-lit]")) el.textContent = `${Math.round(p.illumination * 100)}%`;
+    const d = (x: Date) => x.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+    for (const el of document.querySelectorAll<HTMLElement>("[data-moon-age]")) el.textContent = `${p.age.toFixed(1)} days`;
+    for (const el of document.querySelectorAll<HTMLElement>("[data-moon-full]")) el.textContent = d(nextPhase(0.5));
+    for (const el of document.querySelectorAll<HTMLElement>("[data-moon-new]")) el.textContent = d(nextPhase(0));
+  }
+  update();
+</script>

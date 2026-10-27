@@ -1,0 +1,52 @@
+---
+// Daily events as grass blades: one hairline per UTC day, the peak in lily,
+// the last (still-collecting) day dotted.
+import { num, day } from "../lib/format";
+interface Props { series: { day: string; events: number }[]; height?: number; labels?: boolean; class?: string }
+const { series, height = 120, labels = true, class: cls } = Astro.props;
+const W = 600, pad = 6;
+const max = Math.max(...series.map((d) => d.events), 1);
+const peak = series.reduce((a, b) => (b.events > a.events ? b : a), series[0]);
+const step = (W - pad * 2) / Math.max(series.length - 1, 1);
+const x = (i: number) => pad + i * step;
+const y = (v: number) => height - 2 - (v / max) * (height - 18);
+const date = (s: string) => new Date(`${s}T00:00:00Z`);
+// first day, each 1st of the month, last day — dropping any label that would crowd its neighbour
+const last = series.length - 1;
+const ticks: typeof series = [];
+for (const [i, d] of series.entries()) {
+  if (!(i === 0 || i === last || d.day.endsWith("-01"))) continue;
+  const prev = ticks.length ? series.indexOf(ticks[ticks.length - 1]) : -Infinity;
+  if (i !== last && ((i - prev) * step < 64 || (last - i) * step < 64)) continue;
+  ticks.push(d);
+}
+---
+<figure class:list={["blades", cls]}>
+  <svg viewBox={`0 0 ${W} ${height + (labels ? 22 : 0)}`} role="img" aria-label={`Events per day, ${series[0]?.day} to ${series.at(-1)?.day}; peak ${num(peak.events)} on ${peak.day}`}>
+    <line class="blades__base" x1="0" x2={W} y1={height - 1} y2={height - 1} />
+    {series.map((d, i) => (
+      <line
+        class:list={["blades__b", { "is-peak": d === peak, "is-partial": i === series.length - 1 }]}
+        x1={x(i)} x2={x(i)} y1={height - 1} y2={y(d.events)}
+      ><title>{`${day(date(d.day))}: ${num(d.events)} events${i === series.length - 1 ? " (partial day)" : ""}`}</title></line>
+    ))}
+    <circle class="blades__peak" cx={x(series.indexOf(peak))} cy={y(peak.events) - 4} r="2.2" />
+    {labels && ticks.map((d) => {
+      const i = series.indexOf(d);
+      const anchor = i === 0 ? "start" : i === series.length - 1 ? "end" : "middle";
+      return <text x={x(i)} y={height + 16} text-anchor={anchor}>{day(date(d.day), false)}</text>;
+    })}
+  </svg>
+  <slot />
+</figure>
+<style>
+  .blades { margin: 0; }
+  .blades svg { width: 100%; height: auto; overflow: visible; }
+  .blades__base { stroke: var(--rule-2); stroke-width: 1; }
+  .blades__b { stroke: color-mix(in srgb, var(--blue) 60%, var(--bg)); stroke-width: 2; stroke-linecap: round; transition: stroke .2s; }
+  .blades__b:hover { stroke: var(--bone); }
+  .blades__b.is-peak { stroke: var(--lily); }
+  .blades__b.is-partial { stroke-dasharray: 1.5 3; }
+  .blades__peak { fill: var(--lily); }
+  .blades text { font: 400 11px var(--sans); fill: var(--muted); }
+</style>

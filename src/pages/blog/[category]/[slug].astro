@@ -1,0 +1,39 @@
+---
+import Base from "../../../layouts/Base.astro";
+import Article from "../../../components/Article.astro";
+import { getPosts, type Post } from "../../../lib/blog";
+import { day, iso, minutes } from "../../../lib/format";
+import { site } from "../../../config";
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return posts.map((p, i) => ({
+    params: { category: p.category, slug: p.slug },
+    props: { p, newer: posts[i - 1], older: posts[i + 1] },
+  }));
+}
+const { p, newer, older } = Astro.props as { p: Post; newer?: Post; older?: Post };
+const specs = [
+  { k: "category", v: p.categoryLabel, href: `/blog/${p.category}/` },
+  { k: "published", v: `<time datetime="${iso(p.date)}">${day(p.date)}</time>` },
+  { k: "reading", v: `${minutes(p.body.words)} min` },
+  ...(p.tags.length ? [{ k: "tags", v: p.tags.map((t) => `<span class="tag">${t}</span>`).join(" ") }] : []),
+  { k: "source", v: "security-blog ↗", href: p.source },
+];
+const jsonld = {
+  "@context": "https://schema.org", "@type": "BlogPosting", headline: p.title, description: p.summary,
+  datePublished: iso(p.date), author: { "@type": "Person", name: site.profile.name, url: site.url },
+  url: new URL(p.url, site.url).href, keywords: p.tags.join(", "),
+};
+---
+<Base title={p.title} description={p.summary} section="blog" type="article" published={p.date} jsonld={jsonld}>
+  <Article
+    crumbs={[{ label: "blog", href: "/blog/" }, { label: p.categoryLabel, href: `/blog/${p.category}/` }, { label: p.slug }]}
+    title={p.title}
+    specs={specs}
+    body={p.body}
+    prev={older && { title: older.title, url: older.url }}
+    next={newer && { title: newer.title, url: newer.url }}
+    standfirst={p.summary}
+  />
+</Base>

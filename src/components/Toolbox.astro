@@ -1,0 +1,60 @@
+---
+// What I work with — one panel, one row per skill group: the group on the left,
+// its items flowing on the right. Skills that have writeups link to them.
+import { site } from "../config";
+import { getWriteups } from "../lib/writeups";
+const writeups = await getWriteups();
+const TAG_FOR: Record<string, string> = { "Reverse Engineering": "rev", "Binary Exploitation": "pwn", "Web Exploitation": "web", OSINT: "osint" };
+const count = (tag: string) => writeups.filter((w) => w.tags.includes(tag)).length;
+---
+<section class="tb" id="skills" aria-labelledby="tb-h">
+  <h2 id="tb-h" class="tb__h">What I work with</h2>
+  <dl class="tb__panel">
+    {site.skills.map((group) => {
+      const learning = group.category === "Currently Learning";
+      return (
+        <div class:list={["tb__row", { "tb__row--learning": learning }]}>
+          <dt>{group.category}</dt>
+          <dd>
+            {group.items.map((item) => {
+              const tag = TAG_FOR[item];
+              const n = tag ? count(tag) : 0;
+              if (n) return <a class="pill pill--link" href={`/writeups/?tag=${tag}`}>{item}<span class="pill__n">{n} writeups</span><span class="cue" aria-hidden="true">→</span></a>;
+              if (item.includes(": ")) {
+                const [k, v] = item.split(": ");
+                return (
+                  <span class="tb__set">
+                    <span class="tb__k">{k}</span>
+                    {v.split(", ").map((tool) => <span class="pill">{tool}</span>)}
+                  </span>
+                );
+              }
+              return <span class="pill">{item}</span>;
+            })}
+          </dd>
+        </div>
+      );
+    })}
+  </dl>
+</section>
+<style>
+  .tb__h { font: 400 var(--t-h2)/1.1 var(--sans); letter-spacing: -.03em; color: var(--bone); }
+  .tb__panel { margin: var(--s5) 0 0; display: grid; gap: 2px; }
+  .tb__row { display: grid; grid-template-columns: 11rem minmax(0, 1fr); gap: var(--s5); align-items: start; padding: var(--s5) var(--s6); background: var(--bg-1); }
+  .tb__row:first-child { border-radius: 6px 6px 0 0; }
+  .tb__row:last-child { border-radius: 0 0 6px 6px; }
+  .tb__row dt { padding-top: .45rem; font-size: var(--t-small); color: var(--fg-2); }
+  .tb__row dd { margin: 0; display: flex; flex-wrap: wrap; gap: var(--s2); align-items: center; }
+  .tb__set { display: inline-flex; flex-wrap: wrap; align-items: center; gap: var(--s2); margin-right: var(--s4); }
+  .tb__k { font-size: var(--t-small); color: var(--muted); margin-right: 2px; }
+  .pill { display: inline-flex; align-items: center; gap: .55em; padding: .5rem .9rem; border-radius: 999px; background: var(--bg-2); font-size: .9375rem; line-height: 1.2; color: var(--fg); white-space: nowrap; }
+  .pill--link { background: color-mix(in srgb, var(--blue) 14%, var(--bg-2)); color: var(--bone); transition: background-color .2s; }
+  .pill--link:hover { background: color-mix(in srgb, var(--blue) 24%, var(--bg-2)); }
+  .pill__n { font-size: var(--t-small); color: var(--blue); }
+  @media (max-width: 760px) {
+    .tb__row { grid-template-columns: minmax(0, 1fr); gap: var(--s3); padding: var(--s4); }
+    .tb__row dt { padding: 0; }
+    .tb__set { margin-right: 0; }
+    .tb__set .tb__k { flex-basis: 100%; }
+  }
+</style>

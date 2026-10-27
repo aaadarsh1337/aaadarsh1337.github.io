@@ -1,0 +1,33 @@
+---
+// Category filter for the blog: "All" plus one chip per category, the current one lit.
+import { getPosts, CATEGORY_LABELS } from "../lib/blog";
+interface Props { current?: string }
+const { current = "" } = Astro.props;
+const posts = await getPosts();
+const cats = [...new Set(posts.map((p) => p.category))];
+const items = [
+  { id: "", label: "All", href: "/blog/", n: posts.length },
+  ...cats.map((c) => ({ id: c, label: CATEGORY_LABELS[c] ?? c.replace(/-/g, " "), href: `/blog/${c}/`, n: posts.filter((p) => p.category === c).length })),
+];
+---
+<nav class="bc" aria-label="Blog categories">
+  {items.map((it) => (
+    <a class="bc__chip" href={it.href} aria-current={it.id === current ? "page" : undefined}>
+      {it.label}<span class="bc__n">{it.n}</span>
+    </a>
+  ))}
+</nav>
+<style>
+  .bc { margin-top: var(--s6); display: flex; flex-wrap: wrap; gap: var(--s2); }
+  .bc__chip {
+    display: inline-flex; align-items: center; gap: .6em;
+    height: 2.5rem; padding: 0 1.1rem; border-radius: 999px;
+    background: var(--bg-2); font-size: .9375rem; color: var(--fg);
+    transition: background-color .2s var(--ease), color .2s, transform .15s;
+  }
+  .bc__chip:hover { background: var(--bg-3); color: var(--bone); }
+  .bc__chip:active { transform: scale(.97); }
+  .bc__chip[aria-current="page"] { background: color-mix(in srgb, var(--blue) 22%, var(--bg-2)); color: var(--bone); }
+  .bc__n { min-width: 1.5em; height: 1.5em; padding: 0 .4em; display: inline-grid; place-items: center; border-radius: 999px; background: color-mix(in srgb, var(--fg) 8%, transparent); font-size: var(--t-small); color: var(--fg-2); font-variant-numeric: tabular-nums; }
+  .bc__chip[aria-current="page"] .bc__n { background: color-mix(in srgb, var(--blue) 30%, transparent); color: var(--bone); }
+</style>

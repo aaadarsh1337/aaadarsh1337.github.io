@@ -1,0 +1,183 @@
+---
+// Home — "Nocturne": the serif name, the avatar as a framed print, the bio,
+// latest work, the honeypot in detail, and the results.
+import Latest from "./Latest.astro";
+import Blades from "../Blades.astro";
+import { site } from "../../config";
+import { homeData } from "../../lib/home";
+import { moonPhase } from "../../lib/moon";
+import { days, cutoff } from "../../lib/intel";
+import { day, num } from "../../lib/format";
+
+const d = await homeData();
+const p = site.profile;
+const m = d.metrics;
+const tonight = moonPhase(new Date());
+const stats = [...site.stats, { value: String(d.writeups.length), label: "CTF writeups" }, { value: `#${d.ranked[0].rank}`, label: "best finish, 404squad" }];
+
+const series = days(m).slice(-60);
+const cut = cutoff(m);
+const since = new Date(`${m.observation_period.start}T00:00:00Z`);
+const dur = m.sessions.session_duration_seconds;
+const users = m.logins.top_usernames.slice(0, 4);
+const pws = (m.logins.top_passwords ?? []).slice(0, 4);
+const topCmd = m.commands.top_commands[0];
+const cats = m.behavioral_command_categories as Record<string, number>;
+const catTotal = Object.values(cats).reduce((a, b) => a + b, 0);
+const discovery = Math.round(((cats.discovery ?? 0) / catTotal) * 100);
+const facts = [
+  { v: num(m.sources.unique_source_ips), k: "source addresses" },
+  { v: num(m.sessions.unique_session_ids), k: "sessions" },
+  { v: `${dur.median.toFixed(1)}s`, k: "median session" },
+  { v: `${discovery}%`, k: "of commands are recon" },
+];
+const rest = (detail: string) => detail.replace(/^404squad\s*-\s*#\d+\s*/, "").replace(/^Overall$/, "overall");
+---
+<section class="b-hero">
+  <div class="b-text">
+    <p class="b-tonight">Tonight, <span data-moon-name>{tonight.name}</span>, <span data-moon-lit>{Math.round(tonight.illumination * 100)}%</span> lit</p>
+    <h1 class="b-name">{p.name}</h1>
+    <p class="b-tag">{p.tagline.map((t, i) => <>{i > 0 && <span class="b-tagdot" aria-hidden="true">·</span>}<span class="b-tagi">{t}</span></>)}</p>
+    <p class="b-lede">{p.bio[0]}</p>
+    <p class="b-act">
+      <a class="btn btn--primary" href="/writeups/">Read the writeups <span class="arr">→</span></a>
+      <a class="btn" href="/about/">About me</a>
+    </p>
+  </div>
+  <figure class="b-print">
+    <picture><source srcset={p.avatar} type="image/webp" /><img src={p.avatarFallback} width="288" height="512" alt="Avatar: a lone swordsman under a full moon, in a field of red spider lilies." /></picture>
+  </figure>
+</section>
+
+<dl class="b-stats">{stats.map((s) => <div><dt>{s.label}</dt><dd>{s.value}</dd></div>)}</dl>
+
+
+
+<section class="b-sec">
+  <h2 class="b-h">Latest</h2>
+  <Latest items={d.latest.slice(0, 6)} />
+  <p class="b-more"><a class="link" href="/writeups/">All {d.writeups.length} writeups</a><span class="b-dot">·</span><a class="link" href="/blog/">Blog</a></p>
+</section>
+
+<section class="b-sec th" aria-labelledby="th-h">
+  <header class="th__head">
+    <h2 id="th-h" class="b-h">{site.flagship.name}</h2>
+    <p class="th__live"><span class="th__pulse" aria-hidden="true" />Live sensor · data to {day(cut)}, {cut.toISOString().slice(11, 16)} UTC</p>
+  </header>
+  <p class="th__lede">{site.flagship.description}</p>
+
+  <div class="th__panel">
+    <div class="th__main">
+      <p class="th__num">{num(m.totals.total_events)}</p>
+      <p class="th__unit">SSH events since {day(since)}</p>
+      <Blades series={series} height={90} class="th__chart" />
+      <p class="th__axis">Events per day, last {series.length} days. The red blade is the busiest.</p>
+    </div>
+    <dl class="th__facts">{facts.map((f) => <div><dt>{f.k}</dt><dd>{f.v}</dd></div>)}</dl>
+  </div>
+
+  <div class="th__grid">
+    <div class="th__list">
+      <h3>Usernames bots try most</h3>
+      <ol>{users.map((u) => <li><span>{u.value}</span><span>{num(u.count)}</span></li>)}</ol>
+    </div>
+    <div class="th__list">
+      <h3>Passwords bots try most</h3>
+      <ol>{pws.map((u) => <li><span>{u.value}</span><span>{num(u.count)}</span></li>)}</ol>
+    </div>
+    <div class="th__list th__cmd">
+      <h3>Most common command</h3>
+      <p><code>{topCmd.input}</code></p>
+      <p class="th__cmdn">Run {num(topCmd.count)} times. Automated recon, not humans.</p>
+    </div>
+  </div>
+  <p class="th__go"><a class="btn" href="/intel/">Open the full dashboard <span class="arr">→</span></a><a class="link" href={site.flagship.links.github} rel="external">How it's built</a></p>
+</section>
+
+<section class="b-sec" aria-labelledby="res-h">
+  <h2 id="res-h" class="b-h">With {p.team}, 2026</h2>
+  <ol class="res">
+    {d.ranked.map((r) => (
+      <li><a href={r.url} rel="external"><span class="res__n">#{r.rank}</span><span class="res__t">{r.title}</span><span class="res__d">{rest(r.detail)}</span><span class="cue cue--corner" aria-hidden="true">↗</span></a></li>
+    ))}
+  </ol>
+  <p class="b-more"><a class="link" href="/about/#results">Proof and certificates</a></p>
+</section>
+
+<style>
+  .b-hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 17rem); gap: var(--s8); align-items: center; padding-top: var(--s7); }
+  .b-tonight { font-size: var(--t-small); color: var(--fg-2); }
+  .b-name { margin-top: var(--s4); font: 500 clamp(3rem, 7vw, 6.5rem)/1 "Shippori Mincho", var(--sans); letter-spacing: -.02em; color: var(--bone); }
+  .b-tag { margin-top: var(--s4); display: flex; flex-wrap: wrap; gap: 0 .6em; font-size: var(--t-body); color: var(--blue); letter-spacing: .01em; }
+  .b-tagi { white-space: nowrap; }
+  .b-tagdot { color: var(--muted); }
+  .b-lede { margin-top: var(--s6); max-width: 36rem; font: 400 1.4375rem/1.55 "Newsreader Variable", Georgia, serif; font-optical-sizing: auto; letter-spacing: -.003em; color: var(--fg); text-wrap: pretty; }
+  .b-act { margin-top: var(--s6); display: flex; flex-wrap: wrap; gap: var(--s3); }
+  .b-print { margin: 0; padding: var(--s3); background: color-mix(in srgb, var(--blue) 10%, var(--bg-2)); }
+  .b-print img { width: 100%; aspect-ratio: 288 / 512; object-fit: cover; }
+  .b-stats { margin: var(--s7) 0 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--s3); }
+  .b-stats div { container-type: inline-size; min-width: 0; display: flex; flex-direction: column-reverse; justify-content: flex-end; gap: var(--s2); padding: var(--s4) var(--s5); background: var(--bg-1); }
+  .b-stats dt { font-size: var(--t-small); color: var(--fg-2); }
+  .b-stats dd { margin: 0; font: 400 clamp(1.5rem, 22cqi, 2.5rem)/1 var(--sans); white-space: nowrap; letter-spacing: -.03em; color: var(--bone); }
+  .b-sec { margin-top: var(--gap); }
+  .b-h { font: 400 var(--t-h2)/1.1 var(--sans); letter-spacing: -.03em; color: var(--bone); }
+  .b-sec > .b-h { margin-bottom: var(--s5); }
+  .b-more { margin-top: var(--s5); font-size: var(--t-body); color: var(--fg-2); }
+  .b-dot { padding-inline: .6em; color: var(--muted); }
+
+  /* ---------- Threat Harbour ---------- */
+  .th__head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: var(--s3) var(--s6); }
+  .th__live { display: inline-flex; align-items: center; gap: .55em; font-size: var(--t-small); color: var(--fg-2); }
+  .th__pulse { width: 8px; height: 8px; border-radius: 50%; background: var(--blue); animation: pulse 2.6s ease-in-out infinite; }
+  @keyframes pulse { 50% { opacity: .3; } }
+  .th__lede { margin-top: var(--s5); max-width: 40rem; font-size: var(--t-body); line-height: 1.6; color: var(--fg); }
+  .th__panel { margin-top: var(--s6); display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: var(--s3); }
+  .th__main { container-type: inline-size; min-width: 0; padding: var(--s6); background: var(--bg-1); }
+  .th__num { font: 400 clamp(2.5rem, 15cqi, 5.5rem)/1 var(--sans); white-space: nowrap; letter-spacing: -.05em; color: var(--bone); font-variant-numeric: tabular-nums; }
+  .th__unit { margin-top: var(--s2); font-size: var(--t-body); color: var(--fg-2); }
+  .th :global(.th__chart) { margin-top: var(--s6); }
+  .th__axis { margin-top: var(--s3); font-size: var(--t-small); color: var(--muted); }
+  .th__facts { margin: 0; display: grid; grid-template-rows: repeat(4, 1fr); gap: var(--s3); }
+  .th__facts div { container-type: inline-size; min-width: 0; display: flex; flex-direction: column-reverse; justify-content: center; gap: var(--s1); padding: var(--s4) var(--s5); background: var(--bg-1); }
+  .th__facts dt { font-size: var(--t-small); color: var(--fg-2); }
+  .th__facts dd { margin: 0; font: 400 clamp(1.375rem, 14cqi, 2rem)/1 var(--sans); white-space: nowrap; letter-spacing: -.03em; color: var(--bone); font-variant-numeric: tabular-nums; }
+  .th__grid { margin-top: var(--s3); display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s3); }
+  .th__list { padding: var(--s5); background: var(--bg-1); }
+  .th__list h3 { font-size: var(--t-small); font-weight: 400; color: var(--fg-2); }
+  .th__list ol { list-style: none; margin-top: var(--s3); display: grid; gap: var(--s2); }
+  .th__list li { display: flex; justify-content: space-between; gap: var(--s3); font-size: var(--t-body); color: var(--bone); font-variant-numeric: tabular-nums; }
+  .th__list li span:last-child { color: var(--fg-2); }
+  .th__list li:first-child span:first-child { color: var(--lily); }
+  .th__cmd code { display: block; margin-top: var(--s3); font: 400 1rem/1.5 var(--mono); color: var(--blue); overflow-wrap: anywhere; }
+  .th__cmdn { margin-top: var(--s3); font-size: var(--t-small); line-height: 1.5; color: var(--fg-2); }
+  .th__go { margin-top: var(--s5); display: flex; flex-wrap: wrap; align-items: center; gap: var(--s5); font-size: var(--t-body); }
+
+  /* ---------- results ---------- */
+  .res { list-style: none; margin-top: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s3); }
+  .res a { position: relative; display: flex; flex-direction: column; gap: var(--s2); height: 100%; padding: var(--s5); border-radius: 6px; background: var(--bg-1); transition: background-color .25s; }
+  .res a:hover { background: var(--bg-2); }
+  .res__n { margin-bottom: var(--s2); font: 400 2.5rem/1 var(--sans); letter-spacing: -.04em; color: var(--bone); font-variant-numeric: tabular-nums; }
+  .res li:first-child .res__n { color: var(--sage); }
+  .res__t { font-size: var(--t-body); line-height: 1.35; color: var(--bone); padding-right: var(--s5); }
+  .res__d { font-size: var(--t-small); color: var(--fg-2); }
+  .res a:active { background: var(--bg-3); }
+  .res .cue--corner { top: var(--s5); right: var(--s5); }
+
+  @media (max-width: 960px) {
+    .th__panel { grid-template-columns: minmax(0, 1fr); }
+    .th__facts { grid-template-rows: none; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .th__grid, .res { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+    .th__cmd { grid-column: 1 / -1; }
+  }
+  @media (max-width: 760px) {
+    .b-hero { grid-template-columns: minmax(0, 1fr) 7rem; gap: var(--s5); padding-top: var(--s4); align-items: start; }
+    .b-text { display: contents; }
+    .b-tonight, .b-name { grid-column: 1; }
+    .b-print { grid-column: 2; grid-row: 1 / 3; padding: 6px; }
+    .b-tag, .b-lede, .b-act { grid-column: 1 / -1; }
+    .b-lede { font-size: 1.25rem; }
+    .b-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .th__main { padding: var(--s5); }
+    .th__grid, .res { grid-template-columns: minmax(0, 1fr); }
+  }
+</style>

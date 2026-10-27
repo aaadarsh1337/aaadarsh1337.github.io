@@ -1,0 +1,238 @@
+---
+import Base from "../../layouts/Base.astro";
+import PageHead from "../../components/PageHead.astro";
+import Blades from "../../components/Blades.astro";
+import { site } from "../../config";
+import { getMetrics, days, cutoff } from "../../lib/intel";
+import { day, num } from "../../lib/format";
+import { existsSync } from "node:fs";
+import { join } from "node:path";
+import { getPosts } from "../../lib/blog";
+const funnel = existsSync(join(process.cwd(), "public/intel/session-funnel.png"));
+const bendi = (await getPosts()).find((x) => x.slug === "bendi");
+
+const { metrics: m, live } = getMetrics();
+const f = site.flagship;
+const series = days(m);
+const peak = series.reduce((a, b) => (b.events > a.events ? b : a));
+const cut = cutoff(m);
+const cutText = `${day(cut)}, ${cut.toISOString().slice(11, 16)} UTC`;
+const start = new Date(`${m.observation_period.start}T00:00:00Z`);
+const dur = m.sessions.session_duration_seconds;
+const cats = Object.entries(m.behavioral_command_categories as Record<string, number>).sort((a, b) => b[1] - a[1]);
+const catTotal = cats.reduce((s, [, v]) => s + v, 0);
+const pct = (v: number, t: number) => `${((v / t) * 100).toFixed(1)}%`;
+const discovery = pct((m.behavioral_command_categories as Record<string, number>).discovery ?? 0, catTotal);
+const users = m.logins.top_usernames.slice(0, 8);
+const pws = (m.logins.top_passwords ?? []).slice(0, 8);
+const oneLine = (s: string) => { const l = s.split("\n"); return l[0].length > 64 ? `${l[0].slice(0, 62)}…` : l.length > 1 ? `${l[0]} …` : l[0]; };
+const commands = m.commands.top_commands.slice(0, 8);
+const nets = m.sources.top_source_net16_by_event_volume.slice(0, 6);
+const dests = m.downloads_uploads.top_destfiles.slice(0, 5);
+const shas = (m.downloads_uploads.top_shasums ?? []).slice(0, 4);
+const gh = f.links.github;
+
+const jsonld = {
+  "@context": "https://schema.org", "@type": "Dataset",
+  name: "Threat Harbour — SSH honeypot case study",
+  description: "A daily Cowrie SSH sensor case study: credential leaderboard, command samples, sources, and defensive takeaways.",
+  url: `${site.url}/intel/`, creator: { "@type": "Person", name: site.profile.name, url: site.url },
+  temporalCoverage: `${m.observation_period.start}/${m.observation_period.end}`,
+};
+---
+<Base title="Threat Harbour" description={`Threat Harbour case study: a daily SSH honeypot snapshot with ${num(m.totals.total_events)} events, ${num(m.sources.unique_source_ips)} IPs, top attacker passwords and commands. Rebuilt daily; cutoff ${cutText}.`} section="intel" jsonld={jsonld}>
+  <PageHead crumbs={[{ label: "threat-harbour" }]} title={f.name} lede={f.description}>
+    <p class="sub meta"><span class="live" data-live={live ? "" : undefined}></span>{f.tagline}<span class="sep">·</span>data to {cutText}{!live && <><span class="sep">·</span>cached snapshot</>}</p>
+  </PageHead>
+
+  <dl class="kpis">
+    <div><dt>events</dt><dd>{num(m.totals.total_events)}</dd></div>
+    <div><dt>source IPs</dt><dd>{num(m.sources.unique_source_ips)}</dd></div>
+    <div><dt>sessions</dt><dd>{num(m.sessions.unique_session_ids)}</dd></div>
+    <div><dt>median session</dt><dd>{dur.median.toFixed(2)}<small>s</small></dd></div>
+  </dl>
+
+  <section class="sec">
+    <h2 class="label">Event volume per UTC day since {day(start)}</h2>
+    <Blades series={series} height={150} class="chart">
+      <figcaption class="meta chart__cap">
+        <span>peak <b>{num(peak.events)}</b> on {day(new Date(`${peak.day}T00:00:00Z`))}</span>
+        <span>dotted blade = today, still collecting</span>
+        <span>Botnet sweeps against this sensor — not global trends.</span>
+      </figcaption>
+    </Blades>
+  </section>
+
+  <section class="sec">
+    <h2 class="label">Credentials bots try first</h2>
+    <p class="note">If it's in this table, bots are trying it against your servers too.</p>
+    <div class="cols">
+      {[["usernames", users], ["passwords", pws]].map(([title, rows]) => (
+        <div>
+          <h3 class="h3 meta">top {title as string}</h3>
+          <ol class="bars">
+            {(rows as { value: string; count: number }[]).map((r) => (
+              <li style={`--w:${(r.count / (rows as { count: number }[])[0].count) * 100}%`}>
+                <span class="bars__k">{r.value}</span><span class="bars__v">{num(r.count)}</span>
+              </li>
+            ))}
+          </ol>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="sec">
+    <h2 class="label">Top commands</h2>
+    <p class="note">{discovery} discovery/fingerprinting — automated recon, not humans.</p>
+    <ol class="cmds">
+      {commands.map((c) => <li><code title={c.input}>{oneLine(c.input)}</code><span class="meta">{num(c.count)}</span></li>)}
+    </ol>
+  </section>
+
+  <div class="cols cols--sec">
+    <section class="sec">
+      <h2 class="label">Command categories</h2>
+      <p class="note">How the sensor classifies every command input.</p>
+      <ol class="bars bars--cat">
+        {cats.map(([k, v]) => <li style={`--w:${(v / cats[0][1]) * 100}%`}><span class="bars__k">{k}</span><span class="bars__v">{pct(v, catTotal)}</span></li>)}
+      </ol>
+    </section>
+    <section class="sec">
+      <h2 class="label">Busiest /16s</h2>
+      <p class="note">Volume only — a source IP never identifies the operator.</p>
+      <ol class="bars">
+        {nets.map((n) => <li style={`--w:${(n.events / nets[0].events) * 100}%`}><span class="bars__k">{n.cidr}</span><span class="bars__v">{num(n.events)}</span></li>)}
+      </ol>
+    </section>
+  </div>
+
+  <div class="cols cols--sec">
+    <section class="sec">
+      <h2 class="label">How long they stay</h2>
+      <p class="note">Short, bursty, automated.</p>
+      <dl class="facts">
+        <div><dt>median</dt><dd>{dur.median.toFixed(2)} s</dd></div>
+        <div><dt>under 10 s</dt><dd>{pct(dur.under_10s, dur.n_closed_matched)}</dd></div>
+        <div><dt>longest</dt><dd>{(dur.max / 3600).toFixed(1)} h</dd></div>
+        <div><dt>fake logins accepted</dt><dd>{num(m.logins.success_fake)}</dd></div>
+      </dl>
+    </section>
+    <section class="sec">
+      <h2 class="label">File operations</h2>
+      <p class="note">Destinations and shasums only — contents withheld.</p>
+      <ol class="cmds cmds--tight">
+        {dests.map((d) => <li><code>{d.value}</code><span class="meta">{num(d.count)}</span></li>)}
+        {shas.map((s) => <li><code title={s.value}>{s.value.slice(0, 16)}…</code><span class="meta">{num(s.count)}</span></li>)}
+      </ol>
+    </section>
+  </div>
+
+  <section class="sec seen">
+    <h2 class="label">What it caught</h2>
+    <div class="seen__grid">
+      {funnel && <figure class="seen__fig seen__fig--wide"><img src="/intel/session-funnel.png" width="1515" height="1013" alt="Session funnel diagram from the Threat Harbour repository" decoding="async" /><figcaption>Session funnel, from the threat-harbour repository</figcaption></figure>}
+      {bendi && <>
+        <figure class="seen__fig"><img src={`${bendi.url}komari.png`} width="1920" height="1023" alt="The attacker's Komari monitoring dashboard the worm reports to" decoding="async" /><figcaption>The attacker's Komari dashboard</figcaption></figure>
+        <figure class="seen__fig"><img src={`${bendi.url}login.png`} width="1920" height="1025" alt="The Komari control panel login page" decoding="async" /><figcaption>Its control panel login</figcaption></figure>
+        <p class="seen__text">{bendi.summary}. <a class="link" href={bendi.url}>Read the analysis of {bendi.title.replace(/^.*— /, "")}</a></p>
+      </>}
+    </div>
+  </section>
+
+  <section class="sec">
+    <h2 class="label">Defensive takeaways</h2>
+    <ol class="takeaways">
+      <li><h3>Blocklist these passwords</h3><p>Deny-list the top 10 in your IdP; require manager-generated secrets.</p></li>
+      <li><h3>Expect recon, not intrusion</h3><p>Mostly <code>uname/hostname/whoami</code> in <code>{dur.median.toFixed(2)}s</code> sessions — alert on discovery bursts, not single logins.</p></li>
+      <li><h3>Watch persistence paths</h3><p>Writes toward <code>authorized_keys</code> keep recurring — alert on any unexpected one.</p></li>
+    </ol>
+  </section>
+
+  <section class="sec">
+    <h2 class="label">How it works</h2>
+    <div class="how">
+      <ul class="steps">{f.highlights.map((h) => <li>{h}</li>)}</ul>
+      <div class="method">
+        <p>{m.method}</p>
+        <p>Aggregates are published daily; the full dataset ships alongside as <a class="link" href="/intel/data.json">data.json</a>.</p>
+        <p>One VM, one IP, one region — what hit this sensor, not the internet. Never attribution.</p>
+        <p class="stack">{f.stack.map((s) => <span>{s}</span>)}</p>
+      </div>
+    </div>
+    <p class="actions">
+      <a class="btn" href={gh} rel="external">threat-harbour repo <span class="arr">↗</span></a>
+      <a class="btn" href={f.links.docs} rel="external">methodology docs <span class="arr">↗</span></a>
+      <a class="btn" href={`${gh}/blob/main/analysis/summary.md`} rel="external">full tables <span class="arr">↗</span></a>
+      <a class="btn" href="/intel/data.json">data.json</a>
+    </p>
+  </section>
+</Base>
+
+<style>
+  .sub { margin-top: var(--s5); display: flex; flex-wrap: wrap; align-items: center; font-size: var(--t-small); color: var(--fg-2); }
+  .live { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); margin-right: var(--s2); }
+  .live[data-live] { background: var(--blue); animation: pulse 3s ease-in-out infinite; }
+  @keyframes pulse { 50% { opacity: .35; } }
+
+  .kpis { margin: var(--s8) 0 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--s3); }
+  .kpis div { container-type: inline-size; min-width: 0; padding: var(--s5); background: var(--bg-1); display: flex; flex-direction: column-reverse; gap: var(--s3); }
+  .kpis dt { font-size: var(--t-body); color: var(--fg-2); }
+  .kpis dd { margin: 0; font: 400 clamp(1.5rem, 17cqi, 3.25rem)/1 var(--sans); white-space: nowrap; letter-spacing: -.04em; color: var(--bone); font-variant-numeric: tabular-nums; }
+  .kpis small { font-size: .5em; color: var(--fg-2); margin-left: .1em; }
+
+  .sec { margin-top: var(--gap); }
+  .note { margin-top: var(--s3); margin-bottom: var(--s5); font-size: var(--t-body); color: var(--fg-2); line-height: 1.55; }
+  :global(.chart) { margin-top: var(--s6); }
+  .chart__cap { margin-top: var(--s4); display: flex; flex-wrap: wrap; gap: var(--s2) var(--s6); font-size: var(--t-body); color: var(--fg-2); }
+  .chart__cap b { color: var(--lily); font-weight: 400; }
+
+  .cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s7); margin-top: var(--s5); }
+  .cols--sec { margin-top: 0; }
+  .cols--sec .sec { margin-top: var(--gap); }
+  .h3 { font-size: var(--t-body); color: var(--bone); margin-bottom: var(--s4); }
+  .bars { list-style: none; display: grid; gap: var(--s2); margin-top: 0; }
+  .cols .bars { margin-top: 0; }
+  .bars li { position: relative; display: flex; justify-content: space-between; gap: var(--s4); padding: .55rem .8rem; font-size: var(--t-body); line-height: 1.3; }
+  .bars li::before { content: ""; position: absolute; inset: 0 auto 0 0; width: var(--w); background: color-mix(in srgb, var(--blue) 17%, var(--bg)); }
+  .bars li:first-child::before { background: color-mix(in srgb, var(--lily) 22%, var(--bg)); }
+  .bars__k { position: relative; color: var(--fg); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .bars__v { position: relative; color: var(--fg-2); font-variant-numeric: tabular-nums; }
+
+  .cmds { list-style: none; margin-top: 0; display: grid; gap: var(--s2); }
+  .cmds li { display: flex; justify-content: space-between; align-items: baseline; gap: var(--s4); padding: .6rem .8rem; background: var(--bg-1); }
+  .cmds code { font: 400 .9375rem/1.5 var(--mono); color: var(--fg); overflow-wrap: anywhere; }
+  .cmds .meta { font-size: var(--t-body); color: var(--fg-2); }
+
+  .facts { margin: 0; display: grid; gap: var(--s2); }
+  .facts div { display: flex; justify-content: space-between; align-items: baseline; gap: var(--s3); padding: .7rem .8rem; background: var(--bg-1); }
+  .facts dt { font-size: var(--t-body); color: var(--fg-2); }
+  .facts dd { margin: 0; font-size: var(--t-body); color: var(--bone); font-variant-numeric: tabular-nums; }
+
+  .seen__grid { margin-top: var(--s5); display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s6) var(--s5); align-items: start; }
+  .seen__fig { margin: 0; }
+  .seen__fig--wide { grid-column: 1 / -1; }
+  .seen__fig img { width: 100%; filter: brightness(.92); }
+  .seen__fig figcaption { margin-top: var(--s3); font-size: var(--t-small); color: var(--fg-2); }
+  .seen__text { grid-column: 1 / -1; max-width: 40rem; font-size: var(--t-body); line-height: 1.6; color: var(--fg); }
+
+  .takeaways { list-style: none; margin-top: var(--s5); display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s4); }
+  .takeaways li { padding: var(--s5); background: var(--bg-1); }
+  .takeaways h3 { font: 400 var(--t-lede)/1.25 var(--sans); letter-spacing: -.015em; color: var(--bone); }
+  .takeaways p { margin-top: var(--s3); font-size: var(--t-body); line-height: 1.55; color: var(--fg); }
+  .takeaways code, .method code { font: 400 .85em var(--mono); color: var(--bone-dim); }
+
+  .how { margin-top: var(--s5); display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--s7); }
+  .steps { list-style: none; display: grid; gap: var(--s4); }
+  .steps li { font-size: var(--t-lede); line-height: 1.35; letter-spacing: -.015em; color: var(--bone); }
+  .method { display: grid; gap: var(--s3); font-size: var(--t-body); line-height: 1.6; color: var(--fg); }
+  .stack { display: flex; flex-wrap: wrap; gap: var(--s2); margin-top: var(--s2); }
+  .stack span { font-size: var(--t-small); color: var(--fg-2); padding: .5rem .8rem; border-radius: 999px; background: var(--bg-2); }
+  .actions { margin-top: var(--s7); display: flex; flex-wrap: wrap; gap: var(--s3); }
+
+  @media (max-width: 860px) {
+    .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .cols, .how, .seen__grid { grid-template-columns: minmax(0, 1fr); gap: var(--s5); }
+    .takeaways { grid-template-columns: minmax(0, 1fr); }
+  }
+</style>

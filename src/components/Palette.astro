@@ -1,0 +1,133 @@
+---
+import { site } from "../config";
+import { getWriteups } from "../lib/writeups";
+import { getPosts } from "../lib/blog";
+
+const [writeups, posts] = await Promise.all([getWriteups(), getPosts()]);
+const items = [
+  { t: "Home", u: "/", k: "page" },
+  { t: "Writeups", u: "/writeups/", k: "page" },
+  { t: "Blog", u: "/blog/", k: "page" },
+  { t: "Threat Harbour", u: "/intel/", k: "page", h: "intel honeypot sensor dashboard" },
+  { t: "About", u: "/about/", k: "page", h: "skills bio" },
+  { t: "CTF results", u: "/about/#results", k: "page", h: "placements 404squad" },
+  { t: "Certificates", u: "/about/#certificates", k: "page" },
+  { t: "Contact", u: "/about/#contact", k: "page", h: "email discord" },
+  { t: "Résumé", u: site.profile.resume, k: "file", h: "resume cv pdf" },
+  ...writeups.map((w) => ({ t: w.title, u: w.url, k: "writeup", h: `${w.platform} ${w.difficulty ?? ""} ${w.tags.join(" ")}` })),
+  ...posts.map((p) => ({ t: p.title, u: p.url, k: "post", h: `${p.categoryLabel} ${p.tags.join(" ")}` })),
+  ...site.links.map((l) => ({ t: l.label, u: l.url, k: "profile", h: l.detail })),
+];
+---
+<dialog class="pal" aria-label="Search and jump">
+  <div class="pal__box">
+    <label class="pal__field">
+      <span class="visually-hidden">Search pages, writeups and posts</span>
+      
+      <input type="search" placeholder="jump to…" autocomplete="off" spellcheck="false" aria-controls="pal-list" />
+      <kbd>esc</kbd>
+    </label>
+    <ul id="pal-list" class="pal__list" role="listbox" aria-label="Results"></ul>
+    <p class="pal__hint"><span><kbd>↑</kbd> <kbd>↓</kbd> move</span><span><kbd>↵</kbd> open</span><span><kbd>/</kbd> or <kbd>⌘K</kbd> anywhere</span></p>
+  </div>
+  <script type="application/json" id="pal-data" set:html={JSON.stringify(items)} />
+</dialog>
+
+<style>
+  .pal { padding: 0; border: 0; background: none; width: min(36rem, calc(100vw - 2rem)); margin: 12vh auto auto; color: var(--fg); }
+  .pal::backdrop { background: color-mix(in srgb, var(--bg) 80%, transparent); }
+  .pal[open] { animation: pal-in .18s var(--ease); }
+  @keyframes pal-in { from { opacity: 0; translate: 0 -6px; } }
+  .pal__box { background: var(--bg-2); box-shadow: 0 24px 80px -20px rgb(0 0 0 / .6); /* taste-skill-ignore: a real dialog floats */ overflow: hidden; }
+  .pal__field { display: flex; align-items: center; gap: var(--s2); padding: 0 var(--s4); background: var(--bg-3); }
+  .pal__prompt { font: 400 var(--t-small)/1 var(--sans); color: var(--faint); }
+  .pal input { flex: 1; min-width: 0; height: 3.25rem; border: 0; background: none; outline: none; font: 400 var(--t-ui)/1 var(--sans); color: var(--bone); }
+  .pal input::placeholder { color: var(--faint); }
+  .pal input::-webkit-search-cancel-button { display: none; }
+  .pal__list { list-style: none; max-height: min(24rem, 55vh); overflow-y: auto; padding: var(--s2); }
+  .pal__list :global(li) { display: flex; align-items: baseline; gap: var(--s3); padding: .6rem var(--s3); border-radius: 6px; cursor: pointer; }
+  .pal__list :global(li[aria-selected="true"]) { background: var(--bg-3); }
+  .pal__list :global(.pal__t) { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 400 var(--t-small)/1.3 var(--sans); }
+  .pal__list :global(.pal__k) { font: 400 .75rem/1 var(--sans); color: var(--faint); }
+  .pal__list :global(.pal__empty) { cursor: default; color: var(--muted); font: 400 var(--t-meta)/1.4 var(--sans); }
+  .pal__hint { display: flex; flex-wrap: wrap; gap: var(--s4); padding: var(--s3) var(--s4); background: var(--bg-1); color: var(--fg-2); font-size: var(--t-small); }
+</style>
+
+<script>
+  type Item = { t: string; u: string; k: string; h?: string };
+  const dialog = document.querySelector<HTMLDialogElement>("dialog.pal")!;
+  const input = dialog.querySelector("input")!;
+  const list = dialog.querySelector<HTMLUListElement>(".pal__list")!;
+  const items: Item[] = JSON.parse(document.getElementById("pal-data")!.textContent!);
+  let shown: Item[] = [];
+  let active = 0;
+
+  // subsequence match, rewarding word starts and contiguous runs
+  function score(item: Item, q: string): number {
+    if (!q) return 1;
+    const hay = `${item.t} ${item.h ?? ""}`.toLowerCase();
+    if (hay.includes(q)) return 100 - hay.indexOf(q);
+    let i = 0, s = 0, run = 0;
+    for (const ch of q) {
+      const j = hay.indexOf(ch, i);
+      if (j < 0) return 0;
+      run = j === i ? run + 1 : 0;
+      s += 1 + run + (j === 0 || hay[j - 1] === " " ? 3 : 0);
+      i = j + 1;
+    }
+    return s;
+  }
+
+  function draw() {
+    const q = input.value.trim().toLowerCase();
+    shown = items.map((it) => [it, score(it, q)] as const).filter(([, s]) => s > 0)
+      .sort((a, b) => b[1] - a[1]).slice(0, 12).map(([it]) => it);
+    active = Math.min(active, Math.max(shown.length - 1, 0));
+    list.replaceChildren(...(shown.length ? shown.map((it, i) => {
+      const li = document.createElement("li");
+      li.role = "option";
+      li.id = `pal-${i}`;
+      li.setAttribute("aria-selected", String(i === active));
+      const t = document.createElement("span"); t.className = "pal__t"; t.textContent = it.t;
+      const k = document.createElement("span"); k.className = "pal__k"; k.textContent = it.k;
+      li.append(t, k);
+      li.addEventListener("mousemove", () => { if (active !== i) { active = i; mark(); } });
+      li.addEventListener("click", () => go(it));
+      return li;
+    }) : [Object.assign(document.createElement("li"), { className: "pal__empty", textContent: "nothing here — try another word" })]));
+    input.setAttribute("aria-activedescendant", shown.length ? `pal-${active}` : "");
+  }
+  function mark() {
+    list.querySelectorAll("li[role=option]").forEach((li, i) => li.setAttribute("aria-selected", String(i === active)));
+    list.querySelector(`#pal-${active}`)?.scrollIntoView({ block: "nearest" });
+    input.setAttribute("aria-activedescendant", `pal-${active}`);
+  }
+  function go(it: Item) {
+    dialog.close();
+    if (/^https?:/.test(it.u)) window.open(it.u, "_blank", "noopener"); else location.href = it.u;
+  }
+  function open() {
+    if (dialog.open) return;
+    input.value = ""; active = 0; draw();
+    dialog.showModal();
+    input.focus();
+  }
+
+  input.addEventListener("input", () => { active = 0; draw(); });
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowDown") { e.preventDefault(); active = (active + 1) % Math.max(shown.length, 1); mark(); }
+    else if (e.key === "ArrowUp") { e.preventDefault(); active = (active - 1 + shown.length) % Math.max(shown.length, 1); mark(); }
+    else if (e.key === "Enter" && shown[active]) { e.preventDefault(); go(shown[active]); }
+  });
+  dialog.addEventListener("click", (e) => { if (e.target === dialog) dialog.close(); });
+  document.querySelectorAll("[data-palette-open]").forEach((b) => b.addEventListener("click", open));
+  document.addEventListener("keydown", (e) => {
+    const typing = e.target instanceof HTMLElement && e.target.matches("input, textarea, select, [contenteditable]");
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") { e.preventDefault(); dialog.open ? dialog.close() : open(); }
+    else if (e.key === "/" && !typing && !dialog.open) {
+      const local = document.querySelector<HTMLElement>("[data-slash]");   // pages with their own search
+      e.preventDefault();
+      local ? local.focus() : open();
+    }
+  });
+</script>

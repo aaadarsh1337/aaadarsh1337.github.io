@@ -1,0 +1,47 @@
+---
+import Base from "../../layouts/Base.astro";
+import Article from "../../components/Article.astro";
+import { getWriteups, type Writeup } from "../../lib/writeups";
+import { day, iso, minutes } from "../../lib/format";
+import { site } from "../../config";
+
+export async function getStaticPaths() {
+  return (await getWriteups()).map((w) => ({ params: { id: w.id }, props: { w } }));
+}
+const { w } = Astro.props as { w: Writeup };
+const tierHtml = w.tier
+  ? `<span class="tier" data-tier="${w.tier}">${w.difficulty}</span>`
+  : "—";
+const specs = [
+  { k: "platform", v: w.platform },
+  ...(w.difficulty ? [{ k: "difficulty", v: tierHtml }] : []),
+  { k: "category", v: w.tags.map((t) => `<span class="tag" data-tag="${t}">${t}</span>`).join(" ") },
+  { k: "published", v: `<time datetime="${iso(w.date)}">${day(w.date)}</time>` },
+  { k: "reading", v: `${minutes(w.body.words, w.body.listings.reduce((s, l) => s + l.lines, 0))} min · ${w.body.listings.length} listings` },
+  ...(w.body.challenge ? [{ k: w.body.challenge.label.toLowerCase(), v: new URL(w.body.challenge.url).host + new URL(w.body.challenge.url).pathname.replace(/\/$/, ""), href: w.body.challenge.url }] : []),
+  { k: "source", v: "ctf-writeups ↗", href: w.source },
+];
+const jsonld = {
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  headline: w.title,
+  description: w.body.excerpt,
+  datePublished: iso(w.date) || undefined,
+  author: { "@type": "Person", name: site.profile.name, url: site.url },
+  url: new URL(w.url, site.url).href,
+  keywords: [w.platform, ...w.tags, w.difficulty].filter(Boolean).join(", "),
+};
+---
+<Base title={`${w.title} · ${w.platform} writeup`} description={w.body.excerpt} section="writeups" type="article" published={w.date} jsonld={jsonld}>
+  <Article
+    crumbs={[{ label: "writeups", href: "/writeups/" }, { label: w.platform, href: `/writeups/?platform=${encodeURIComponent(w.platform)}` }, { label: w.id.split("/").slice(1).join("/") }]}
+    title={w.title}
+    specs={specs}
+    body={w.body}
+    attachments={w.attachments}
+    prev={w.prev}
+    next={w.next}
+    series={w.platform}
+    standfirst={`A ${w.difficulty ? `${w.difficulty} ` : ""}${w.tags.join(" and ")} challenge from ${w.platform}, ${minutes(w.body.words, w.body.listings.reduce((s, l) => s + l.lines, 0))} minutes to read.`}
+  />
+</Base>

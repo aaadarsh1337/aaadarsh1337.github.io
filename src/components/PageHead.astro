@@ -1,0 +1,20 @@
+---
+interface Props { crumbs: { label: string; href?: string }[]; title: string; lede?: string; count?: number }
+const { crumbs, title, lede, count } = Astro.props;
+---
+<header class="ph rise">
+  <nav class="ph__crumbs meta" aria-label="Breadcrumb">
+    <a href="/">~</a>{crumbs.map((c) => <><span class="sep">/</span>{c.href ? <a href={c.href}>{c.label}</a> : <span aria-current="page">{c.label}</span>}</>)}
+  </nav>
+  <h1 class="ph__title page-title">{title}{count !== undefined && <sup aria-label={`${count} in total`}>{count}</sup>}</h1>
+  {lede && <p class="ph__lede">{lede}</p>}
+  <slot />
+</header>
+<style>
+  .ph { max-width: none; }
+  .ph__crumbs { color: var(--muted); }
+  .ph__crumbs a { color: var(--fg-2); transition: color .2s; }
+  .ph__crumbs a:hover { color: var(--bone); }
+  .ph__title { margin-top: var(--s4); }
+  .ph__lede { margin-top: var(--s5); max-width: 40rem; font-size: var(--t-lede); line-height: 1.45; color: var(--fg); }
+</style>

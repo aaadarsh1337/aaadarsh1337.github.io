@@ -1,0 +1,24 @@
+---
+import Base from "../layouts/Base.astro";
+import Moon from "../components/Moon.astro";
+---
+<Base title="Not found">
+  <section class="nf rise">
+    <Moon phase={0} size={72} halo />
+    <p class="meta">404 · new moon</p>
+    <h1>Nothing out here.</h1>
+    <p class="nf__t">That page isn't on this site — it may have moved when the site was rebuilt.</p>
+    <p class="nf__a">
+      <a class="btn btn--primary" href="/">Home</a>
+      <a class="btn" href="/writeups/">Writeups</a>
+      <a class="btn" href="/blog/">Blog</a>
+      <button class="btn" type="button" data-palette-open>Search <kbd>⌘K</kbd></button>
+    </p>
+  </section>
+</Base>
+<style>
+  .nf { min-height: 60vh; display: grid; align-content: center; justify-items: start; gap: var(--s4); max-width: var(--measure); }
+  .nf h1 { font: 500 var(--t-title)/1.1 var(--sans); color: var(--bone); }
+  .nf__t { font-size: var(--t-body); line-height: 1.6; color: var(--fg-2); }
+  .nf__a { margin-top: var(--s3); display: flex; flex-wrap: wrap; gap: var(--s3); }
+</style>

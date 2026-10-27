@@ -1,0 +1,192 @@
+---
+import Base from "../../layouts/Base.astro";
+import Tier from "../../components/Tier.astro";
+import Moon from "../../components/Moon.astro";
+import { getWriteups, TAG_ORDER, TIERS } from "../../lib/writeups";
+import { day, iso, month } from "../../lib/format";
+
+const writeups = await getWriteups();
+const count = <T,>(xs: T[]) => xs.reduce((m, x) => m.set(x, (m.get(x) ?? 0) + 1), new Map<T, number>());
+const tags = [...count(writeups.flatMap((w) => w.tags))].sort((a, b) => TAG_ORDER.indexOf(a[0]) - TAG_ORDER.indexOf(b[0]));
+const platforms = [...count(writeups.map((w) => w.platform))].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+const tiers = [...count(writeups.map((w) => w.tier).filter(Boolean))].sort((a, b) => TIERS.indexOf(a[0]!) - TIERS.indexOf(b[0]!));
+const groups = [...writeups.reduce((m, w) => m.set(month(w.date), [...(m.get(month(w.date)) ?? []), w]), new Map<string, typeof writeups>())];
+const moonFor = { easy: 0.17, medium: 0.25, hard: 0.5 } as const;
+---
+<Base title="Writeups" description={`${writeups.length} CTF writeups across ${platforms.length} platforms — reverse engineering, binary exploitation and crypto, step by step.`} section="writeups">
+  <header class="top rise">
+    <nav class="crumbs meta" aria-label="Breadcrumb"><a href="/">~</a><span class="sep">/</span><span aria-current="page">writeups</span></nav>
+    <h1 class="title page-title">Writeups<sup aria-label={`${writeups.length} in total`}>{writeups.length}</sup></h1>
+    <p class="lede">Detailed walkthroughs of challenges I solved, including concept explanation and ideology. {writeups.length} so far, across {platforms.length} platforms.</p>
+  </header>
+
+  <form class="filters" role="search" aria-label="Filter writeups" data-filters hidden>
+    <label class="search">
+      <span class="visually-hidden">Search writeups</span>
+      <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><circle cx="7" cy="7" r="4.6" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M10.4 10.4 14 14" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      <input name="q" type="search" placeholder="grep title, platform, technique…" autocomplete="off" spellcheck="false" data-slash />
+      <kbd aria-hidden="true">/</kbd>
+    </label>
+
+    <fieldset class="group"><legend>category</legend>
+      <label class="chip"><input type="radio" name="tag" value="" checked /><span>all</span></label>
+      {tags.map(([t, n]) => <label class="chip" data-tag={t}><input type="radio" name="tag" value={t} /><span>{t}</span><span class="chip__n">{n}</span></label>)}
+    </fieldset>
+    <fieldset class="group"><legend>platform</legend>
+      <label class="chip"><input type="radio" name="platform" value="" checked /><span>all</span></label>
+      {platforms.map(([p, n]) => <label class="chip"><input type="radio" name="platform" value={p} /><span>{p}</span><span class="chip__n">{n}</span></label>)}
+    </fieldset>
+    <fieldset class="group"><legend>difficulty</legend>
+      <label class="chip"><input type="radio" name="tier" value="" checked /><span>all</span></label>
+      {tiers.map(([t, n]) => <label class="chip" data-tier={t}><input type="radio" name="tier" value={t} /><Moon phase={moonFor[t!]} size={12} /><span>{t}</span><span class="chip__n">{n}</span></label>)}
+    </fieldset>
+    <p class="status" aria-live="polite">Showing <span data-shown>{writeups.length}</span> of {writeups.length} <button type="reset" class="reset" data-reset hidden>Clear filters</button></p>
+  </form>
+
+  <div class="list">
+    {groups.map(([m, ws]) => (
+      <section class="month" data-month>
+        <h2 class="month__h">{m}</h2>
+        <ol>
+          {ws.map((w) => (
+            <li
+              class="row"
+              data-row
+              data-tags={w.tags.join(" ")}
+              data-platform={w.platform}
+              data-tier={w.tier ?? ""}
+              data-text={`${w.title} ${w.platform} ${w.tags.join(" ")} ${w.difficulty ?? ""} ${w.body.excerpt}`.toLowerCase()}
+            >
+              <time class="row__date" datetime={iso(w.date)}>{day(w.date, false)}</time>
+              <div class="row__main">
+                <h3 class="row__title"><a href={w.url}>{w.title}</a></h3>
+                <p class="row__meta">
+                  <span class="meta">{w.platform}</span>
+                  <Tier tier={w.tier} label={w.difficulty} />
+                  {w.tags.map((t) => <span class="tag" data-tag={t}>{t}</span>)}
+                </p>
+                <p class="row__ex">{w.body.excerpt}</p>
+              </div>
+              <span class="cue row__cue" aria-hidden="true">→</span>
+            </li>
+          ))}
+        </ol>
+      </section>
+    ))}
+    <p class="empty" data-empty hidden>Nothing matches that. <button type="button" class="link" data-clear>Clear the filters</button></p>
+  </div>
+</Base>
+
+<style>
+  .top, .filters, .list { max-width: 64rem; }
+  .crumbs { color: var(--muted); }
+  .crumbs a { color: var(--fg-2); }
+  .title { margin-top: var(--s4); }
+  .lede { margin-top: var(--s5); max-width: 36rem; font-size: var(--t-lede); line-height: 1.45; color: var(--fg); }
+
+  .filters { margin-top: var(--s7); display: grid; gap: var(--s4); padding: var(--s5); background: var(--bg-1); }
+  .search { display: flex; align-items: center; gap: var(--s3); height: 3.25rem; padding: 0 var(--s4); background: var(--bg-2); color: var(--muted); }
+  .search:focus-within { color: var(--bone); }
+  .search input { flex: 1; min-width: 0; border: 0; background: none; outline: none; font: 400 var(--t-body)/1 var(--sans); color: var(--bone); }
+  .search input::placeholder { color: var(--muted); }
+  .search input::-webkit-search-cancel-button { display: none; }
+  .group { border: 0; padding: 0; margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2); }
+  .group legend { float: left; width: 6.5rem; font: 400 var(--t-small)/2.4rem var(--sans); color: var(--fg-2); }
+  .chip { --c: var(--blue); position: relative; display: inline-flex; align-items: center; gap: .45em; height: 2.4rem; padding: 0 1rem; border-radius: 999px; background: var(--bg-2); cursor: pointer; font: 400 var(--t-small)/1 var(--sans); color: var(--c); transition: background-color .2s, color .2s, transform .15s; }
+  .chip input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+  .chip:hover { background: var(--bg-3); }
+  .chip:active { transform: scale(.97); }
+  .chip:has(input:checked) { background: color-mix(in srgb, var(--c) 20%, var(--bg-2)); color: var(--bone); }
+  .chip:has(input:focus-visible) { outline: 2px solid var(--bone); outline-offset: 2px; }
+  .chip__n { color: var(--muted); }
+  .chip[data-tag="rev"] { --c: var(--tide); } .chip[data-tag="pwn"] { --c: var(--lily); } .chip[data-tag="crypto"] { --c: var(--lantern); }
+  .chip[data-tier="easy"] { --c: var(--sage); } .chip[data-tier="medium"] { --c: var(--lantern); } .chip[data-tier="hard"] { --c: var(--lily); }
+  .chip :global(.moon) { --moon-lit: var(--c); --moon-dark: color-mix(in srgb, var(--c) 14%, var(--bg)); --moon-edge: color-mix(in srgb, var(--c) 45%, transparent); }
+  .status { font-size: var(--t-small); color: var(--fg-2); }
+  .status .reset { margin-left: var(--s4); }
+  .reset { background: none; border: 0; padding: 0; cursor: pointer; font: inherit; color: var(--bone); text-decoration: underline; text-decoration-color: var(--muted); text-underline-offset: .25em; }
+
+  .list { margin-top: var(--gap); }
+  .month + .month { margin-top: var(--gap); }
+  .month__h { font: 400 var(--t-h2)/1.1 var(--sans); letter-spacing: -.03em; color: var(--bone); }
+  .month ol { list-style: none; margin-top: var(--s5); display: grid; gap: var(--s2); }
+  .row { position: relative; display: grid; grid-template-columns: 5rem minmax(0, 1fr) 1.5rem; gap: var(--s5); align-items: start; padding: var(--s4); margin-inline: calc(-1 * var(--s4)); border-radius: 4px; transition: background-color .2s var(--ease); }
+  .row:hover { background: var(--bg-1); }
+  .row:active { background: var(--bg-2); }
+  .row__cue { align-self: center; font-size: 1.25rem; }
+  .row:hover .row__cue { opacity: 1; color: var(--blue); translate: 3px 0; }
+  .row:hover .row__title a { color: #fff; }
+  .row__date { padding-top: .35rem; font-size: var(--t-small); color: var(--fg-2); font-variant-numeric: tabular-nums; }
+  .row__title { font: 400 var(--t-lede)/1.25 var(--sans); letter-spacing: -.015em; }
+  .row__title a { color: var(--bone); }
+  .row__title a::after { content: ""; position: absolute; inset: 0; }
+  .row__meta { margin-top: var(--s2); display: flex; flex-wrap: wrap; align-items: center; gap: .35rem .9rem; font-size: var(--t-small); color: var(--fg-2); }
+  .row__meta :global(.meta) { color: var(--fg-2); }
+  .row__ex { margin-top: var(--s3); max-width: 38rem; font-size: var(--t-body); line-height: 1.55; color: var(--fg); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .empty { padding: var(--s7) 0; font-size: var(--t-body); color: var(--fg-2); }
+  .empty .link { background: none; border: 0; padding: 0; font: inherit; cursor: pointer; }
+
+  :global(.js) .row { animation: rise .6s var(--ease) both; }
+
+  @media (max-width: 760px) {
+    .group legend { float: none; width: 100%; line-height: 1.6; }
+    .filters { padding: var(--s4); }
+    .row { grid-template-columns: minmax(0, 1fr) 1.25rem; gap: var(--s2) var(--s3); }
+    .row__date { grid-column: 1; }
+    .row__main { grid-column: 1; }
+    .row__cue { grid-column: 2; grid-row: 1 / 3; }
+    }
+</style>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>("[data-filters]")!;
+  form.hidden = false;   // controls only exist when JS can drive them
+  const rows = [...document.querySelectorAll<HTMLElement>("[data-row]")];
+  const months = [...document.querySelectorAll<HTMLElement>("[data-month]")];
+  const shown = form.querySelector<HTMLElement>("[data-shown]")!;
+  const empty = document.querySelector<HTMLElement>("[data-empty]")!;
+  const keys = ["q", "tag", "platform", "tier"] as const;
+
+  // deep links: /writeups/?tag=pwn&platform=pwnable.kr — also accepts ?difficulty=hard
+  const url = new URL(location.href);
+  if (url.searchParams.has("difficulty")) url.searchParams.set("tier", url.searchParams.get("difficulty")!.toLowerCase());
+  for (const k of keys) {
+    const v = url.searchParams.get(k);
+    if (!v) continue;
+    const el = form.elements.namedItem(k);
+    if (el instanceof HTMLInputElement) el.value = v;
+    else if (el instanceof RadioNodeList) for (const r of el as unknown as HTMLInputElement[]) r.checked = r.value === v;
+  }
+
+  function apply() {
+    const f = new FormData(form);
+    const q = String(f.get("q") ?? "").trim().toLowerCase();
+    const terms = q.split(/\s+/).filter(Boolean);
+    const tag = String(f.get("tag") ?? ""), platform = String(f.get("platform") ?? ""), tier = String(f.get("tier") ?? "");
+    let n = 0;
+    for (const r of rows) {
+      const ok = (!tag || r.dataset.tags!.split(" ").includes(tag))
+        && (!platform || r.dataset.platform === platform)
+        && (!tier || r.dataset.tier === tier)
+        && terms.every((t) => r.dataset.text!.includes(t));
+      r.hidden = !ok;
+      if (ok) n++;
+    }
+    for (const m of months) m.hidden = !m.querySelector("[data-row]:not([hidden])");
+    shown.textContent = String(n);
+    form.querySelector<HTMLElement>("[data-reset]")!.hidden = !(terms.length || tag || platform || tier);
+    empty.hidden = n > 0;
+    const next = new URL(location.href);
+    next.search = "";
+    for (const k of keys) { const v = String(f.get(k) ?? "").trim(); if (v) next.searchParams.set(k, v); }
+    history.replaceState(null, "", next);
+  }
+  form.addEventListener("input", apply);
+  form.addEventListener("submit", (e) => e.preventDefault());
+  form.addEventListener("reset", () => setTimeout(apply));
+  document.querySelector("[data-clear]")?.addEventListener("click", () => form.reset());
+  form.querySelector("input[name=q]")!.addEventListener("keydown", (e) => {
+    if ((e as KeyboardEvent).key === "Escape") { (e.target as HTMLInputElement).value = ""; apply(); (e.target as HTMLInputElement).blur(); }
+  });
+  apply();
+</script>

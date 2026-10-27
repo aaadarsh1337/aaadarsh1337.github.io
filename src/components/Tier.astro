@@ -1,0 +1,18 @@
+---
+// Difficulty as a moon: crescent = easy, half = medium, full = hard.
+import Moon from "./Moon.astro";
+import type { Tier } from "../lib/writeups";
+interface Props { tier: Tier | null; label: string | null; bare?: boolean }
+const { tier, label, bare = false } = Astro.props;
+const phase = { easy: 0.17, medium: 0.25, hard: 0.5 } as const;
+---
+{tier && label && (
+  <span class="tier" data-tier={tier}>
+    <Moon phase={phase[tier]} size={13} />
+    {!bare && <span>{label}</span>}
+    {bare && <span class="visually-hidden">{label}</span>}
+  </span>
+)}
+<style>
+  .tier :global(.moon) { --moon-lit: var(--c); --moon-dark: color-mix(in srgb, var(--c) 14%, var(--bg)); --moon-edge: color-mix(in srgb, var(--c) 45%, transparent); }
+</style>

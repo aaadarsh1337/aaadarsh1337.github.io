@@ -1,0 +1,180 @@
+---
+import Base from "../../layouts/Base.astro";
+import PageHead from "../../components/PageHead.astro";
+import Toolbox from "../../components/Toolbox.astro";
+import { site } from "../../config";
+import { getRepos } from "../../lib/repos";
+import { day } from "../../lib/format";
+
+const p = site.profile;
+const repos = getRepos();
+const identity = [
+  ["name", p.name], ["handle", p.handle], ["also", p.aliases.join(", ")], ["based in", p.location],
+  ["focus", p.focus], ["team", `${p.team} · ${p.teamRole}`],
+];
+// A placement and its certificate are the same event: pair them, list the rest separately.
+const norm = (s: string) => s.toLowerCase().replace(/\b20\d\d\b/g, "").replace(/[^a-z0-9]/g, "");
+const certFor = (title: string) => site.certificates.find((c) => norm(title).startsWith(norm(c.name)) || norm(title) === norm(c.name));
+const paired = new Set(site.achievements.map((x) => certFor(x.title)).filter(Boolean));
+const otherCerts = site.certificates.filter((c) => !paired.has(c));
+const results = site.achievements.map((a) => ({ ...a, cert: certFor(a.title), rank: a.detail.match(/#\d+/)?.[0] ?? "", rest: a.detail.replace(/^404squad\s*-\s*#\d+\s*/, "").replace(/^Overall$/, "overall") }));
+---
+<Base title="About" description={`${p.name} — skills, CTF results with ${p.team}, certificates, repositories and contact.`} section="about">
+  <PageHead crumbs={[{ label: "about" }]} title="About" />
+
+  <section class="who">
+    <figure class="who__print">
+      <picture>
+        <source srcset={p.avatar} type="image/webp" />
+        <img src={p.avatarFallback} width="288" height="512" alt="Avatar: a lone swordsman under a full moon, in a field of red spider lilies." loading="eager" />
+      </picture>
+    </figure>
+    <dl class="spec">
+      {identity.map(([k, v]) => <div><dt>{k}</dt><dd>{v}</dd></div>)}
+    </dl>
+    <p class="who__links">
+      <a class="btn btn--primary" href={p.resume}>Résumé (PDF) <span class="arr">↗</span></a>
+      <a class="btn" href="#contact">Contact</a>
+    </p>
+  </section>
+
+  <section class="sec story" aria-labelledby="h-story">
+    <h2 class="label" id="h-story">More about me</h2>
+    <div class="story__text">{p.bio.slice(1).map((para) => <p>{para}</p>)}</div>
+  </section>
+
+  <div class="sec"><Toolbox /></div>
+
+  <section class="sec" id="results" aria-labelledby="h-results">
+    <h2 class="label" id="h-results">CTF results with {p.team}</h2>
+    <ol class="table table--results">
+      {results.map((r) => (
+        <li>
+          <span class="rank">{r.rank}</span>
+          <span class="t">{r.title}<span class="d">{r.rest}</span></span>
+          <span class="links">
+            <a class="v" href={r.url} rel="external">Proof <span aria-hidden="true">↗</span><span class="visually-hidden"> for {r.title}</span></a>
+            {r.cert && <a class="v v--cert" href={r.cert.url} rel="external">Certificate <span aria-hidden="true">↗</span><span class="visually-hidden"> for {r.title}, issued by {r.cert.issuer}</span></a>}
+          </span>
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  <section class="sec" id="certificates" aria-labelledby="h-certs">
+    <h2 class="label" id="h-certs">Certificates</h2>
+    <ol class="table table--certs">
+      {otherCerts.map((c) => (
+        <li>
+          <span class="yr">{c.date}</span>
+          <span class="t">{c.name}<span class="d">{c.issuer}</span></span>
+          <span class="links"><a class="v" href={c.url} rel="external">Verify <span aria-hidden="true">↗</span><span class="visually-hidden"> {c.name}</span></a></span>
+        </li>
+      ))}
+    </ol>
+    <p class="note">Every certificate, including the CTF ones above, is mirrored in <a class="link" href="https://github.com/aaadarsh1337/cybersecurity-achievements" rel="external">cybersecurity-achievements</a> in case an original link goes away.</p>
+  </section>
+
+  <section class="sec" id="repositories" aria-labelledby="h-repos">
+    <h2 class="label" id="h-repos">Repositories <a href={`https://github.com/${site.github.user}?tab=repositories`} rel="external">github ↗</a></h2>
+    <ul class="repos">
+      {repos.map((r) => (
+        <li>
+          <a href={r.url} rel="external">
+            <span class="repo__name">{r.name}{r.pinned && <span class="pin" title="pinned">·</span>}</span>
+            {r.description && <span class="repo__desc">{r.description}</span>}
+            <span class="cue cue--corner" aria-hidden="true">↗</span>
+            <span class="repo__meta meta">{r.language ?? "—"}<span class="sep">·</span>pushed {day(r.pushed)}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section class="sec" id="contact" aria-labelledby="h-contact">
+    <h2 class="label" id="h-contact">Contact</h2>
+    <div class="contact">
+      <div class="c">
+        <p class="c__k">Email, best for longer conversations &amp; opportunities</p>
+        <p class="c__v"><a href={`mailto:${site.contact.email}`}>{site.contact.email}</a> <button class="copy" type="button" data-copy-text={site.contact.email}>copy</button></p>
+      </div>
+      <div class="c">
+        <p class="c__k">Discord, fastest for a quick chat</p>
+        <p class="c__v"><a href={site.contact.discord} rel="external">@{p.handle}</a></p>
+      </div>
+    </div>
+    <ul class="profiles">
+      {site.links.map((l) => <li><a href={l.url} rel="external"><span>{l.label}</span><span class="meta">{l.detail}</span><span class="cue cue--corner" aria-hidden="true">↗</span></a></li>)}
+    </ul>
+  </section>
+</Base>
+
+<style>
+  .who { margin-top: var(--s7); display: grid; grid-template-columns: minmax(0, 15rem) minmax(0, 1fr); grid-template-rows: auto 1fr; column-gap: var(--s7); row-gap: var(--s6); align-items: start; }
+  .who__print { grid-row: 1 / 3; margin: 0; padding: var(--s3); background: color-mix(in srgb, var(--blue) 10%, var(--bg-2)); }
+  .who__print img { width: 100%; aspect-ratio: 288 / 512; object-fit: cover; }
+  .spec { margin: 0; display: grid; padding: var(--s3) var(--s5); background: var(--bg-1); }
+  .spec div { display: grid; grid-template-columns: 7rem minmax(0, 1fr); gap: var(--s4); align-items: baseline; padding: .7rem 0; }
+  .spec dt { font-size: var(--t-small); color: var(--fg-2); }
+  .spec dd { margin: 0; font-size: var(--t-body); color: var(--bone); }
+  .who__links { grid-column: 2; display: flex; flex-wrap: wrap; gap: var(--s3); align-self: start; }
+
+  .sec { margin-top: var(--gap); scroll-margin-top: 6rem; }
+  .story__text { margin-top: var(--s5); max-width: 40rem; display: grid; gap: 1.1em; font: 400 1.25rem/1.6 "Newsreader Variable", Georgia, serif; color: var(--fg); text-wrap: pretty; }
+  .sec > .label { margin-bottom: 0; }
+  .n { color: var(--fg-2); }
+  .note { margin-top: var(--s5); font-size: var(--t-body); color: var(--fg-2); }
+
+
+  .table { list-style: none; margin-top: var(--s5); display: grid; gap: var(--s2); }
+  .table li { display: grid; grid-template-columns: 4rem minmax(0, 1fr) auto; gap: var(--s4); align-items: center; padding: var(--s4) var(--s5); background: var(--bg-1); }
+  .t { display: grid; gap: 2px; }
+  .links { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: var(--s2); }
+  .rank { font: 400 var(--t-lede)/1 var(--sans); letter-spacing: -.02em; color: var(--bone); font-variant-numeric: tabular-nums; }
+  .t { font-size: var(--t-body); color: var(--bone); }
+  .d { font-size: var(--t-small); color: var(--fg-2); }
+  .v { display: inline-flex; align-items: center; min-height: 2.5rem; padding: 0 .9rem; border-radius: 999px; background: var(--bg-2); font-size: var(--t-small); color: var(--sage); white-space: nowrap; transition: background-color .2s, color .2s; }
+  .v--cert { color: var(--fg); }
+  .v:hover { background: var(--bg-3); color: var(--bone); }
+  .yr { font-size: var(--t-body); color: var(--fg-2); font-variant-numeric: tabular-nums; }
+
+  .repos { list-style: none; margin-top: var(--s5); display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s4); }
+  .repos a { position: relative; display: grid; gap: var(--s2); height: 100%; padding: var(--s5); background: var(--bg-1); transition: background-color .2s; }
+  .repos a:hover { background: var(--bg-2); }
+  .repo__name { font: 400 var(--t-lede)/1.25 var(--sans); letter-spacing: -.015em; color: var(--bone); }
+  .pin { color: var(--lily); margin-left: .3em; }
+  .repo__desc { font-size: var(--t-body); line-height: 1.5; color: var(--fg); }
+  .repo__meta { font-size: var(--t-small); color: var(--fg-2); }
+
+  .contact { margin-top: var(--s5); display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s4); }
+  .c { padding: var(--s5); background: var(--bg-1); }
+  .c__k { font-size: var(--t-body); color: var(--fg-2); }
+  .c__v { margin-top: var(--s3); display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--s3); font: 400 var(--t-lede)/1.3 var(--sans); color: var(--bone); overflow-wrap: anywhere; }
+  .c__v a { text-decoration: underline; text-decoration-color: var(--muted); text-underline-offset: .2em; }
+  .copy { border: 0; border-radius: 999px; padding: .45rem .9rem; cursor: pointer; font: inherit; font-size: var(--t-small); background: var(--bg-3); color: var(--fg); }
+  .copy:hover { color: var(--bone); background: var(--rule-2); }
+  .profiles { list-style: none; margin-top: var(--s4); display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s4); }
+  .profiles a { position: relative; display: grid; gap: 2px; padding: var(--s4) var(--s5); background: var(--bg-1); transition: background-color .2s; }
+  .profiles a:hover { background: var(--bg-2); }
+  .profiles a span:first-child { font-size: var(--t-body); color: var(--bone); }
+  .profiles .meta { font-size: var(--t-small); color: var(--fg-2); }
+
+  @media (max-width: 860px) {
+    .who { grid-template-columns: minmax(0, 1fr); row-gap: var(--s5); }
+    .who__print { grid-row: auto; width: 9rem; padding: 6px; }
+    .who__links { grid-column: 1; }
+    .spec { padding: var(--s2) var(--s4); }
+    .spec div { grid-template-columns: 5.5rem minmax(0, 1fr); gap: var(--s3); padding: .55rem 0; }
+    .profiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .table li { grid-template-columns: 3rem minmax(0, 1fr); row-gap: var(--s3); padding: var(--s4); }
+    .links { grid-column: 2; justify-content: flex-start; }
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>("[data-copy-text]").forEach((b) =>
+    b.addEventListener("click", async () => {
+      try { await navigator.clipboard.writeText(b.dataset.copyText!); b.textContent = "copied"; } catch { b.textContent = "⌘C it"; }
+      setTimeout(() => (b.textContent = "copy"), 1600);
+    }));
+</script>

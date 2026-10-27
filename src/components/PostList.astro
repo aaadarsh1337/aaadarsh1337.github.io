@@ -1,0 +1,59 @@
+---
+// Blog posts as quiet cards: the title on the left, the summary and a way in on the right.
+import type { Post } from "../lib/blog";
+import { day, iso, minutes } from "../lib/format";
+interface Props { posts: Post[] }
+const { posts } = Astro.props;
+---
+<ol class="posts">
+  {posts.map((p) => {
+    const lines = p.body.listings.reduce((s, l) => s + l.lines, 0);
+    return (
+      <li class="post">
+        <div class="post__head">
+          <p class="post__kicker">
+            <span class="chiplet chiplet--cat">{p.categoryLabel}</span>
+            {p.featured && <span class="chiplet chiplet--feat"><span class="chiplet__moon" aria-hidden="true" />Featured</span>}
+          </p>
+          <h2 class="post__title"><a href={p.url}>{p.title}</a></h2>
+        </div>
+        <div class="post__side">
+          <p class="post__sum">{p.summary.replace(/([^.!?])$/, "$1.")}</p>
+          <p class="post__foot">
+            <span class="post__meta"><time datetime={iso(p.date)}>{day(p.date)}</time> · {minutes(p.body.words, lines)} min read</span>
+            <span class="post__go">Read the post <span class="cue" aria-hidden="true">→</span></span>
+          </p>
+        </div>
+      </li>
+    );
+  })}
+</ol>
+<style>
+  .posts { list-style: none; display: grid; gap: var(--s3); }
+  .post {
+    position: relative;
+    display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--s5) var(--s7);
+    padding: var(--s6); border-radius: 6px; background: var(--bg-1);
+    transition: background-color .25s var(--ease);
+  }
+  .post:hover { background: var(--bg-2); }
+  .post:active { background: var(--bg-3); }
+  .post__kicker { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2); }
+  .chiplet { display: inline-flex; align-items: center; gap: .45em; height: 1.75rem; padding: 0 .75rem; border-radius: 999px; font-size: var(--t-small); line-height: 1; }
+  .chiplet--cat { background: color-mix(in srgb, var(--lantern) 12%, var(--bg-1)); color: var(--lantern); }
+  .chiplet--feat { background: color-mix(in srgb, var(--blue) 12%, var(--bg-1)); color: var(--blue); }
+  .chiplet__moon { width: .8em; height: .8em; background: currentColor; -webkit-mask: var(--crescent) center / contain no-repeat; mask: var(--crescent) center / contain no-repeat; }
+  .post__title { margin-top: var(--s4); font: 500 clamp(1.75rem, 1.3rem + 1.6vw, 2.5rem)/1.12 "Shippori Mincho", var(--sans); letter-spacing: -.01em; }
+  .post__title a { color: var(--bone); }
+  .post__title a::after { content: ""; position: absolute; inset: 0; border-radius: 6px; }
+  .post:hover .post__title a { color: var(--blue); }
+  .post__side { display: grid; align-content: space-between; gap: var(--s5); }
+  .post__sum { font: 400 1.1875rem/1.55 "Newsreader Variable", Georgia, serif; color: var(--fg); text-wrap: pretty; }
+  .post__foot { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: var(--s2) var(--s5); }
+  .post__meta { font-size: var(--t-small); color: var(--fg-2); }
+  .post__go { font-size: var(--t-body); color: var(--bone); }
+  .post:hover .post__go .cue { opacity: 1; color: var(--blue); translate: 3px 0; }
+  @media (max-width: 760px) {
+    .post { grid-template-columns: minmax(0, 1fr); padding: var(--s5); gap: var(--s4); }
+  }
+</style>

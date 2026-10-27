@@ -1,0 +1,17 @@
+---
+import Base from "../../layouts/Base.astro";
+import PageHead from "../../components/PageHead.astro";
+import PostList from "../../components/PostList.astro";
+import BlogCats from "../../components/BlogCats.astro";
+import { getPosts } from "../../lib/blog";
+const posts = await getPosts();
+---
+<Base title="Blog" description="Malware analysis, reverse engineering notes and other security writing." section="blog">
+  <PageHead crumbs={[{ label: "blog" }]} title="Blog" count={posts.length} lede="Blog where I upload malware analysis, random stories, and a lot more!">
+    <BlogCats />
+  </PageHead>
+  <div class="wrap"><PostList posts={posts} /></div>
+</Base>
+<style>
+  .wrap { margin-top: var(--s7); }
+</style>
