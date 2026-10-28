@@ -4,6 +4,7 @@
 import type { Rendered } from "../lib/markdown";
 import type { Attachment } from "../lib/writeups";
 import { size } from "../lib/format";
+import Moon from "./Moon.astro";
 
 interface Crumb { label: string; href?: string }
 interface Spec { k: string; v: string; href?: string; accent?: string }
@@ -90,7 +91,27 @@ const dirs = [...new Set(attachments.map((a) => a.dir))];
   <slot name="after" />
 </article>
 
+<!-- reading progress: the moon waxes from new to full as you read; it also takes you back up -->
+<button class="readmoon" type="button" data-readmoon aria-label="Back to top">
+  <Moon phase={0} size={30} label="" />
+  <span class="readmoon__pct" aria-hidden="true" data-readmoon-pct>0%</span>
+</button>
+
 <style>
+  .readmoon {
+    position: fixed; z-index: 15; right: var(--margin); bottom: calc(var(--s5) + env(safe-area-inset-bottom, 0px));
+    display: flex; align-items: center; gap: var(--s2); height: 2.75rem; padding: 0 .4rem 0 .4rem;
+    border: 0; border-radius: 999px; background: var(--bg-2); color: var(--fg-2); cursor: pointer;
+    box-shadow: 0 10px 30px -14px rgb(0 0 0 / .7); /* taste-skill-ignore: it floats over the text */
+    opacity: 0; translate: 0 8px; pointer-events: none; visibility: hidden;
+    transition: opacity .3s var(--ease), translate .3s var(--ease), background-color .2s, visibility 0s .3s;
+  }
+  .readmoon.is-on { opacity: 1; translate: 0 0; pointer-events: auto; visibility: visible; transition-delay: 0s; }
+  .readmoon:hover { background: var(--bg-3); }
+  .readmoon:active { scale: .95; }
+  .readmoon__pct { display: none; padding-right: .5rem; font: 500 var(--t-small)/1 var(--sans); font-variant-numeric: tabular-nums; }
+  .readmoon:hover .readmoon__pct, .readmoon:focus-visible .readmoon__pct { display: inline; }
+  .readmoon :global(.moon__lit) { transition: none; }
   .head { max-width: none; }
   .crumbs { display: flex; flex-wrap: wrap; gap: 0 .45em; color: var(--muted); }
   .crumbs a { color: var(--fg-2); transition: color .2s; }
@@ -162,6 +183,33 @@ const dirs = [...new Set(attachments.map((a) => a.dir))];
   if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
     const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("is-in"); io.unobserve(e.target); } }), { rootMargin: "0px 0px -8% 0px" });
     document.querySelectorAll(".body > .listing, .body > .figure, .body > h2, .file, .pager__a").forEach((el) => { el.classList.add("will-rise"); io.observe(el); });
+  }
+
+  // reading progress moon
+  import { litPath } from "../lib/moon";
+  const rm = document.querySelector<HTMLButtonElement>("[data-readmoon]");
+  const prose = document.querySelector<HTMLElement>(".article .body");
+  if (rm && prose) {
+    const lit = rm.querySelector(".moon__lit")!;
+    const pct = rm.querySelector<HTMLElement>("[data-readmoon-pct]")!;
+    let raf = 0;
+    const draw = () => {
+      raf = 0;
+      const r = prose.getBoundingClientRect();
+      const p = Math.min(1, Math.max(0, (innerHeight * 0.6 - r.top) / r.height));
+      lit.setAttribute("d", litPath(p * 0.5));
+      const n = Math.round(p * 100);
+      pct.textContent = `${n}%`;
+      rm.setAttribute("aria-label", `${n}% read. Back to top`);
+      rm.classList.toggle("is-on", scrollY > innerHeight * 0.6);
+    };
+    addEventListener("scroll", () => { raf ||= requestAnimationFrame(draw); }, { passive: true });
+    addEventListener("resize", () => { raf ||= requestAnimationFrame(draw); });
+    draw();
+    rm.addEventListener("click", () => {
+      scrollTo({ top: 0, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+      document.querySelector<HTMLElement>("#main")?.focus({ preventScroll: true });
+    });
   }
 
   // copy buttons on listings

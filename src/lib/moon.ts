@@ -42,3 +42,20 @@ export function nextPhase(target: 0 | 0.5, date: Date = new Date()): Date {
   if (frac < 0.01) frac += 1;   // just passed it: the next one
   return new Date(date.getTime() + frac * SYNODIC * 86400000);
 }
+
+/** Within ~18 hours of the exact full or new moon those nights get dressed up.
+ *  The no-flash script in layouts/Base.astro repeats this test inline. */
+export const SPECIAL_DAYS = 0.75;
+export function special(p: Phase): "full" | "new" | null {
+  if (Math.abs(p.age - SYNODIC / 2) < SPECIAL_DAYS) return "full";
+  if (p.age < SPECIAL_DAYS || p.age > SYNODIC - SPECIAL_DAYS) return "new";
+  return null;
+}
+
+/** The homepage's one line about tonight's sky. */
+export function tonightLine(p: Phase): string {
+  const s = special(p);
+  if (s === "full") return "Full moon tonight";
+  if (s === "new") return "New moon tonight, the darkest sky of the month";
+  return `Tonight, ${p.name}, ${Math.round(p.illumination * 100)}% lit`;
+}

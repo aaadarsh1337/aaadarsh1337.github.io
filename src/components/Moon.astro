@@ -43,7 +43,7 @@ const title = label === "" ? undefined : label ?? (live ? `${now.name} · ${Math
 </style>
 
 <script>
-  import { litPath, moonPhase, nextPhase } from "../lib/moon";
+  import { litPath, moonPhase, nextPhase, special, tonightLine } from "../lib/moon";
   // The build renders the phase of build day; correct it to the visitor's now.
   function update() {
     const p = moonPhase(new Date());
@@ -60,6 +60,9 @@ const title = label === "" ? undefined : label ?? (live ? `${now.name} · ${Math
     for (const el of document.querySelectorAll<HTMLElement>("[data-moon-age]")) el.textContent = `${p.age.toFixed(1)} days`;
     for (const el of document.querySelectorAll<HTMLElement>("[data-moon-full]")) el.textContent = d(nextPhase(0.5));
     for (const el of document.querySelectorAll<HTMLElement>("[data-moon-new]")) el.textContent = d(nextPhase(0));
+    for (const el of document.querySelectorAll<HTMLElement>("[data-moon-line]")) el.textContent = tonightLine(p);
+    const s = special(p), root = document.documentElement;
+    if (s) root.dataset.lunar = s; else delete root.dataset.lunar;
   }
   update();
 </script>

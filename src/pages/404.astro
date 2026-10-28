@@ -1,13 +1,16 @@
 ---
 import Base from "../layouts/Base.astro";
 import Moon from "../components/Moon.astro";
+import { moonPhase } from "../lib/moon";
+const tonight = moonPhase(new Date());
 ---
 <Base title="Not found">
   <section class="nf rise">
-    <Moon phase={0} size={72} halo />
-    <p class="meta">404 · new moon</p>
-    <h1>Nothing out here.</h1>
+    <div class="nf__moon"><Moon phase={0} size={168} halo label="" /></div>
+    <p class="meta">404</p>
+    <h1>Nothing here: new moon.</h1>
     <p class="nf__t">That page isn't on this site — it may have moved when the site was rebuilt.</p>
+    <p class="nf__t">Tonight's real moon is a <span data-moon-name>{tonight.name}</span>, so it's only this page that's gone dark.</p>
     <p class="nf__a">
       <a class="btn btn--primary" href="/">Home</a>
       <a class="btn" href="/writeups/">Writeups</a>
@@ -18,7 +21,16 @@ import Moon from "../components/Moon.astro";
 </Base>
 <style>
   .nf { min-height: 60vh; display: grid; align-content: center; justify-items: start; gap: var(--s4); max-width: var(--measure); }
-  .nf h1 { font: 500 var(--t-title)/1.1 var(--sans); color: var(--bone); }
+  .nf h1 { font: 500 var(--t-title)/1.1 var(--display); letter-spacing: -.015em; color: var(--bone); }
+  /* the new moon: a dark disc you only see by its rim and a faint earthshine */
+  .nf__moon { margin-bottom: var(--s4); }
+  .nf__moon :global(.moon) { filter: none; animation: earthshine 7s ease-in-out infinite; }
+  .nf__moon :global(.moon__dark) { stroke: color-mix(in srgb, var(--moon) 32%, transparent); stroke-width: .18; }
+  .nf__moon :global(.moon__halo) { stroke-opacity: .16; stroke-width: .15; }
+  @keyframes earthshine {
+    0%, 100% { filter: drop-shadow(0 0 10px color-mix(in srgb, var(--moon) 6%, transparent)); }
+    50% { filter: drop-shadow(0 0 26px color-mix(in srgb, var(--moon) 16%, transparent)); }
+  }
   .nf__t { font-size: var(--t-body); line-height: 1.6; color: var(--fg-2); }
   .nf__a { margin-top: var(--s3); display: flex; flex-wrap: wrap; gap: var(--s3); }
 </style>
