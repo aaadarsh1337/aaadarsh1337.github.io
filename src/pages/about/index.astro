@@ -120,7 +120,7 @@ const results = site.achievements.map((a) => ({ ...a, cert: certFor(a.title), ra
   .who__links { grid-column: 2; display: flex; flex-wrap: wrap; gap: var(--s3); align-self: start; }
 
   .sec { margin-top: var(--gap); scroll-margin-top: 6rem; }
-  .story__text { margin-top: var(--s5); max-width: 40rem; display: grid; gap: 1.1em; font: 400 1.25rem/1.6 "Newsreader Variable", Georgia, serif; color: var(--fg); text-wrap: pretty; }
+  .story__text { margin-top: var(--s5); max-width: 40rem; display: grid; gap: 1.1em; font: 400 clamp(1rem, .92rem + .3vw, 1.125rem)/1.8 var(--voice); letter-spacing: -.01em; color: var(--fg); text-wrap: pretty; }
   .sec > .label { margin-bottom: 0; }
   .n { color: var(--fg-2); }
   .note { margin-top: var(--s5); font-size: var(--t-body); color: var(--fg-2); }

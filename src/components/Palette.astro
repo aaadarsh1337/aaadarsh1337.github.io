@@ -27,7 +27,7 @@ const items = [
       <input type="search" placeholder="jump to…" autocomplete="off" spellcheck="false" aria-controls="pal-list" />
       <kbd>esc</kbd>
     </label>
-    <ul id="pal-list" class="pal__list" role="listbox" aria-label="Results"></ul>
+    <ul id="pal-list" class="pal__list" role="listbox" aria-label="Results" aria-live="polite"></ul>
     <p class="pal__hint"><span><kbd>↑</kbd> <kbd>↓</kbd> move</span><span><kbd>↵</kbd> open</span><span><kbd>/</kbd> or <kbd>⌘K</kbd> anywhere</span></p>
   </div>
   <script type="application/json" id="pal-data" set:html={JSON.stringify(items)} />
@@ -50,10 +50,12 @@ const items = [
   .pal__list :global(.pal__t) { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 400 var(--t-small)/1.3 var(--sans); }
   .pal__list :global(.pal__k) { font: 400 .75rem/1 var(--sans); color: var(--faint); }
   .pal__list :global(.pal__empty) { cursor: default; color: var(--muted); font: 400 var(--t-meta)/1.4 var(--sans); }
+  .pal__list :global(.pal__love) { cursor: default; padding: var(--s5) var(--s3); font: 500 1.125rem/1.5 var(--display); color: var(--lily); }
   .pal__hint { display: flex; flex-wrap: wrap; gap: var(--s4); padding: var(--s3) var(--s4); background: var(--bg-1); color: var(--fg-2); font-size: var(--t-small); }
 </style>
 
 <script>
+  import { LOVE_NOTE, isLove } from "../lib/love";
   type Item = { t: string; u: string; k: string; h?: string };
   const dialog = document.querySelector<HTMLDialogElement>("dialog.pal")!;
   const input = dialog.querySelector("input")!;
@@ -80,6 +82,12 @@ const items = [
 
   function draw() {
     const q = input.value.trim().toLowerCase();
+    if (isLove(q)) {
+      shown = [];
+      list.replaceChildren(Object.assign(document.createElement("li"), { className: "pal__love", textContent: LOVE_NOTE }));
+      input.setAttribute("aria-activedescendant", "");
+      return;
+    }
     shown = items.map((it) => [it, score(it, q)] as const).filter(([, s]) => s > 0)
       .sort((a, b) => b[1] - a[1]).slice(0, 12).map(([it]) => it);
     active = Math.min(active, Math.max(shown.length - 1, 0));

@@ -3,6 +3,7 @@
 @import "@fontsource-variable/instrument-sans/wght.css";
 @import "@fontsource-variable/instrument-sans/wght-italic.css";
 @import "@fontsource-variable/newsreader/opsz.css";
+@import "@fontsource-variable/jetbrains-mono/wght.css";
 @import "@fontsource/sometype-mono/latin-400.css";
 @import "@fontsource/sometype-mono/latin-500.css";
 @import "./tokens.css";
@@ -99,6 +100,7 @@ a:hover .cue--corner { translate: 2px -2px; }
 :root {
   --crescent: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M15.5 2.5a9.5 9.5 0 1 0 6 16.9A8 8 0 0 1 15.5 2.5z'/%3E%3C/svg%3E");
   --display: "Shippori Mincho", var(--sans);
+  --voice: "JetBrains Mono Variable", ui-monospace, monospace;   /* the bio: in my own voice */
 }
 :is(.b-h, .label, .tb__h, .month__h, .prose h2) {
   font-family: var(--display) !important;
