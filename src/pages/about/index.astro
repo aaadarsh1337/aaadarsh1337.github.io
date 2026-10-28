@@ -76,7 +76,7 @@ const results = site.achievements.map((a) => ({ ...a, cert: certFor(a.title), ra
   </section>
 
   <section class="sec" id="repositories" aria-labelledby="h-repos">
-    <h2 class="label" id="h-repos">Repositories <a href={`https://github.com/${site.github.user}?tab=repositories`} rel="external">github ↗</a></h2>
+    <h2 class="label" id="h-repos">Repositories <a href={`https://github.com/${site.github.user}?tab=repositories`} rel="external" class="btn btn--sm">All on GitHub <span class="arr arr--out">↗</span></a></h2>
     <ul class="repos">
       {repos.map((r) => (
         <li>

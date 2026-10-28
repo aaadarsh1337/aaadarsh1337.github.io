@@ -217,8 +217,12 @@ a:hover .cue--corner { translate: 2px -2px; }
 .btn:active { transform: scale(.97); transition-duration: .05s; }
 .btn--primary { background: var(--moon); color: #0b0e13; }
 .btn--primary:hover { background: #ffffff; color: #0b0e13; }
-.btn .arr { transition: translate .2s var(--ease); }
+.btn .arr { color: var(--blue); transition: translate .2s var(--ease); }
+.btn--primary .arr { color: inherit; }
 .btn:hover .arr { translate: 2px 0; }
+.btn:hover .arr--out { translate: 2px -2px; }
+.btn--sm { height: 2rem; padding: 0 .8rem; font-size: var(--t-small); }
+.label > a.btn { align-self: center; font-size: var(--t-small); color: var(--fg); }
 
 kbd {
   font: 400 .72rem/1 var(--mono); color: var(--muted);

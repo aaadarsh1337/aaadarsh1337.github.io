@@ -22,9 +22,8 @@ const { items, size = "small" } = Astro.props;
   ))}
 </ol>
 <style>
-  .latest { list-style: none; display: grid; border-radius: 8px; overflow: hidden; background: var(--bg-1); }
-  .latest li + li { border-top: 1px solid color-mix(in srgb, var(--fg) 7%, transparent); }
-  .latest a { position: relative; display: grid; grid-template-columns: 7.5rem minmax(0, 1fr) auto 1rem; gap: var(--s5); align-items: baseline; padding: var(--s4) var(--s5); transition: background-color .2s var(--ease); }
+  .latest { list-style: none; display: grid; gap: var(--s2); }
+  .latest a { position: relative; display: grid; grid-template-columns: 7.5rem minmax(0, 1fr) auto 1rem; gap: var(--s5); align-items: baseline; padding: var(--s4) var(--s5); border-radius: 8px; overflow: hidden; background: var(--bg-1); transition: background-color .2s var(--ease); }
   .latest a::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: var(--blue); opacity: 0; transition: opacity .2s; }
   .latest a:hover { background: var(--bg-2); }
   .latest a:hover::before { opacity: 1; }

@@ -40,7 +40,7 @@ const moonFor = { easy: 0.17, medium: 0.25, hard: 0.5 } as const;
       <label class="chip"><input type="radio" name="tier" value="" checked /><span>all</span></label>
       {tiers.map(([t, n]) => <label class="chip" data-tier={t}><input type="radio" name="tier" value={t} /><Moon phase={moonFor[t!]} size={12} /><span>{t}</span><span class="chip__n">{n}</span></label>)}
     </fieldset>
-    <p class="status" aria-live="polite">Showing <span data-shown>{writeups.length}</span> of {writeups.length} <button type="reset" class="reset" data-reset hidden>Clear filters</button></p>
+    <p class="status" aria-live="polite"><span>Showing <span data-shown>{writeups.length}</span> of {writeups.length}</span> <button type="reset" class="btn btn--sm reset" data-reset hidden>Clear filters <span class="arr" aria-hidden="true">×</span></button></p>
   </form>
 
   <div class="list">
@@ -73,7 +73,7 @@ const moonFor = { easy: 0.17, medium: 0.25, hard: 0.5 } as const;
         </ol>
       </section>
     ))}
-    <p class="empty" data-empty hidden>Nothing matches that. <button type="button" class="link" data-clear>Clear the filters</button></p>
+    <p class="empty" data-empty hidden>Nothing matches that. <button type="button" class="btn" data-clear>Clear the filters</button></p>
   </div>
 </Base>
 
@@ -102,16 +102,13 @@ const moonFor = { easy: 0.17, medium: 0.25, hard: 0.5 } as const;
   .chip[data-tag="rev"] { --c: var(--tide); } .chip[data-tag="pwn"] { --c: var(--lily); } .chip[data-tag="crypto"] { --c: var(--lantern); }
   .chip[data-tier="easy"] { --c: var(--sage); } .chip[data-tier="medium"] { --c: var(--lantern); } .chip[data-tier="hard"] { --c: var(--lily); }
   .chip :global(.moon) { --moon-lit: var(--c); --moon-dark: color-mix(in srgb, var(--c) 14%, var(--bg)); --moon-edge: color-mix(in srgb, var(--c) 45%, transparent); }
-  .status { font-size: var(--t-small); color: var(--fg-2); }
-  .status .reset { margin-left: var(--s4); }
-  .reset { background: none; border: 0; padding: 0; cursor: pointer; font: inherit; color: var(--bone); text-decoration: underline; text-decoration-color: var(--muted); text-underline-offset: .25em; }
+  .status { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2) var(--s4); min-height: 2rem; font-size: var(--t-small); color: var(--fg-2); }
 
   .list { margin-top: var(--gap); }
   .month + .month { margin-top: var(--gap); }
   .month__h { font: 400 var(--t-h2)/1.1 var(--sans); letter-spacing: -.03em; color: var(--bone); }
-  .month ol { list-style: none; margin-top: var(--s5); display: grid; border-radius: 8px; overflow: hidden; background: var(--bg-1); }
-  .month li:not([hidden]) ~ li:not([hidden]) { border-top: 1px solid color-mix(in srgb, var(--fg) 7%, transparent); }
-  .row { position: relative; display: grid; grid-template-columns: 5rem minmax(0, 1fr) 1.5rem; gap: var(--s5); align-items: start; padding: var(--s5); transition: background-color .2s var(--ease); }
+  .month ol { list-style: none; margin-top: var(--s5); display: grid; gap: var(--s2); }
+  .row { position: relative; display: grid; grid-template-columns: 5rem minmax(0, 1fr) 1.5rem; gap: var(--s5); align-items: start; padding: var(--s5); border-radius: 8px; overflow: hidden; background: var(--bg-1); transition: background-color .2s var(--ease); }
   .row::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: var(--blue); opacity: 0; transition: opacity .2s; }
   .row:hover { background: var(--bg-2); }
   .row:hover::before { opacity: 1; }
@@ -127,7 +124,7 @@ const moonFor = { easy: 0.17, medium: 0.25, hard: 0.5 } as const;
   .row__meta :global(.meta) { color: var(--fg-2); }
   .row__ex { margin-top: var(--s3); max-width: 38rem; font-size: var(--t-body); line-height: 1.55; color: var(--fg); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
   .empty { padding: var(--s7) 0; font-size: var(--t-body); color: var(--fg-2); }
-  .empty .link { background: none; border: 0; padding: 0; font: inherit; cursor: pointer; }
+  .empty .btn { margin-left: var(--s3); }
 
   :global(.js) .row { animation: rise .6s var(--ease) both; }
 

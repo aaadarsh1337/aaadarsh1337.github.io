@@ -135,7 +135,7 @@ const jsonld = {
       {bendi && <>
         <figure class="seen__fig"><img src={`${bendi.url}komari.png`} width="1920" height="1023" alt="The attacker's Komari monitoring dashboard the worm reports to" decoding="async" /><figcaption>The attacker's Komari dashboard</figcaption></figure>
         <figure class="seen__fig"><img src={`${bendi.url}login.png`} width="1920" height="1025" alt="The Komari control panel login page" decoding="async" /><figcaption>Its control panel login</figcaption></figure>
-        <p class="seen__text">{bendi.summary}. <a class="link" href={bendi.url}>Read the analysis of {bendi.title.replace(/^.*— /, "")}</a></p>
+        <p class="seen__text">{bendi.summary}. <a class="btn" href={bendi.url}>Read the analysis of {bendi.title.replace(/^.*— /, "")} <span class="arr">→</span></a></p>
       </>}
     </div>
   </section>
@@ -215,6 +215,7 @@ const jsonld = {
   .seen__fig img { width: 100%; filter: brightness(.92); }
   .seen__fig figcaption { margin-top: var(--s3); font-size: var(--t-small); color: var(--fg-2); }
   .seen__text { grid-column: 1 / -1; max-width: 40rem; font-size: var(--t-body); line-height: 1.6; color: var(--fg); }
+  .seen__text .btn { display: flex; width: fit-content; margin-top: var(--s4); }
 
   .takeaways { list-style: none; margin-top: var(--s5); display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s4); }
   .takeaways li { padding: var(--s5); background: var(--bg-1); }
