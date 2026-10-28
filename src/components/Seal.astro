@@ -23,8 +23,21 @@
   </g>
 </svg>
 
+<script>
+  // a secret for phones, where there is no keyboard for the Konami code:
+  // three quick taps on the seal start the blood moon (TopBar.astro listens)
+  const seal = document.querySelector<SVGSVGElement>(".seal");
+  let taps: number[] = [];
+  seal?.addEventListener("click", () => {
+    const now = Date.now();
+    taps = [...taps.filter((t) => now - t < 1200), now];
+    if (taps.length >= 3) { taps = []; document.dispatchEvent(new Event("bloodmoon")); }
+  });
+</script>
+
 <style>
   /* slightly askew, as if stamped by hand; it straightens when you look at it */
-  .seal { flex: none; color: var(--lily); rotate: -5deg; opacity: .9; transition: rotate .4s var(--ease), scale .4s var(--ease); }
+  .seal { flex: none; touch-action: manipulation; -webkit-tap-highlight-color: transparent; user-select: none; color: var(--lily); rotate: -5deg; opacity: .9; transition: rotate .4s var(--ease), scale .4s var(--ease); }
+  .seal:active { scale: .94; }
   :global(.foot__who:hover) .seal { rotate: 0deg; scale: 1.06; }
 </style>

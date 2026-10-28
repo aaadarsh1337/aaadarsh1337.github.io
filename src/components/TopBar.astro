@@ -227,7 +227,8 @@ const sheetNav = [{ id: "home", href: "/", label: "Home" }, ...nav];
     document.querySelector<HTMLButtonElement>(".bar [data-palette-open]")?.click();
   });
 
-  // ↑ ↑ ↓ ↓ ← → ← → B A: a lunar eclipse over the whole site, for a few seconds
+  // ↑ ↑ ↓ ↓ ← → ← → B A (or three quick taps on the footer seal, see Seal.astro):
+  // a lunar eclipse over the whole site, for a few seconds
   const code = ["arrowup", "arrowup", "arrowdown", "arrowdown", "arrowleft", "arrowright", "arrowleft", "arrowright", "b", "a"];
   let at = 0, bloodTimer = 0;
   addEventListener("keydown", (e) => {
@@ -235,6 +236,10 @@ const sheetNav = [{ id: "home", href: "/", label: "Home" }, ...nav];
     at = k === code[at] ? at + 1 : k === code[0] ? 1 : 0;
     if (at < code.length) return;
     at = 0;
+    bloodMoon();
+  });
+  document.addEventListener("bloodmoon", bloodMoon);
+  function bloodMoon() {
     if (root.classList.contains("blood")) return;
     root.classList.add("blood");
     const note = document.createElement("p");
@@ -248,7 +253,7 @@ const sheetNav = [{ id: "home", href: "/", label: "Home" }, ...nav];
       note.classList.add("is-out");
       setTimeout(() => note.remove(), 1600);
     }, 9000);
-  });
+  }
 
   // phones: hide the bar while scrolling down, bring it back on any scroll up
   const bar = document.querySelector<HTMLElement>("[data-bar]")!;
