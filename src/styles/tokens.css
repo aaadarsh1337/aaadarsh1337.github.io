@@ -131,3 +131,34 @@
   --sh-link: #2f6660;
   --sh-number: #7a5a17;
 }
+
+/* Blood moon: the secret theme (the Konami code, or three taps on the footer seal).
+   A night palette lit by an eclipsed moon: warm red-black ground, copper moonlight
+   as the accent, the moon itself copper. The other accents keep their meanings. */
+:root.blood {
+  color-scheme: dark;
+  --bg: #0f0a0b;
+  --bg-1: #150e0f;
+  --bg-2: #1b1214;
+  --bg-3: #241719;
+  --rule: #261a1c;
+  --rule-2: #362527;
+  --fg: #ecdeda;
+  --fg-2: #c9b3ae;
+  --muted: #a9928c;
+  --faint: #98807a;
+  --bone: #f5e8e4;
+  --bone-dim: #d9c2bb;
+  --moon: #e3a58c;
+  --moon-shade: color-mix(in srgb, #e3a58c 10%, #0f0a0b);
+  --moon-edge: rgb(227 165 140 / 0.25);
+  --lily: #e2675a;
+  --blue: #e6a088;
+  --dusk: var(--blue);
+  --lily-wash: rgb(226 103 90 / 0.10);
+  --dusk-wash: rgb(230 160 136 / 0.12);
+  --bone-wash: rgb(245 232 228 / 0.05);
+  --glow: rgb(227 165 140 / 0.04);
+  --sh-keyword: #d99a86;
+  --sh-function: #e6d6cf;
+}

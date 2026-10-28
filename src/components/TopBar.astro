@@ -193,7 +193,7 @@ const sheetNav = [{ id: "home", href: "/", label: "Home" }, ...nav];
 <script>
   const root = document.documentElement;
   const themeName = () => document.querySelectorAll<HTMLElement>("[data-theme-name]")
-    .forEach((el) => (el.textContent = root.dataset.theme === "dawn" ? "Switch to night" : "Switch to dawn"));
+    .forEach((el) => (el.textContent = root.classList.contains("blood") ? "End blood moon" : root.dataset.theme === "dawn" ? "Switch to night" : "Switch to dawn"));
   const flip = () => {
     const next = root.dataset.theme === "dawn" ? "night" : "dawn";
     if (next === "dawn") root.dataset.theme = "dawn"; else delete root.dataset.theme;
@@ -206,6 +206,7 @@ const sheetNav = [{ id: "home", href: "/", label: "Home" }, ...nav];
   let eclipsing = false;
   document.querySelectorAll("[data-theme-toggle]").forEach((btn) =>
     btn.addEventListener("click", () => {
+      if (root.classList.contains("blood")) return setBlood(false);   // the way back to normal
       if (eclipsing) return;
       const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
       if (still || root.classList.contains("sheet-open") || moonBtn.getBoundingClientRect().bottom < 0) return flip();
@@ -227,10 +228,11 @@ const sheetNav = [{ id: "home", href: "/", label: "Home" }, ...nav];
     document.querySelector<HTMLButtonElement>(".bar [data-palette-open]")?.click();
   });
 
-  // ↑ ↑ ↓ ↓ ← → ← → B A (or three quick taps on the footer seal, see Seal.astro):
-  // a lunar eclipse over the whole site, for a few seconds
+  // The secret blood-moon theme: ↑ ↑ ↓ ↓ ← → ← → B A, or three quick taps on the footer
+  // seal (Seal.astro). It stays on across pages until the theme button or a reload ends it
+  // (the no-flash script in Base.astro restores it on each page).
   const code = ["arrowup", "arrowup", "arrowdown", "arrowdown", "arrowleft", "arrowright", "arrowleft", "arrowright", "b", "a"];
-  let at = 0, bloodTimer = 0;
+  let at = 0;
   addEventListener("keydown", (e) => {
     const k = e.key.toLowerCase();
     at = k === code[at] ? at + 1 : k === code[0] ? 1 : 0;
@@ -241,18 +243,27 @@ const sheetNav = [{ id: "home", href: "/", label: "Home" }, ...nav];
   document.addEventListener("bloodmoon", bloodMoon);
   function bloodMoon() {
     if (root.classList.contains("blood")) return;
-    root.classList.add("blood");
+    setBlood(true);
     const note = document.createElement("p");
     note.className = "blood-note";
     note.setAttribute("role", "status");
-    note.textContent = "Blood moon. You found the secret.";
+    note.textContent = "Blood moon: you found the secret theme";
     document.body.append(note);
-    clearTimeout(bloodTimer);
-    bloodTimer = window.setTimeout(() => {
-      root.classList.remove("blood");
-      note.classList.add("is-out");
-      setTimeout(() => note.remove(), 1600);
-    }, 9000);
+    setTimeout(() => { note.classList.add("is-out"); setTimeout(() => note.remove(), 1000); }, 4200);
+  }
+  function setBlood(on: boolean) {
+    const apply = () => {
+      root.classList.toggle("blood", on);
+      // a blood moon is a night sky; leaving it restores the saved theme
+      if (on) delete root.dataset.theme;
+      else try { if (localStorage.getItem("theme") === "dawn") root.dataset.theme = "dawn"; } catch {}
+      try { if (on) sessionStorage.setItem("blood", "1"); else sessionStorage.removeItem("blood"); } catch {}
+      if (!on) document.querySelectorAll(".blood-note").forEach((n) => n.classList.add("is-out"));
+      themeName();
+    };
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches || !document.startViewTransition) return apply();
+    root.classList.add("blood-vt");
+    document.startViewTransition(apply).finished.finally(() => root.classList.remove("blood-vt"));
   }
 
   // phones: hide the bar while scrolling down, bring it back on any scroll up

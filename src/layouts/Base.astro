@@ -25,9 +25,10 @@ const fullTitle = title ? `${title} — ${site.profile.name}` : `${site.profile.
 const canonical = new URL(Astro.url.pathname, site.url).href;
 
 // No-flash theme: runs before first paint. Its hash goes into the CSP so no
-// other inline script can run. It also marks full/new moon nights (same test
+// other inline script can run. It keeps the secret blood-moon theme across pages
+// (sessionStorage; a reload ends it), marks full/new moon nights (same test
 // as special() in lib/moon.ts) and the visitor's night hours, for the stars.
-const themeScript = `(function(){try{var d=document.documentElement,q=new URLSearchParams(location.search).get('theme'),t=q==='dawn'||q==='light'?'dawn':q==='night'||q==='dark'?'night':localStorage.getItem('theme');if(t==='dawn')d.dataset.theme='dawn'}catch(e){}var S=29.530588853,a=((Date.now()-Date.UTC(2000,0,6,18,14))/864e5%S+S)%S;if(Math.abs(a-S/2)<.75)d.dataset.lunar='full';else if(a<.75||a>S-.75)d.dataset.lunar='new';var h=new Date().getHours();if(h>=19||h<5)d.dataset.night='';d.classList.add('js')})()`;
+const themeScript = `(function(){var d=document.documentElement;try{var q=new URLSearchParams(location.search).get('theme'),t=q==='dawn'||q==='light'?'dawn':q==='night'||q==='dark'?'night':localStorage.getItem('theme'),b=sessionStorage.getItem('blood');if(b){var n=performance.getEntriesByType('navigation')[0];if(n&&n.type==='reload'){sessionStorage.removeItem('blood');b=null}}if(b)d.classList.add('blood');else if(t==='dawn')d.dataset.theme='dawn'}catch(e){}var S=29.530588853,a=((Date.now()-Date.UTC(2000,0,6,18,14))/864e5%S+S)%S;if(Math.abs(a-S/2)<.75)d.dataset.lunar='full';else if(a<.75||a>S-.75)d.dataset.lunar='new';var h=new Date().getHours();if(h>=19||h<5)d.dataset.night='';d.classList.add('js')})()`;
 const hash = createHash("sha256").update(themeScript).digest("base64");
 const csp = [
   "default-src 'self'",
