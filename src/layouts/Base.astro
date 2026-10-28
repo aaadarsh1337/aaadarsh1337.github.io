@@ -31,7 +31,8 @@ const themeScript = `(function(){try{var d=document.documentElement,q=new URLSea
 const hash = createHash("sha256").update(themeScript).digest("base64");
 const csp = [
   "default-src 'self'",
-  `script-src 'self' 'sha256-${hash}'`,
+  // wasm-unsafe-eval lets the Pagefind search index compile its WebAssembly; it allows no eval of script
+  `script-src 'self' 'sha256-${hash}' 'wasm-unsafe-eval'`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data:",
   "font-src 'self'",

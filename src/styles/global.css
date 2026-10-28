@@ -39,6 +39,25 @@ body::before {
 :root[data-theme="dawn"] { --moonlight: rgb(230 196 140 / calc(.16 * var(--k))); --moonlight-core: rgb(255 246 228 / calc(.5 * var(--k))); }
 :root[data-lunar="full"] { --k: 1.9; }
 :root[data-lunar="new"] { --k: .25; }
+/* blood moon (the Konami code, see TopBar.astro): red light, a darkened sky, a short note */
+:root.blood, :root.blood[data-theme="dawn"] { --blue: #e2806e; --moonlight: rgb(200 70 50 / .2); --moonlight-core: rgb(230 110 80 / .16); }
+:root.blood[data-theme="dawn"] { --blue: #a2382c; }
+body::after {
+  content: ""; position: fixed; inset: 0; z-index: 40; pointer-events: none;
+  background: radial-gradient(ellipse 120% 90% at 50% 20%, rgb(150 40 25 / .1), rgb(70 8 4 / .42));
+  mix-blend-mode: multiply; opacity: 0; transition: opacity 1.6s var(--ease);
+}
+:root.blood body::after { opacity: 1; }
+.blood-note {
+  position: fixed; z-index: 41; left: 50%; bottom: calc(var(--s6) + env(safe-area-inset-bottom, 0px)); translate: -50% 0;
+  padding: var(--s3) var(--s5); border-radius: 999px; background: var(--bg-3); white-space: nowrap;
+  font: 500 var(--t-body)/1.3 var(--display); color: #e2806e;
+  box-shadow: 0 16px 50px -16px rgb(0 0 0 / .8); /* taste-skill-ignore: it floats */
+  animation: rise .8s .6s var(--ease) both;
+  transition: opacity 1.2s var(--ease);
+}
+:root[data-theme="dawn"] .blood-note { color: #a2382c; }
+.blood-note.is-out { opacity: 0; }
 @media (max-width: 860px) { body::before { --at: calc(var(--margin) + 17px) calc(36px + env(safe-area-inset-top, 0px)); height: 70svh; } }
 html.sheet-open { overflow: hidden; }
 img, svg { display: block; max-width: 100%; }

@@ -33,7 +33,7 @@ const dirs = [...new Set(attachments.map((a) => a.dir))];
       {crumbs.map((c) => <><span class="crumbs__sep">/</span>{c.href ? <a href={c.href}>{c.label.toLowerCase()}</a> : <span aria-current="page">{c.label.toLowerCase()}</span>}</>)}
     </nav>
     {kicker && <p class="head__kicker meta">{kicker}</p>}
-    <h1 class="head__title page-title">{title}</h1>
+    <h1 class="head__title page-title" data-pagefind-meta="title">{title}</h1>
     {standfirst && <p class="head__stand">{standfirst}</p>}
     <dl class:list={["specs", { "specs--rail": attachments.length === 0 }]}>
       {specs.map((s) => (
@@ -46,7 +46,7 @@ const dirs = [...new Set(attachments.map((a) => a.dir))];
   </header>
 
   <div class="layout">
-    <div class="prose body" set:html={body.html} />
+    <div class="prose body" data-pagefind-body data-pagefind-meta={`kind:${crumbs[0]?.label.toLowerCase() === "blog" ? "post" : "writeup"}`} set:html={body.html} />
 
     <aside class="rail" aria-label={attachments.length ? "Files in this challenge" : "About this post"}>
       <div class="rail__inner">

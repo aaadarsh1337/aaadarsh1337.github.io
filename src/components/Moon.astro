@@ -43,7 +43,7 @@ const title = label === "" ? undefined : label ?? (live ? `${now.name} · ${Math
 </style>
 
 <script>
-  import { litPath, moonPhase, nextPhase, special, tonightLine } from "../lib/moon";
+  import { litPath, moonPhase, nextPhase, special, tonightLine, fullMoonName } from "../lib/moon";
   // The build renders the phase of build day; correct it to the visitor's now.
   function update() {
     const p = moonPhase(new Date());
@@ -61,6 +61,11 @@ const title = label === "" ? undefined : label ?? (live ? `${now.name} · ${Math
     for (const el of document.querySelectorAll<HTMLElement>("[data-moon-full]")) el.textContent = d(nextPhase(0.5));
     for (const el of document.querySelectorAll<HTMLElement>("[data-moon-new]")) el.textContent = d(nextPhase(0));
     for (const el of document.querySelectorAll<HTMLElement>("[data-moon-line]")) el.textContent = tonightLine(p);
+    for (const el of document.querySelectorAll<HTMLElement>("[data-moon-fullname]")) el.textContent = fullMoonName(nextPhase(0.5));
+    // the browser tab shows tonight's moon too (public/favicon.svg is the no-JS fallback)
+    const icon = document.querySelector<HTMLLinkElement>('link[rel="icon"]');
+    if (icon) icon.href = "data:image/svg+xml," + encodeURIComponent(
+      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="#0b0e13"/><circle cx="16" cy="16" r="10.5" fill="#1c2027" stroke="#3a414c" stroke-width=".8"/><path d="${litPath(p.phase, 16, 10.5)}" fill="#ece8de"/></svg>`);
     const s = special(p), root = document.documentElement;
     if (s) root.dataset.lunar = s; else delete root.dataset.lunar;
   }

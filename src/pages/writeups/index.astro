@@ -55,11 +55,13 @@ const moonFor = { easy: 0.17, medium: 0.25, hard: 0.5 } as const;
               data-tags={w.tags.join(" ")}
               data-platform={w.platform}
               data-tier={w.tier ?? ""}
+              data-url={w.url}
               data-text={`${w.title} ${w.platform} ${w.tags.join(" ")} ${w.difficulty ?? ""} ${w.body.excerpt}`.toLowerCase()}
             >
               <time class="row__date" datetime={iso(w.date)}>{day(w.date, false)}</time>
               <div class="row__main">
                 <h3 class="row__title"><a href={w.url}>{w.title}</a></h3>
+                <p class="row__hit" data-hit hidden></p>
                 <p class="row__meta">
                   <span class="meta">{w.platform}</span>
                   <Tier tier={w.tier} label={w.difficulty} />
@@ -120,6 +122,8 @@ const moonFor = { easy: 0.17, medium: 0.25, hard: 0.5 } as const;
   .row__title { font: 400 var(--t-lede)/1.25 var(--sans); letter-spacing: -.015em; }
   .row__title a { color: var(--bone); }
   .row__title a::after { content: ""; position: absolute; inset: 0; }
+  .row__hit { margin-top: var(--s2); max-width: 38rem; font-size: var(--t-small); line-height: 1.5; color: var(--fg-2); overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+  .row__hit :global(mark) { background: none; color: var(--blue); font-weight: 600; }
   .row__meta { margin-top: var(--s2); display: flex; flex-wrap: wrap; align-items: center; gap: .35rem .9rem; font-size: var(--t-small); color: var(--fg-2); }
   .row__meta :global(.meta) { color: var(--fg-2); }
   .love { padding: var(--s7) 0; font: 500 var(--t-h3)/1.5 var(--display); color: var(--lily); }
@@ -140,6 +144,7 @@ const moonFor = { easy: 0.17, medium: 0.25, hard: 0.5 } as const;
 
 <script>
   import { LOVE_NOTE, isLove } from "../../lib/love";
+  import { fulltext, excerptNodes } from "../../lib/fulltext";
   const form = document.querySelector<HTMLFormElement>("[data-filters]")!;
   form.hidden = false;   // controls only exist when JS can drive them
   const rows = [...document.querySelectorAll<HTMLElement>("[data-row]")];
@@ -161,18 +166,33 @@ const moonFor = { easy: 0.17, medium: 0.25, hard: 0.5 } as const;
     else if (el instanceof RadioNodeList) for (const r of el as unknown as HTMLInputElement[]) r.checked = r.value === v;
   }
 
+  // words found inside the writeups' text (Pagefind), for the current query only
+  let hits = new Map<string, string>(), hitsFor = "";
   function apply() {
     const f = new FormData(form);
     const q = String(f.get("q") ?? "").trim().toLowerCase();
+    if (q !== hitsFor) {
+      hits = new Map(); hitsFor = q;
+      if (!isLove(q)) fulltext(q, 50).then((hs) => {
+        if (hitsFor !== q || !hs.length) return;
+        hits = new Map(hs.map((h) => [h.url, h.excerpt]));
+        apply();
+      });
+    }
     const terms = q.split(/\s+/).filter(Boolean);
     const tag = String(f.get("tag") ?? ""), platform = String(f.get("platform") ?? ""), tier = String(f.get("tier") ?? "");
     let n = 0;
     for (const r of rows) {
+      const byMeta = terms.every((t) => r.dataset.text!.includes(t));
+      const inText = !byMeta && hits.get(r.dataset.url!);
       const ok = (!tag || r.dataset.tags!.split(" ").includes(tag))
         && (!platform || r.dataset.platform === platform)
         && (!tier || r.dataset.tier === tier)
-        && terms.every((t) => r.dataset.text!.includes(t));
+        && (byMeta || !!inText);
       r.hidden = !ok;
+      const hit = r.querySelector<HTMLElement>("[data-hit]")!;
+      hit.hidden = !inText;
+      if (inText) hit.replaceChildren(...excerptNodes(inText));
       if (ok) n++;
     }
     for (const m of months) m.hidden = !m.querySelector("[data-row]:not([hidden])");

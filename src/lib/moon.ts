@@ -55,7 +55,27 @@ export function special(p: Phase): "full" | "new" | null {
 /** The homepage's one line about tonight's sky. */
 export function tonightLine(p: Phase): string {
   const s = special(p);
-  if (s === "full") return "Full moon tonight";
+  if (s === "full") return `Full moon tonight: the ${fullMoonName(new Date())}`;
   if (s === "new") return "New moon tonight, the darkest sky of the month";
   return `Tonight, ${p.name}, ${Math.round(p.illumination * 100)}% lit`;
+}
+
+const DAY = 86400000;
+const MONTH_MOONS = ["Wolf", "Snow", "Worm", "Pink", "Flower", "Strawberry", "Buck", "Sturgeon", "Corn", "Hunter's", "Beaver", "Cold"];
+function nearestFull(d: Date): number {
+  let f = 0.5 - moonPhase(d).phase;
+  if (f > 0.5) f -= 1; else if (f < -0.5) f += 1;
+  return d.getTime() + f * SYNODIC * DAY;
+}
+/** The traditional (Old Farmer's Almanac) name of the full moon at `full`, in local time:
+ *  one per month, except that the full moon nearest the September equinox is the
+ *  Harvest Moon, the one after it the Hunter's Moon, and a month's second full moon a Blue Moon. */
+export function fullMoonName(full: Date): string {
+  const harvest = nearestFull(new Date(full.getFullYear(), 8, 22));
+  const t = nearestFull(full);
+  if (Math.abs(t - harvest) < 2 * DAY) return "Harvest Moon";
+  if (Math.abs(t - (harvest + SYNODIC * DAY)) < 2 * DAY) return "Hunter's Moon";
+  const prev = new Date(t - SYNODIC * DAY), at = new Date(t);
+  if (prev.getMonth() === at.getMonth() && prev.getFullYear() === at.getFullYear()) return "Blue Moon";
+  return `${MONTH_MOONS[at.getMonth()]} Moon`;
 }

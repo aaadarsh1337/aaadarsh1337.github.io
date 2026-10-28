@@ -143,7 +143,7 @@ function enhance(hl: Highlighter, out: Omit<Rendered, "html" | "words" | "excerp
         const label = (intro.length >= 14 && intro.length <= 48 ? intro : raw.split("\n").find((l) => l.trim())?.trim() ?? "").slice(0, 60);
         out.listings.push({ id: `lst-${n}`, n, lang: declared || "text", lines, label });
         parent.children[index] = h("figure.listing", { id: `lst-${n}`, dataLang: declared || "text" }, [
-          h("figcaption.listing__bar", [
+          h("figcaption.listing__bar", { "data-pagefind-ignore": "" }, [
             h("span.listing__lang", declared || "text"),
             h("span.listing__lines", `${lines} ${lines === 1 ? "line" : "lines"}`),
             h("button.listing__copy", { type: "button", dataCopy: "" }, "copy"),

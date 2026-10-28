@@ -2,7 +2,7 @@
 // Plain bar: wordmark (with tonight's moon) and a few links on the left, the one action on the right.
 import Moon from "./Moon.astro";
 import { site } from "../config";
-import { moonPhase, nextPhase } from "../lib/moon";
+import { moonPhase, nextPhase, fullMoonName } from "../lib/moon";
 import { day } from "../lib/format";
 import { getWriteups } from "../lib/writeups";
 import { getPosts } from "../lib/blog";
@@ -34,7 +34,7 @@ const sheetNav = [{ id: "home", href: "/", label: "Home" }, ...nav];
       <dl class="tonight__facts">
         <div><dt>Lit</dt><dd data-moon-lit>{Math.round(tonight.illumination * 100)}%</dd></div>
         <div><dt>Age</dt><dd data-moon-age>{tonight.age.toFixed(1)} days</dd></div>
-        <div><dt>Next full moon</dt><dd data-moon-full>{day(nextPhase(0.5))}</dd></div>
+        <div><dt>Next full moon</dt><dd><span data-moon-full>{day(nextPhase(0.5))}</span><span class="tonight__fname" data-moon-fullname>{fullMoonName(nextPhase(0.5))}</span></dd></div>
         <div><dt>Next new moon</dt><dd data-moon-new>{day(nextPhase(0))}</dd></div>
       </dl>
       <p class="tonight__note">Worked out in your browser for your date. It changes every night.</p>
@@ -69,7 +69,7 @@ const sheetNav = [{ id: "home", href: "/", label: "Home" }, ...nav];
     <div>
       <p class="sheet__k">Tonight</p>
       <p class="sheet__phase"><span data-moon-name>{tonight.name}</span>, <span data-moon-lit>{Math.round(tonight.illumination * 100)}%</span> lit</p>
-      <p class="sheet__next">Next full moon <span data-moon-full>{day(nextPhase(0.5))}</span></p>
+      <p class="sheet__next">Next full moon <span data-moon-full>{day(nextPhase(0.5))}</span>, the <span data-moon-fullname>{fullMoonName(nextPhase(0.5))}</span></p>
     </div>
   </div>
   <div class="sheet__tools">
@@ -107,6 +107,9 @@ const sheetNav = [{ id: "home", href: "/", label: "Home" }, ...nav];
   .eclipse { position: absolute; left: 50%; top: 50%; width: 28.4px; height: 28.4px; translate: -50% -50%; border-radius: 50%; overflow: hidden; pointer-events: none; }
   .eclipse i { position: absolute; inset: -1px; border-radius: 50%; translate: -110% 0; background: radial-gradient(circle at 46% 42%, color-mix(in srgb, #9c3a2f 70%, #0b0e13), #160b0b 72%); }
   .is-eclipsing .eclipse i { animation: eclipse .9s cubic-bezier(.45, 0, .55, 1) both; }
+  /* blood moon (the Konami code): the shadow slides over and stays a while */
+  .eclipse i { transition: translate 1.4s cubic-bezier(.45, 0, .55, 1); }
+  :global(html.blood) .eclipse i { translate: 0 0; opacity: .95; }
   @keyframes eclipse {
     0% { translate: -110% 0; opacity: .9; }
     42%, 58% { translate: 0 0; opacity: .94; }
@@ -123,7 +126,8 @@ const sheetNav = [{ id: "home", href: "/", label: "Home" }, ...nav];
   .tonight__facts { margin: var(--s4) 0 0; display: grid; gap: var(--s2); }
   .tonight__facts div { display: flex; justify-content: space-between; gap: var(--s4); font-size: var(--t-small); }
   .tonight__facts dt { color: var(--fg-2); }
-  .tonight__facts dd { margin: 0; color: var(--bone); font-variant-numeric: tabular-nums; }
+  .tonight__facts dd { margin: 0; color: var(--bone); font-variant-numeric: tabular-nums; text-align: right; }
+  .tonight__fname { display: block; margin-top: 2px; font: 500 var(--t-small)/1.3 var(--display); color: var(--blue); }
   .tonight__note { margin-top: var(--s4); font-size: var(--t-small); line-height: 1.45; color: var(--muted); }
   .links { display: flex; gap: var(--s5); }
   .links a, .menu nav a { color: var(--fg-2); transition: color .2s var(--ease); position: relative; }
@@ -221,6 +225,29 @@ const sheetNav = [{ id: "home", href: "/", label: "Home" }, ...nav];
   sheet.querySelector("[data-sheet-search]")?.addEventListener("click", () => {
     closeSheet();
     document.querySelector<HTMLButtonElement>(".bar [data-palette-open]")?.click();
+  });
+
+  // ↑ ↑ ↓ ↓ ← → ← → B A: a lunar eclipse over the whole site, for a few seconds
+  const code = ["arrowup", "arrowup", "arrowdown", "arrowdown", "arrowleft", "arrowright", "arrowleft", "arrowright", "b", "a"];
+  let at = 0, bloodTimer = 0;
+  addEventListener("keydown", (e) => {
+    const k = e.key.toLowerCase();
+    at = k === code[at] ? at + 1 : k === code[0] ? 1 : 0;
+    if (at < code.length) return;
+    at = 0;
+    if (root.classList.contains("blood")) return;
+    root.classList.add("blood");
+    const note = document.createElement("p");
+    note.className = "blood-note";
+    note.setAttribute("role", "status");
+    note.textContent = "Blood moon. You found the secret.";
+    document.body.append(note);
+    clearTimeout(bloodTimer);
+    bloodTimer = window.setTimeout(() => {
+      root.classList.remove("blood");
+      note.classList.add("is-out");
+      setTimeout(() => note.remove(), 1600);
+    }, 9000);
   });
 
   // phones: hide the bar while scrolling down, bring it back on any scroll up

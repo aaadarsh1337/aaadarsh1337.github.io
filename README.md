@@ -74,7 +74,7 @@ Requires Node 22.12+.
 npm ci
 npm run content    # clones ctf-writeups + security-blog into content-src/, fetches metrics + repos
 npm run dev        # http://localhost:4321
-npm run build      # → dist/
+npm run build      # → dist/, then Pagefind indexes it into dist/pagefind/
 ```
 
 To preview writeups or posts you haven't pushed yet, point the sync at local checkouts:
@@ -147,6 +147,7 @@ The look is "Lunar": a night field, moonlit type, one blue accent.
   - Difficulty is drawn as moon phases: crescent, half, full.
 - **Writeups:** each one has a file listing beside the article. The contents rail is gone.
 - **Shortcuts:** `/` or `⌘K` opens jump-search. On `/writeups/`, `/` focuses the filter instead.
+- **Full-text search:** both searches also look inside writeup and post text, through the [Pagefind](https://pagefind.app) index built after `astro build` (`src/lib/fulltext.ts`). Only article bodies are indexed (`data-pagefind-body` in `Article.astro`). There is no index under `npm run dev`, so text matches only show in a build or preview.
 
 
 All URLs from the previous version of the site still work, including `/writeups/search.json`, `/blog/search.json` and `/intel/data.json`.

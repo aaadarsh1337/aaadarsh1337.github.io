@@ -5,7 +5,7 @@
   "scripts": {
     "content": "node scripts/sync-content.mjs",
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "astro build && pagefind --site dist",
     "preview": "astro preview"
   },
   "dependencies": {
@@ -29,7 +29,8 @@
   },
   "devDependencies": {
     "@types/hast": "3.0.4",
-    "@types/node": "22.18.0"
+    "@types/node": "22.18.0",
+    "pagefind": "1.5.2"
   },
   "engines": {
     "node": ">=22.12"

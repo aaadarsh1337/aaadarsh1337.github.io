@@ -53,6 +53,7 @@ jobs:
           test -f dist/blog/search.json
           test -f dist/intel/data.json
           test -f dist/assets/resume.pdf
+          test -f dist/pagefind/pagefind.js   # full-text search index
           # The CSP allows same-origin script files plus one hashed inline snippet
           # (the theme). Fail if any page grows another inline or remote script.
           node -e '

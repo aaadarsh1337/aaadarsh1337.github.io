@@ -45,10 +45,12 @@ const items = [
   .pal input::placeholder { color: var(--faint); }
   .pal input::-webkit-search-cancel-button { display: none; }
   .pal__list { list-style: none; max-height: min(24rem, 55vh); overflow-y: auto; padding: var(--s2); }
-  .pal__list :global(li) { display: flex; align-items: baseline; gap: var(--s3); padding: .6rem var(--s3); border-radius: 6px; cursor: pointer; }
+  .pal__list :global(li) { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--s3); padding: .6rem var(--s3); border-radius: 6px; cursor: pointer; }
   .pal__list :global(li[aria-selected="true"]) { background: var(--bg-3); }
   .pal__list :global(.pal__t) { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 400 var(--t-small)/1.3 var(--sans); }
   .pal__list :global(.pal__k) { font: 400 .75rem/1 var(--sans); color: var(--faint); }
+  .pal__list :global(.pal__x) { flex-basis: 100%; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; font: 400 .8125rem/1.45 var(--sans); color: var(--fg-2); }
+  .pal__list :global(.pal__x mark) { background: none; color: var(--blue); font-weight: 600; }
   .pal__list :global(.pal__empty) { cursor: default; color: var(--muted); font: 400 var(--t-meta)/1.4 var(--sans); }
   .pal__list :global(.pal__love) { cursor: default; padding: var(--s5) var(--s3); font: 500 1.125rem/1.5 var(--display); color: var(--lily); }
   .pal__hint { display: flex; flex-wrap: wrap; gap: var(--s4); padding: var(--s3) var(--s4); background: var(--bg-1); color: var(--fg-2); font-size: var(--t-small); }
@@ -56,7 +58,8 @@ const items = [
 
 <script>
   import { LOVE_NOTE, isLove } from "../lib/love";
-  type Item = { t: string; u: string; k: string; h?: string };
+  import { fulltext, excerptNodes } from "../lib/fulltext";
+  type Item = { t: string; u: string; k: string; h?: string; x?: string };
   const dialog = document.querySelector<HTMLDialogElement>("dialog.pal")!;
   const input = dialog.querySelector("input")!;
   const list = dialog.querySelector<HTMLUListElement>(".pal__list")!;
@@ -80,8 +83,10 @@ const items = [
     return s;
   }
 
+  let asked = 0;
   function draw() {
     const q = input.value.trim().toLowerCase();
+    const ask = ++asked;
     if (isLove(q)) {
       shown = [];
       list.replaceChildren(Object.assign(document.createElement("li"), { className: "pal__love", textContent: LOVE_NOTE }));
@@ -90,6 +95,19 @@ const items = [
     }
     shown = items.map((it) => [it, score(it, q)] as const).filter(([, s]) => s > 0)
       .sort((a, b) => b[1] - a[1]).slice(0, 12).map(([it]) => it);
+    render();
+    // then look inside the writeups and posts themselves
+    if (q.length >= 3) fulltext(q, 6).then((hits) => {
+      if (ask !== asked || !hits.length) return;
+      const have = new Set(shown.map((it) => it.u));
+      const extra = hits.filter((h) => !have.has(h.url))
+        .map((h) => ({ t: h.meta.title ?? h.url, u: h.url, k: `in ${h.meta.kind ?? "text"}`, x: h.excerpt }));
+      if (!extra.length) return;
+      shown = [...shown.slice(0, 6), ...extra];
+      render();
+    });
+  }
+  function render() {
     active = Math.min(active, Math.max(shown.length - 1, 0));
     list.replaceChildren(...(shown.length ? shown.map((it, i) => {
       const li = document.createElement("li");
@@ -99,6 +117,7 @@ const items = [
       const t = document.createElement("span"); t.className = "pal__t"; t.textContent = it.t;
       const k = document.createElement("span"); k.className = "pal__k"; k.textContent = it.k;
       li.append(t, k);
+      if (it.x) { const x = document.createElement("span"); x.className = "pal__x"; x.append(...excerptNodes(it.x)); li.append(x); }
       li.addEventListener("mousemove", () => { if (active !== i) { active = i; mark(); } });
       li.addEventListener("click", () => go(it));
       return li;
