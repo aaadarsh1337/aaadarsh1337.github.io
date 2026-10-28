@@ -143,10 +143,10 @@ const sheetNav = [{ id: "home", href: "/", label: "Home" }, ...nav];
       position: sticky; top: 0; z-index: 20;
       grid-template-columns: 1fr auto; padding-block: var(--s3);
       padding-top: calc(var(--s3) + env(safe-area-inset-top, 0px));
-      background: var(--bg);
-      transition: transform .3s var(--ease), box-shadow .3s;
+      background: transparent;
+      transition: transform .3s var(--ease), box-shadow .3s, background-color .3s;
     }
-    .bar.is-scrolled { box-shadow: 0 1px 0 var(--rule), 0 10px 30px -18px rgb(0 0 0 / .6); }
+    .bar.is-scrolled { background: var(--bg); box-shadow: 0 1px 0 var(--rule), 0 10px 30px -18px rgb(0 0 0 / .6); }
     .bar.is-hidden { transform: translateY(-110%); }
     .links, .bar__cta, .mark__phase { display: none; }
     .menu-btn { display: inline-block; }

@@ -35,20 +35,20 @@ const facts = [
 // Seeded so every build draws the same stars.
 let seed = 1337;
 const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
-const stars = Array.from({ length: 16 }, (_, i) => ({
-  x: (rnd() * 1000).toFixed(1),
-  y: (rnd() ** 1.3 * 150).toFixed(1),     // the sky above the name, denser near the top
-  r: (0.9 + rnd() * 1.1).toFixed(2),
-  o: (0.25 + rnd() * 0.4).toFixed(2),
-  tw: i % 3 === 0,                        // a third of them twinkle
-  d: (rnd() * 6).toFixed(1),
-}));
+// Positions are percentages of a band above the hero text. Its lower half sits beside
+// the name on wide screens, so stars there keep to the right of it.
+const stars: { x: number; y: number; s: number; o: number; tw: boolean; d: number }[] = [];
+while (stars.length < 16) {
+  const x = rnd() * 100, y = rnd() ** 1.2 * 100;
+  if (y > 45 && x < 64) continue;
+  stars.push({ x, y, s: 1.6 + rnd() * 1.8, o: 0.25 + rnd() * 0.4, tw: stars.length % 3 === 0, d: rnd() * 6 });
+}
 const rest = (detail: string) => detail.replace(/^404squad\s*-\s*#\d+\s*/, "").replace(/^Overall$/, "overall");
 ---
 <section class="b-hero">
-  <svg class="b-stars" viewBox="0 0 1000 560" preserveAspectRatio="xMidYMin slice" aria-hidden="true">
-    {stars.map((s) => <circle cx={s.x} cy={s.y} r={s.r} style={`--o:${s.o};--d:${s.d}s`} class:list={{ tw: s.tw }} />)}
-  </svg>
+  <div class="b-stars" aria-hidden="true">
+    {stars.map((s) => <i class:list={{ tw: s.tw }} style={`left:${s.x.toFixed(1)}%;top:${s.y.toFixed(1)}%;--s:${s.s.toFixed(1)}px;--o:${s.o.toFixed(2)};--d:${s.d.toFixed(1)}s`} />)}
+  </div>
   <div class="b-text">
     <p class="b-tonight" data-moon-line>{tonightLine(tonight)}</p>
     <h1 class="b-name">{p.name}</h1>
@@ -121,9 +121,9 @@ const rest = (detail: string) => detail.replace(/^404squad\s*-\s*#\d+\s*/, "").r
 
 <style>
   .b-hero { position: relative; isolation: isolate; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 17rem); gap: var(--s8); align-items: center; padding-top: var(--s7); }
-  .b-stars { display: none; position: absolute; z-index: -1; left: 0; right: 0; top: calc(-1 * var(--s8)); width: 100%; height: calc(100% + var(--s8)); pointer-events: none; }
+  .b-stars { display: none; position: absolute; z-index: -1; left: 0; right: 0; top: calc(-1 * var(--s8)); height: calc(var(--s8) + 9rem); pointer-events: none; }
   :global(html[data-night]:not([data-theme="dawn"])) .b-stars { display: block; animation: stars-in 2.4s var(--ease) both; }
-  .b-stars circle { fill: var(--moon); opacity: var(--o); }
+  .b-stars i { position: absolute; width: var(--s); height: var(--s); border-radius: 50%; background: var(--moon); opacity: var(--o); }
   .b-stars .tw { animation: twinkle 5.5s ease-in-out var(--d) infinite; }
   @keyframes stars-in { from { opacity: 0; } }
   @keyframes twinkle { 0%, 100% { opacity: var(--o); } 50% { opacity: calc(var(--o) * .25); } }
@@ -190,7 +190,9 @@ const rest = (detail: string) => detail.replace(/^404squad\s*-\s*#\d+\s*/, "").r
     .th__grid, .res { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
     .th__cmd { grid-column: 1 / -1; }
   }
+  @media (max-width: 860px) { .b-stars { top: calc(-1 * var(--s6)); height: calc(var(--s6) + 9rem); } }   /* the sticky bar sits closer above */
   @media (max-width: 760px) {
+    :global(html[data-night]:not([data-theme="dawn"])) .b-stars { display: none; }   /* phones have no open sky above the name; the moonlight is enough */
     .b-hero { grid-template-columns: minmax(0, 1fr) 7rem; gap: var(--s5); padding-top: var(--s4); align-items: start; }
     .b-text { display: contents; }
     .b-tonight, .b-name { grid-column: 1; }

@@ -23,6 +23,23 @@ body {
   text-rendering: optimizeLegibility;
 }
 [hidden] { display: none !important; }
+
+/* moonlight: the corner moon lights the top of every page, fading out within the
+   first screen and never reaching the reading column's depth. Brighter on full
+   moon nights, nearly gone at new moon; a warm morning light in dawn. */
+body::before {
+  content: ""; position: absolute; z-index: -1; top: 0; left: 0; right: 0;
+  height: min(100svh, 60rem); pointer-events: none;
+  --at: calc(var(--margin) + 17px) 44px;
+  background:
+    radial-gradient(circle 28rem at var(--at), var(--moonlight-core), transparent 70%),
+    radial-gradient(ellipse 85% 100% at var(--at), var(--moonlight), transparent 72%);
+}
+:root { --k: 1; --moonlight: rgb(143 179 232 / calc(.055 * var(--k))); --moonlight-core: rgb(236 232 222 / calc(.05 * var(--k))); }
+:root[data-theme="dawn"] { --moonlight: rgb(230 196 140 / calc(.16 * var(--k))); --moonlight-core: rgb(255 246 228 / calc(.5 * var(--k))); }
+:root[data-lunar="full"] { --k: 1.9; }
+:root[data-lunar="new"] { --k: .25; }
+@media (max-width: 860px) { body::before { --at: calc(var(--margin) + 17px) calc(36px + env(safe-area-inset-top, 0px)); height: 70svh; } }
 html.sheet-open { overflow: hidden; }
 img, svg { display: block; max-width: 100%; }
 img { height: auto; }
