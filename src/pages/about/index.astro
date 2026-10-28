@@ -12,14 +12,8 @@ const identity = [
   ["name", p.name], ["handle", p.handle], ["also", p.aliases.join(", ")], ["based in", p.location],
   ["focus", p.focus], ["team", `${p.team} · ${p.teamRole}`],
 ];
-// A placement and its certificate are the same event: pair them, list the rest separately.
-const norm = (s: string) => s.toLowerCase().replace(/\b20\d\d\b/g, "").replace(/[^a-z0-9]/g, "");
-const certFor = (title: string) => site.certificates.find((c) => norm(title).startsWith(norm(c.name)) || norm(title) === norm(c.name));
-const paired = new Set(site.achievements.map((x) => certFor(x.title)).filter(Boolean));
-const otherCerts = site.certificates.filter((c) => !paired.has(c));
-const results = site.achievements.map((a) => ({ ...a, cert: certFor(a.title), rank: a.detail.match(/#\d+/)?.[0] ?? "", rest: a.detail.replace(/^404squad\s*-\s*#\d+\s*/, "").replace(/^Overall$/, "overall") }));
 ---
-<Base title="About" description={`${p.name} — skills, CTF results with ${p.team}, certificates, repositories and contact.`} section="about">
+<Base title="About" description={`${p.name} — who I am, what I work with, repositories and contact.`} section="about">
   <PageHead crumbs={[{ label: "about" }]} title="About" />
 
   <section class="who">
@@ -34,6 +28,7 @@ const results = site.achievements.map((a) => ({ ...a, cert: certFor(a.title), ra
     </dl>
     <p class="who__links">
       <a class="btn btn--primary" href={p.resume}>Résumé (PDF) <span class="arr">↗</span></a>
+      <a class="btn" href="/achievements/">Achievements <span class="arr">→</span></a>
       <a class="btn" href="#contact">Contact</a>
     </p>
   </section>
@@ -44,36 +39,6 @@ const results = site.achievements.map((a) => ({ ...a, cert: certFor(a.title), ra
   </section>
 
   <div class="sec"><Toolbox /></div>
-
-  <section class="sec" id="results" aria-labelledby="h-results">
-    <h2 class="label" id="h-results">CTF results with {p.team}</h2>
-    <ol class="table table--results">
-      {results.map((r) => (
-        <li>
-          <span class="rank">{r.rank}</span>
-          <span class="t">{r.title}<span class="d">{r.rest}</span></span>
-          <span class="links">
-            <a class="v" href={r.url} rel="external">Proof <span aria-hidden="true">↗</span><span class="visually-hidden"> for {r.title}</span></a>
-            {r.cert && <a class="v v--cert" href={r.cert.url} rel="external">Certificate <span aria-hidden="true">↗</span><span class="visually-hidden"> for {r.title}, issued by {r.cert.issuer}</span></a>}
-          </span>
-        </li>
-      ))}
-    </ol>
-  </section>
-
-  <section class="sec" id="certificates" aria-labelledby="h-certs">
-    <h2 class="label" id="h-certs">Certificates</h2>
-    <ol class="table table--certs">
-      {otherCerts.map((c) => (
-        <li>
-          <span class="yr">{c.date}</span>
-          <span class="t">{c.name}<span class="d">{c.issuer}</span></span>
-          <span class="links"><a class="v" href={c.url} rel="external">Verify <span aria-hidden="true">↗</span><span class="visually-hidden"> {c.name}</span></a></span>
-        </li>
-      ))}
-    </ol>
-    <p class="note">Every certificate, including the CTF ones above, is mirrored in <a class="link" href="https://github.com/aaadarsh1337/cybersecurity-achievements" rel="external">cybersecurity-achievements</a> in case an original link goes away.</p>
-  </section>
 
   <section class="sec" id="repositories" aria-labelledby="h-repos">
     <h2 class="label" id="h-repos">Repositories <a href={`https://github.com/${site.github.user}?tab=repositories`} rel="external" class="btn btn--sm">All on GitHub <span class="arr arr--out">↗</span></a></h2>
@@ -122,21 +87,7 @@ const results = site.achievements.map((a) => ({ ...a, cert: certFor(a.title), ra
   .sec { margin-top: var(--gap); scroll-margin-top: 6rem; }
   .story__text { margin-top: var(--s5); max-width: 40rem; display: grid; gap: 1.1em; font: 400 clamp(1rem, .92rem + .3vw, 1.125rem)/1.8 var(--voice); letter-spacing: -.01em; color: var(--fg); text-wrap: pretty; }
   .sec > .label { margin-bottom: 0; }
-  .n { color: var(--fg-2); }
-  .note { margin-top: var(--s5); font-size: var(--t-body); color: var(--fg-2); }
 
-
-  .table { list-style: none; margin-top: var(--s5); display: grid; gap: var(--s2); }
-  .table li { display: grid; grid-template-columns: 4rem minmax(0, 1fr) auto; gap: var(--s4); align-items: center; padding: var(--s4) var(--s5); background: var(--bg-1); }
-  .t { display: grid; gap: 2px; }
-  .links { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: var(--s2); }
-  .rank { font: 400 var(--t-lede)/1 var(--sans); letter-spacing: -.02em; color: var(--bone); font-variant-numeric: tabular-nums; }
-  .t { font-size: var(--t-body); color: var(--bone); }
-  .d { font-size: var(--t-small); color: var(--fg-2); }
-  .v { display: inline-flex; align-items: center; min-height: 2.5rem; padding: 0 .9rem; border-radius: 999px; background: var(--bg-2); font-size: var(--t-small); color: var(--sage); white-space: nowrap; transition: background-color .2s, color .2s; }
-  .v--cert { color: var(--fg); }
-  .v:hover { background: var(--bg-3); color: var(--bone); }
-  .yr { font-size: var(--t-body); color: var(--fg-2); font-variant-numeric: tabular-nums; }
 
   .repos { list-style: none; margin-top: var(--s5); display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s4); }
   .repos a { position: relative; display: grid; gap: var(--s2); height: 100%; padding: var(--s5); background: var(--bg-1); transition: background-color .2s; }
@@ -166,8 +117,6 @@ const results = site.achievements.map((a) => ({ ...a, cert: certFor(a.title), ra
     .spec { padding: var(--s2) var(--s4); }
     .spec div { grid-template-columns: 5.5rem minmax(0, 1fr); gap: var(--s3); padding: .55rem 0; }
     .profiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .table li { grid-template-columns: 3rem minmax(0, 1fr); row-gap: var(--s3); padding: var(--s4); }
-    .links { grid-column: 2; justify-content: flex-start; }
   }
 </style>
 

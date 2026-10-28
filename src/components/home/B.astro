@@ -56,6 +56,7 @@ const rest = (detail: string) => detail.replace(/^404squad\s*-\s*#\d+\s*/, "").r
     <p class="b-lede">{p.bio[0]}</p>
     <p class="b-act">
       <a class="btn btn--primary" href="/writeups/">Read the writeups <span class="arr">→</span></a>
+      <a class="btn" href="/blog/">Blog</a>
       <a class="btn" href="/about/">About me</a>
     </p>
   </div>
@@ -70,8 +71,7 @@ const rest = (detail: string) => detail.replace(/^404squad\s*-\s*#\d+\s*/, "").r
 
 <section class="b-sec">
   <h2 class="b-h">Latest</h2>
-  <Latest items={d.latest.slice(0, 6)} />
-  <p class="b-more"><a class="btn" href="/writeups/">All {d.writeups.length} writeups <span class="arr">→</span></a><a class="btn" href="/blog/">Blog <span class="arr">→</span></a></p>
+  <Latest items={d.latest.slice(0, 3)} />
 </section>
 
 <section class="b-sec th" aria-labelledby="th-h">
@@ -116,7 +116,7 @@ const rest = (detail: string) => detail.replace(/^404squad\s*-\s*#\d+\s*/, "").r
       <li><a href={r.url} rel="external"><span class="res__n">#{r.rank}</span><span class="res__t">{r.title}</span><span class="res__d">{rest(r.detail)}</span><span class="cue cue--corner" aria-hidden="true">↗</span></a></li>
     ))}
   </ol>
-  <p class="b-more"><a class="btn" href="/about/#results">Proof and certificates <span class="arr">→</span></a></p>
+  <p class="b-more"><a class="btn" href="/achievements/">All achievements <span class="arr">→</span></a></p>
 </section>
 
 <style>
@@ -135,6 +135,7 @@ const rest = (detail: string) => detail.replace(/^404squad\s*-\s*#\d+\s*/, "").r
   .b-tagdot { color: var(--muted); }
   .b-lede { margin-top: var(--s6); max-width: 36rem; font: 400 clamp(1rem, .9rem + .4vw, 1.1875rem)/1.75 var(--voice); letter-spacing: -.01em; color: var(--fg); text-wrap: pretty; }
   .b-act { margin-top: var(--s6); display: flex; flex-wrap: wrap; gap: var(--s3); }
+  @media (max-width: 440px) { .b-act { gap: var(--s2); } .b-act .btn { padding: 0 .65rem; } }   /* all three on one row on phones */
   .b-print { margin: 0; padding: var(--s3); background: color-mix(in srgb, var(--blue) 10%, var(--bg-2)); }
   .b-print img { width: 100%; aspect-ratio: 288 / 512; object-fit: cover; }
   .b-stats { margin: var(--s7) 0 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--s3); }

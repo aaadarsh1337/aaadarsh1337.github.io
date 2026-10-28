@@ -15,6 +15,7 @@ const nav = [
   { id: "writeups", href: "/writeups/", label: "Writeups", n: writeups.length },
   { id: "blog", href: "/blog/", label: "Blog", n: posts.length },
   { id: "intel", href: "/intel/", label: "Threat Harbour" },
+  { id: "achievements", href: "/achievements/", label: "Achievements" },
   { id: "about", href: "/about/", label: "About" },
 ];
 const sheetNav = [{ id: "home", href: "/", label: "Home" }, ...nav];
@@ -140,6 +141,14 @@ const sheetNav = [{ id: "home", href: "/", label: "Home" }, ...nav];
   .bar__cta { margin-left: var(--s2); height: 2.5rem; }
   .menu-btn { display: none; height: 2.5rem; padding: 0 .9rem; margin-left: var(--s1); border: 0; border-radius: 999px; background: var(--bg-2); color: var(--bone); font: 500 var(--t-small)/1 var(--sans); cursor: pointer; transition: background-color .2s, transform .15s; }
   .menu-btn:active { transform: scale(.95); }
+
+  .bar :is(a, span, button) { white-space: nowrap; }
+  /* small laptops and tablets in landscape: five links fit once the phase label steps out
+     (tonight's phase is still one click away, in the moon's popover) */
+  @media (min-width: 861px) and (max-width: 1040px) {
+    .mark__phase { display: none; }
+    .links { gap: var(--s4); }
+  }
 
   /* phones: a sticky bar that steps aside while you read and returns when you scroll up */
   @media (max-width: 860px) {

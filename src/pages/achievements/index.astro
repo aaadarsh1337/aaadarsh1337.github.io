@@ -1,0 +1,202 @@
+---
+// Achievements: CTF placements with the team, the certificates that aren't tied to
+// a placement, and the profiles where the record lives. Everything comes from config.ts.
+import Base from "../../layouts/Base.astro";
+import PageHead from "../../components/PageHead.astro";
+import Moon from "../../components/Moon.astro";
+import { site } from "../../config";
+
+const p = site.profile;
+// A placement and its certificate are the same event: the certificate sits in the
+// placement's proof folder, so only the certificates without a placement get cards.
+const norm = (s: string) => s.toLowerCase().replace(/\b20\d\d\b/g, "").replace(/[^a-z0-9]/g, "");
+const certFor = (title: string) => site.certificates.find((c) => norm(title).startsWith(norm(c.name)) || norm(title) === norm(c.name));
+const paired = new Set(site.achievements.map((x) => certFor(x.title)).filter(Boolean));
+const otherCerts = site.certificates.filter((c) => !paired.has(c));
+
+// The fuller the moon, the higher the finish: #1 is full, #100 a thin crescent.
+const lit = (rank: number) => Math.min(1, Math.max(0.06, 1 - Math.log(rank) / Math.log(100)));
+const phaseFor = (rank: number) => Math.acos(1 - 2 * lit(rank)) / (2 * Math.PI);   // waxing phase with that illumination
+const results = site.achievements
+  .map((a) => {
+    const rank = Number(a.detail.match(/#(\d+)/)?.[1] ?? 999);
+    return { ...a, rank, rest: a.detail.replace(/^404squad\s*-\s*#\d+\s*/, "").replace(/^Overall$/, "overall"), phase: phaseFor(rank) };
+  })
+  .sort((a, b) => a.rank - b.rank);
+const best = results[0];
+const topTen = results.filter((r) => r.rank <= 10).length;
+
+const statFor = (label: string) => label === "TryHackMe" ? site.stats.map((s) => `${s.value} ${s.label.replace(/^TryHackMe |^THM /, "")}`).join(" · ") : undefined;
+const profiles = site.links.filter((l) => ["TryHackMe", "CTFtime", "pwn.college", "PicoCTF"].includes(l.label)).map((l) => ({ ...l, stat: statFor(l.label) }));
+---
+<Base title="Achievements" description={`${p.name}'s CTF placements with ${p.team} (best: #${best.rank} at ${best.title}) and certificates, each linked to its proof.`} section="achievements">
+  <PageHead crumbs={[{ label: "achievements" }]} title="Achievements"
+    lede={`CTF placements with ${p.team} and the certificates I've earned. Every one links to its proof.`} />
+
+  <section class="best" aria-labelledby="h-best">
+    <div class="best__moon" aria-hidden="true">
+      <Moon phase={0.5} size={220} halo label="" />
+      <span class="best__rank">#{best.rank}</span>
+    </div>
+    <div class="best__text">
+      <h2 class="best__k" id="h-best">Best finish</h2>
+      <p class="best__t">{best.title}</p>
+      <p class="best__d">#{best.rank} {best.rest}, with {p.team}</p>
+      <p class="best__go"><a class="btn btn--primary" href={best.url} rel="external">See the proof <span class="arr arr--out">↗</span></a></p>
+      <dl class="best__sum">
+        <div><dt>CTF placements</dt><dd>{results.length}</dd></div>
+        <div><dt>top-10 finishes</dt><dd>{topTen}</dd></div>
+        <div><dt>certificates</dt><dd>{site.certificates.length}</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="sec" id="results" aria-labelledby="h-results">
+    <h2 class="label" id="h-results">CTF results with {p.team}</h2>
+    <p class="hint"><Moon phase={0.5} size={14} label="" /><Moon phase={0.25} size={14} label="" /><Moon phase={0.08} size={14} label="" /> The fuller the moon, the higher the finish.</p>
+    <ol class="res">
+      {results.map((r) => (
+        <li>
+          <a href={r.url} rel="external">
+            <span class="res__top">
+              <span class="res__rank">#{r.rank}</span>
+              <Moon phase={r.phase} size={40} class="res__moon" label="" />
+            </span>
+            <span class="res__t">{r.title}</span>
+            <span class="res__d">{r.rest}</span>
+            <span class="res__go">Proof <span aria-hidden="true">↗</span><span class="visually-hidden"> and certificate for {r.title}</span></span>
+          </a>
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  <section class="sec" id="certificates" aria-labelledby="h-certs">
+    <h2 class="label" id="h-certs">Certificates</h2>
+    <ul class="certs">
+      {otherCerts.map((c) => (
+        <li>
+          <a href={c.url} rel="external">
+            <span class="cert__yr">{c.date}</span>
+            <span class="cert__t">{c.name}</span>
+            <span class="cert__by">{c.issuer}</span>
+            <span class="cert__go">Verify <span aria-hidden="true">↗</span><span class="visually-hidden"> {c.name}</span></span>
+          </a>
+        </li>
+      ))}
+    </ul>
+    <p class="note">Certificates for the CTF results are inside each Proof folder. Everything is mirrored in <a class="link" href="https://github.com/aaadarsh1337/cybersecurity-achievements" rel="external">cybersecurity-achievements</a> in case an original link goes away.</p>
+  </section>
+
+  <section class="sec" id="profiles" aria-labelledby="h-profiles">
+    <h2 class="label" id="h-profiles">Where the record lives</h2>
+    <ul class="profiles">
+      {profiles.map((l) => (
+        <li>
+          <a href={l.url} rel="external">
+            <span class="pr__name">{l.label}</span>
+            <span class="pr__stat">{l.stat ?? l.detail}</span>
+            <span class="cue cue--corner" aria-hidden="true">↗</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
+</Base>
+
+<style>
+  .sec { margin-top: var(--gap); scroll-margin-top: 6rem; }
+
+  /* ---------- best finish: the rank carved into a full moon ---------- */
+  .best {
+    margin-top: var(--s7); display: grid; grid-template-columns: auto minmax(0, 1fr); gap: var(--s8); align-items: center;
+    padding: var(--s7) var(--s7) var(--s7) var(--s8); border-radius: 10px;
+    background:
+      radial-gradient(circle 26rem at 9rem 50%, color-mix(in srgb, var(--moon) 9%, transparent), transparent 70%),
+      var(--bg-1);
+  }
+  .best__moon { position: relative; display: grid; place-items: center; }
+  .best__moon :global(.moon) { filter: drop-shadow(0 0 30px color-mix(in srgb, var(--moon) 30%, transparent)) drop-shadow(0 0 80px color-mix(in srgb, var(--moon) 12%, transparent)); }
+  .best__rank {
+    position: absolute; inset: 0; display: grid; place-items: center; padding-bottom: .08em;
+    font: 600 4.75rem/1 var(--display); letter-spacing: -.03em;
+    color: color-mix(in srgb, var(--moon) 30%, #1a1512);   /* carved: dark ink in the moon's own tone */
+  }
+  .best__k { font: 400 var(--t-small)/1.4 var(--sans); letter-spacing: .02em; color: var(--blue); }
+  .best__t { margin-top: var(--s3); font: 500 clamp(1.75rem, 1.2rem + 1.8vw, 2.5rem)/1.15 var(--display); letter-spacing: -.015em; color: var(--bone); text-wrap: balance; }
+  .best__d { margin-top: var(--s2); font-size: var(--t-body); color: var(--fg-2); }
+  .best__go { margin-top: var(--s5); }
+  .best__sum { margin: var(--s6) 0 0; display: flex; flex-wrap: wrap; gap: var(--s3) var(--s7); }
+  .best__sum div { display: flex; flex-direction: column-reverse; justify-content: flex-end; gap: 2px; }   /* numbers line up on top */
+  .best__sum dt { font-size: var(--t-small); color: var(--fg-2); }
+  .best__sum dd { margin: 0; font: 400 2rem/1 var(--sans); letter-spacing: -.03em; color: var(--bone); font-variant-numeric: tabular-nums; }
+
+  /* ---------- results: one card per placement, its moon as full as the finish ---------- */
+  .hint { margin-top: var(--s3); display: flex; align-items: center; gap: .35rem; font-size: var(--t-small); color: var(--fg-2); }
+  .hint :global(.moon:last-of-type) { margin-right: .3rem; }
+  .res { list-style: none; margin-top: var(--s5); display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s3); }
+  .res a {
+    position: relative; display: grid; grid-template-rows: auto auto 1fr auto; height: 100%;
+    padding: var(--s5); border-radius: 8px; overflow: hidden; background: var(--bg-1);
+    transition: background-color .25s var(--ease), translate .25s var(--ease);
+  }
+  .res a::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: var(--blue); opacity: 0; transition: opacity .2s; }
+  .res a:hover { background: var(--bg-2); translate: 0 -2px; }
+  .res a:hover::before { opacity: 1; }
+  .res a:active { translate: 0 0; background: var(--bg-3); }
+  .res__top { display: flex; align-items: center; justify-content: space-between; gap: var(--s4); }
+  .res__rank { font: 500 2.75rem/1 var(--display); letter-spacing: -.03em; color: var(--bone); font-variant-numeric: tabular-nums; }
+  .res__top :global(.res__moon) { transition: filter .3s var(--ease); }
+  .res a:hover :global(.res__moon) { filter: drop-shadow(0 0 10px color-mix(in srgb, var(--moon) 45%, transparent)); }
+  .res__t { margin-top: var(--s5); font-size: var(--t-body); line-height: 1.35; color: var(--bone); }
+  .res__d { margin-top: 2px; font-size: var(--t-small); line-height: 1.45; color: var(--fg-2); }
+  .res__go { margin-top: var(--s5); justify-self: start; display: inline-flex; align-items: center; gap: .35em; height: 2rem; padding: 0 .8rem; border-radius: 999px; background: var(--bg-2); font-size: var(--t-small); color: var(--blue); transition: background-color .2s; }
+  .res a:hover .res__go { background: var(--bg-3); }
+  .res li:first-child .res__rank { color: var(--blue); }
+  /* dawn: a white moon vanishes on a light card, so these are drawn in ink */
+  :global(:root[data-theme="dawn"]) :is(.res, .hint) :global(.moon) { --moon-lit: var(--blue); --moon-dark: var(--bg-3); --moon-edge: color-mix(in srgb, var(--blue) 35%, transparent); }
+
+  /* ---------- certificates: framed like the paper they're printed on ---------- */
+  .certs { list-style: none; margin-top: var(--s5); display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s3); }
+  .certs a {
+    position: relative; display: grid; grid-template-rows: auto auto 1fr auto; height: 100%; padding: var(--s6) var(--s5) var(--s5);
+    border-radius: 8px; background: var(--bg-1);
+    box-shadow: inset 0 0 0 7px var(--bg-1), inset 0 0 0 8px color-mix(in srgb, var(--fg) 13%, transparent);
+    transition: background-color .25s var(--ease), box-shadow .25s var(--ease), translate .25s var(--ease);
+  }
+  .certs a:hover { background: var(--bg-2); translate: 0 -2px; box-shadow: inset 0 0 0 7px var(--bg-2), inset 0 0 0 8px color-mix(in srgb, var(--blue) 45%, transparent); }
+  .cert__yr { font: 500 var(--t-small)/1 var(--sans); letter-spacing: .08em; color: var(--blue); font-variant-numeric: tabular-nums; }
+  .cert__t { margin-top: var(--s3); font: 500 var(--t-h3)/1.25 var(--display); color: var(--bone); text-wrap: balance; }
+  .cert__by { margin-top: var(--s1); font-size: var(--t-small); color: var(--fg-2); }
+  .cert__go { margin-top: var(--s5); font-size: var(--t-small); color: var(--fg-2); transition: color .2s; }
+  .certs a:hover .cert__go { color: var(--blue); }
+  .note { margin-top: var(--s5); max-width: 44rem; font-size: var(--t-body); line-height: 1.6; color: var(--fg-2); }
+
+  /* ---------- profiles ---------- */
+  .profiles { list-style: none; margin-top: var(--s5); display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--s3); }
+  .profiles a { position: relative; display: grid; gap: var(--s1); height: 100%; padding: var(--s5); border-radius: 8px; background: var(--bg-1); transition: background-color .2s; }
+  .profiles a:hover { background: var(--bg-2); }
+  .pr__name { font-size: var(--t-body); color: var(--bone); }
+  .pr__stat { font-size: var(--t-small); line-height: 1.45; color: var(--fg-2); }
+
+  @media (max-width: 960px) {
+    .res, .certs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .profiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 760px) {
+    .best { grid-template-columns: minmax(0, 1fr); justify-items: start; gap: var(--s6); padding: var(--s6) var(--s5); background: radial-gradient(circle 18rem at 50% 6rem, color-mix(in srgb, var(--moon) 9%, transparent), transparent 70%), var(--bg-1); }
+    .best__moon { justify-self: center; }
+    .best__moon :global(.moon) { width: 168px; height: 168px; }
+    .best__rank { font-size: 3.75rem; }
+    .certs { grid-template-columns: minmax(0, 1fr); }
+    .res { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s2); }   /* phones: two to a row keeps the list short */
+    .res a { padding: var(--s4); }
+    .res__rank { font-size: 2.25rem; }
+    .res__top :global(.res__moon) { width: 30px; height: 30px; }
+    .res__t { margin-top: var(--s4); font-size: var(--t-ui); }
+    .res__go { margin-top: var(--s4); }
+    .best__sum { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s4); width: 100%; }
+    .best__sum dd { font-size: 1.75rem; }
+  }
+  @media (max-width: 420px) { .profiles { grid-template-columns: minmax(0, 1fr); } }
+</style>

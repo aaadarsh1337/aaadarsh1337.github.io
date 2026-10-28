@@ -38,7 +38,7 @@ export const site = {
     ],
     // Phrases in the bio that become links (first occurrence only, text unchanged).
     bioLinks: [
-      { text: "404squad", href: "/about/#results" },
+      { text: "404squad", href: "/achievements/" },
       { text: "security projects of my own", href: "/intel/" },
       { text: "writeups", href: "/writeups/" },
     ],
