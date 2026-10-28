@@ -1,0 +1,30 @@
+---
+// The footer's hanko: 浪人 (rōnin, "wanderer": the masterless, wandering samurai),
+// carved white out of red ink. Outlines traced from Shippori Mincho ExtraBold,
+// so no Japanese font has to load.
+---
+<svg class="seal" viewBox="0 0 40 64" width="34" height="54" role="img" aria-label="Seal: 浪人, rōnin, the wanderer">
+  <title>浪人 · rōnin, the wanderer</title>
+  <defs>
+    <filter id="seal-ink" x="-8%" y="-8%" width="116%" height="116%">
+      <feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="7" result="n" />
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="1.4" />
+    </filter>
+    <mask id="seal-carve" maskUnits="userSpaceOnUse" x="0" y="0" width="40" height="64">
+      <rect width="40" height="64" fill="#fff" />
+      <g fill="#000">
+        <path transform="translate(6.75 27.82) scale(0.0265 -0.0265)" d="M766 732Q770 737 776 745Q783 753 788 757Q792 761 796 761Q802 761 828 742Q853 724 876 704Q898 684 898 677Q894 671 884 665Q873 659 859 656V341Q859 338 836 327Q889 285 910 266Q930 246 930 239Q930 233 918 233H896Q821 187 726 155Q815 78 967 35L965 25Q931 17 906 -10Q882 -36 871 -78Q803 -43 754 2Q704 46 667 105Q569 41 369 -61Q366 -70 359 -77Q352 -84 344 -86L279 52Q299 55 382 68V551Q382 677 369 756L501 704H562Q562 794 553 855Q633 838 664 828Q695 817 695 810Q695 806 688 801L671 790V704H743ZM128 826Q192 824 234 808Q275 792 294 769Q312 746 312 721Q312 697 296 680Q280 662 256 662Q237 662 219 673Q207 710 179 750Q151 791 121 819ZM110 207Q122 207 126 210Q131 213 139 228Q155 256 196 347Q237 438 342 676L358 672Q251 333 236 264Q221 204 221 173Q221 157 225 143Q229 129 237 106Q248 75 254 53Q259 31 259 -1Q259 -41 236 -66Q214 -90 177 -90Q158 -90 144 -78Q131 -65 126 -38Q136 23 136 79Q136 158 116 171Q97 185 66 187V207ZM752 545V675H488V545ZM52 608Q139 602 180 572Q221 542 221 504Q221 480 206 463Q190 446 167 446Q147 446 127 460Q119 496 96 535Q72 574 44 601ZM488 380H752V516H488ZM581 352H488V87Q607 110 658 120Q605 216 581 352ZM770 313H752V352H599Q631 248 701 178Q757 237 818 321Q786 313 770 313Z" />
+        <path transform="translate(6.75 55.82) scale(0.0265 -0.0265)" d="M473 826Q545 823 545 812Q545 808 535 801L517 790Q528 586 570 446Q611 306 704 207Q796 108 956 46L954 34Q911 26 884 -4Q857 -34 848 -83Q731 -18 661 80Q591 179 557 306Q523 433 510 605Q500 457 462 337Q423 217 328 107Q232 -3 62 -88L52 -74Q184 26 257 141Q330 256 358 374Q386 493 392 637L393 672Q393 760 381 839Z" />
+      </g>
+    </mask>
+  </defs>
+  <g filter="url(#seal-ink)">
+    <rect x="2" y="2" width="36" height="60" rx="3.5" fill="currentColor" mask="url(#seal-carve)" />
+  </g>
+</svg>
+
+<style>
+  /* slightly askew, as if stamped by hand; it straightens when you look at it */
+  .seal { flex: none; color: var(--lily); rotate: -5deg; opacity: .9; transition: rotate .4s var(--ease), scale .4s var(--ease); }
+  :global(.foot__who:hover) .seal { rotate: 0deg; scale: 1.06; }
+</style>

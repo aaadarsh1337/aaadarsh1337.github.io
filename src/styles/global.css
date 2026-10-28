@@ -95,11 +95,14 @@ a:hover .cue--corner { translate: 2px -2px; }
 .tier svg { width: .95em; height: .95em; flex: none; }
 
 /* ---------- headings: one voice everywhere ----------
-   Section headings share the name's serif and carry a small blue crescent;
-   page titles are set large in the same serif. */
+   Section headings share the name's serif and carry a small blue moon: the
+   whole disc faintly, its lit part in full. Down a page the moons wax, crescent to
+   gibbous (Base.astro sets each one's --moon-mask); without JS they rest at first quarter.
+   Page titles are set large in the same serif. */
 :root {
   --crescent: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M15.5 2.5a9.5 9.5 0 1 0 6 16.9A8 8 0 0 1 15.5 2.5z'/%3E%3C/svg%3E");
   --display: "Shippori Mincho", var(--sans);
+  --moon-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='11' fill-opacity='.26'/%3E%3Cpath d='M12 1A11 11 0 0 1 12 23A0 11 0 0 1 12 1Z'/%3E%3C/svg%3E");
   --voice: "JetBrains Mono Variable", ui-monospace, monospace;   /* the bio: in my own voice */
 }
 :is(.b-h, .label, .tb__h, .month__h, .prose h2) {
@@ -109,9 +112,9 @@ a:hover .cue--corner { translate: 2px -2px; }
 }
 :is(.b-h, .tb__h, .month__h, .prose h2, .label) { display: flex; align-items: baseline; gap: .5em; }
 :is(.b-h, .tb__h, .month__h, .prose h2, .label)::before {
-  content: ""; flex: none; width: .56em; height: .56em; translate: 0 -.04em;
+  content: ""; flex: none; width: .64em; height: .64em; translate: 0 -.01em;
   background: var(--blue);
-  -webkit-mask: var(--crescent) center / contain no-repeat; mask: var(--crescent) center / contain no-repeat;
+  -webkit-mask: var(--moon-mask) center / contain no-repeat; mask: var(--moon-mask) center / contain no-repeat;
 }
 .label > a { margin-left: auto; font-family: var(--sans); }
 .page-title { font: 500 clamp(3rem, 1.6rem + 5vw, 6rem)/1 var(--display); letter-spacing: -.02em; color: var(--bone); }
