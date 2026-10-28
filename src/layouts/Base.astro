@@ -94,14 +94,18 @@ const csp = [
 </html>
 
 <style>
+  /* short pages: keep the footer at the bottom of the screen */
+  :global(body) { display: flex; flex-direction: column; min-height: 100svh; }
+  .main { flex: 1 0 auto; }
   .skip { position: absolute; left: var(--s4); top: -4rem; z-index: 10; padding: var(--s2) var(--s4); background: var(--moon); color: #0b0e13; font: 500 var(--t-small)/1.4 var(--sans); }
   .skip:focus { top: var(--s4); }
   /* inner pages: one centred frame; the home page draws its own full-bleed rooms */
-  .main { display: block; width: min(100% - 2 * var(--margin), 64rem); margin-inline: auto; padding-block: var(--s8) var(--s9); outline: none; }
+  .main { display: block; width: min(100% - 2 * var(--margin), 64rem); margin-inline: auto; padding-block: var(--s8) 0; outline: none; }
   .main--wide { width: 100%; padding: 0; }
   .foot {
     display: grid; grid-template-columns: 1fr auto 1fr; align-items: baseline; gap: var(--s4) var(--s6);
-    padding: 30svh var(--margin) 30px;
+    margin-top: var(--gap); padding: var(--s6) var(--margin);
+    background: var(--bg-1);
     font-size: var(--t-small); color: var(--muted);
   }
   .foot nav { display: flex; gap: var(--s5); }
@@ -109,8 +113,8 @@ const csp = [
   .foot a:hover { color: var(--bone); }
   .foot__end { text-align: right; }
   @media (max-width: 860px) {
-    .main { padding-block: var(--s6) var(--s8); }
-    .foot { grid-template-columns: 1fr; gap: var(--s2); padding-top: 20svh; padding-bottom: 24px; font-size: .875rem; }
+    .main { padding-block: var(--s6) 0; }
+    .foot { grid-template-columns: 1fr; gap: var(--s2); padding-block: var(--s5); font-size: .875rem; }
     .foot nav { flex-wrap: wrap; gap: var(--s2) var(--s5); }
     .foot__end { text-align: left; }
   }

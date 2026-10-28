@@ -4,18 +4,22 @@ import Moon from "./Moon.astro";
 import { site } from "../config";
 import { moonPhase, nextPhase } from "../lib/moon";
 import { day } from "../lib/format";
+import { getWriteups } from "../lib/writeups";
+import { getPosts } from "../lib/blog";
 const tonight = moonPhase(new Date());
+const [writeups, posts] = await Promise.all([getWriteups(), getPosts()]);
 
 interface Props { section: string }
 const { section } = Astro.props;
 const nav = [
-  { id: "writeups", href: "/writeups/", label: "Writeups" },
-  { id: "blog", href: "/blog/", label: "Blog" },
+  { id: "writeups", href: "/writeups/", label: "Writeups", n: writeups.length },
+  { id: "blog", href: "/blog/", label: "Blog", n: posts.length },
   { id: "intel", href: "/intel/", label: "Threat Harbour" },
   { id: "about", href: "/about/", label: "About" },
 ];
+const sheetNav = [{ id: "home", href: "/", label: "Home" }, ...nav];
 ---
-<header class="bar">
+<header class="bar" data-bar>
   <div class="mark">
     <button class="mark__moonbtn" type="button" popovertarget="tonight" aria-label="Tonight's moon">
       <Moon live halo size={34} class="mark__moon" label="" />
@@ -42,15 +46,36 @@ const nav = [
     <button class="tool" type="button" data-palette-open aria-label="Search the site"><svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><circle cx="7" cy="7" r="4.6" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M10.4 10.4 14 14" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
     <button class="tool" type="button" data-theme-toggle aria-label="Switch between night and dawn"><svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><circle cx="8" cy="8" r="5.6" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 2.4a5.6 5.6 0 0 1 0 11.2Z" fill="currentColor"/></svg></button>
     <a class="btn btn--primary bar__cta" href={site.profile.resume}>Résumé</a>
-    <details class="menu">
-      <summary>Menu</summary>
-      <nav aria-label="Primary (menu)">
-        {nav.map((n) => <a href={n.href} aria-current={section === n.id ? "page" : undefined}>{n.label}</a>)}
-        <a href={site.profile.resume}>Résumé</a>
-      </nav>
-    </details>
+    <button class="menu-btn" type="button" data-sheet-open aria-haspopup="dialog">Menu</button>
   </div>
 </header>
+
+<dialog class="sheet" aria-label="Menu" data-sheet>
+  <div class="sheet__top">
+    <span class="sheet__mark"><Moon live size={28} label="" />{site.profile.name}</span>
+    <button class="sheet__close" type="button" data-sheet-close aria-label="Close menu">Close</button>
+  </div>
+  <nav class="sheet__nav" aria-label="Primary">
+    {sheetNav.map((n) => (
+      <a href={n.href} aria-current={section === n.id ? "page" : undefined}>
+        <span>{n.label}</span>{"n" in n && n.n !== undefined && <sup>{n.n}</sup>}
+      </a>
+    ))}
+    <a href={site.profile.resume}><span>Résumé</span><sup>pdf</sup></a>
+  </nav>
+  <div class="sheet__tonight">
+    <Moon live size={56} label="" />
+    <div>
+      <p class="sheet__k">Tonight</p>
+      <p class="sheet__phase"><span data-moon-name>{tonight.name}</span>, <span data-moon-lit>{Math.round(tonight.illumination * 100)}%</span> lit</p>
+      <p class="sheet__next">Next full moon <span data-moon-full>{day(nextPhase(0.5))}</span></p>
+    </div>
+  </div>
+  <div class="sheet__tools">
+    <button class="btn" type="button" data-sheet-search>Search</button>
+    <button class="btn" type="button" data-theme-toggle><span data-theme-name>Switch theme</span></button>
+  </div>
+</dialog>
 
 <style>
   .bar {
@@ -86,16 +111,56 @@ const nav = [
   .tool:hover { color: var(--bone); }
   .tool:active { transform: scale(.92); }
   .bar__cta { margin-left: var(--s2); height: 2.5rem; }
-  .menu { display: none; position: relative; }
-  .menu summary { list-style: none; cursor: pointer; padding: .55rem .2rem; color: var(--bone); }
-  .menu summary::-webkit-details-marker { display: none; }
-  .menu nav { position: absolute; right: 0; top: calc(100% + .5rem); display: grid; gap: .25rem; min-width: 12rem; padding: var(--s3); background: var(--bg-3); }
-  .menu nav a { padding: .6rem .5rem; font-size: 1.0625rem; }
+  .menu-btn { display: none; height: 2.5rem; padding: 0 .9rem; margin-left: var(--s1); border: 0; border-radius: 999px; background: var(--bg-2); color: var(--bone); font: 500 var(--t-small)/1 var(--sans); cursor: pointer; transition: background-color .2s, transform .15s; }
+  .menu-btn:active { transform: scale(.95); }
+
+  /* phones: a sticky bar that steps aside while you read and returns when you scroll up */
   @media (max-width: 860px) {
-    .bar { grid-template-columns: 1fr auto; padding-block: var(--s4); }
+    .bar {
+      position: sticky; top: 0; z-index: 20;
+      grid-template-columns: 1fr auto; padding-block: var(--s3);
+      padding-top: calc(var(--s3) + env(safe-area-inset-top, 0px));
+      background: var(--bg);
+      transition: transform .3s var(--ease), box-shadow .3s;
+    }
+    .bar.is-scrolled { box-shadow: 0 1px 0 var(--rule), 0 10px 30px -18px rgb(0 0 0 / .6); }
+    .bar.is-hidden { transform: translateY(-110%); }
     .links, .bar__cta, .mark__phase { display: none; }
-    .menu { display: block; }
+    .menu-btn { display: inline-block; }
   }
+
+  /* the menu sheet */
+  .sheet {
+    width: 100%; height: 100%; max-width: none; max-height: none; margin: 0; padding: 0;
+    border: 0; background: var(--bg); color: var(--fg);
+    padding: calc(var(--s3) + env(safe-area-inset-top, 0px)) var(--margin) calc(var(--s6) + env(safe-area-inset-bottom, 0px));
+    overflow-y: auto;
+  }
+  .sheet[open] { display: flex; flex-direction: column; animation: sheet-in .28s var(--ease); }
+  .sheet::backdrop { background: var(--bg); }
+  @keyframes sheet-in { from { opacity: 0; translate: 0 -10px; } }
+  .sheet__top { display: flex; align-items: center; justify-content: space-between; min-height: 3rem; }
+  .sheet__mark { display: inline-flex; align-items: center; gap: .7rem; font-weight: 500; color: var(--bone); }
+  .sheet__close { height: 2.5rem; padding: 0 .9rem; border: 0; border-radius: 999px; background: var(--bg-2); color: var(--bone); font: 500 var(--t-small)/1 var(--sans); cursor: pointer; }
+  .sheet__close:active { transform: scale(.95); }
+  .sheet__nav { margin-top: var(--s7); display: grid; }
+  .sheet__nav a { position: relative; display: flex; align-items: baseline; gap: .35em; padding: .55rem 0 .55rem 1.6rem; font: 500 clamp(2rem, 9vw, 2.75rem)/1.15 var(--display); letter-spacing: -.015em; color: var(--fg-2); transition: color .2s, translate .2s var(--ease); }
+  .sheet__nav a:active { translate: 4px 0; color: var(--bone); }
+  .sheet__nav a[aria-current="page"] { color: var(--bone); }
+  .sheet__nav a[aria-current="page"]::before {
+    content: ""; position: absolute; left: 0; top: 50%; width: .62em; height: .62em; translate: 0 -40%; font-size: 1.6rem;
+    background: var(--blue); -webkit-mask: var(--crescent) center / contain no-repeat; mask: var(--crescent) center / contain no-repeat;
+  }
+  .sheet__nav sup { font: 400 .875rem/1 var(--sans); letter-spacing: 0; color: var(--blue); }
+  .sheet__tonight { margin-top: auto; padding-top: var(--s7); display: flex; align-items: center; gap: var(--s5); }
+  .sheet__k { font-size: var(--t-small); color: var(--fg-2); }
+  .sheet__phase { margin-top: 2px; font: 500 1.375rem/1.2 var(--display); color: var(--bone); }
+  .sheet__phase span:first-child { text-transform: capitalize; }
+  .sheet__next { margin-top: 4px; font-size: var(--t-small); color: var(--muted); }
+  .sheet__tools { margin-top: var(--s6); display: flex; gap: var(--s3); }
+  .sheet__tools .btn { flex: 1; justify-content: center; height: 3rem; border-radius: 999px; }
+  @media (min-width: 861px) { .sheet { display: none !important; } }
+  @media (prefers-reduced-motion: reduce) { .bar { transition: none; } }
 </style>
 
 <script>
@@ -106,6 +171,45 @@ const nav = [
       if (next === "dawn") root.dataset.theme = "dawn"; else delete root.dataset.theme;
       try { localStorage.setItem("theme", next); } catch {}
     }));
+  const themeName = () => document.querySelectorAll<HTMLElement>("[data-theme-name]")
+    .forEach((el) => (el.textContent = root.dataset.theme === "dawn" ? "Switch to night" : "Switch to dawn"));
+  themeName();
+  document.querySelectorAll("[data-theme-toggle]").forEach((b) => b.addEventListener("click", () => setTimeout(themeName)));
+
+  // menu sheet
+  const sheet = document.querySelector<HTMLDialogElement>("[data-sheet]")!;
+  document.querySelector("[data-sheet-open]")?.addEventListener("click", () => { sheet.showModal(); root.classList.add("sheet-open"); });
+  const closeSheet = () => sheet.close();
+  sheet.addEventListener("close", () => root.classList.remove("sheet-open"));
+  sheet.querySelector("[data-sheet-close]")?.addEventListener("click", closeSheet);
+  sheet.querySelectorAll("a").forEach((a) => a.addEventListener("click", closeSheet));
+  sheet.querySelector("[data-sheet-search]")?.addEventListener("click", () => {
+    closeSheet();
+    document.querySelector<HTMLButtonElement>(".bar [data-palette-open]")?.click();
+  });
+
+  // phones: hide the bar while scrolling down, bring it back on any scroll up
+  const bar = document.querySelector<HTMLElement>("[data-bar]")!;
+  const small = matchMedia("(max-width: 860px)");
+  let lastY = scrollY, ticking = false;
+  addEventListener("scroll", () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => {
+      ticking = false;
+      const y = scrollY;
+      bar.classList.toggle("is-scrolled", y > 8);
+      if (!small.matches) { bar.classList.remove("is-hidden"); lastY = y; return; }
+      if (y > lastY + 6 && y > 120) {
+        bar.classList.add("is-hidden");
+        document.getElementById("tonight")?.hidePopover?.();
+      } else if (y < lastY - 6) bar.classList.remove("is-hidden");
+      lastY = y;
+    });
+  }, { passive: true });
+  // keyboard users always see where focus is
+  bar.addEventListener("focusin", () => bar.classList.remove("is-hidden"));
+
   // local time where Adarsh is
   const fmt = new Intl.DateTimeFormat("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: "Asia/Kolkata" });
   const tick = () => document.querySelectorAll<HTMLElement>("[data-local-time]").forEach((el) => (el.textContent = fmt.format(new Date())));

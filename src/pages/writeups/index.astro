@@ -109,10 +109,13 @@ const moonFor = { easy: 0.17, medium: 0.25, hard: 0.5 } as const;
   .list { margin-top: var(--gap); }
   .month + .month { margin-top: var(--gap); }
   .month__h { font: 400 var(--t-h2)/1.1 var(--sans); letter-spacing: -.03em; color: var(--bone); }
-  .month ol { list-style: none; margin-top: var(--s5); display: grid; gap: var(--s2); }
-  .row { position: relative; display: grid; grid-template-columns: 5rem minmax(0, 1fr) 1.5rem; gap: var(--s5); align-items: start; padding: var(--s4); margin-inline: calc(-1 * var(--s4)); border-radius: 4px; transition: background-color .2s var(--ease); }
-  .row:hover { background: var(--bg-1); }
-  .row:active { background: var(--bg-2); }
+  .month ol { list-style: none; margin-top: var(--s5); display: grid; border-radius: 8px; overflow: hidden; background: var(--bg-1); }
+  .month li:not([hidden]) ~ li:not([hidden]) { border-top: 1px solid color-mix(in srgb, var(--fg) 7%, transparent); }
+  .row { position: relative; display: grid; grid-template-columns: 5rem minmax(0, 1fr) 1.5rem; gap: var(--s5); align-items: start; padding: var(--s5); transition: background-color .2s var(--ease); }
+  .row::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: var(--blue); opacity: 0; transition: opacity .2s; }
+  .row:hover { background: var(--bg-2); }
+  .row:hover::before { opacity: 1; }
+  .row:active { background: var(--bg-3); }
   .row__cue { align-self: center; font-size: 1.25rem; }
   .row:hover .row__cue { opacity: 1; color: var(--blue); translate: 3px 0; }
   .row:hover .row__title a { color: #fff; }
@@ -131,7 +134,7 @@ const moonFor = { easy: 0.17, medium: 0.25, hard: 0.5 } as const;
   @media (max-width: 760px) {
     .group legend { float: none; width: 100%; line-height: 1.6; }
     .filters { padding: var(--s4); }
-    .row { grid-template-columns: minmax(0, 1fr) 1.25rem; gap: var(--s2) var(--s3); }
+    .row { grid-template-columns: minmax(0, 1fr) 1.25rem; gap: var(--s2) var(--s3); padding: var(--s4); }
     .row__date { grid-column: 1; }
     .row__main { grid-column: 1; }
     .row__cue { grid-column: 2; grid-row: 1 / 3; }

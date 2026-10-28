@@ -22,6 +22,7 @@ body {
   text-rendering: optimizeLegibility;
 }
 [hidden] { display: none !important; }
+html.sheet-open { overflow: hidden; }
 img, svg { display: block; max-width: 100%; }
 img { height: auto; }
 h1, h2, h3, h4 { margin: 0; font-weight: 500; text-wrap: balance; }
