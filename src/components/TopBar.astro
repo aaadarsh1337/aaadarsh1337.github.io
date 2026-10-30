@@ -116,7 +116,7 @@ const sheetNav = [{ id: "home", href: "/", label: "Home" }, ...nav];
     42%, 58% { translate: 0 0; opacity: .94; }
     100% { translate: 110% 0; opacity: .9; }
   }
-  .mark__name { color: var(--bone); font-weight: 500; letter-spacing: -.01em; }
+  .mark__name { font: 600 var(--t-ui)/1 var(--voice); letter-spacing: -.03em; color: var(--bone); }
   .mark__phase { color: var(--fg-2); padding-left: .75rem; box-shadow: inset 1px 0 0 var(--rule-2); text-transform: lowercase; }
   .tonight { position: fixed; inset: auto; top: 4.75rem; left: var(--margin); margin: 0; width: min(20rem, calc(100vw - 2 * var(--margin))); padding: var(--s5); border: 0; background: var(--bg-3); color: var(--fg); box-shadow: 0 24px 70px -24px rgb(0 0 0 / .75); /* taste-skill-ignore: a real popover floats */ }
   .tonight:popover-open { animation: tn-in .3s var(--ease); }
@@ -176,7 +176,7 @@ const sheetNav = [{ id: "home", href: "/", label: "Home" }, ...nav];
   .sheet::backdrop { background: var(--bg); }
   @keyframes sheet-in { from { opacity: 0; translate: 0 -10px; } }
   .sheet__top { display: flex; align-items: center; justify-content: space-between; min-height: 3rem; }
-  .sheet__mark { display: inline-flex; align-items: center; gap: .7rem; font-weight: 500; color: var(--bone); }
+  .sheet__mark { display: inline-flex; align-items: center; gap: .7rem; font: 600 var(--t-ui)/1 var(--voice); letter-spacing: -.03em; color: var(--bone); }
   .sheet__close { height: 2.5rem; padding: 0 .9rem; border: 0; border-radius: 999px; background: var(--bg-2); color: var(--bone); font: 500 var(--t-small)/1 var(--sans); cursor: pointer; }
   .sheet__close:active { transform: scale(.95); }
   .sheet__nav { margin-top: var(--s7); display: grid; }

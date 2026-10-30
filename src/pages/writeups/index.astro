@@ -13,7 +13,7 @@ const tiers = [...count(writeups.map((w) => w.tier).filter(Boolean))].sort((a, b
 const groups = [...writeups.reduce((m, w) => m.set(month(w.date), [...(m.get(month(w.date)) ?? []), w]), new Map<string, typeof writeups>())];
 const moonFor = { easy: 0.17, medium: 0.25, hard: 0.5 } as const;
 ---
-<Base title="Writeups" description={`${writeups.length} CTF writeups across ${platforms.length} platforms — reverse engineering, binary exploitation and crypto, step by step.`} section="writeups">
+<Base title="Writeups" description={`${writeups.length} CTF writeups across ${platforms.length} platforms: reverse engineering, binary exploitation and crypto, step by step.`} section="writeups">
   <header class="top rise">
     <nav class="crumbs meta" aria-label="Breadcrumb"><a href="/">~</a><span class="sep">/</span><span aria-current="page">writeups</span></nav>
     <h1 class="title page-title">Writeups<sup aria-label={`${writeups.length} in total`}>{writeups.length}</sup></h1>

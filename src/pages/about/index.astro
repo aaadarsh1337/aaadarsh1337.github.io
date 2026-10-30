@@ -13,7 +13,7 @@ const identity = [
   ["focus", p.focus], ["team", `${p.team} · ${p.teamRole}`],
 ];
 ---
-<Base title="About" description={`${p.name} — who I am, what I work with, repositories and contact.`} section="about">
+<Base title="About" description={`About ${p.name}: background, the tools I work with, repositories and contact.`} section="about">
   <PageHead crumbs={[{ label: "about" }]} title="About" />
 
   <section class="who">
@@ -49,7 +49,7 @@ const identity = [
             <span class="repo__name">{r.name}{r.pinned && <span class="pin" title="pinned">·</span>}</span>
             {r.description && <span class="repo__desc">{r.description}</span>}
             <span class="cue cue--corner" aria-hidden="true">↗</span>
-            <span class="repo__meta meta">{r.language ?? "—"}<span class="sep">·</span>pushed {day(r.pushed)}</span>
+            <span class="repo__meta meta">{r.language && <>{r.language}<span class="sep">·</span></>}pushed {day(r.pushed)}</span>
           </a>
         </li>
       ))}

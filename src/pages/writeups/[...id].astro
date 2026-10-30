@@ -11,7 +11,7 @@ export async function getStaticPaths() {
 const { w } = Astro.props as { w: Writeup };
 const tierHtml = w.tier
   ? `<span class="tier" data-tier="${w.tier}">${w.difficulty}</span>`
-  : "—";
+  : w.difficulty ?? "";   // a platform's own difficulty name (pwnable.kr's Toddler's Bottle) without a tier
 const specs = [
   { k: "platform", v: w.platform },
   ...(w.difficulty ? [{ k: "difficulty", v: tierHtml }] : []),

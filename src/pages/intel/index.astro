@@ -34,7 +34,7 @@ const gh = f.links.github;
 
 const jsonld = {
   "@context": "https://schema.org", "@type": "Dataset",
-  name: "Threat Harbour — SSH honeypot case study",
+  name: "Threat Harbour: SSH honeypot case study",
   description: "A daily Cowrie SSH sensor case study: credential leaderboard, command samples, sources, and defensive takeaways.",
   url: `${site.url}/intel/`, creator: { "@type": "Person", name: site.profile.name, url: site.url },
   temporalCoverage: `${m.observation_period.start}/${m.observation_period.end}`,
@@ -58,7 +58,7 @@ const jsonld = {
       <figcaption class="meta chart__cap">
         <span>peak <b>{num(peak.events)}</b> on {day(new Date(`${peak.day}T00:00:00Z`))}</span>
         <span>dotted blade = today, still collecting</span>
-        <span>Botnet sweeps against this sensor — not global trends.</span>
+        <span>Botnet sweeps against this sensor, not global trends.</span>
       </figcaption>
     </Blades>
   </section>
@@ -84,7 +84,7 @@ const jsonld = {
 
   <section class="sec">
     <h2 class="label">Top commands</h2>
-    <p class="note">{discovery} discovery/fingerprinting — automated recon, not humans.</p>
+    <p class="note">{discovery} discovery/fingerprinting: automated recon, not humans.</p>
     <ol class="cmds">
       {commands.map((c) => <li><code title={c.input}>{oneLine(c.input)}</code><span class="meta">{num(c.count)}</span></li>)}
     </ol>
@@ -100,7 +100,7 @@ const jsonld = {
     </section>
     <section class="sec">
       <h2 class="label">Busiest /16s</h2>
-      <p class="note">Volume only — a source IP never identifies the operator.</p>
+      <p class="note">Volume only. A source IP never identifies the operator.</p>
       <ol class="bars">
         {nets.map((n) => <li style={`--w:${(n.events / nets[0].events) * 100}%`}><span class="bars__k">{n.cidr}</span><span class="bars__v">{num(n.events)}</span></li>)}
       </ol>
@@ -120,7 +120,7 @@ const jsonld = {
     </section>
     <section class="sec">
       <h2 class="label">File operations</h2>
-      <p class="note">Destinations and shasums only — contents withheld.</p>
+      <p class="note">Destinations and shasums only. Contents withheld.</p>
       <ol class="cmds cmds--tight">
         {dests.map((d) => <li><code>{d.value}</code><span class="meta">{num(d.count)}</span></li>)}
         {shas.map((s) => <li><code title={s.value}>{s.value.slice(0, 16)}…</code><span class="meta">{num(s.count)}</span></li>)}
@@ -135,7 +135,7 @@ const jsonld = {
       {bendi && <>
         <figure class="seen__fig"><img src={`${bendi.url}komari.png`} width="1920" height="1023" alt="The attacker's Komari monitoring dashboard the worm reports to" decoding="async" /><figcaption>The attacker's Komari dashboard</figcaption></figure>
         <figure class="seen__fig"><img src={`${bendi.url}login.png`} width="1920" height="1025" alt="The Komari control panel login page" decoding="async" /><figcaption>Its control panel login</figcaption></figure>
-        <p class="seen__text">{bendi.summary}. <a class="btn" href={bendi.url}>Read the analysis of {bendi.title.replace(/^.*— /, "")} <span class="arr">→</span></a></p>
+        <p class="seen__text">{bendi.summary}. <a class="btn" href={bendi.url}>Read the analysis of {bendi.title.replace(/^.*?(?:\s[—–-]\s|:\s)/, "")} <span class="arr">→</span></a></p>
       </>}
     </div>
   </section>
@@ -144,8 +144,8 @@ const jsonld = {
     <h2 class="label">Defensive takeaways</h2>
     <ol class="takeaways">
       <li><h3>Blocklist these passwords</h3><p>Deny-list the top 10 in your IdP; require manager-generated secrets.</p></li>
-      <li><h3>Expect recon, not intrusion</h3><p>Mostly <code>uname/hostname/whoami</code> in <code>{dur.median.toFixed(2)}s</code> sessions — alert on discovery bursts, not single logins.</p></li>
-      <li><h3>Watch persistence paths</h3><p>Writes toward <code>authorized_keys</code> keep recurring — alert on any unexpected one.</p></li>
+      <li><h3>Expect recon, not intrusion</h3><p>Mostly <code>uname/hostname/whoami</code> in <code>{dur.median.toFixed(2)}s</code> sessions. Alert on discovery bursts, not single logins.</p></li>
+      <li><h3>Watch persistence paths</h3><p>Writes toward <code>authorized_keys</code> keep recurring. Alert on any unexpected one.</p></li>
     </ol>
   </section>
 
@@ -156,7 +156,7 @@ const jsonld = {
       <div class="method">
         <p>{m.method}</p>
         <p>Aggregates are published daily; the full dataset ships alongside as <a class="link" href="/intel/data.json">data.json</a>.</p>
-        <p>One VM, one IP, one region — what hit this sensor, not the internet. Never attribution.</p>
+        <p>One VM, one IP, one region: what hit this sensor, not the internet. Never attribution.</p>
         <p class="stack">{f.stack.map((s) => <span>{s}</span>)}</p>
       </div>
     </div>

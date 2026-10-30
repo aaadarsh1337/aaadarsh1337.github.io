@@ -20,8 +20,8 @@ interface Props {
 }
 const { title, section = "", image = "/assets/og.png", type = "website", jsonld, published, wide = false } = Astro.props;
 const description = Astro.props.description
-  ?? `${site.profile.name} (${site.profile.handle}) — ${site.profile.tagline.join(" · ")}. CTF writeups, security notes and the Threat Harbour honeypot.`;
-const fullTitle = title ? `${title} — ${site.profile.name}` : `${site.profile.name} — ${site.profile.handle}`;
+  ?? `${site.profile.name} (${site.profile.handle}). ${site.profile.tagline.join(", ")}. CTF writeups, security notes and the Threat Harbour honeypot.`;
+const fullTitle = title ? `${title} · ${site.profile.name}` : site.profile.name;
 const canonical = new URL(Astro.url.pathname, site.url).href;
 
 // No-flash theme: runs before first paint. Its hash goes into the CSP so no
@@ -77,7 +77,7 @@ const csp = [
   <footer class="foot">
     <p class="foot__who">
       <Seal />
-      <span>{site.profile.name}, {site.profile.tagline.join(", ").toLowerCase()}</span>
+      <span><span class="foot__name">{site.profile.name}</span>, {site.profile.tagline.join(", ").toLowerCase()}</span>
     </p>
     <nav aria-label="Elsewhere">
       <a href={`https://github.com/${site.github.user}`} rel="external">GitHub</a>
@@ -127,6 +127,7 @@ const csp = [
   }
   .foot nav { display: flex; gap: var(--s5); }
   .foot__who { display: flex; align-items: center; gap: var(--s4); }
+  .foot__name { font: 600 1em/1 var(--voice); letter-spacing: -.03em; color: var(--fg); }
   .foot a { color: var(--fg); transition: color .2s; }
   .foot a:hover { color: var(--bone); }
   .foot__end { text-align: right; }

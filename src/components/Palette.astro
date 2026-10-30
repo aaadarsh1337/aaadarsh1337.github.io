@@ -122,7 +122,7 @@ const items = [
       li.addEventListener("mousemove", () => { if (active !== i) { active = i; mark(); } });
       li.addEventListener("click", () => go(it));
       return li;
-    }) : [Object.assign(document.createElement("li"), { className: "pal__empty", textContent: "nothing here — try another word" })]));
+    }) : [Object.assign(document.createElement("li"), { className: "pal__empty", textContent: "Nothing here. Try another word." })]));
     input.setAttribute("aria-activedescendant", shown.length ? `pal-${active}` : "");
   }
   function mark() {

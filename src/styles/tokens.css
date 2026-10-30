@@ -60,7 +60,8 @@
   /* type */
   --serif: "Shippori Mincho", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
   --sans: "Instrument Sans Variable", "Instrument Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  --mono: "Sometype Mono", /* taste-skill-ignore: code blocks only */ ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  /* one monospace for "me" (the name, the bio) and for code */
+  --mono: "JetBrains Mono Variable", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
 
   --t-micro: 0.75rem;     /* 12 — only for uppercase-free tiny marks */
   --t-meta: 0.875rem;     /* 14 — small */
