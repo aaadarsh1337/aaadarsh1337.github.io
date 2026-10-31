@@ -91,6 +91,11 @@ const sheetNav = [{ id: "home", href: "/", label: "Home" }, ...nav];
   .mark__moonbtn:hover { transform: rotate(-12deg) scale(1.06); }
   .mark__moonbtn:active { transform: scale(.94); }
   .mark__moonbtn :global(.mark__moon) { view-transition-name: moon; }
+  /* the moon never gives up space to the name: without this, the global
+     svg { max-width: 100% } let a tight phone bar squeeze it to nothing */
+  .mark__moonbtn { flex: none; }
+  .mark__moonbtn :global(.mark__moon) { width: 34px; height: 34px; max-width: none; }
+  .mark__name { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 
   /* full moon nights: the halo brightens and breathes; new moon nights: only the rim shows */
   :global(html[data-lunar="full"]) .mark__moonbtn :global(.mark__moon) { animation: full-glow 6s ease-in-out infinite; }
@@ -103,18 +108,31 @@ const sheetNav = [{ id: "home", href: "/", label: "Home" }, ...nav];
   :global(html[data-lunar="new"]) .mark__moonbtn :global(.mark__moon .moon__dark) { stroke: color-mix(in srgb, var(--moon) 55%, transparent); stroke-width: .8; }
   :global(html[data-lunar="new"]) .mark__moonbtn :global(.mark__moon .moon__halo) { stroke-opacity: .28; }
 
+  /* dawn: a white moon all but vanishes on the light bar, so the UI moons are drawn in ink
+     (the eclipse then visibly crosses something) */
+  :global(:root[data-theme="dawn"]) :is(.mark__moonbtn, .sheet, .tonight) :global(.moon) {
+    --moon-lit: var(--blue); --moon-dark: var(--bg-3); --moon-edge: color-mix(in srgb, var(--blue) 40%, transparent);
+  }
+
   /* switching theme: a shadow crosses the moon, blood-red at its deepest */
   .mark__moonbtn { position: relative; }
-  .eclipse { position: absolute; left: 50%; top: 50%; width: 28.4px; height: 28.4px; translate: -50% -50%; border-radius: 50%; overflow: hidden; pointer-events: none; }
-  .eclipse i { position: absolute; inset: -1px; border-radius: 50%; translate: -110% 0; background: radial-gradient(circle at 46% 42%, color-mix(in srgb, #9c3a2f 70%, #0b0e13), #160b0b 72%); }
+  /* Built only from long-supported CSS (margins, transform, clip-path, plain colours):
+     wherever the shadow can't be moved aside it would sit on the moon and hide it,
+     so it is also fully transparent unless an eclipse is actually happening. */
+  .eclipse { position: absolute; left: 50%; top: 50%; width: 28.4px; height: 28.4px; margin: -14.2px 0 0 -14.2px; border-radius: 50%; overflow: hidden; -webkit-clip-path: circle(50%); clip-path: circle(50%); pointer-events: none; }
+  .eclipse i {
+    position: absolute; top: -1px; right: -1px; bottom: -1px; left: -1px; border-radius: 50%;
+    opacity: 0; -webkit-transform: translateX(-110%); transform: translateX(-110%);
+    background: radial-gradient(circle at 46% 42%, #722b24, #160b0b 72%);
+    transition: transform 1.4s cubic-bezier(.45, 0, .55, 1), opacity .4s;
+  }
   .is-eclipsing .eclipse i { animation: eclipse .9s cubic-bezier(.45, 0, .55, 1) both; }
-  /* blood moon (the Konami code): the shadow slides over and stays a while */
-  .eclipse i { transition: translate 1.4s cubic-bezier(.45, 0, .55, 1); }
-  :global(html.blood) .eclipse i { translate: 0 0; opacity: .95; }
+  /* blood moon (the Konami code): the shadow slides over and stays */
+  :global(html.blood) .eclipse i { opacity: .95; -webkit-transform: none; transform: none; }
   @keyframes eclipse {
-    0% { translate: -110% 0; opacity: .9; }
-    42%, 58% { translate: 0 0; opacity: .94; }
-    100% { translate: 110% 0; opacity: .9; }
+    0% { transform: translateX(-110%); opacity: .9; }
+    42%, 58% { transform: none; opacity: .94; }
+    100% { transform: translateX(110%); opacity: .9; }
   }
   .mark__name { font: 600 var(--t-ui)/1 var(--voice); letter-spacing: -.03em; color: var(--bone); }
   .mark__phase { color: var(--fg-2); padding-left: .75rem; box-shadow: inset 1px 0 0 var(--rule-2); text-transform: lowercase; }
@@ -154,7 +172,7 @@ const sheetNav = [{ id: "home", href: "/", label: "Home" }, ...nav];
   @media (max-width: 860px) {
     .bar {
       position: sticky; top: 0; z-index: 20;
-      grid-template-columns: 1fr auto; padding-block: var(--s3);
+      grid-template-columns: minmax(0, 1fr) auto; gap: var(--s3); padding-block: var(--s3);   /* the name may trim, the moon and buttons never move off-screen */
       padding-top: calc(var(--s3) + env(safe-area-inset-top, 0px));
       background: transparent;
       transition: transform .3s var(--ease), box-shadow .3s, background-color .3s;
@@ -162,7 +180,9 @@ const sheetNav = [{ id: "home", href: "/", label: "Home" }, ...nav];
     .bar.is-scrolled { background: var(--bg); box-shadow: 0 1px 0 var(--rule), 0 10px 30px -18px rgb(0 0 0 / .6); }
     .bar.is-hidden { transform: translateY(-110%); }
     .links, .bar__cta, .mark__phase { display: none; }
-    .menu-btn { display: inline-block; }
+    .menu-btn { display: inline-block; flex: none; }
+    .mark { min-width: 0; max-width: 100%; }
+    .end { flex: none; }
   }
 
   /* the menu sheet */

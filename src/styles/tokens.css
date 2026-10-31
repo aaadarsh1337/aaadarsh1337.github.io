@@ -30,7 +30,7 @@
   --bone-dim: #cfcabd;
   /* the moon is always moonlight, whatever the theme */
   --moon: #ece8de;
-  --moon-shade: color-mix(in srgb, #ece8de 9%, #0b0e13);
+  --moon-shade: #1f2225;   /* 9% moonlight over the ground; a plain colour so every browser draws it */
   --moon-edge: rgb(236 232 222 / 0.22);
 
   --lily: #cf7c71;
@@ -151,7 +151,7 @@
   --bone: #f5e8e4;
   --bone-dim: #d9c2bb;
   --moon: #e3a58c;
-  --moon-shade: color-mix(in srgb, #e3a58c 10%, #0f0a0b);
+  --moon-shade: #241a18;
   --moon-edge: rgb(227 165 140 / 0.25);
   --lily: #e2675a;
   --blue: #e6a088;
