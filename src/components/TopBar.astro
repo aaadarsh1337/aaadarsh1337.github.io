@@ -95,7 +95,7 @@ const sheetNav = [{ id: "home", href: "/", label: "Home" }, ...nav];
      svg { max-width: 100% } let a tight phone bar squeeze it to nothing */
   .mark__moonbtn { flex: none; }
   .mark__moonbtn :global(.mark__moon) { width: 34px; height: 34px; max-width: none; }
-  .mark__name { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+  .mark__name { min-width: 0; }
 
   /* full moon nights: the halo brightens and breathes; new moon nights: only the rim shows */
   :global(html[data-lunar="full"]) .mark__moonbtn :global(.mark__moon) { animation: full-glow 6s ease-in-out infinite; }
@@ -107,12 +107,6 @@ const sheetNav = [{ id: "home", href: "/", label: "Home" }, ...nav];
   :global(html[data-lunar="new"]) .mark__moonbtn :global(.mark__moon) { filter: none; }
   :global(html[data-lunar="new"]) .mark__moonbtn :global(.mark__moon .moon__dark) { stroke: color-mix(in srgb, var(--moon) 55%, transparent); stroke-width: .8; }
   :global(html[data-lunar="new"]) .mark__moonbtn :global(.mark__moon .moon__halo) { stroke-opacity: .28; }
-
-  /* dawn: a white moon all but vanishes on the light bar, so the UI moons are drawn in ink
-     (the eclipse then visibly crosses something) */
-  :global(:root[data-theme="dawn"]) :is(.mark__moonbtn, .sheet, .tonight) :global(.moon) {
-    --moon-lit: var(--blue); --moon-dark: var(--bg-3); --moon-edge: color-mix(in srgb, var(--blue) 40%, transparent);
-  }
 
   /* switching theme: a shadow crosses the moon, blood-red at its deepest */
   .mark__moonbtn { position: relative; }
@@ -163,6 +157,11 @@ const sheetNav = [{ id: "home", href: "/", label: "Home" }, ...nav];
   .bar :is(a, span, button) { white-space: nowrap; }
   /* small laptops and tablets in landscape: five links fit once the phase label steps out
      (tonight's phase is still one click away, in the moon's popover) */
+  /* cramped bars (narrow phones, or enlarged system text, since this is measured in em): the search
+     icon steps out so the whole name fits; Search is still in the menu, and / opens it */
+  @media (max-width: 19em) { .bar .end [data-palette-open] { display: none; } }
+  @media (max-width: 16.5em) { .bar .end [data-theme-toggle] { display: none; } }   /* both live in the menu too */
+
   @media (min-width: 861px) and (max-width: 1040px) {
     .mark__phase { display: none; }
     .links { gap: var(--s4); }
@@ -182,6 +181,8 @@ const sheetNav = [{ id: "home", href: "/", label: "Home" }, ...nav];
     .links, .bar__cta, .mark__phase { display: none; }
     .menu-btn { display: inline-block; flex: none; }
     .mark { min-width: 0; max-width: 100%; }
+    /* a tight bar (small phone, large text) stacks the name, Adarsh over Pillai, rather than cutting it */
+    .bar .mark__name { white-space: normal; line-height: 1.1; }
     .end { flex: none; }
   }
 

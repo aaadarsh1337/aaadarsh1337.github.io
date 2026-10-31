@@ -112,7 +112,6 @@ const dirs = [...new Set(attachments.map((a) => a.dir))];
   .readmoon__pct { display: none; padding-right: .5rem; font: 500 var(--t-small)/1 var(--sans); font-variant-numeric: tabular-nums; }
   .readmoon:hover .readmoon__pct, .readmoon:focus-visible .readmoon__pct { display: inline; }
   .readmoon :global(.moon__lit) { transition: none; }
-  :global(:root[data-theme="dawn"]) .readmoon :global(.moon) { --moon-lit: var(--blue); --moon-dark: var(--bg-3); --moon-edge: color-mix(in srgb, var(--blue) 40%, transparent); }
   .head { max-width: none; }
   .crumbs { display: flex; flex-wrap: wrap; gap: 0 .45em; color: var(--muted); }
   .crumbs a { color: var(--fg-2); transition: color .2s; }

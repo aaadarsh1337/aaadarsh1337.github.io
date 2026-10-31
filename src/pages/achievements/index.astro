@@ -153,8 +153,6 @@ const profiles = site.links.filter((l) => ["TryHackMe", "CTFtime", "pwn.college"
   .res__go { margin-top: var(--s5); justify-self: start; display: inline-flex; align-items: center; gap: .35em; height: 2rem; padding: 0 .8rem; border-radius: 999px; background: var(--bg-2); font-size: var(--t-small); color: var(--blue); transition: background-color .2s; }
   .res a:hover .res__go { background: var(--bg-3); }
   .res li:first-child .res__rank { color: var(--blue); }
-  /* dawn: a white moon vanishes on a light card, so these are drawn in ink */
-  :global(:root[data-theme="dawn"]) :is(.res, .hint) :global(.moon) { --moon-lit: var(--blue); --moon-dark: var(--bg-3); --moon-edge: color-mix(in srgb, var(--blue) 35%, transparent); }
 
   /* ---------- certificates: framed like the paper they're printed on ---------- */
   .certs { list-style: none; margin-top: var(--s5); display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s3); }

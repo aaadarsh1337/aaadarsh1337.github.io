@@ -105,9 +105,10 @@
   --faint: #626c78;
   --bone: #2a2f36;
   --bone-dim: #3d434b;
-  --moon: #fbf8ef;
-  --moon-shade: #c9d0d8;
-  --moon-edge: rgb(20 25 32 / 0.28);
+  --moon: #fffdf6;
+  /* a pale moon on a pale sky: the lit side stays moonlight, the shadow side and the rim draw the shape */
+  --moon-shade: #97a2b0;
+  --moon-edge: rgb(20 25 32 / 0.42);
 
   --lily: #a23f35;
   --lantern: #6a4e12;
