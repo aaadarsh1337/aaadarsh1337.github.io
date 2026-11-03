@@ -4,6 +4,7 @@ import Article from "../../components/Article.astro";
 import { getWriteups, type Writeup } from "../../lib/writeups";
 import { day, iso, minutes } from "../../lib/format";
 import { site } from "../../config";
+import { abs, personRef, writeupDescription, TOPICS, cardFor } from "../../lib/seo";
 
 export async function getStaticPaths() {
   return (await getWriteups()).map((w) => ({ params: { id: w.id }, props: { w } }));
@@ -21,18 +22,27 @@ const specs = [
   ...(w.body.challenge ? [{ k: w.body.challenge.label.toLowerCase(), v: new URL(w.body.challenge.url).host + new URL(w.body.challenge.url).pathname.replace(/\/$/, ""), href: w.body.challenge.url }] : []),
   { k: "source", v: "ctf-writeups ↗", href: w.source },
 ];
+const description = writeupDescription(w);
 const jsonld = {
-  "@context": "https://schema.org",
   "@type": "TechArticle",
-  headline: w.title,
-  description: w.body.excerpt,
+  headline: `${w.title}: ${w.platform} writeup`,
+  name: w.title,
+  description,
   datePublished: iso(w.date) || undefined,
-  author: { "@type": "Person", name: site.profile.name, url: site.url },
-  url: new URL(w.url, site.url).href,
-  keywords: [w.platform, ...w.tags, w.difficulty].filter(Boolean).join(", "),
+  dateModified: iso(w.date) || undefined,
+  author: personRef(),
+  publisher: personRef(),
+  image: abs(cardFor.writeup(w.id)),
+  url: abs(w.url),
+  mainEntityOfPage: abs(w.url),
+  inLanguage: "en",
+  wordCount: w.body.words,
+  about: [w.platform, ...w.tags.map((t) => TOPICS[t] ?? t), "Capture the flag (CTF)"],
+  keywords: [w.title, w.platform, `${w.platform} writeup`, ...w.tags.map((t) => TOPICS[t] ?? t), w.difficulty, "CTF writeup"].filter(Boolean).join(", "),
 };
 ---
-<Base title={`${w.title} · ${w.platform} writeup`} description={w.body.excerpt} section="writeups" type="article" published={w.date} jsonld={jsonld}>
+<Base title={`${w.title} · ${w.platform} writeup`} description={description} section="writeups" type="article" published={w.date} jsonld={jsonld} image={cardFor.writeup(w.id)}
+  crumbs={[{ name: "CTF writeups", url: "/writeups/" }, { name: w.platform, url: `/writeups/?platform=${encodeURIComponent(w.platform)}` }]}>
   <Article
     crumbs={[{ label: "writeups", href: "/writeups/" }, { label: w.platform, href: `/writeups/?platform=${encodeURIComponent(w.platform)}` }, { label: w.id.split("/").slice(1).join("/") }]}
     title={w.title}

@@ -5,7 +5,7 @@
   "scripts": {
     "content": "node scripts/sync-content.mjs",
     "dev": "astro dev",
-    "build": "astro build && pagefind --site dist",
+    "build": "astro build && pagefind --site dist && node scripts/og-cards.mjs",
     "preview": "astro preview"
   },
   "dependencies": {

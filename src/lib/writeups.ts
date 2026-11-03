@@ -36,6 +36,8 @@ export interface Writeup {
   source: string;          // GitHub tree URL of the folder
   attachments: Attachment[];
   body: Rendered;
+  /** the note's Markdown without frontmatter, for llms-full.txt */
+  markdown: string;
   prev?: Pick<Writeup, "title" | "url">;
   next?: Pick<Writeup, "title" | "url">;
 }
@@ -194,6 +196,7 @@ async function load(): Promise<Writeup[]> {
         };
       }),
       body: await render(body),
+      markdown: body,
     });
   }
 

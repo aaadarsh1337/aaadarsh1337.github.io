@@ -54,6 +54,9 @@ jobs:
           test -f dist/intel/data.json
           test -f dist/assets/resume.pdf
           test -f dist/pagefind/pagefind.js   # full-text search index
+          test -f dist/sitemap.xml            # for Search Console
+          test -f dist/llms.txt && test -f dist/llms-full.txt   # for AI agents
+          test -f dist/robots.txt
           # The CSP allows same-origin script files plus one hashed inline snippet
           # (the theme). Fail if any page grows another inline or remote script.
           node -e '
@@ -81,3 +84,18 @@ jobs:
     steps:
       - id: deployment
         uses: actions/deploy-pages@v5
+
+  # Tell Bing, Yandex and the other IndexNow engines what changed, once the new site is live.
+  # Best effort: it never fails the run.
+  indexnow:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          sparse-checkout: scripts/indexnow.mjs
+          sparse-checkout-cone-mode: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - run: node scripts/indexnow.mjs

@@ -29,7 +29,7 @@ const topTen = results.filter((r) => r.rank <= 10).length;
 const statFor = (label: string) => label === "TryHackMe" ? site.stats.map((s) => `${s.value} ${s.label.replace(/^TryHackMe |^THM /, "")}`).join(" · ") : undefined;
 const profiles = site.links.filter((l) => ["TryHackMe", "CTFtime", "pwn.college", "PicoCTF"].includes(l.label)).map((l) => ({ ...l, stat: statFor(l.label) }));
 ---
-<Base title="Achievements" description={`${p.name}'s CTF placements with ${p.team} (best: #${best.rank} at ${best.title}) and certificates, each linked to its proof.`} section="achievements">
+<Base title="Achievements" description={`CTF placements of ${p.name} (${p.handle}) with ${p.team}, best #${best.rank} at ${best.title}, plus certificates. Each one links to its proof.`} section="achievements">
   <PageHead crumbs={[{ label: "achievements" }]} title="Achievements"
     lede={`CTF placements with ${p.team} and the certificates I've earned. Every one links to its proof.`} />
 

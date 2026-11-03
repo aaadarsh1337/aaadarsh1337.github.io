@@ -154,6 +154,19 @@ All URLs from the previous version of the site still work, including `/writeups/
 
 ---
 
+
+## Search engines and AI agents
+
+Everything below is generated on every build, from `src/config.ts` and the content repos, so it is never out of date:
+
+- **`/sitemap.xml`** (`src/pages/sitemap.xml.ts`): every page with the date its content last changed. Submitted once in Google Search Console and Bing Webmaster Tools.
+- **`/robots.txt`** (`public/robots.txt`): allows every crawler, names the AI ones, points to the sitemap.
+- **Structured data** (`src/lib/seo.ts`, merged into one JSON-LD `@graph` in `Base.astro`): a Person with every handle and profile on the home and About pages, breadcrumbs everywhere, and TechArticle/BlogPosting data on writeups and posts.
+- **`/llms.txt` and `/llms-full.txt`** (`src/lib/llms.ts`): a summary for AI agents, and the same plus the full Markdown of every writeup and post.
+- **Share cards** (`scripts/og-cards.mjs`): one 1200×630 card per writeup and post, rendered with headless Chrome after the build. Without Chrome, each falls back to `assets/og.png`.
+- **IndexNow** (`scripts/indexnow.mjs`, the `indexnow` job in the deploy workflow): after each deploy, tells Bing and the other IndexNow engines which pages changed. The key file is `public/<key>.txt`; keep it.
+- Titles from content are written without em or en dashes (`plainTitle` in `src/lib/seo.ts`).
+
 ## On AI assistance
 
 I'm a **cybersecurity student**, not a full-time web developer. Parts of this site's structure, layout, and tooling were built with help from AI assistants so I could ship a clear portfolio without turning it into a web-dev project.

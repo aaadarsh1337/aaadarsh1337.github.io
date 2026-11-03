@@ -6,7 +6,7 @@ import BlogCats from "../../components/BlogCats.astro";
 import { getPosts } from "../../lib/blog";
 const posts = await getPosts();
 ---
-<Base title="Blog" description="Malware analysis, reverse engineering notes and other security writing." section="blog">
+<Base title="Security blog" description="Malware analysis, reverse engineering notes and other security writing by Adarsh Pillai (aaadarsh1337)." section="blog">
   <PageHead crumbs={[{ label: "blog" }]} title="Blog" count={posts.length} lede="Blog where I upload malware analysis, random stories, and a lot more!">
     <BlogCats />
   </PageHead>

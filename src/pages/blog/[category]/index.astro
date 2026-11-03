@@ -15,7 +15,7 @@ export async function getStaticPaths() {
 const { posts } = Astro.props as { posts: Post[] };
 const label = posts[0].categoryLabel;
 ---
-<Base title={`${label} · Blog`} section="blog">
+<Base title={`${label} · Security blog`} description={`${label} posts by Adarsh Pillai (aaadarsh1337).`} section="blog" crumbs={[{ name: "Security blog", url: "/blog/" }]}>
   <PageHead crumbs={[{ label: "blog", href: "/blog/" }, { label: label.toLowerCase() }]} title={label} count={posts.length}>
     <BlogCats current={posts[0].category} />
   </PageHead>

@@ -4,7 +4,7 @@ import Moon from "../components/Moon.astro";
 import { moonPhase } from "../lib/moon";
 const tonight = moonPhase(new Date());
 ---
-<Base title="Not found">
+<Base title="Not found" noindex>
   <section class="nf rise">
     <div class="nf__moon"><Moon phase={0} size={168} halo label="" /></div>
     <p class="meta">404</p>

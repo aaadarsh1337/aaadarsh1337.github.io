@@ -5,6 +5,7 @@ import TopBar from "../components/TopBar.astro";
 import Palette from "../components/Palette.astro";
 import Seal from "../components/Seal.astro";
 import { site } from "../config";
+import { person, website, abs, plainTitle } from "../lib/seo";
 
 interface Props {
   title?: string;
@@ -13,16 +14,33 @@ interface Props {
   section?: string;
   image?: string;
   type?: "website" | "article";
-  jsonld?: Record<string, unknown>;
+  /** schema.org objects for this page (merged into one @graph with the breadcrumbs) */
+  jsonld?: Record<string, unknown> | Record<string, unknown>[];
+  /** Breadcrumb levels between Home and this page, for search results. */
+  crumbs?: { name: string; url: string }[];
+  noindex?: boolean;
   published?: Date | null;
   /** Full-bleed page (home): no centred reading frame. */
   wide?: boolean;
 }
-const { title, section = "", image = "/assets/og.png", type = "website", jsonld, published, wide = false } = Astro.props;
+const { title: rawTitle, section = "", image = "/assets/og.png", type = "website", jsonld, published, wide = false, crumbs = [], noindex = false } = Astro.props;
+const title = rawTitle && plainTitle(rawTitle);
 const description = Astro.props.description
-  ?? `${site.profile.name} (${site.profile.handle}). ${site.profile.tagline.join(", ")}. CTF writeups, security notes and the Threat Harbour honeypot.`;
+  ?? `${site.profile.name} (${site.profile.handle}), a cybersecurity student focused on ${site.profile.focus.toLowerCase()} and CTFs with ${site.profile.team}. Writeups, malware analysis and a live SSH honeypot.`;
 const fullTitle = title ? `${title} · ${site.profile.name}` : site.profile.name;
 const canonical = new URL(Astro.url.pathname, site.url).href;
+// One @graph per page: the page's own objects, its breadcrumbs, and on the home and
+// About pages the full Person (elsewhere articles point at it by @id).
+const isHome = Astro.url.pathname === "/";
+const own = jsonld ? (Array.isArray(jsonld) ? jsonld : [jsonld]).map(({ ["@context"]: _c, ...o }) => o) : [];
+const trail = isHome || noindex ? [] : [{ name: "Home", url: site.url + "/" }, ...crumbs.map((c) => ({ name: c.name, url: abs(c.url) })), { name: (title ?? site.profile.name).split(" · ")[0], url: canonical }];
+const graph = [
+  ...(isHome ? [website(), person()] : []),
+  ...(section === "about" ? [{ "@type": "ProfilePage", url: canonical, name: fullTitleFor(title), mainEntity: person() }] : []),
+  ...own,
+  ...(trail.length ? [{ "@type": "BreadcrumbList", itemListElement: trail.map((t, i) => ({ "@type": "ListItem", position: i + 1, name: t.name, item: t.url })) }] : []),
+];
+function fullTitleFor(t?: string) { return t ? `${t} · ${site.profile.name}` : site.profile.name; }
 
 // No-flash theme: runs before first paint. Its hash goes into the CSP so no
 // other inline script can run. It keeps the secret blood-moon theme across pages
@@ -62,11 +80,16 @@ const csp = [
   <meta property="og:description" content={description} />
   <meta property="og:url" content={canonical} />
   <meta property="og:image" content={new URL(image, site.url).href} />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content={title ? `${title}, by ${site.profile.name}` : `${site.profile.name} (${site.profile.handle})`} />
+  <meta name="twitter:image" content={new URL(image, site.url).href} />
   <meta property="og:site_name" content={`${site.profile.name} · ${site.profile.handle}`} />
   {published && <meta property="article:published_time" content={published.toISOString()} />}
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:creator" content="@aaadarsh1337" />
-  {jsonld && <script type="application/ld+json" set:html={JSON.stringify(jsonld)} />}
+  {noindex && <meta name="robots" content="noindex" />}
+  {graph.length > 0 && <script type="application/ld+json" set:html={JSON.stringify({ "@context": "https://schema.org", "@graph": graph })} />}
 </head>
 <body>
   <a class="skip" href="#main">Skip to content</a>

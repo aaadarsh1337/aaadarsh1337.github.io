@@ -1,6 +1,7 @@
 // Blog posts from the security-blog repo: posts/<category>/<file>.md
 // URL: /blog/<category>/<slug>/ (slug = frontmatter `slug`, else file name).
 import { readdirSync, readFileSync, existsSync, statSync } from "node:fs";
+import { plainTitle } from "./seo";
 import { basename, join, relative } from "node:path";
 import { frontmatter, render, type Rendered } from "./markdown";
 
@@ -27,6 +28,8 @@ export interface Post {
   featured: boolean;
   source: string;
   body: Rendered;
+  /** the post's Markdown without frontmatter, for llms-full.txt */
+  markdown: string;
 }
 
 function walk(dir: string, out: string[] = []): string[] {
@@ -57,13 +60,14 @@ async function load(): Promise<Post[]> {
       slug, category,
       categoryLabel: CATEGORY_LABELS[category] ?? category.replace(/-/g, " "),
       url: `/blog/${category}/${slug}/`,
-      title: String(data.title ?? slug),
+      title: plainTitle(String(data.title ?? slug)),   // "Honeypot Worm — bendi.py" reads "Honeypot Worm: bendi.py"
       date: new Date(Date.UTC(+m[1], +m[2] - 1, +m[3])),
       summary: typeof data.summary === "string" && data.summary ? data.summary : rendered.excerpt,
       tags: Array.isArray(data.tags) ? data.tags : [],
       featured: data.featured === true,
       source: `https://github.com/aaadarsh1337/security-blog/blob/main/posts/${rel}`,
       body: rendered,
+      markdown: body,
     });
   }
   return posts.sort((a, b) => b.date.getTime() - a.date.getTime());

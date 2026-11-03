@@ -40,7 +40,7 @@ const jsonld = {
   temporalCoverage: `${m.observation_period.start}/${m.observation_period.end}`,
 };
 ---
-<Base title="Threat Harbour" description={`Threat Harbour case study: a daily SSH honeypot snapshot with ${num(m.totals.total_events)} events, ${num(m.sources.unique_source_ips)} IPs, top attacker passwords and commands. Rebuilt daily; cutoff ${cutText}.`} section="intel" jsonld={jsonld}>
+<Base title="Threat Harbour SSH honeypot" description={`Threat Harbour case study: a daily SSH honeypot snapshot with ${num(m.totals.total_events)} events, ${num(m.sources.unique_source_ips)} IPs, top attacker passwords and commands. Rebuilt daily; cutoff ${cutText}.`} section="intel" jsonld={jsonld}>
   <PageHead crumbs={[{ label: "threat-harbour" }]} title={f.name} lede={f.description}>
     <p class="sub meta"><span class="live" data-live={live ? "" : undefined}></span>{f.tagline}<span class="sep">·</span>data to {cutText}{!live && <><span class="sep">·</span>cached snapshot</>}</p>
   </PageHead>

@@ -4,6 +4,7 @@ import Article from "../../../components/Article.astro";
 import { getPosts, type Post } from "../../../lib/blog";
 import { day, iso, minutes } from "../../../lib/format";
 import { site } from "../../../config";
+import { abs, personRef, cardFor } from "../../../lib/seo";
 
 export async function getStaticPaths() {
   const posts = await getPosts();
@@ -21,12 +22,14 @@ const specs = [
   { k: "source", v: "security-blog ↗", href: p.source },
 ];
 const jsonld = {
-  "@context": "https://schema.org", "@type": "BlogPosting", headline: p.title, description: p.summary,
-  datePublished: iso(p.date), author: { "@type": "Person", name: site.profile.name, url: site.url },
-  url: new URL(p.url, site.url).href, keywords: p.tags.join(", "),
+  "@type": "BlogPosting", headline: p.title, description: p.summary,
+  datePublished: iso(p.date), dateModified: iso(p.date), author: personRef(), publisher: personRef(),
+  image: abs(cardFor.post(p.category, p.slug)), url: abs(p.url), mainEntityOfPage: abs(p.url), inLanguage: "en",
+  wordCount: p.body.words, articleSection: p.categoryLabel, keywords: [p.categoryLabel, ...p.tags].join(", "),
 };
 ---
-<Base title={p.title} description={p.summary} section="blog" type="article" published={p.date} jsonld={jsonld}>
+<Base title={`${p.title} · ${p.categoryLabel}`} description={p.summary} section="blog" type="article" published={p.date} jsonld={jsonld} image={cardFor.post(p.category, p.slug)}
+  crumbs={[{ name: "Security blog", url: "/blog/" }, { name: p.categoryLabel, url: `/blog/${p.category}/` }]}>
   <Article
     crumbs={[{ label: "blog", href: "/blog/" }, { label: p.categoryLabel, href: `/blog/${p.category}/` }, { label: p.slug }]}
     title={p.title}

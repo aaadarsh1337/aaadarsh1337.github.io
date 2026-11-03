@@ -1,2 +1,21 @@
+# Everyone is welcome: search engines and AI agents alike.
 User-agent: *
 Allow: /
+
+# AI search and assistant crawlers, named so there is no doubt they may read the site.
+User-agent: GPTBot
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: ClaudeBot
+User-agent: Claude-SearchBot
+User-agent: Claude-User
+User-agent: PerplexityBot
+User-agent: Perplexity-User
+User-agent: Google-Extended
+User-agent: Applebot-Extended
+User-agent: CCBot
+Allow: /
+
+Sitemap: https://aaadarsh1337.github.io/sitemap.xml
+
+# For AI agents: a summary at /llms.txt and the full text of every writeup at /llms-full.txt
