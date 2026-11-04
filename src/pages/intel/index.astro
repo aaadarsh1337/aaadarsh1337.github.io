@@ -135,7 +135,7 @@ const jsonld = {
       {bendi && <>
         <figure class="seen__fig"><img src={`${bendi.url}komari.png`} width="1920" height="1023" alt="The attacker's Komari monitoring dashboard the worm reports to" decoding="async" /><figcaption>The attacker's Komari dashboard</figcaption></figure>
         <figure class="seen__fig"><img src={`${bendi.url}login.png`} width="1920" height="1025" alt="The Komari control panel login page" decoding="async" /><figcaption>Its control panel login</figcaption></figure>
-        <p class="seen__text">{bendi.summary}. <a class="btn" href={bendi.url}>Read the analysis of {bendi.title.replace(/^.*?(?:\s[—–-]\s|:\s)/, "")} <span class="arr">→</span></a></p>
+        <p class="seen__text">{bendi.summary}. <a class="btn" href={bendi.url}>Read the analysis of {bendi.title.replace(/^.*?(?:\s[\u2014\u2013-]\s|:\s)/, "")} <span class="arr">→</span></a></p>
       </>}
     </div>
   </section>

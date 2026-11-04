@@ -24,7 +24,7 @@ export const PLATFORM_LABELS: Record<string, string> = {
 export type Tier = "easy" | "medium" | "hard";
 export interface Attachment { path: string; name: string; dir: string; size: number; kind: string; url: string; self: boolean }
 export interface Writeup {
-  id: string;              // "ReRange/Steganography" — also the URL path
+  id: string;              // "ReRange/Steganography": also the URL path
   url: string;             // "/writeups/ReRange/Steganography/"
   title: string;           // frontmatter title, verbatim
   platform: string;        // display label
@@ -154,7 +154,7 @@ let cache: Promise<Writeup[]> | undefined;
 export const getWriteups = () => (cache ??= load());
 
 async function load(): Promise<Writeup[]> {
-  if (!existsSync(ROOT)) throw new Error("content-src/ctf-writeups missing — run `npm run content` first");
+  if (!existsSync(ROOT)) throw new Error("content-src/ctf-writeups missing: run `npm run content` first");
   const list: Writeup[] = [];
   const gh = `https://github.com/${site.github.user}/ctf-writeups`;
 

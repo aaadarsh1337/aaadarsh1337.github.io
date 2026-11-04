@@ -45,7 +45,7 @@ let cache: Promise<Post[]> | undefined;
 export const getPosts = () => (cache ??= load());
 
 async function load(): Promise<Post[]> {
-  if (!existsSync(ROOT)) throw new Error("content-src/security-blog/posts missing — run `npm run content` first");
+  if (!existsSync(ROOT)) throw new Error("content-src/security-blog/posts missing: run `npm run content` first");
   const posts: Post[] = [];
   for (const file of walk(ROOT)) {
     const { data, body } = frontmatter(readFileSync(file, "utf8"));
@@ -60,7 +60,7 @@ async function load(): Promise<Post[]> {
       slug, category,
       categoryLabel: CATEGORY_LABELS[category] ?? category.replace(/-/g, " "),
       url: `/blog/${category}/${slug}/`,
-      title: plainTitle(String(data.title ?? slug)),   // "Honeypot Worm — bendi.py" reads "Honeypot Worm: bendi.py"
+      title: plainTitle(String(data.title ?? slug)),   // a dash in a title reads as a colon: "Honeypot Worm: bendi.py"
       date: new Date(Date.UTC(+m[1], +m[2] - 1, +m[3])),
       summary: typeof data.summary === "string" && data.summary ? data.summary : rendered.excerpt,
       tags: Array.isArray(data.tags) ? data.tags : [],

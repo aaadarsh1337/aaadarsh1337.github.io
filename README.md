@@ -172,7 +172,7 @@ Everything below is generated on every build, from `src/config.ts` and the conte
 I'm a **cybersecurity student**, not a full-time web developer. Parts of this site's structure, layout, and tooling were built with help from AI assistants so I could ship a clear portfolio without turning it into a web-dev project.
 
 - AI helped with HTML/CSS/JS structure, static generation, and polish
-- **Content is mine** — writeups, notes, tools, certificates, and project work
+- **Content is mine**: writeups, notes, tools, certificates, and project work
 - Security learning and CTF methodology are my own effort
 
 I care more about the work behind the links than hand-rolling every CSS rule.

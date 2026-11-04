@@ -1,7 +1,7 @@
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const LONG = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
-/** "8 Oct 2026" (UTC — content dates are calendar days, not instants) */
+/** "8 Oct 2026" (UTC: content dates are calendar days, not instants) */
 export const day = (d: Date | null, year = true) =>
   d ? `${d.getUTCDate()} ${MONTHS[d.getUTCMonth()]}${year ? ` ${d.getUTCFullYear()}` : ""}` : "undated";
 export const iso = (d: Date | null) => (d ? d.toISOString().slice(0, 10) : "");

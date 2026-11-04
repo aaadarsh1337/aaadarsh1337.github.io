@@ -1,5 +1,5 @@
 // =====================================================================
-// SITE CONFIG — the one file to edit for routine updates:
+// SITE CONFIG: the one file to edit for routine updates:
 // bio, skills, CTF results, certificates, links, flagship copy.
 //
 // Writeups and blog posts are NOT here: they come from the ctf-writeups and
@@ -9,6 +9,9 @@
 
 export const site = {
   url: "https://aaadarsh1337.github.io",
+  // The last day every page changed together (titles, layout, structured data). The
+  // sitemap never reports an older date than this, so search engines re-crawl after it.
+  siteUpdated: "2026-11-04",
   github: {
     user: "aaadarsh1337",
     // Repos never shown in the repository list (the flagship has its own page).

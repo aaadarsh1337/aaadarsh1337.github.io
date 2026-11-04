@@ -155,7 +155,7 @@ const moonFor = { easy: 0.17, medium: 0.25, hard: 0.5 } as const;
   love.textContent = LOVE_NOTE;
   const keys = ["q", "tag", "platform", "tier"] as const;
 
-  // deep links: /writeups/?tag=pwn&platform=pwnable.kr — also accepts ?difficulty=hard
+  // deep links: /writeups/?tag=pwn&platform=pwnable.kr, also accepts ?difficulty=hard
   const url = new URL(location.href);
   if (url.searchParams.has("difficulty")) url.searchParams.set("tier", url.searchParams.get("difficulty")!.toLowerCase());
   for (const k of keys) {

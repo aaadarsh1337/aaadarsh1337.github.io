@@ -3,7 +3,7 @@
 // The source repos are plain Markdown written for GitHub, so this pipeline is
 // deliberately conservative: raw HTML in Markdown is dropped (remark-rehype's
 // default), dangerous URL schemes are stripped, and every enhancement below is
-// presentational only — the author's words are never rewritten.
+// presentational only: the author's words are never rewritten.
 import { unified } from "unified";
 import remarkParse from "remark-parse";
 import remarkGfm from "remark-gfm";

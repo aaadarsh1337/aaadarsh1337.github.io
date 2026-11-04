@@ -11,7 +11,7 @@ const step = (W - pad * 2) / Math.max(series.length - 1, 1);
 const x = (i: number) => pad + i * step;
 const y = (v: number) => height - 2 - (v / max) * (height - 18);
 const date = (s: string) => new Date(`${s}T00:00:00Z`);
-// first day, each 1st of the month, last day — dropping any label that would crowd its neighbour
+// first day, each 1st of the month, last day: dropping any label that would crowd its neighbour
 const last = series.length - 1;
 const ticks: typeof series = [];
 for (const [i, d] of series.entries()) {

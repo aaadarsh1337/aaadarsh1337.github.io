@@ -8,9 +8,9 @@ export const abs = (path: string) => new URL(path, site.url).href;
 export const PERSON_ID = `${site.url}/#person`;
 export const WEBSITE_ID = `${site.url}/#website`;
 
-/** Titles from content may carry an em or en dash ("Honeypot Worm — bendi.py");
+/** Titles from content may carry an em or en dash ("Honeypot Worm \u2014 bendi.py");
  *  everywhere the site writes a title it reads "Honeypot Worm: bendi.py" instead. */
-export const plainTitle = (s: string) => s.replace(/\s+[—–]\s+/g, ": ").replace(/[—–]/g, "-");
+export const plainTitle = (s: string) => s.replace(/\s+[\u2014\u2013]\s+/g, ": ").replace(/[\u2014\u2013]/g, "-");
 
 /** Where each page's share card is rendered (scripts/og-cards.mjs). */
 export const cardFor = {

@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Lunar — design tokens
+   Lunar: design tokens
    Night is the default. Dawn is the light theme (toggle, persisted).
    Accents are low-chroma and carry fixed meanings across the whole site:
      lily     hard · pwn · "you are here"
@@ -63,11 +63,11 @@
   /* one monospace for "me" (the name, the bio) and for code */
   --mono: "JetBrains Mono Variable", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
 
-  --t-micro: 0.75rem;     /* 12 — only for uppercase-free tiny marks */
-  --t-meta: 0.875rem;     /* 14 — small */
-  --t-small: 0.875rem;    /* 14 — small, UI */
+  --t-micro: 0.75rem;     /* 12: only for uppercase-free tiny marks */
+  --t-meta: 0.875rem;     /* 14: small */
+  --t-small: 0.875rem;    /* 14: small, UI */
   --t-ui: 1rem;           /* 16 */
-  --t-body: 1.125rem;     /* 18 — prose */
+  --t-body: 1.125rem;     /* 18: prose */
   --t-lede: 1.375rem;     /* 22 */
   --t-h3: 1.25rem;        /* 20 */
   --t-h2: clamp(1.75rem, 1.3rem + 1.6vw, 2.25rem);   /* 28 → 36 section headings */

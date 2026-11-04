@@ -1,4 +1,4 @@
-// Moon phase from a date — shared by the build (initial render) and the
+// Moon phase from a date: shared by the build (initial render) and the
 // browser (re-computed for the visitor's "now", see components/Moon.astro).
 //
 // Mean synodic month from a known new moon (2000-01-06 18:14 UTC). Accurate

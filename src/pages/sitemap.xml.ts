@@ -6,8 +6,11 @@ import { getWriteups } from "../lib/writeups";
 import { getPosts } from "../lib/blog";
 import { getMetrics, cutoff } from "../lib/intel";
 import { abs } from "../lib/seo";
+import { site } from "../config";
 
-const day = (d: Date | null | undefined) => (d && !isNaN(+d) ? d.toISOString().slice(0, 10) : undefined);
+const SITE_UPDATED = new Date(`${site.siteUpdated}T00:00:00Z`);
+// a page changed when its content did, or when the whole site did, whichever is later
+const day = (d: Date | null | undefined) => (d && !isNaN(+d) ? (d > SITE_UPDATED ? d : SITE_UPDATED) : SITE_UPDATED).toISOString().slice(0, 10);
 const newest = (ds: (Date | null)[]) => ds.filter((d): d is Date => !!d).sort((a, b) => +b - +a)[0];
 
 export const GET: APIRoute = async () => {
@@ -23,8 +26,8 @@ export const GET: APIRoute = async () => {
     ...[...new Set(posts.map((p) => p.category))].map((c) => ({ url: `/blog/${c}/`, lastmod: day(newest(posts.filter((p) => p.category === c).map((p) => p.date))) })),
     ...posts.map((p) => ({ url: p.url, lastmod: day(p.date) })),
     { url: "/intel/", lastmod: day(intel) },
-    { url: "/achievements/" },
-    { url: "/about/" },
+    { url: "/achievements/", lastmod: day(null) },
+    { url: "/about/", lastmod: day(null) },
   ];
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
