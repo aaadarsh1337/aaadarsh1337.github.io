@@ -9,8 +9,8 @@ import { day } from "../../lib/format";
 const p = site.profile;
 const repos = getRepos();
 const identity = [
-  ["name", p.name], ["handle", p.handle], ["also", p.aliases.join(", ")], ["based in", p.location],
-  ["focus", p.focus], ["role", `${p.company.role} at ${p.company.name}`], ["team", `${p.team} · ${p.teamRole}`],
+  ["name", p.name], ["handles", [p.handle, ...p.aliases].join(", ")], ["based in", p.location],
+  ["work", `${p.company.role} at ${p.company.name}`], ["team", `${p.team} · ${p.teamRole}`],
   ["previously", `${p.formerTeam.name} · former ${p.formerTeam.role}`],
 ];
 ---

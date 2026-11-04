@@ -26,7 +26,7 @@ interface Props {
 const { title: rawTitle, section = "", image = "/assets/og.png", type = "website", jsonld, published, wide = false, crumbs = [], noindex = false } = Astro.props;
 const title = rawTitle && plainTitle(rawTitle);
 const description = Astro.props.description
-  ?? `${site.profile.name} (${site.profile.handle}), a cybersecurity student and ${site.profile.company.role.toLowerCase()} at ${site.profile.company.name}, playing CTFs for ${site.profile.team}. Writeups, malware analysis and a live SSH honeypot.`;
+  ?? `${site.profile.name} (${site.profile.handle}), a ${site.profile.company.role.toLowerCase()} at ${site.profile.company.name} and a cybersecurity student, playing CTFs for ${site.profile.team}. Writeups, malware analysis and a live SSH honeypot.`;
 const fullTitle = title ? `${title} · ${site.profile.name}` : site.profile.name;
 const canonical = new URL(Astro.url.pathname, site.url).href;
 // One @graph per page: the page's own objects, its breadcrumbs, and on the home and

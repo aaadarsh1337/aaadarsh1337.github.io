@@ -87,11 +87,20 @@ const sheetNav = [{ id: "home", href: "/", label: "Home" }, ...nav];
     font-size: var(--t-small);
   }
   .mark { position: relative; display: inline-flex; align-items: center; gap: .75rem; }
-  /* the moon stays still: hovering only brightens its faint ring */
-  .mark__moonbtn { display: grid; place-items: center; padding: 4px; margin: -4px; border: 0; background: none; border-radius: 50%; cursor: pointer; }
-  .mark__moonbtn :global(.moon__halo) { transition: stroke-opacity .25s var(--ease); }
-  .mark__moonbtn:hover :global(.mark__moon .moon__halo) { stroke-opacity: .32; }
-  .mark__moonbtn :global(.mark__moon) { view-transition-name: moon; }
+  /* the moon never moves: it answers with light. A soft glow on hover, a brighter one
+     when pressed, and it stays lit while its popover is open. */
+  .mark__moonbtn { --glow: var(--moon); display: grid; place-items: center; padding: 4px; margin: -4px; border: 0; background: none; border-radius: 50%; cursor: pointer; }
+  :global(:root[data-theme="dawn"]) .mark__moonbtn { --glow: var(--blue); }
+  .mark__moonbtn :global(.mark__moon) { transition: filter .3s var(--ease); }
+  .mark__moonbtn :global(.moon__halo) { transition: stroke-opacity .3s var(--ease); }
+  .mark__moonbtn:hover :global(.mark__moon),
+  .mark__moonbtn:focus-visible :global(.mark__moon),
+  .mark:has(.tonight:popover-open) .mark__moonbtn :global(.mark__moon) { filter: drop-shadow(0 0 9px color-mix(in srgb, var(--glow) 50%, transparent)); }
+  .mark__moonbtn:hover :global(.mark__moon .moon__halo),
+  .mark:has(.tonight:popover-open) .mark__moonbtn :global(.mark__moon .moon__halo) { stroke-opacity: .35; }
+  .mark__moonbtn:active :global(.mark__moon) { filter: drop-shadow(0 0 16px color-mix(in srgb, var(--glow) 80%, transparent)); transition-duration: .06s; }
+  /* the moon and its eclipse shadow travel as one layer through page and theme fades */
+  .mark__moonbtn { view-transition-name: moon; }
   /* the moon never gives up space to the name: without this, the global
      svg { max-width: 100% } let a tight phone bar squeeze it to nothing */
   .mark__moonbtn { flex: none; }
@@ -119,7 +128,7 @@ const sheetNav = [{ id: "home", href: "/", label: "Home" }, ...nav];
     position: absolute; top: -1px; right: -1px; bottom: -1px; left: -1px; border-radius: 50%;
     opacity: 0; -webkit-transform: translateX(-110%); transform: translateX(-110%);
     background: radial-gradient(circle at 46% 42%, #722b24, #160b0b 72%);
-    transition: transform 1.4s cubic-bezier(.45, 0, .55, 1), opacity .4s;
+    transition: transform .9s cubic-bezier(.45, 0, .55, 1), opacity .3s;   /* the same pace as the theme-switch eclipse */
   }
   .is-eclipsing .eclipse i { animation: eclipse .9s cubic-bezier(.45, 0, .55, 1) both; }
   /* blood moon (the Konami code): the shadow slides over and stays */
@@ -299,8 +308,8 @@ const sheetNav = [{ id: "home", href: "/", label: "Home" }, ...nav];
       themeName();
     };
     if (matchMedia("(prefers-reduced-motion: reduce)").matches || !document.startViewTransition) return apply();
-    root.classList.add("blood-vt");
-    document.startViewTransition(apply).finished.finally(() => root.classList.remove("blood-vt"));
+    root.classList.add("theme-vt");   // the same fade as night and dawn
+    document.startViewTransition(apply).finished.finally(() => root.classList.remove("theme-vt"));
   }
 
   // phones: hide the bar while scrolling down, bring it back on any scroll up

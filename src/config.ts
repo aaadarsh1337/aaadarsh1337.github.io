@@ -41,7 +41,7 @@ export const site = {
     resume: "/assets/resume.pdf",
     // Shown verbatim on the home page. The first paragraph is set as a lede.
     bio: [
-      "I’m Adarsh Pillai, known online as aaadarsh1337, jackthereaper1337, or Hasher2009. I’m a cybersecurity student and a reverse engineer at Heap0verflow, with a longstanding interest in offensive security. What started as curiosity about computers became something I spend much of my free time on: solving challenges, experimenting with tools, and understanding the details behind how things work.",
+      "I’m Adarsh Pillai, known online as aaadarsh1337, jackthereaper1337, or Hasher2009. I work as a reverse engineer at Heap0verflow, and I’m a cybersecurity student with a longstanding interest in offensive security. What started as curiosity about computers became something I spend much of my free time on: solving challenges, experimenting with tools, and understanding the details behind how things work.",
       "I play CTFs for H3ap, Heap0verflow’s CTF team, where I work on rev challenges. I’m a former co-founder of 404squad, the CTF team we ran from August to October 2026, where I organized our near-weekly CTF participation, before we went on to start Heap0verflow. Building a team that consistently shows up, learns together, and enjoys the process matters to me as much as the competition itself.",
       "Outside CTFs, I’m usually digging further into reverse engineering or working on security projects of my own. I enjoy having something unfamiliar to figure out, whether that means tracing a binary, testing an approach, or writing a tool to make progress. This site collects that work, along with the notes and writeups I produce along the way.",
     ],

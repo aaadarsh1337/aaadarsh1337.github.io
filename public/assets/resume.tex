@@ -129,8 +129,7 @@
 %-----------PROFILE-----------
 \section{Profile}
   \resumeSubHeadingListStart
-    \resumeItem{Cybersecurity student and \textbf{reverse engineer at Heap0verflow}, with a background in offensive security. I play CTFs for \textbf{H3ap}, Heap0verflow's CTF team, working on rev challenges; former co-founder of 404squad, the team it grew from.}
-    \resumeItem{I publish detailed CTF writeups and malware analysis, and build and operate \textbf{Threat Harbour}, a live SSH honeypot that turns real attacker traffic into public threat intelligence every day.}
+    \item\small{Reverse engineer at \textbf{Heap0verflow} and CTF player for its team \textbf{H3ap}, working on rev challenges; former co-founder of 404squad, the team H3ap grew from. Cybersecurity student with a background in offensive security. I publish detailed CTF writeups and malware analysis, and run \textbf{Threat Harbour}, a live SSH honeypot that turns real attacker traffic into public threat intelligence every day.}
   \resumeSubHeadingListEnd
 
 
@@ -143,8 +142,9 @@
     \resumeSubheading
       {Amrita Vidyalayam}{Vazhappally West, Kottayam, Kerala}
       {Class X, CBSE (Classes IX--X)}{2023 -- 2025}
-    \resumeItem{\textbf{Earlier schooling:} \emph{Bharatiya Vidya Bhavan Senior Secondary School}, Thirunavaya, Malappuram (Class VIII, 2022--23); \emph{Raja Narayanlal Lahoti English School (RNLES)}, Latur, Maharashtra (Classes I--VII, to 2022)}
-  \resumeSubHeadingListEnd
+    \resumeEntry{\small\textbf{Earlier:} Bharatiya Vidya Bhavan Senior Secondary School, Thirunavaya, Malappuram}{Class VIII, 2022 -- 2023}
+    \resumeEntry{\small\phantom{\textbf{Earlier:}} Raja Narayanlal Lahoti English School (RNLES), Latur, Maharashtra}{Classes I -- VII, to 2022}
+  \resumeSubHeadingListEnd\vspace{4pt}
 
 
 %-----------EXPERIENCE-----------
@@ -160,7 +160,7 @@
 
     \resumeSubheading
       {Former Co-Founder \& Core Member, 404squad (CTF Team)}{Aug. 2026 -- Oct. 2026}
-      {Competitive Capture The Flag; the team that became H3ap}{Remote, India}
+      {CTF team, now H3ap}{Remote, India}
       \resumeItemListStart
         \resumeItem{Co-founded 404squad (one of three founders); ran the team's near-weekly competition cycle: scheduling, challenge triage across web/pwn/rev/crypto/forensics, and post-event writeup reviews.}
         \resumeItem{Primary solver on reverse engineering; cross-trained teammates and kept a shared methodology so results repeated.}
@@ -185,11 +185,11 @@
       \resumeProjectHeading
           {\textbf{Threat Harbour} $|$ \emph{Cowrie, Python, Oracle Cloud, Grafana/Loki, GitHub Actions}}{Aug. 2026 -- Present}
           \resumeItemListStart
-            \resumeItem{Deployed and hardened a \textbf{Cowrie 3.0.13 SSH honeypot} on an OCI Free Tier VM (ap-hyderabad-1): single~exposed~port, NSG rules, restricted read-only SSH operator account, localhost-bound monitoring never exposed publicly.}
-            \resumeItem{Built a \textbf{daily 00:00 UTC pipeline} that SSHes to the sensor, runs a stdlib-only parser on-box and commits \mbox{only aggregates}: raw logs, source IPs, payloads and keys never leave the machine; out-of-band OCI API reboot handles a wedged sshd.}
-            \resumeItem{Instrumented the sensor with \textbf{Grafana + Loki + Promtail} (SSH-tunnel only) \mbox{and gated every publish on a fail-loud \textbf{pytest} suite} with GitHub Actions CI.}
+            \resumeItem{Deployed and hardened a \textbf{Cowrie 3.0.13 SSH honeypot} on an OCI Free Tier VM (ap-hyderabad-1): a single exposed port, NSG rules, restricted read-only SSH operator account, localhost-bound monitoring never exposed publicly.}
+            \resumeItem{Built a \textbf{daily 00:00 UTC pipeline} that SSHes to the sensor, runs a stdlib-only parser on-box and commits only aggregates: raw logs, source IPs, payloads and keys never leave the machine; out-of-band OCI API reboot handles a wedged sshd.}
+            \resumeItem{Instrumented the sensor with \textbf{Grafana + Loki + Promtail} (SSH-tunnel only) and gated every publish on a fail-loud \textbf{pytest} suite in GitHub Actions CI.}
             \resumeItem{\textbf{2,925,425 events / 8,198 unique IPs / 386,289 sessions} analyzed from Aug.~27 to Nov.~4, 2026. Median session 2.3s; 74.8\%~of~commands are discovery and fingerprinting, with repeated persistence attempts against authorized\_keys. Findings are written up in the research docs.}
-            \resumeItem{Published a public \textbf{intel dashboard} rebuilt daily from the same metrics: full, defanged attacker commands, SHA-256 hashes with VirusTotal/MalwareBazaar lookups, and \textbf{IoC feeds} (TXT, CSV, JSON) of hashes, file paths, source networks and credentials.}
+            \resumeItem{Published a public \textbf{intel dashboard}, rebuilt daily from the same metrics: full, defanged attacker commands, SHA-256 hashes with VirusTotal/MalwareBazaar lookups, and \textbf{IoC feeds} (TXT, CSV, JSON) of hashes, file paths, source networks and credentials.}
           \resumeItemListEnd
       \resumeProjectHeading
           {\textbf{Security Automation Toolkit} $|$ \emph{Python, Bash}}{Jul. 2026 -- Present}
@@ -209,8 +209,8 @@
 
 %-----------COMPETITIVE RESULTS-----------
 \section{Competitive Results}
-  {\small All with 404squad (Aug.--Oct. 2026), the team now playing as H3ap: \href{https://ctftime.org/team/444694}{\underline{CTFtime team 444694}}.\par}\vspace{3pt}
   \resumeSubHeadingListStart
+    \resumeEntry{\small\textit{All with 404squad (Aug. -- Oct. 2026), the team now playing as H3ap}}{\href{https://ctftime.org/team/444694}{CTFtime team 444694}}
     \resumeEntry{\textbf{Lun4R CTF 2026} \emph{qualifiers}, 404squad: \textbf{\#2} overall}{\href{https://github.com/aaadarsh1337/cybersecurity-achievements/tree/main/Lun4R-quals}{proof}\,$\cdot$\,\href{https://github.com/aaadarsh1337/cybersecurity-achievements/blob/main/Lun4R-quals/LUN4R_CTF_2026_Certificate_Adarsh_Pillai.jpg}{certificate}}
     \resumeEntry{\textbf{cruXipher 2026}, 404squad: \textbf{\#3} overall}{\href{https://github.com/aaadarsh1337/cybersecurity-achievements/blob/main/cruXipher.webp}{scoreboard}}
     \resumeEntry{\textbf{PwnSec CTF 2026}, 404squad: \textbf{\#6} human division, 237 teams}{\href{https://github.com/aaadarsh1337/cybersecurity-achievements/tree/main/PwnSec}{proof}\,$\cdot$\,\href{https://github.com/aaadarsh1337/cybersecurity-achievements/blob/main/PwnSec/006_404squad.pdf}{certificate}}
@@ -220,8 +220,10 @@
     \resumeEntry{\textbf{TFC CTF 2026}, 404squad: \textbf{\#23} human, \#172 overall}{\href{https://github.com/aaadarsh1337/cybersecurity-achievements/tree/main/TFCCTF}{proof}\,$\cdot$\,\href{https://github.com/aaadarsh1337/cybersecurity-achievements/blob/main/TFCCTF/tfc-ctf-26-diploma-adarsh-pillai.png}{certificate}}
     \resumeEntry{\textbf{H7CTF 2026}, 404squad: \textbf{\#58} overall}{\href{https://github.com/aaadarsh1337/cybersecurity-achievements/tree/main/H7CTF}{proof}\,$\cdot$\,\href{https://github.com/aaadarsh1337/cybersecurity-achievements/blob/main/H7CTF/certificate_H7CTF26-46VN-V3V2-32HK.png}{certificate}}
     \resumeEntry{\textbf{TryHackMe}: top 2\% globally, 100+ rooms completed}{\href{https://tryhackme.com/p/aaadarsh1337}{profile}}
-    \resumeItem{\textbf{ReRange}: 5 reversing challenges incl. its only Hard; \textbf{pwnable.kr}: 5 challenges (fd, collision, bof, passcode, dragon); \textbf{picoCTF}: heap and rev}
-  \resumeSubHeadingListEnd
+    \resumeEntry{\textbf{ReRange}: 5 reversing challenges, including its only Hard}{\href{https://aaadarsh1337.github.io/writeups/?platform=ReRange}{writeups}}
+    \resumeEntry{\textbf{pwnable.kr}: fd, collision, bof, passcode, dragon}{\href{https://aaadarsh1337.github.io/writeups/?platform=pwnable.kr}{writeups}}
+    \resumeEntry{\textbf{picoCTF}: heap and rev challenges}{\href{https://aaadarsh1337.github.io/writeups/?platform=picoCTF}{writeups}}
+  \resumeSubHeadingListEnd\vspace{4pt}
 
 
 %-----------TECHNICAL SKILLS-----------
@@ -229,7 +231,9 @@
  \begin{itemize}[leftmargin=0.15in, label={}]
     \small{\item{
      \textbf{Security}{: Reverse Engineering, Binary Exploitation (pwn), Web Exploitation, Network Security, OSINT, Threat~Intelligence, Honeypot Operations} \\
-     \textbf{Tools}{: Burp Suite, ffuf, Nuclei, Nikto, sqlmap, Nmap, Wireshark, Ghidra, Binary Ninja, pwntools, pwndbg, Autopsy, Binwalk} \\
+     \textbf{Reversing tools}{: Ghidra, Binary Ninja, pwntools, pwndbg} \\
+     \textbf{Web \& network tools}{: Burp Suite, ffuf, Nuclei, Nikto, sqlmap, Nmap, Wireshark} \\
+     \textbf{Forensics tools}{: Autopsy, Binwalk} \\
      \textbf{Languages}{: Python, Bash, C, SQL, Go} \\
      \textbf{Platforms}{: Linux, Docker, Git, GitHub Actions, Oracle Cloud (OCI), Grafana, Loki, Astro} \\
      \textbf{Currently Learning}{: VM Reversing, Embedded Security, Malware Analysis, Firmware Analysis}

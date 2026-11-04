@@ -46,14 +46,13 @@ body::after {
   opacity: 0;
 }
 :root.blood body::after { opacity: 1; }
-/* entering and leaving cross-fade slowly, the whole page at once */
-:root.blood-vt::view-transition-group(*),
-:root.blood-vt::view-transition-old(*),
-:root.blood-vt::view-transition-new(*) { animation-duration: 1.4s; animation-timing-function: ease-in-out; }
-/* switching night and dawn: the same cross-fade, quicker for an everyday action */
-:root.theme-vt::view-transition-group(*),
-:root.theme-vt::view-transition-old(*),
-:root.theme-vt::view-transition-new(*) { animation-duration: .55s; animation-timing-function: ease-in-out; }
+/* Switching night, dawn or the blood moon: one cross-fade, the same for all three.
+   The moon stays out of the snapshot, so its eclipse plays straight through live. */
+:root.theme-vt::view-transition-old(root),
+:root.theme-vt::view-transition-new(root) { animation-duration: .55s; animation-timing-function: ease-in-out; }
+:root.theme-vt::view-transition-group(moon),
+:root.theme-vt::view-transition-new(moon) { animation: none; }
+:root.theme-vt::view-transition-old(moon) { display: none; }
 .blood-note {
   position: fixed; z-index: 41; left: 50%; bottom: calc(var(--s6) + env(safe-area-inset-bottom, 0px)); translate: -50% 0;
   padding: var(--s3) var(--s5); border-radius: 999px; background: var(--bg-3); white-space: nowrap;
