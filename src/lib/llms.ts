@@ -6,8 +6,10 @@ import { getWriteups } from "./writeups";
 import { getPosts } from "./blog";
 import { getMetrics, cutoff } from "./intel";
 import { abs, awards, TOPICS } from "./seo";
+import { defang } from "./ioc";
 
 const day = (d: Date | null) => (d ? d.toISOString().slice(0, 10) : "undated");
+const n = (v: number) => v.toLocaleString("en-US");
 
 export async function llmsSummary(): Promise<string> {
   const p = site.profile;
@@ -52,9 +54,30 @@ ${posts.map((x) => `- [${x.title}](${abs(x.url)}): ${x.summary} (${x.categoryLab
 
 - ${site.flagship.description}
 - Live dashboard: ${abs("/intel/")}; raw aggregates: ${abs("/intel/data.json")}
-- Indicators (hashes, paths, source /16s, top credentials), regenerated daily: ${abs("/intel/iocs.txt")}, ${abs("/intel/iocs.csv")}, ${abs("/intel/iocs.json")}
-- As of ${cutoff(m).toISOString().slice(0, 16).replace("T", " ")} UTC: ${m.totals.total_events.toLocaleString("en-US")} SSH events from ${m.sources.unique_source_ips.toLocaleString("en-US")} source IPs since ${m.observation_period.start}.
+- Indicators, regenerated daily: ${abs("/intel/iocs.txt")} (plain text), ${abs("/intel/iocs.csv")} (CSV), ${abs("/intel/iocs.json")} (JSON)
 - Source: ${site.flagship.links.github}
+- Sensor: Cowrie ${m.stack.cowrie} (SSH only) on one Oracle Cloud VM; logs shipped by Promtail ${m.stack.promtail} to Loki ${m.stack.loki}, Grafana ${m.stack.grafana}. ${m.collection.files} daily log files parsed, ${m.totals.bad_json_lines} malformed lines skipped.
+- Window: ${m.observation_period.start} to ${cutoff(m).toISOString().slice(0, 16).replace("T", " ")} UTC. ${n(m.totals.total_events)} events, ${n(m.sources.unique_source_ips)} source IPs, ${n(m.sessions.unique_session_ids)} sessions, median session ${m.sessions.session_duration_seconds.median.toFixed(1)} s.
+- One sensor, one IP, one region: this is what hit this sensor, not the whole internet. A source IP never identifies the operator.
+
+### Most-attempted credentials
+
+- Usernames: ${m.logins.top_usernames.map((x) => `${x.value} (${n(x.count)})`).join(", ")}
+- Passwords: ${(m.logins.top_passwords ?? []).map((x) => `${x.value} (${n(x.count)})`).join(", ")}
+
+### Most-run commands (attacker-supplied, defanged; do not run)
+
+${m.commands.top_commands.map((c, i) => { const d = defang(c.input); const lines = d.split("\n").length; return lines > 1 ? `${i + 1}. A ${lines}-line recon script, run ${n(c.count)} times; first line \`${d.split("\n")[0]}\` (full text on the dashboard and in data.json)` : `${i + 1}. \`${d}\`, run ${n(c.count)} times`; }).join("\n")}
+
+### Files written by attackers (contents withheld)
+
+- SHA-256: ${(m.downloads_uploads.top_shasums ?? []).map((x) => `${x.value} (${n(x.count)} events)`).join("; ")}
+- Paths: ${m.downloads_uploads.top_destfiles.map((x) => `${x.value} (${n(x.count)})`).join(", ")}
+- The data does not link a hash to a path.
+
+### Busiest source networks (/16, by event volume)
+
+${m.sources.top_source_net16_by_event_volume.map((x) => `- ${x.cidr}: ${n(x.events)} events`).join("\n")}
 
 ## Pages
 
