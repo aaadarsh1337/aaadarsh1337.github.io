@@ -87,9 +87,10 @@ const sheetNav = [{ id: "home", href: "/", label: "Home" }, ...nav];
     font-size: var(--t-small);
   }
   .mark { position: relative; display: inline-flex; align-items: center; gap: .75rem; }
-  .mark__moonbtn { display: grid; place-items: center; padding: 4px; margin: -4px; border: 0; background: none; border-radius: 50%; cursor: pointer; transition: transform .4s var(--ease); }
-  .mark__moonbtn:hover { transform: rotate(-12deg) scale(1.06); }
-  .mark__moonbtn:active { transform: scale(.94); }
+  /* the moon stays still: hovering only brightens its faint ring */
+  .mark__moonbtn { display: grid; place-items: center; padding: 4px; margin: -4px; border: 0; background: none; border-radius: 50%; cursor: pointer; }
+  .mark__moonbtn :global(.moon__halo) { transition: stroke-opacity .25s var(--ease); }
+  .mark__moonbtn:hover :global(.mark__moon .moon__halo) { stroke-opacity: .32; }
   .mark__moonbtn :global(.mark__moon) { view-transition-name: moon; }
   /* the moon never gives up space to the name: without this, the global
      svg { max-width: 100% } let a tight phone bar squeeze it to nothing */
@@ -226,9 +227,15 @@ const sheetNav = [{ id: "home", href: "/", label: "Home" }, ...nav];
     .forEach((el) => (el.textContent = root.classList.contains("blood") ? "End blood moon" : root.dataset.theme === "dawn" ? "Switch to night" : "Switch to dawn"));
   const flip = () => {
     const next = root.dataset.theme === "dawn" ? "night" : "dawn";
-    if (next === "dawn") root.dataset.theme = "dawn"; else delete root.dataset.theme;
-    try { localStorage.setItem("theme", next); } catch {}
-    themeName();
+    const apply = () => {
+      if (next === "dawn") root.dataset.theme = "dawn"; else delete root.dataset.theme;
+      try { localStorage.setItem("theme", next); } catch {}
+      themeName();
+    };
+    // night and dawn cross-fade, like the blood moon (instant without motion or view transitions)
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches || !document.startViewTransition) return apply();
+    root.classList.add("theme-vt");
+    document.startViewTransition(apply).finished.finally(() => root.classList.remove("theme-vt"));
   };
   themeName();
   // the theme changes at the eclipse's deepest point; instantly when motion is off or the moon is out of sight

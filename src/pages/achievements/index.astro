@@ -20,7 +20,8 @@ const phaseFor = (rank: number) => Math.acos(1 - 2 * lit(rank)) / (2 * Math.PI);
 const results = site.achievements
   .map((a) => {
     const rank = Number(a.detail.match(/#(\d+)/)?.[1] ?? 999);
-    return { ...a, rank, rest: a.detail.replace(/^404squad\s*-\s*#\d+\s*/, "").replace(/^Overall$/, "overall"), phase: phaseFor(rank) };
+    const proof = "proof" in a ? a.proof : "Proof";   // a CTFtime results page where there was no certificate
+    return { ...a, rank, proof, rest: a.detail.replace(/^[^#]*#\d+\s*/, "").replace(/^Overall$/, "overall"), phase: phaseFor(rank) };
   })
   .sort((a, b) => a.rank - b.rank);
 const best = results[0];
@@ -29,9 +30,9 @@ const topTen = results.filter((r) => r.rank <= 10).length;
 const statFor = (label: string) => label === "TryHackMe" ? site.stats.map((s) => `${s.value} ${s.label.replace(/^TryHackMe |^THM /, "")}`).join(" · ") : undefined;
 const profiles = site.links.filter((l) => ["TryHackMe", "CTFtime", "pwn.college", "PicoCTF"].includes(l.label)).map((l) => ({ ...l, stat: statFor(l.label) }));
 ---
-<Base title="Achievements" description={`CTF placements of ${p.name} (${p.handle}) with ${p.team}, best #${best.rank} at ${best.title}, plus certificates. Each one links to its proof.`} section="achievements">
+<Base title="Achievements" description={`CTF placements of ${p.name} (${p.handle}), best #${best.rank} at ${best.title} with ${best.team}, plus certificates. Each one links to its proof.`} section="achievements">
   <PageHead crumbs={[{ label: "achievements" }]} title="Achievements"
-    lede={`CTF placements with ${p.team} and the certificates I've earned. Every one links to its proof.`} />
+    lede={`CTF placements and the certificates I've earned. Every one links to its proof.`} />
 
   <section class="best" aria-labelledby="h-best">
     <div class="best__moon" aria-hidden="true">
@@ -41,7 +42,7 @@ const profiles = site.links.filter((l) => ["TryHackMe", "CTFtime", "pwn.college"
     <div class="best__text">
       <h2 class="best__k" id="h-best">Best finish</h2>
       <p class="best__t">{best.title}</p>
-      <p class="best__d">#{best.rank} {best.rest}, with {p.team}</p>
+      <p class="best__d">#{best.rank} {best.rest}, with {best.team}</p>
       <p class="best__go"><a class="btn btn--primary" href={best.url} rel="external">See the proof <span class="arr arr--out">↗</span></a></p>
       <dl class="best__sum">
         <div><dt>CTF placements</dt><dd>{results.length}</dd></div>
@@ -52,7 +53,8 @@ const profiles = site.links.filter((l) => ["TryHackMe", "CTFtime", "pwn.college"
   </section>
 
   <section class="sec" id="results" aria-labelledby="h-results">
-    <h2 class="label" id="h-results">CTF results with {p.team}</h2>
+    <h2 class="label" id="h-results">CTF results</h2>
+    <p class="hint hint--team">Results from {p.formerTeam.period} were earned with {p.formerTeam.name}, the team that now plays as {p.team}, Heap0verflow’s CTF team. <a class="link" href={p.ctftimeTeam} rel="external">Same team on CTFtime</a>, with {p.formerTeam.name} as its alias.</p>
     <p class="hint"><Moon phase={0.5} size={14} label="" /><Moon phase={0.25} size={14} label="" /><Moon phase={0.08} size={14} label="" /> The fuller the moon, the higher the finish.</p>
     <ol class="res">
       {results.map((r) => (
@@ -63,8 +65,8 @@ const profiles = site.links.filter((l) => ["TryHackMe", "CTFtime", "pwn.college"
               <Moon phase={r.phase} size={40} class="res__moon" label="" />
             </span>
             <span class="res__t">{r.title}</span>
-            <span class="res__d">{r.rest}</span>
-            <span class="res__go">Proof <span aria-hidden="true">↗</span><span class="visually-hidden"> and certificate for {r.title}</span></span>
+            <span class="res__d">{r.rest}, with {r.team}</span>
+            <span class="res__go">{r.proof} <span aria-hidden="true">↗</span><span class="visually-hidden"> for {r.title}</span></span>
           </a>
         </li>
       ))}
@@ -85,7 +87,7 @@ const profiles = site.links.filter((l) => ["TryHackMe", "CTFtime", "pwn.college"
         </li>
       ))}
     </ul>
-    <p class="note">Certificates for the CTF results are inside each Proof folder. Everything is mirrored in <a class="link" href="https://github.com/aaadarsh1337/cybersecurity-achievements" rel="external">cybersecurity-achievements</a> in case an original link goes away.</p>
+    <p class="note">Certificates for the CTF results are inside each Proof folder; where an event gave no certificate, the proof is its scoreboard or its CTFtime results page. Everything is mirrored in <a class="link" href="https://github.com/aaadarsh1337/cybersecurity-achievements" rel="external">cybersecurity-achievements</a> in case an original link goes away.</p>
   </section>
 
   <section class="sec" id="profiles" aria-labelledby="h-profiles">
@@ -134,6 +136,7 @@ const profiles = site.links.filter((l) => ["TryHackMe", "CTFtime", "pwn.college"
   /* ---------- results: one card per placement, its moon as full as the finish ---------- */
   .hint { margin-top: var(--s3); display: flex; align-items: center; gap: .35rem; font-size: var(--t-small); color: var(--fg-2); }
   .hint :global(.moon:last-of-type) { margin-right: .3rem; }
+  .hint--team { display: block; margin-top: var(--s2); max-width: 44rem; line-height: 1.55; }
   .res { list-style: none; margin-top: var(--s5); display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s3); }
   .res a {
     position: relative; display: grid; grid-template-rows: auto auto 1fr auto; height: 100%;

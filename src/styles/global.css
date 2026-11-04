@@ -50,6 +50,10 @@ body::after {
 :root.blood-vt::view-transition-group(*),
 :root.blood-vt::view-transition-old(*),
 :root.blood-vt::view-transition-new(*) { animation-duration: 1.4s; animation-timing-function: ease-in-out; }
+/* switching night and dawn: the same cross-fade, quicker for an everyday action */
+:root.theme-vt::view-transition-group(*),
+:root.theme-vt::view-transition-old(*),
+:root.theme-vt::view-transition-new(*) { animation-duration: .55s; animation-timing-function: ease-in-out; }
 .blood-note {
   position: fixed; z-index: 41; left: 50%; bottom: calc(var(--s6) + env(safe-area-inset-bottom, 0px)); translate: -50% 0;
   padding: var(--s3) var(--s5); border-radius: 999px; background: var(--bg-3); white-space: nowrap;

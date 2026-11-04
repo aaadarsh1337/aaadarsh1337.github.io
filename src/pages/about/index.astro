@@ -10,7 +10,8 @@ const p = site.profile;
 const repos = getRepos();
 const identity = [
   ["name", p.name], ["handle", p.handle], ["also", p.aliases.join(", ")], ["based in", p.location],
-  ["focus", p.focus], ["team", `${p.team} · ${p.teamRole}`],
+  ["focus", p.focus], ["role", `${p.company.role} at ${p.company.name}`], ["team", `${p.team} · ${p.teamRole}`],
+  ["previously", `${p.formerTeam.name} · former ${p.formerTeam.role}`],
 ];
 ---
 <Base title="About" description={`About ${p.name}: background, the tools I work with, repositories and contact.`} section="about">

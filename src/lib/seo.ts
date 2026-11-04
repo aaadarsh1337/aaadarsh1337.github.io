@@ -27,7 +27,7 @@ const rankOf = (detail: string) => detail.match(/#(\d+)/)?.[1];
 export const awards = () => site.achievements.map((a) => {
   const r = rankOf(a.detail);
   const rest = a.detail.replace(/^.*?#\d+\s*/, "").trim();
-  return `${r ? `#${r} ` : ""}${rest ? `${rest} ` : ""}at ${a.title} with ${site.profile.team}`.replace(/\s+/g, " ");
+  return `${r ? `#${r} ` : ""}${rest ? `${rest} ` : ""}at ${a.title} with ${a.team}`.replace(/\s+/g, " ");
 });
 
 /** The schema.org Person: name, every handle, the work, and every other profile. */
@@ -40,9 +40,11 @@ export function person() {
     alternateName: [p.handle, ...p.aliases],
     url: site.url,
     image: abs(p.avatarFallback),
-    description: `Cybersecurity student focused on ${p.focus.toLowerCase()}, CTFs with ${p.team} (${p.teamRole}), malware analysis and the Threat Harbour SSH honeypot.`,
+    description: `Cybersecurity student and ${p.company.role.toLowerCase()} at ${p.company.name}. Plays CTFs for ${p.team}; former ${p.formerTeam.role} of ${p.formerTeam.name}. Malware analysis and the Threat Harbour SSH honeypot.`,
+    jobTitle: p.company.role,
+    worksFor: { "@type": "Organization", name: p.company.name, url: p.company.url },
     knowsAbout: ["Reverse engineering", "Binary exploitation", "Malware analysis", "Capture the flag (CTF)", "Threat intelligence", "Honeypots", "OSINT", "Web exploitation"],
-    memberOf: { "@type": "Organization", name: p.team, description: "CTF team" },
+    memberOf: { "@type": "Organization", name: p.team, alternateName: p.formerTeam.name, url: p.ctftimeTeam, description: `${p.company.name}’s CTF team, formerly ${p.formerTeam.name}` },
     homeLocation: { "@type": "Country", name: p.location },
     award: awards(),
     sameAs: site.links.map((l) => l.url),

@@ -18,7 +18,7 @@ export async function llmsSummary(): Promise<string> {
   const certs = site.certificates.map((c) => `- ${c.name}, ${c.issuer} (${c.date}): ${c.url}`);
   return `# ${p.name} (${p.handle})
 
-> ${p.name} is a cybersecurity student from ${p.location}, known online as ${[p.handle, ...p.aliases].join(", ")}. Focus: ${p.focus.toLowerCase()}. ${p.teamRole[0].toUpperCase() + p.teamRole.slice(1)} of the CTF team ${p.team}. Writes CTF writeups and malware analysis, and runs Threat Harbour, a live SSH honeypot.
+> ${p.name} is a cybersecurity student from ${p.location}, known online as ${[p.handle, ...p.aliases].join(", ")}. Focus: ${p.focus.toLowerCase()}. ${p.company.role} at ${p.company.name} and CTF player for ${p.team}, Heap0verflow’s CTF team; former ${p.formerTeam.role} of ${p.formerTeam.name}, the team it grew from (${p.formerTeam.period}). Writes CTF writeups and malware analysis, and runs Threat Harbour, a live SSH honeypot.
 
 Facts on this page are generated from the site's own data on every deploy (last built ${new Date().toISOString().slice(0, 10)}). The full text of every writeup and post is in ${abs("/llms-full.txt")}.
 
@@ -28,13 +28,17 @@ ${p.bio.map((b) => b).join("\n\n")}
 
 - Focus: ${p.focus}
 - Currently learning: ${site.skills.find((s) => /learning/i.test(s.category))?.items.join(", ") ?? ""}
-- Team: ${p.team} (${p.teamRole})
+- Role: ${p.company.role} at ${p.company.name} (${p.company.url})
+- Team: ${p.team} (${p.teamRole}); CTFtime ${p.ctftimeTeam}
+- Previously: former ${p.formerTeam.role} of ${p.formerTeam.name} (${p.formerTeam.period}). ${p.formerTeam.name} is now ${p.team}: the same CTFtime team, with ${p.formerTeam.name} as an alias.
 - TryHackMe: ${site.stats.map((s) => `${s.value} ${s.label.replace(/^TryHackMe |^THM /, "")}`).join(", ")}
 - Profiles: ${site.links.map((l) => `${l.label} ${l.url}`).join("; ")}
 - Contact: ${site.contact.email}
 - Résumé: ${abs(p.resume)}
 
-## CTF results with ${p.team}
+## CTF results
+
+All results so far were earned with ${p.formerTeam.name} (${p.formerTeam.period}), the team now playing as ${p.team}.
 
 ${awards().map((a, i) => `- ${a}. Proof: ${site.achievements[i].url}`).join("\n")}
 

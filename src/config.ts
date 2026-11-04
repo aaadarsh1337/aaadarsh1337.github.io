@@ -28,20 +28,27 @@ export const site = {
     location: "India",
     timezone: "Asia/Kolkata",
     focus: "Reverse Engineering",
-    team: "404squad",
-    teamRole: "co-founder",
+    // Now: reverse engineer at Heap0verflow, CTF player for its team H3ap.
+    team: "H3ap",
+    teamRole: "CTF player",
+    company: { name: "Heap0verflow", role: "Reverse engineer", url: "https://www.linkedin.com/company/heap0verflow" },
+    // Before: 404squad, the CTF team that became H3ap (same CTFtime team, 404squad is its alias).
+    // Results from then are always shown "with 404squad"; the co-founder role is always "former".
+    formerTeam: { name: "404squad", role: "co-founder", period: "August to October 2026" },
+    ctftimeTeam: "https://ctftime.org/team/444694",
     avatar: "/assets/avatar.webp",
     avatarFallback: "/assets/avatar.jpg",
     resume: "/assets/resume.pdf",
     // Shown verbatim on the home page. The first paragraph is set as a lede.
     bio: [
-      "I’m Adarsh Pillai, known online as aaadarsh1337, jackthereaper1337, or Hasher2009. I’m a cybersecurity student with a longstanding interest in offensive security and a growing focus on reverse engineering. What started as curiosity about computers became something I spend much of my free time on: solving challenges, experimenting with tools, and understanding the details behind how things work.",
-      "As one of the three co-founders and a core member of 404squad, I organize our near-weekly CTF participation and primarily work on misc and rev challenges. Building a team that consistently shows up, learns together, and enjoys the process matters to me as much as the competition itself.",
+      "I’m Adarsh Pillai, known online as aaadarsh1337, jackthereaper1337, or Hasher2009. I’m a cybersecurity student and a reverse engineer at Heap0verflow, with a longstanding interest in offensive security. What started as curiosity about computers became something I spend much of my free time on: solving challenges, experimenting with tools, and understanding the details behind how things work.",
+      "I play CTFs for H3ap, Heap0verflow’s CTF team, where I work on rev challenges. I’m a former co-founder of 404squad, the CTF team we ran from August to October 2026, where I organized our near-weekly CTF participation, before we went on to start Heap0verflow. Building a team that consistently shows up, learns together, and enjoys the process matters to me as much as the competition itself.",
       "Outside CTFs, I’m usually digging further into reverse engineering or working on security projects of my own. I enjoy having something unfamiliar to figure out, whether that means tracing a binary, testing an approach, or writing a tool to make progress. This site collects that work, along with the notes and writeups I produce along the way.",
     ],
     // Phrases in the bio that become links (first occurrence only, text unchanged).
     bioLinks: [
       { text: "404squad", href: "/achievements/" },
+      { text: "Heap0verflow", href: "https://www.linkedin.com/company/heap0verflow" },
       { text: "security projects of my own", href: "/intel/" },
       { text: "writeups", href: "/writeups/" },
     ],
@@ -63,12 +70,14 @@ export const site = {
 
   // Team placements, in the order played. `url` = proof.
   achievements: [
-    { title: "Lun4R CTF 2026 - Finals", detail: "404squad - #9 Overall", date: "2026", url: "https://github.com/aaadarsh1337/cybersecurity-achievements/tree/main/Lun4R-finals" },
-    { title: "H7CTF 2026", detail: "404squad - #58 Overall", date: "2026", url: "https://github.com/aaadarsh1337/cybersecurity-achievements/tree/main/H7CTF" },
-    { title: "Lun4R CTF 2026 - Qualifiers", detail: "404squad - #2 Overall", date: "2026", url: "https://github.com/aaadarsh1337/cybersecurity-achievements/tree/main/Lun4R-quals" },
-    { title: "PwnSec CTF 2026", detail: "404squad - #6 Human Division of 237 teams", date: "2026", url: "https://github.com/aaadarsh1337/cybersecurity-achievements/tree/main/PwnSec" },
-    { title: "TFC CTF 2026", detail: "404squad - #23 Human Division; #172 Overall", date: "2026", url: "https://github.com/aaadarsh1337/cybersecurity-achievements/tree/main/TFCCTF" },
-    { title: "z0d1ak CTF 2026", detail: "404squad - #13 Human Division; #75 Overall", date: "2026", url: "https://github.com/aaadarsh1337/cybersecurity-achievements/tree/main/z0d1ak-ctf" },
+    { title: "cruXipher 2026", team: "404squad", detail: "404squad - #3 Overall", date: "2026", url: "https://github.com/aaadarsh1337/cybersecurity-achievements/blob/main/cruXipher.webp" },   // scoreboard; the event gave no certificate
+    { title: "Sudocrypt v16.0", team: "404squad", detail: "404squad - #17 Overall", date: "2026", url: "https://ctftime.org/event/3443", proof: "CTFtime results" },   // no certificate or screenshot
+    { title: "Lun4R CTF 2026 - Finals", team: "404squad", detail: "404squad - #9 Overall", date: "2026", url: "https://github.com/aaadarsh1337/cybersecurity-achievements/tree/main/Lun4R-finals" },
+    { title: "H7CTF 2026", team: "404squad", detail: "404squad - #58 Overall", date: "2026", url: "https://github.com/aaadarsh1337/cybersecurity-achievements/tree/main/H7CTF" },
+    { title: "Lun4R CTF 2026 - Qualifiers", team: "404squad", detail: "404squad - #2 Overall", date: "2026", url: "https://github.com/aaadarsh1337/cybersecurity-achievements/tree/main/Lun4R-quals" },
+    { title: "PwnSec CTF 2026", team: "404squad", detail: "404squad - #6 Human Division of 237 teams", date: "2026", url: "https://github.com/aaadarsh1337/cybersecurity-achievements/tree/main/PwnSec" },
+    { title: "TFC CTF 2026", team: "404squad", detail: "404squad - #23 Human Division; #172 Overall", date: "2026", url: "https://github.com/aaadarsh1337/cybersecurity-achievements/tree/main/TFCCTF" },
+    { title: "z0d1ak CTF 2026", team: "404squad", detail: "404squad - #13 Human Division; #75 Overall", date: "2026", url: "https://github.com/aaadarsh1337/cybersecurity-achievements/tree/main/z0d1ak-ctf" },
   ],
 
   certificates: [

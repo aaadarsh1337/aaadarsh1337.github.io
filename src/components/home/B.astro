@@ -13,7 +13,7 @@ const d = await homeData();
 const p = site.profile;
 const m = d.metrics;
 const tonight = moonPhase(new Date());
-const stats = [...site.stats, { value: String(d.writeups.length), label: "CTF writeups" }, { value: `#${d.ranked[0].rank}`, label: "best finish, 404squad" }];
+const stats = [...site.stats, { value: String(d.writeups.length), label: "CTF writeups" }, { value: `#${d.ranked[0].rank}`, label: "best CTF finish" }];
 
 const series = days(m).slice(-60);
 const cut = cutoff(m);
@@ -43,7 +43,7 @@ while (stars.length < 16) {
   if (y > 45 && x < 64) continue;
   stars.push({ x, y, s: 1.6 + rnd() * 1.8, o: 0.25 + rnd() * 0.4, tw: stars.length % 3 === 0, d: rnd() * 6 });
 }
-const rest = (detail: string) => detail.replace(/^404squad\s*-\s*#\d+\s*/, "").replace(/^Overall$/, "overall");
+const rest = (detail: string) => detail.replace(/^[^#]*#\d+\s*/, "").replace(/^Overall$/, "overall");
 ---
 <section class="b-hero">
   <div class="b-stars" aria-hidden="true">
@@ -110,10 +110,11 @@ const rest = (detail: string) => detail.replace(/^404squad\s*-\s*#\d+\s*/, "").r
 </section>
 
 <section class="b-sec" aria-labelledby="res-h">
-  <h2 id="res-h" class="b-h">With {p.team}, 2026</h2>
+  <h2 id="res-h" class="b-h">CTF results, 2026</h2>
+  <p class="res__note">With {p.formerTeam.name}, the team that now plays as {p.team}.</p>
   <ol class="res">
-    {d.ranked.map((r) => (
-      <li><a href={r.url} rel="external"><span class="res__n">#{r.rank}</span><span class="res__t">{r.title}</span><span class="res__d">{rest(r.detail)}</span><span class="cue cue--corner" aria-hidden="true">↗</span></a></li>
+    {d.ranked.slice(0, 6).map((r) => (   /* the best six fill the grid; all of them are on /achievements/ */
+      <li><a href={r.url} rel="external"><span class="res__n">#{r.rank}</span><span class="res__t">{r.title}</span><span class="res__d">{rest(r.detail)}, with {r.team}</span><span class="cue cue--corner" aria-hidden="true">↗</span></a></li>
     ))}
   </ol>
   <p class="b-more"><a class="btn" href="/achievements/">All achievements <span class="arr">→</span></a></p>
@@ -145,6 +146,7 @@ const rest = (detail: string) => detail.replace(/^404squad\s*-\s*#\d+\s*/, "").r
   .b-sec { margin-top: var(--gap); }
   .b-h { font: 400 var(--t-h2)/1.1 var(--sans); letter-spacing: -.03em; color: var(--bone); }
   .b-sec > .b-h { margin-bottom: var(--s5); }
+  .res__note { margin: calc(-1 * var(--s3)) 0 var(--s5); font-size: var(--t-small); color: var(--fg-2); }
   .b-more { margin-top: var(--s4); display: flex; flex-wrap: wrap; gap: var(--s2); }
 
   /* ---------- Threat Harbour ---------- */
