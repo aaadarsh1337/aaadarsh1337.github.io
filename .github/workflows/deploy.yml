@@ -52,6 +52,7 @@ jobs:
           test -f dist/writeups/search.json
           test -f dist/blog/search.json
           test -f dist/intel/data.json
+          test -f dist/intel/iocs.txt && test -f dist/intel/iocs.csv && test -f dist/intel/iocs.json
           test -f dist/assets/resume.pdf
           test -f dist/pagefind/pagefind.js   # full-text search index
           test -f dist/sitemap.xml            # for Search Console

@@ -52,6 +52,7 @@ ${posts.map((x) => `- [${x.title}](${abs(x.url)}): ${x.summary} (${x.categoryLab
 
 - ${site.flagship.description}
 - Live dashboard: ${abs("/intel/")}; raw aggregates: ${abs("/intel/data.json")}
+- Indicators (hashes, paths, source /16s, top credentials), regenerated daily: ${abs("/intel/iocs.txt")}, ${abs("/intel/iocs.csv")}, ${abs("/intel/iocs.json")}
 - As of ${cutoff(m).toISOString().slice(0, 16).replace("T", " ")} UTC: ${m.totals.total_events.toLocaleString("en-US")} SSH events from ${m.sources.unique_source_ips.toLocaleString("en-US")} source IPs since ${m.observation_period.start}.
 - Source: ${site.flagship.links.github}
 

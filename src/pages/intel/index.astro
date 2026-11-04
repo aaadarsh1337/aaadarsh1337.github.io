@@ -8,6 +8,8 @@ import { day, num } from "../../lib/format";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { getPosts } from "../../lib/blog";
+import { render } from "../../lib/markdown";
+import { defang, lookups } from "../../lib/ioc";
 const funnel = existsSync(join(process.cwd(), "public/intel/session-funnel.png"));
 const bendi = (await getPosts()).find((x) => x.slug === "bendi");
 
@@ -21,15 +23,34 @@ const start = new Date(`${m.observation_period.start}T00:00:00Z`);
 const dur = m.sessions.session_duration_seconds;
 const cats = Object.entries(m.behavioral_command_categories as Record<string, number>).sort((a, b) => b[1] - a[1]);
 const catTotal = cats.reduce((s, [, v]) => s + v, 0);
-const pct = (v: number, t: number) => `${((v / t) * 100).toFixed(1)}%`;
+const pct = (v: number, t: number) => (v > 0 && v / t < 0.001 ? "<0.1%" : `${((v / t) * 100).toFixed(1)}%`);   // a rare event is still an event
 const discovery = pct((m.behavioral_command_categories as Record<string, number>).discovery ?? 0, catTotal);
-const users = m.logins.top_usernames.slice(0, 8);
-const pws = (m.logins.top_passwords ?? []).slice(0, 8);
-const oneLine = (s: string) => { const l = s.split("\n"); return l[0].length > 64 ? `${l[0].slice(0, 62)}…` : l.length > 1 ? `${l[0]} …` : l[0]; };
-const commands = m.commands.top_commands.slice(0, 8);
-const nets = m.sources.top_source_net16_by_event_volume.slice(0, 6);
-const dests = m.downloads_uploads.top_destfiles.slice(0, 5);
-const shas = (m.downloads_uploads.top_shasums ?? []).slice(0, 4);
+// Everything the sensor publishes, in full: no truncated commands or hashes.
+const users = m.logins.top_usernames;
+const pws = m.logins.top_passwords ?? [];
+const cmdTotal = m.commands.input_events;
+const commands = await Promise.all(m.commands.top_commands.map(async (c) => {
+  const text = defang(c.input);                       // attacker text: URLs/IPs defanged
+  const lines = text.split("\n").length;
+  const long = lines > 1 || text.length > 160;        // scripts open in a highlighted listing
+  return { ...c, text, lines, long, listing: long ? (await render("````bash\n" + text + "\n````")).html : "" };
+}));
+const nets = m.sources.top_source_net16_by_event_volume;
+const dests = m.downloads_uploads.top_destfiles;
+const shas = m.downloads_uploads.top_shasums ?? [];
+const events = Object.entries(m.event_ids as Record<string, number>).sort((a, b) => b[1] - a[1]);
+const snippets = [
+  { label: "Today's indicators as plain text", cmd: `curl -s ${site.url}/intel/iocs.txt` },
+  { label: "Top commands, with jq", cmd: `curl -s ${site.url}/intel/data.json | jq '.commands.top_commands'` },
+  { label: "Just the SHA-256 hashes", cmd: `curl -s ${site.url}/intel/iocs.csv | awk -F, '$1=="sha256" {print $2}'` },
+  { label: "Most-attempted passwords as a deny-list", cmd: `curl -s ${site.url}/intel/iocs.json | jq -r '.indicators[] | select(.type=="password") | .value'` },
+];
+const downloads = [
+  { href: "/intel/iocs.txt", label: "iocs.txt", what: "one value per line" },
+  { href: "/intel/iocs.csv", label: "iocs.csv", what: "type, value, count" },
+  { href: "/intel/iocs.json", label: "iocs.json", what: "indicators as JSON" },
+  { href: "/intel/data.json", label: "data.json", what: "every aggregate" },
+];
 const gh = f.links.github;
 
 const jsonld = {
@@ -38,6 +59,12 @@ const jsonld = {
   description: "A daily Cowrie SSH sensor case study: credential leaderboard, command samples, sources, and defensive takeaways.",
   url: `${site.url}/intel/`, creator: { "@type": "Person", name: site.profile.name, url: site.url },
   temporalCoverage: `${m.observation_period.start}/${m.observation_period.end}`,
+  distribution: [
+    { "@type": "DataDownload", encodingFormat: "text/csv", contentUrl: `${site.url}/intel/iocs.csv` },
+    { "@type": "DataDownload", encodingFormat: "application/json", contentUrl: `${site.url}/intel/iocs.json` },
+    { "@type": "DataDownload", encodingFormat: "text/plain", contentUrl: `${site.url}/intel/iocs.txt` },
+    { "@type": "DataDownload", encodingFormat: "application/json", contentUrl: `${site.url}/intel/data.json` },
+  ],
 };
 ---
 <Base title="Threat Harbour SSH honeypot" description={`Threat Harbour case study: a daily SSH honeypot snapshot with ${num(m.totals.total_events)} events, ${num(m.sources.unique_source_ips)} IPs, top attacker passwords and commands. Rebuilt daily; cutoff ${cutText}.`} section="intel" jsonld={jsonld}>
@@ -73,10 +100,11 @@ const jsonld = {
           <ol class="bars">
             {(rows as { value: string; count: number }[]).map((r) => (
               <li style={`--w:${(r.count / (rows as { count: number }[])[0].count) * 100}%`}>
-                <span class="bars__k">{r.value}</span><span class="bars__v">{num(r.count)}</span>
+                <span class="bars__k">{r.value}</span><span class="bars__v">{num(r.count)}</span><button class="cp" type="button" data-copy-value={r.value} aria-label={`Copy ${(title as string).slice(0, -1)} ${r.value}`}><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><rect x="5" y="5" width="8.5" height="8.5" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M10.5 3.2V3a1.5 1.5 0 0 0-1.5-1.5H3.5A1.5 1.5 0 0 0 2 3v5.5A1.5 1.5 0 0 0 3.5 10h.3" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></button>
               </li>
             ))}
           </ol>
+          <p class="more"><button class="btn btn--sm" type="button" data-copy-value={(rows as { value: string }[]).map((r) => r.value).join("\n")}>Copy all {(rows as unknown[]).length} as a blocklist</button></p>
         </div>
       ))}
     </div>
@@ -85,8 +113,21 @@ const jsonld = {
   <section class="sec">
     <h2 class="label">Top commands</h2>
     <p class="note">{discovery} discovery/fingerprinting: automated recon, not humans.</p>
-    <ol class="cmds">
-      {commands.map((c) => <li><code title={c.input}>{oneLine(c.input)}</code><span class="meta">{num(c.count)}</span></li>)}
+    <p class="warn">Attacker-supplied text, shown inert and defanged: any URL reads <code>hxxp://host[.]tld</code> and any IP <code>1.2.3[.]4</code>. Don't run it.</p>
+    <ol class="cmd">
+      {commands.map((c, i) => (
+        <li>
+          <p class="cmd__head"><span class="cmd__n">#{i + 1}</span><span class="cmd__count">{num(c.count)} runs<span class="sep">·</span>{pct(c.count, cmdTotal)} of all commands</span></p>
+          {c.long ? (
+            <details class="cmd__long">
+              <summary><code>{c.text.split("\n")[0].slice(0, 90)}…</code><span class="cmd__more">{c.lines} lines, show all</span></summary>
+              <Fragment set:html={c.listing} />
+            </details>
+          ) : (
+            <div class="cmd__one"><code>{c.text}</code><button class="cp" type="button" data-copy-value={c.text} aria-label={`Copy command ${i + 1}`}><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><rect x="5" y="5" width="8.5" height="8.5" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M10.5 3.2V3a1.5 1.5 0 0 0-1.5-1.5H3.5A1.5 1.5 0 0 0 2 3v5.5A1.5 1.5 0 0 0 3.5 10h.3" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></button></div>
+          )}
+        </li>
+      ))}
     </ol>
   </section>
 
@@ -102,8 +143,9 @@ const jsonld = {
       <h2 class="label">Busiest /16s</h2>
       <p class="note">Volume only. A source IP never identifies the operator.</p>
       <ol class="bars">
-        {nets.map((n) => <li style={`--w:${(n.events / nets[0].events) * 100}%`}><span class="bars__k">{n.cidr}</span><span class="bars__v">{num(n.events)}</span></li>)}
+        {nets.map((n) => <li style={`--w:${(n.events / nets[0].events) * 100}%`}><span class="bars__k">{n.cidr}</span><span class="bars__v">{num(n.events)}</span><button class="cp" type="button" data-copy-value={n.cidr} aria-label={`Copy ${n.cidr}`}><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><rect x="5" y="5" width="8.5" height="8.5" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M10.5 3.2V3a1.5 1.5 0 0 0-1.5-1.5H3.5A1.5 1.5 0 0 0 2 3v5.5A1.5 1.5 0 0 0 3.5 10h.3" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></button></li>)}
       </ol>
+      <p class="more"><button class="btn btn--sm" type="button" data-copy-value={nets.map((n) => n.cidr).join("\n")}>Copy all {nets.length} CIDRs</button></p>
     </section>
   </div>
 
@@ -119,14 +161,51 @@ const jsonld = {
       </dl>
     </section>
     <section class="sec">
-      <h2 class="label">File operations</h2>
-      <p class="note">Destinations and shasums only. Contents withheld.</p>
-      <ol class="cmds cmds--tight">
-        {dests.map((d) => <li><code>{d.value}</code><span class="meta">{num(d.count)}</span></li>)}
-        {shas.map((s) => <li><code title={s.value}>{s.value.slice(0, 16)}…</code><span class="meta">{num(s.count)}</span></li>)}
-      </ol>
+      <h2 class="label">The sensor</h2>
+      <p class="note">What collected this, and how much of it.</p>
+      <dl class="facts">
+        <div><dt>honeypot</dt><dd>Cowrie {m.stack.cowrie}, SSH only</dd></div>
+        <div><dt>log pipeline</dt><dd>Promtail {m.stack.promtail} to Loki {m.stack.loki}</dd></div>
+        <div><dt>operator dashboards</dt><dd>Grafana {m.stack.grafana}</dd></div>
+        <div><dt>log files parsed</dt><dd>{num(m.collection.files)}</dd></div>
+        <div><dt>malformed lines skipped</dt><dd>{num(m.totals.bad_json_lines)}</dd></div>
+        <div><dt>observing since</dt><dd>{day(start)}</dd></div>
+      </dl>
     </section>
   </div>
+
+  <section class="sec">
+    <h2 class="label">Files attackers wrote</h2>
+    <p class="note">{num(m.downloads_uploads.file_download_events)} download and {num(m.downloads_uploads.file_upload_events)} upload events. Destinations and SHA-256 hashes only; contents withheld. Paths and hashes are listed separately because the data doesn't link one to the other.</p>
+    <div class="cols cols--files">
+      <div>
+        <h3 class="h3 meta">destination paths</h3>
+        <ol class="rows">
+          {dests.map((d) => <li><code>{d.value}</code><span class="rows__end"><span class="meta">{num(d.count)}</span><button class="cp" type="button" data-copy-value={d.value} aria-label={`Copy path ${d.value}`}><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><rect x="5" y="5" width="8.5" height="8.5" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M10.5 3.2V3a1.5 1.5 0 0 0-1.5-1.5H3.5A1.5 1.5 0 0 0 2 3v5.5A1.5 1.5 0 0 0 3.5 10h.3" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></button></span></li>)}
+        </ol>
+      </div>
+      <div>
+        <h3 class="h3 meta">sha256</h3>
+        <ol class="rows rows--hash">
+          {shas.map((s) => (
+            <li>
+              <code class="hash">{s.value}</code>
+              <span class="rows__end"><span class="meta">{num(s.count)} events</span><button class="cp" type="button" data-copy-value={s.value} aria-label={`Copy hash ${s.value}`}><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><rect x="5" y="5" width="8.5" height="8.5" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M10.5 3.2V3a1.5 1.5 0 0 0-1.5-1.5H3.5A1.5 1.5 0 0 0 2 3v5.5A1.5 1.5 0 0 0 3.5 10h.3" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></button></span>
+              <span class="look">look up on {lookups(s.value).map((l, i) => <>{i > 0 && <span class="sep">·</span>}<a href={l.url} rel="external noopener">{l.label}<span class="visually-hidden"> (hash {s.value.slice(0, 12)})</span> <span aria-hidden="true">↗</span></a></>)}</span>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <h2 class="label">Every Cowrie event type</h2>
+    <p class="note">All {events.length} event types the sensor logged, out of {num(m.totals.total_events)} events.</p>
+    <ol class="evs">
+      {events.map(([k, v]) => <li><code>{k}</code><span class="meta">{num(v)}</span><span class="evs__pct">{pct(v, m.totals.total_events)}</span></li>)}
+    </ol>
+  </section>
 
   <section class="sec seen">
     <h2 class="label">What it caught</h2>
@@ -146,6 +225,17 @@ const jsonld = {
       <li><h3>Blocklist these passwords</h3><p>Deny-list the top 10 in your IdP; require manager-generated secrets.</p></li>
       <li><h3>Expect recon, not intrusion</h3><p>Mostly <code>uname/hostname/whoami</code> in <code>{dur.median.toFixed(2)}s</code> sessions. Alert on discovery bursts, not single logins.</p></li>
       <li><h3>Watch persistence paths</h3><p>Writes toward <code>authorized_keys</code> keep recurring. Alert on any unexpected one.</p></li>
+    </ol>
+  </section>
+
+  <section class="sec" id="data">
+    <h2 class="label">Use the data</h2>
+    <p class="note">Indicators regenerate with every daily deploy, from the same aggregates as this page.</p>
+    <ul class="dls">
+      {downloads.map((d) => <li><a href={d.href} download><span class="dls__name">{d.label}</span><span class="dls__what">{d.what}</span><span class="cue cue--corner" aria-hidden="true">↓</span></a></li>)}
+    </ul>
+    <ol class="snips">
+      {snippets.map((s, i) => <li><p class="snips__k">{s.label}</p><div class="snip"><code>{s.cmd}</code><button class="cp" type="button" data-copy-value={s.cmd} aria-label={`Copy: ${s.label}`}><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><rect x="5" y="5" width="8.5" height="8.5" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M10.5 3.2V3a1.5 1.5 0 0 0-1.5-1.5H3.5A1.5 1.5 0 0 0 2 3v5.5A1.5 1.5 0 0 0 3.5 10h.3" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></button></div></li>)}
     </ol>
   </section>
 
@@ -231,9 +321,91 @@ const jsonld = {
   .stack span { font-size: var(--t-small); color: var(--fg-2); padding: .5rem .8rem; border-radius: 999px; background: var(--bg-2); }
   .actions { margin-top: var(--s7); display: flex; flex-wrap: wrap; gap: var(--s3); }
 
+  /* copy buttons: quiet until wanted */
+  .cp { flex: none; display: inline-grid; place-items: center; width: 2rem; height: 2rem; margin: -.4rem -.4rem -.4rem 0; border: 0; border-radius: 6px; background: none; color: var(--fg-2); cursor: pointer; position: relative; transition: color .2s, background-color .2s; }
+  .cp:hover { color: var(--bone); background: var(--bg-3); }
+  .cp[data-done] { color: var(--sage); }
+  .cp[data-done]::after { content: attr(data-done); position: absolute; right: 100%; margin-right: .3rem; font: 400 var(--t-small)/1 var(--sans); white-space: nowrap; }
+  .bars li .cp { position: relative; z-index: 1; }
+  .more { margin-top: var(--s3); }
+  .warn { margin: calc(-1 * var(--s2)) 0 var(--s5); padding: var(--s3) var(--s4); border-left: 2px solid var(--lantern); background: color-mix(in srgb, var(--lantern) 7%, transparent); font-size: var(--t-small); line-height: 1.55; color: var(--fg-2); }
+  .warn code { font: 400 .95em var(--mono); color: var(--bone-dim); }
+
+  .cmd { list-style: none; display: grid; gap: var(--s3); }
+  .cmd li { padding: var(--s4); background: var(--bg-1); border-radius: 6px; min-width: 0; }
+  .cmd__head { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--s3); font-size: var(--t-small); color: var(--fg-2); }
+  .cmd__n { color: var(--blue); font-variant-numeric: tabular-nums; }
+  .cmd__count { font-variant-numeric: tabular-nums; }
+  .cmd__one { margin-top: var(--s2); display: flex; align-items: flex-start; justify-content: space-between; gap: var(--s4); }
+  .cmd__one code, .cmd__long summary code { font: 400 .9375rem/1.55 var(--mono); color: var(--bone); overflow-wrap: anywhere; white-space: pre-wrap; font-variant-ligatures: none; }
+  .cmd__long { margin-top: var(--s2); }
+  .cmd__long summary { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: var(--s2) var(--s4); cursor: pointer; list-style: none; }
+  .cmd__long summary::-webkit-details-marker { display: none; }
+  .cmd__more { flex: none; font-size: var(--t-small); color: var(--blue); }
+  .cmd__more::before { content: "▸ "; }
+  .cmd__long[open] .cmd__more::before { content: "▾ "; }
+  .cmd__long :global(.listing) { margin: var(--s3) 0 0; }
+  .cmd__long :global(.code) { max-height: 32rem; white-space: pre-wrap; overflow-wrap: anywhere; font-variant-ligatures: none; }   /* read the whole one-liner, no sideways scroll */
+
+  .cols--files { margin-top: 0; }
+  .rows { list-style: none; display: grid; gap: var(--s2); }
+  .rows li { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--s2) var(--s4); padding: .6rem .8rem; background: var(--bg-1); border-radius: 6px; min-width: 0; }
+  .rows code { font: 400 .9375rem/1.5 var(--mono); color: var(--fg); overflow-wrap: anywhere; min-width: 0; }
+  .rows .hash { flex: 1 1 100%; word-break: break-all; color: var(--bone); letter-spacing: .01em; }
+  .rows__end { display: inline-flex; align-items: center; gap: var(--s3); margin-left: auto; }
+  .rows .meta { font-size: var(--t-small); color: var(--fg-2); font-variant-numeric: tabular-nums; }
+  .look { flex: 1 1 100%; font-size: var(--t-small); color: var(--fg-2); }
+  .look a { color: var(--blue); text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--blue) 40%, transparent); text-underline-offset: .2em; }
+  .rows--hash li { align-items: flex-start; }
+  .rows--hash .rows__end { margin-left: 0; }
+
+  .evs { list-style: none; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s2) var(--s5); }
+  .evs li { display: grid; grid-template-columns: minmax(0, 1fr) auto 3.75rem; align-items: baseline; gap: var(--s3); padding: .5rem .8rem; background: var(--bg-1); border-radius: 6px; }
+  .evs code { font: 400 .875rem/1.4 var(--mono); color: var(--fg); overflow-wrap: anywhere; }
+  .evs .meta { font-size: var(--t-small); color: var(--fg-2); font-variant-numeric: tabular-nums; }
+  .evs__pct { font-size: var(--t-small); color: var(--blue); text-align: right; font-variant-numeric: tabular-nums; }
+
+  .dls { list-style: none; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--s3); }
+  .dls a { position: relative; display: grid; gap: 2px; padding: var(--s4) var(--s5); background: var(--bg-1); border-radius: 6px; transition: background-color .2s; }
+  .dls a:hover { background: var(--bg-2); }
+  .dls__name { font: 500 var(--t-ui)/1.3 var(--mono); color: var(--bone); }
+  .dls__what { font-size: var(--t-small); color: var(--fg-2); }
+  .snips { list-style: none; margin-top: var(--s5); display: grid; gap: var(--s3); }
+  .snips__k { font-size: var(--t-small); color: var(--fg-2); margin-bottom: var(--s1); }
+  .snip { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--s4); padding: .7rem .9rem; background: var(--bg-1); border-radius: 6px; }
+  .snip code { font: 400 .875rem/1.55 var(--mono); color: var(--bone); overflow-wrap: anywhere; font-variant-ligatures: none; }
+  .snip code::before { content: "$ "; color: var(--faint); }
+
+  @media (hover: hover) {
+    .bars li .cp, .rows li .cp { opacity: 0; }
+    .bars li:hover .cp, .rows li:hover .cp, .cp:focus-visible, .cp[data-done] { opacity: 1; }
+  }
+
   @media (max-width: 860px) {
     .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .evs { grid-template-columns: minmax(0, 1fr); }
+    .dls { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .cols, .how, .seen__grid { grid-template-columns: minmax(0, 1fr); gap: var(--s5); }
     .takeaways { grid-template-columns: minmax(0, 1fr); }
   }
 </style>
+
+<script>
+  // Copy buttons: rows, whole lists, fetch commands, and the highlighted script listings.
+  const flash = (b: HTMLElement, msg: string) => { b.dataset.done = msg; setTimeout(() => delete b.dataset.done, 1600); };
+  async function copy(b: HTMLElement, text: string) {
+    try { await navigator.clipboard.writeText(text); flash(b, "copied"); }
+    catch { flash(b, "select + copy"); }
+  }
+  document.querySelectorAll<HTMLElement>("[data-copy-value]").forEach((b) => b.addEventListener("click", () => copy(b, b.dataset.copyValue ?? "")));
+  document.querySelectorAll<HTMLButtonElement>(".cmd [data-copy]").forEach((b) => b.addEventListener("click", async () => {
+    const code = b.closest(".listing")?.querySelector("code")?.textContent ?? "";
+    try { await navigator.clipboard.writeText(code); b.textContent = "copied"; } catch { b.textContent = "select + copy"; }
+    setTimeout(() => (b.textContent = "copy"), 1600);
+  }));
+  // btn--sm list buttons say so in their own label
+  document.querySelectorAll<HTMLButtonElement>(".more [data-copy-value]").forEach((b) => {
+    const label = b.textContent;
+    b.addEventListener("click", () => setTimeout(() => { if (b.dataset.done) { b.textContent = b.dataset.done === "copied" ? "Copied" : label; setTimeout(() => (b.textContent = label), 1600); } }, 0));
+  });
+</script>
