@@ -155,7 +155,7 @@ const csp = [
     font-size: var(--t-small); color: var(--muted);
   }
   .foot nav { display: flex; gap: var(--s5); }
-  .virtues { grid-column: 1 / -1; list-style: none; display: flex; flex-wrap: wrap; justify-content: center; gap: var(--s2) var(--s7); padding-bottom: calc(var(--s5) + 1.1rem); margin-bottom: var(--s2); border-bottom: 1px solid var(--rule); }
+  .virtues { grid-column: 1 / -1; list-style: none; display: flex; flex-wrap: wrap; justify-content: center; gap: var(--s2) clamp(.9rem, 3vw, 3rem); padding-bottom: calc(var(--s5) + 1.1rem);   /* one centred group; the spacing scales with the screen */ margin-bottom: var(--s2); border-bottom: 1px solid var(--rule); }
   .virtues li { position: relative; display: block; line-height: 0; font-size: 1.375rem; color: color-mix(in oklab, var(--lily) 52%, var(--bg)); cursor: default; outline-offset: 4px; transition: color .3s var(--ease); }
   .virtue__en { position: absolute; left: 50%; top: calc(100% + 8px); translate: -50% -3px; white-space: nowrap; font: 400 var(--t-small)/1 var(--sans); color: var(--fg-2); opacity: 0; transition: opacity .3s var(--ease), translate .3s var(--ease); }
   .virtues li:is(:hover, :focus, :focus-within) { color: var(--lily); }
@@ -168,7 +168,6 @@ const csp = [
   @media (max-width: 860px) {
     .main { padding-block: var(--s6) 0; }
     .foot { grid-template-columns: 1fr; gap: var(--s2); padding-block: var(--s5); font-size: .875rem; }
-    .virtues { justify-content: space-between; flex-wrap: nowrap; gap: var(--s2); }
     .virtues li { font-size: 1.125rem; }
     .foot nav { flex-wrap: wrap; gap: var(--s2) var(--s5); }
     .foot__end { text-align: left; }
