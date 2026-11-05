@@ -53,6 +53,18 @@ body::after {
 :root.theme-vt::view-transition-group(moon),
 :root.theme-vt::view-transition-new(moon) { animation: none; }
 :root.theme-vt::view-transition-old(moon) { display: none; }
+:root.theme-vt::view-transition-group(blood-cut),
+:root.theme-vt::view-transition-new(blood-cut) { animation: none; }
+:root.theme-vt::view-transition-old(blood-cut) { display: none; }
+
+/* the katana cut that opens the blood moon (TopBar.astro, katanaCut) */
+.katana-cut { position: fixed; inset: 0; z-index: 60; pointer-events: none; view-transition-name: blood-cut; }
+.katana-cut svg { display: block; width: 100%; height: 100%; max-width: none; }
+.cut-pen { fill: none; stroke: #fff; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; }
+.cut-blood { fill: #6f0909; }
+.cut-drops { fill: #7a0b0b; }
+.cut-drop { opacity: 0; transform-box: fill-box; transform-origin: center; }
+.cut-flash { fill: none; stroke: #f5e8e4; stroke-width: 1.6; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; filter: drop-shadow(0 0 6px rgb(255 240 235 / .8)); }
 .blood-note {
   position: fixed; z-index: 41; left: 50%; bottom: calc(var(--s6) + env(safe-area-inset-bottom, 0px)); translate: -50% 0;
   padding: var(--s3) var(--s5); border-radius: 999px; background: var(--bg-3); white-space: nowrap;

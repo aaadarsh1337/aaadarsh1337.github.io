@@ -1,0 +1,14 @@
+---
+// One or more kanji drawn as SVG from lib/kanji.ts (traced Shippori Mincho), coloured by
+// `currentColor` and sized by the font size: 1em tall, 1em wide per character.
+import { KANJI } from "../lib/kanji";
+interface Props { text: string; class?: string }
+const { text, class: cls } = Astro.props;
+const chars = [...text];
+---
+<svg class:list={["kanji", cls]} viewBox={`0 0 ${chars.length * 1000} 1000`} aria-hidden="true" focusable="false">
+  {chars.map((c, i) => <path transform={`translate(${i * 1000} 0)`} d={KANJI[c]} />)}
+</svg>
+<style>
+  .kanji { display: inline-block; height: 1em; width: auto; fill: currentColor; overflow: visible; }
+</style>

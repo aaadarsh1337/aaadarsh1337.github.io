@@ -2,7 +2,28 @@
 import Base from "../layouts/Base.astro";
 import Moon from "../components/Moon.astro";
 import { moonPhase } from "../lib/moon";
+import { lily, bud, mulberry32 } from "../lib/lilies";
 const tonight = moonPhase(new Date());
+
+// Higanbana, the flower of the other shore: a dark clump under the empty sky at the right,
+// a few strays drifting left into the dark. Build-time SVG on a 1440-wide, 230-high field.
+const W = 1440, H = 230, r = mulberry32(404);
+const strays = [[0.12, 176, 0.65], [0.3, 186, 0.6, 1], [0.44, 168, 0.75]];
+// they flank the torii (centre 0.795, posts ±60, top beam ±124 of 1440) and leave its frame clear
+const clump = [[0.56, 150, 1.0], [0.6, 122, 1.25], [0.645, 160, 0.85, 1], [0.672, 136, 1.1], [0.915, 128, 1.2], [0.94, 158, 0.85, 1], [0.962, 138, 1.05]];
+const flowers = [...strays, ...clump].map(([t, y, s, isBud]) => (isBud ? bud(W * t, y, s, r, H) : lily(W * t, y, s, r, H)));
+
+// A torii, the gate to the other side, standing in the lilies (myōjin style: curved top beam,
+// a tie beam through slightly splayed pillars). Drawn behind the flowers.
+const tx = W * 0.795, top = 30, f1 = (v: number) => v.toFixed(1);
+const torii = [
+  `M${f1(tx - 124)} ${top}Q${f1(tx)} ${top + 15} ${f1(tx + 124)} ${top}L${f1(tx + 117)} ${top + 11}Q${f1(tx)} ${top + 25} ${f1(tx - 117)} ${top + 11}Z`,      // kasagi
+  `M${f1(tx - 104)} ${top + 14}Q${f1(tx)} ${top + 26} ${f1(tx + 104)} ${top + 14}L${f1(tx + 102)} ${top + 21}Q${f1(tx)} ${top + 33} ${f1(tx - 102)} ${top + 21}Z`, // shimaki
+  `M${f1(tx - 5)} ${top + 26}h10v26h-10Z`,                                                         // gakuzuka
+  `M${f1(tx - 100)} ${top + 50}h200v9h-200Z`,                                                      // nuki
+  `M${f1(tx - 64)} ${top + 22}h10L${f1(tx - 58)} ${H}h-13Z`, `M${f1(tx + 54)} ${top + 22}h10L${f1(tx + 71)} ${H}h-13Z`,   // pillars
+  `M${f1(tx - 74)} ${H - 12}h18v12h-18Z`, `M${f1(tx + 56)} ${H - 12}h18v12h-18Z`,                   // kamebara
+].join("");
 ---
 <Base title="Not found" noindex>
   <section class="nf rise">
@@ -18,9 +39,45 @@ const tonight = moonPhase(new Date());
       <button class="btn" type="button" data-palette-open>Search <kbd>⌘K</kbd></button>
     </p>
   </section>
+  <div class="nf__field" aria-hidden="true">
+    <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMaxYMax slice" focusable="false">
+      <path class="nf__torii" d={torii} />
+      {flowers.map((f) => f.kind === "lily" ? (
+        <g>
+          <path class="lf-stem" d={f.stem} stroke-width={f.sw.stem} />
+          <path class="lf-red" d={f.petals} stroke-width={f.sw.petal} />
+          <path class="lf-red lf-stamen" d={f.stamens} stroke-width={f.sw.stamen} />
+          {f.anthers.map((a) => <circle class="lf-dot" cx={a.cx} cy={a.cy} r={a.r} />)}
+        </g>
+      ) : (
+        <g>
+          <path class="lf-stem" d={f.stem} stroke-width={f.sw} />
+          <ellipse class="lf-dot" cx={f.head.cx} cy={f.head.cy} rx={f.head.rx} ry={f.head.ry} transform={`rotate(${f.head.rot} ${f.head.cx} ${f.head.cy})`} />
+        </g>
+      ))}
+    </svg>
+  </div>
 </Base>
 <style>
   .nf { min-height: 60vh; display: grid; align-content: center; justify-items: start; gap: var(--s4); max-width: var(--measure); }
+  /* the field grows from the footer's edge: the 404 page stacks its content so it can sit there */
+  :global(.main:has(.nf__field)) { display: flex; flex-direction: column; }
+  .nf__field {
+    --lf-red: color-mix(in oklab, var(--lily) 45%, #c42a1e);
+    --lf-stem: color-mix(in oklab, var(--sage) 45%, var(--bg));
+    margin: auto 0 calc(-1 * var(--gap)) calc(50% - 50vw);   /* from the viewport's left edge to the footer */
+    width: calc(100vw - 20px);   /* stops short of the right edge, where it fades out, so no scrollbar can appear */
+    height: 230px; opacity: .7; pointer-events: none;
+    -webkit-mask-image: linear-gradient(to right, transparent, rgb(0 0 0 / .5) 30%, #000 60%, #000 94%, transparent);
+    mask-image: linear-gradient(to right, transparent, rgb(0 0 0 / .5) 30%, #000 60%, #000 94%, transparent);
+  }
+  .nf__field svg { display: block; width: 100%; height: 100%; }
+  .nf__torii { fill: color-mix(in oklab, var(--lily) 34%, #3a0606); }
+  .lf-stem { fill: none; stroke: var(--lf-stem); stroke-linecap: round; }
+  .lf-red { fill: none; stroke: var(--lf-red); stroke-linecap: round; }
+  .lf-stamen { opacity: .9; }
+  .lf-dot { fill: var(--lf-red); }
+  @media (max-width: 760px) { .nf__field { height: 150px; } }
   .nf h1 { font: 500 var(--t-title)/1.1 var(--display); letter-spacing: -.015em; color: var(--bone); }
   /* the new moon: a dark disc you only see by its rim and a faint earthshine */
   .nf__moon { margin-bottom: var(--s4); }

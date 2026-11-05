@@ -4,6 +4,9 @@ import { createHash } from "node:crypto";
 import TopBar from "../components/TopBar.astro";
 import Palette from "../components/Palette.astro";
 import Seal from "../components/Seal.astro";
+import Kanji from "../components/Kanji.astro";
+// the seven virtues of bushidō, along the footer; each names itself on hover, focus or tap
+const virtues = [["義", "rectitude"], ["勇", "courage"], ["仁", "benevolence"], ["礼", "respect"], ["誠", "honesty"], ["名誉", "honour"], ["忠義", "loyalty"]];
 import { site } from "../config";
 import { person, website, abs, plainTitle } from "../lib/seo";
 
@@ -98,6 +101,9 @@ const csp = [
     <slot />
   </main>
   <footer class="foot">
+    <ul class="virtues" aria-label="The seven virtues of bushidō">
+      {virtues.map(([k, en]) => <li tabindex="0"><Kanji text={k} /><span class="virtue__en">{en}</span></li>)}
+    </ul>
     <p class="foot__who">
       <Seal />
       <span><span class="foot__name">{site.profile.name}</span>, {site.profile.tagline.join(", ").toLowerCase()}</span>
@@ -149,6 +155,11 @@ const csp = [
     font-size: var(--t-small); color: var(--muted);
   }
   .foot nav { display: flex; gap: var(--s5); }
+  .virtues { grid-column: 1 / -1; list-style: none; display: flex; flex-wrap: wrap; justify-content: center; gap: var(--s2) var(--s7); padding-bottom: calc(var(--s5) + 1.1rem); margin-bottom: var(--s2); border-bottom: 1px solid var(--rule); }
+  .virtues li { position: relative; display: block; line-height: 0; font-size: 1.375rem; color: color-mix(in oklab, var(--lily) 52%, var(--bg)); cursor: default; outline-offset: 4px; transition: color .3s var(--ease); }
+  .virtue__en { position: absolute; left: 50%; top: calc(100% + 8px); translate: -50% -3px; white-space: nowrap; font: 400 var(--t-small)/1 var(--sans); color: var(--fg-2); opacity: 0; transition: opacity .3s var(--ease), translate .3s var(--ease); }
+  .virtues li:is(:hover, :focus, :focus-within) { color: var(--lily); }
+  .virtues li:is(:hover, :focus, :focus-within) .virtue__en { opacity: 1; translate: -50% 0; }
   .foot__who { display: flex; align-items: center; gap: var(--s4); }
   .foot__name { font: 600 1em/1 var(--voice); letter-spacing: -.03em; color: var(--fg); }
   .foot a { color: var(--fg); transition: color .2s; }
@@ -157,6 +168,8 @@ const csp = [
   @media (max-width: 860px) {
     .main { padding-block: var(--s6) 0; }
     .foot { grid-template-columns: 1fr; gap: var(--s2); padding-block: var(--s5); font-size: .875rem; }
+    .virtues { justify-content: space-between; flex-wrap: nowrap; gap: var(--s2); }
+    .virtues li { font-size: 1.125rem; }
     .foot nav { flex-wrap: wrap; gap: var(--s2) var(--s5); }
     .foot__end { text-align: left; }
   }

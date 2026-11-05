@@ -87,18 +87,11 @@ const sheetNav = [{ id: "home", href: "/", label: "Home" }, ...nav];
     font-size: var(--t-small);
   }
   .mark { position: relative; display: inline-flex; align-items: center; gap: .75rem; }
-  /* the moon never moves: it answers with light. A soft glow on hover, a brighter one
-     when pressed, and it stays lit while its popover is open. */
-  .mark__moonbtn { --glow: var(--moon); display: grid; place-items: center; padding: 4px; margin: -4px; border: 0; background: none; border-radius: 50%; cursor: pointer; }
-  :global(:root[data-theme="dawn"]) .mark__moonbtn { --glow: var(--blue); }
-  .mark__moonbtn :global(.mark__moon) { transition: filter .3s var(--ease); }
-  .mark__moonbtn :global(.moon__halo) { transition: stroke-opacity .3s var(--ease); }
-  .mark__moonbtn:hover :global(.mark__moon),
-  .mark__moonbtn:focus-visible :global(.mark__moon),
-  .mark:has(.tonight:popover-open) .mark__moonbtn :global(.mark__moon) { filter: drop-shadow(0 0 9px color-mix(in srgb, var(--glow) 50%, transparent)); }
-  .mark__moonbtn:hover :global(.mark__moon .moon__halo),
-  .mark:has(.tonight:popover-open) .mark__moonbtn :global(.mark__moon .moon__halo) { stroke-opacity: .35; }
-  .mark__moonbtn:active :global(.mark__moon) { filter: drop-shadow(0 0 16px color-mix(in srgb, var(--glow) 80%, transparent)); transition-duration: .06s; }
+  /* the moon only grows a touch on hover and presses in on click: no tilt, no glow */
+  .mark__moonbtn { display: grid; place-items: center; padding: 4px; margin: -4px; border: 0; background: none; border-radius: 50%; cursor: pointer; transition: transform .25s var(--ease); }
+  .mark__moonbtn:hover { transform: scale(1.06); }
+  .mark__moonbtn:active { transform: scale(.94); transition-duration: .08s; }
+  @media (prefers-reduced-motion: reduce) { .mark__moonbtn:hover, .mark__moonbtn:active { transform: none; } }
   /* the moon and its eclipse shadow travel as one layer through page and theme fades */
   .mark__moonbtn { view-transition-name: moon; }
   /* the moon never gives up space to the name: without this, the global
@@ -289,7 +282,8 @@ const sheetNav = [{ id: "home", href: "/", label: "Home" }, ...nav];
   document.addEventListener("bloodmoon", bloodMoon);
   function bloodMoon() {
     if (root.classList.contains("blood")) return;
-    setBlood(true);
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) setBlood(true);
+    else { katanaCut(); setTimeout(() => setBlood(true), 280); }   // the colours turn mid-cut
     const note = document.createElement("p");
     note.className = "blood-note";
     note.setAttribute("role", "status");
@@ -297,6 +291,46 @@ const sheetNav = [{ id: "home", href: "/", label: "Home" }, ...nav];
     document.body.append(note);
     setTimeout(() => { note.classList.add("is-out"); setTimeout(() => note.remove(), 1000); }, 4200);
   }
+  // A single katana cut across the screen: a flash of the blade, then the blood stroke and its
+  // spatter. Built on the fly, removed once it fades. It keeps its own view-transition layer
+  // (global.css), so the theme fade underneath doesn't freeze it.
+  function katanaCut() {
+    const W = innerWidth, H = innerHeight, f = (v: number) => v.toFixed(1);
+    const P = (u: number) => {   // a shallow arc from upper left to lower right
+      const x0 = -0.06 * W, y0 = 0.2 * H, cx = 0.48 * W, cy = 0.36 * H, x1 = 1.06 * W, y1 = 0.8 * H, a = (1 - u) ** 2, b = 2 * (1 - u) * u, c = u * u;
+      return [a * x0 + b * cx + c * x1, a * y0 + b * cy + c * y1];
+    };
+    const n = 80, max = Math.max(9, Math.min(W, H) * 0.022);
+    const line = Array.from({ length: n + 1 }, (_, i) => P(i / n));
+    const width = (u: number) => max * Math.sin(Math.PI * u) ** 0.55;
+    const side = (k: number) => line.map(([x, y], i) => {
+      const [px, py] = line[Math.min(n, i + 1)], [qx, qy] = line[Math.max(0, i - 1)];
+      const dx = px - qx, dy = py - qy, L = Math.hypot(dx, dy) || 1, w = (width(i / n) / 2) * k;
+      return `${f(x - (dy / L) * w)} ${f(y + (dx / L) * w)}`;
+    });
+    const stroke = `M${side(1).join("L")}L${side(-1).reverse().join("L")}Z`;
+    const centre = `M${line.map(([x, y]) => `${f(x)} ${f(y)}`).join("L")}`;
+    let drops = "";
+    for (let i = 0; i < 26; i++) {   // spatter thrown off the lower side of the swing
+      const u = 0.1 + Math.random() * 0.85, [x, y] = P(u), off = (8 + Math.random() * 46) * (Math.random() < 0.8 ? 1 : -1);
+      drops += `<circle class="cut-drop" style="--u:${f(u)}" cx="${f(x + off * 0.35)}" cy="${f(y + off)}" r="${f(1.2 + Math.random() * 3.8)}"/>`;
+    }
+    const el = document.createElement("div");
+    el.className = "katana-cut";
+    el.setAttribute("aria-hidden", "true");
+    el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}"><defs><mask id="cut-mask" maskUnits="userSpaceOnUse" x="0" y="0" width="${W}" height="${H}"><path class="cut-pen" d="${centre}" pathLength="1" stroke-width="${f(max * 3)}"/></mask></defs>`
+      + `<path class="cut-blood" d="${stroke}" mask="url(#cut-mask)"/><g class="cut-drops">${drops}</g><path class="cut-flash" d="${centre}" pathLength="1"/></svg>`;
+    document.body.append(el);
+    const pen = el.querySelector<SVGPathElement>(".cut-pen")!, flash = el.querySelector<SVGPathElement>(".cut-flash")!;
+    flash.animate([{ strokeDashoffset: 1, opacity: 1 }, { strokeDashoffset: 0, opacity: 1, offset: 0.6 }, { strokeDashoffset: 0, opacity: 0 }], { duration: 520, easing: "cubic-bezier(.7,0,.2,1)", fill: "forwards" });
+    pen.animate([{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], { duration: 380, delay: 70, easing: "cubic-bezier(.7,0,.2,1)", fill: "forwards" });
+    el.querySelectorAll<SVGCircleElement>(".cut-drop").forEach((d) => {
+      const u = parseFloat(d.style.getPropertyValue("--u"));
+      d.animate([{ opacity: 0, transform: "scale(.2)" }, { opacity: 0.9, transform: "scale(1)" }], { duration: 220, delay: 90 + u * 340, easing: "ease-out", fill: "forwards" });
+    });
+    el.animate([{ opacity: 1 }, { opacity: 1, offset: 0.45 }, { opacity: 0 }], { duration: 1700, easing: "ease-in", fill: "forwards" }).finished.then(() => el.remove());
+  }
+
   function setBlood(on: boolean) {
     const apply = () => {
       root.classList.toggle("blood", on);
