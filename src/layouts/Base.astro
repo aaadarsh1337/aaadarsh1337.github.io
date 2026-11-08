@@ -8,6 +8,7 @@ import Kanji from "../components/Kanji.astro";
 // the seven virtues of bushidō, along the footer; each names itself on hover, focus or tap
 const virtues = [["義", "rectitude"], ["勇", "courage"], ["仁", "benevolence"], ["礼", "respect"], ["誠", "honesty"], ["名誉", "honour"], ["忠義", "loyalty"]];
 import { site } from "../config";
+import { phaseInstants, SPECIAL_DAYS } from "../lib/moon";
 import { person, website, abs, plainTitle } from "../lib/seo";
 
 interface Props {
@@ -47,9 +48,12 @@ function fullTitleFor(t?: string) { return t ? `${t} · ${site.profile.name}` : 
 
 // No-flash theme: runs before first paint. Its hash goes into the CSP so no
 // other inline script can run. It keeps the secret blood-moon theme across pages
-// (sessionStorage; a reload ends it), marks full/new moon nights (same test
-// as special() in lib/moon.ts) and the visitor's night hours, for the stars.
-const themeScript = `(function(){var d=document.documentElement;try{var q=new URLSearchParams(location.search).get('theme'),t=q==='dawn'||q==='light'?'dawn':q==='night'||q==='dark'?'night':localStorage.getItem('theme'),b=sessionStorage.getItem('blood');if(b){var n=performance.getEntriesByType('navigation')[0];if(n&&n.type==='reload'){sessionStorage.removeItem('blood');b=null}}if(b)d.classList.add('blood');else if(t==='dawn')d.dataset.theme='dawn'}catch(e){}var S=29.530588853,a=((Date.now()-Date.UTC(2000,0,6,18,14))/864e5%S+S)%S;if(Math.abs(a-S/2)<.75)d.dataset.lunar='full';else if(a<.75||a>S-.75)d.dataset.lunar='new';var h=new Date().getHours();if(h>=19||h<5)d.dataset.night='';d.classList.add('js')})()`;
+// (sessionStorage; a reload ends it), marks full/new moon nights and the visitor's
+// night hours, for the stars. The full/new windows are the true instants (lib/moon.ts)
+// ±SPECIAL_DAYS, precomputed here for 60 days back to 180 days ahead of the build.
+const lunarWindows = phaseInstants(new Date(Date.now() - 60 * 864e5), new Date(Date.now() + 180 * 864e5))
+  .map((x) => `[${Math.round((x.at - SPECIAL_DAYS * 864e5) / 6e4)},${Math.round((x.at + SPECIAL_DAYS * 864e5) / 6e4)},'${x.kind}']`).join(",");
+const themeScript = `(function(){var d=document.documentElement;try{var q=new URLSearchParams(location.search).get('theme'),t=q==='dawn'||q==='light'?'dawn':q==='night'||q==='dark'?'night':localStorage.getItem('theme'),b=sessionStorage.getItem('blood');if(b){var n=performance.getEntriesByType('navigation')[0];if(n&&n.type==='reload'){sessionStorage.removeItem('blood');b=null}}if(b)d.classList.add('blood');else if(t==='dawn')d.dataset.theme='dawn'}catch(e){}var m=Date.now()/6e4,w=[${lunarWindows}];for(var i=0;i<w.length;i++)if(m>=w[i][0]&&m<=w[i][1])d.dataset.lunar=w[i][2];var h=new Date().getHours();if(h>=19||h<5)d.dataset.night='';d.classList.add('js')})()`;
 const hash = createHash("sha256").update(themeScript).digest("base64");
 const csp = [
   "default-src 'self'",

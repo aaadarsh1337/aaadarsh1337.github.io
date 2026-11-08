@@ -112,12 +112,15 @@ const moonFor = { easy: 0.17, medium: 0.25, hard: 0.5 } as const;
   .month ol { list-style: none; margin-top: var(--s5); display: grid; gap: var(--s2); }
   .row { position: relative; display: grid; grid-template-columns: 5rem minmax(0, 1fr) 1.5rem; gap: var(--s5); align-items: start; padding: var(--s5); border-radius: 8px; overflow: hidden; background: var(--bg-1); transition: background-color .2s var(--ease); }
   .row::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: var(--blue); opacity: 0; transition: opacity .2s; }
-  .row:hover { background: var(--bg-2); }
-  .row:hover::before { opacity: 1; }
+  /* hover only where there is a real pointer: on touch, the first tap goes straight to the writeup */
+  @media (hover: hover) {
+    .row:hover { background: var(--bg-2); }
+    .row:hover::before { opacity: 1; }
+    .row:hover .row__cue { opacity: 1; color: var(--blue); translate: 3px 0; }
+    .row:hover .row__title a { color: #fff; }
+  }
   .row:active { background: var(--bg-3); }
   .row__cue { align-self: center; font-size: 1.25rem; }
-  .row:hover .row__cue { opacity: 1; color: var(--blue); translate: 3px 0; }
-  .row:hover .row__title a { color: #fff; }
   .row__date { padding-top: .35rem; font-size: var(--t-small); color: var(--fg-2); font-variant-numeric: tabular-nums; }
   .row__title { font: 400 var(--t-lede)/1.25 var(--sans); letter-spacing: -.015em; }
   .row__title a { color: var(--bone); }

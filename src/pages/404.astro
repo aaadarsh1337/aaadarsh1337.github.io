@@ -31,7 +31,8 @@ const torii = [
     <p class="meta">404</p>
     <h1>Nothing here: new moon.</h1>
     <p class="nf__t">That page isn't on this site. It may have moved when the site was rebuilt.</p>
-    <p class="nf__t">Tonight's real moon is a <span data-moon-name>{tonight.name}</span>, so it's only this page that's gone dark.</p>
+    <p class="nf__t nf__t--usual">Tonight's real moon is a <span data-moon-name>{tonight.name}</span>, so it's only this page that's gone dark.</p>
+    <p class="nf__t nf__t--new">Tonight really is a new moon. Even the sky has nothing here.</p>
     <p class="nf__a">
       <a class="btn btn--primary" href="/">Home</a>
       <a class="btn" href="/writeups/">Writeups</a>
@@ -65,6 +66,7 @@ const torii = [
   .nf__field {
     --lf-red: color-mix(in oklab, var(--lily) 45%, #c42a1e);
     --lf-stem: color-mix(in oklab, var(--sage) 45%, var(--bg));
+    position: relative;
     margin: auto 0 calc(-1 * var(--gap)) calc(50% - 50vw);   /* from the viewport's left edge to the footer */
     width: calc(100vw - 20px);   /* stops short of the right edge, where it fades out, so no scrollbar can appear */
     height: 230px; opacity: .7; pointer-events: none;
@@ -72,7 +74,26 @@ const torii = [
     mask-image: linear-gradient(to right, transparent, rgb(0 0 0 / .5) 30%, #000 60%, #000 94%, transparent);
   }
   .nf__field svg { display: block; width: 100%; height: 100%; }
-  .nf__torii { fill: color-mix(in oklab, var(--lily) 34%, #3a0606); }
+  .nf__torii { fill: color-mix(in oklab, var(--lily) 34%, #3a0606); transition: fill 1s, opacity 1s; }
+
+  /* a real new moon night (html[data-lunar="new"], see lib/moon.ts): the page and the sky
+     agree. The line changes, the field sinks into the dark, a low mist rises, and the
+     moon's rim all but goes out. */
+  .nf__t--new { display: none; }
+  :global(html[data-lunar="new"]) .nf__t--usual { display: none; }
+  :global(html[data-lunar="new"]) .nf__t--new { display: block; color: var(--fg); }
+  :global(html[data-lunar="new"]) .nf__field { opacity: .5; filter: saturate(.7) brightness(.8); }
+  :global(html[data-lunar="new"]) .nf__torii { fill: color-mix(in oklab, var(--lily) 18%, #200303); }
+  :global(html[data-lunar="new"]) .nf__field::after {
+    content: ""; position: absolute; inset: 35% 0 0; pointer-events: none;
+    background: linear-gradient(to bottom, transparent, color-mix(in oklab, var(--bg) 85%, transparent) 75%);
+    animation: nf-mist 9s ease-in-out infinite alternate;
+  }
+  :global(html[data-lunar="new"]) .nf__moon :global(.moon) { animation: none; filter: none; }
+  :global(html[data-lunar="new"]) .nf__moon :global(.moon__dark) { stroke-opacity: .45; }
+  :global(html[data-lunar="new"]) .nf__moon :global(.moon__halo) { stroke-opacity: .06; }
+  @keyframes nf-mist { from { opacity: .75; translate: -2% 0; } to { opacity: 1; translate: 2% 0; } }
+  @media (prefers-reduced-motion: reduce) { :global(html[data-lunar="new"]) .nf__field::after { animation: none; } }
   .lf-stem { fill: none; stroke: var(--lf-stem); stroke-linecap: round; }
   .lf-red { fill: none; stroke: var(--lf-red); stroke-linecap: round; }
   .lf-stamen { opacity: .9; }
