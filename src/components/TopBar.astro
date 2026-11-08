@@ -2,7 +2,7 @@
 // Plain bar: wordmark (with tonight's moon) and a few links on the left, the one action on the right.
 import Moon from "./Moon.astro";
 import { site } from "../config";
-import { moonPhase, nextPhase, fullMoonName } from "../lib/moon";
+import { moonPhase, nextPhase, fullMoonName, litText } from "../lib/moon";
 import { day } from "../lib/format";
 import { getWriteups } from "../lib/writeups";
 import { getPosts } from "../lib/blog";
@@ -33,7 +33,7 @@ const sheetNav = [{ id: "home", href: "/", label: "Home" }, ...nav];
       <p class="tonight__k">Tonight</p>
       <p class="tonight__name" data-moon-name>{tonight.name}</p>
       <dl class="tonight__facts">
-        <div><dt>Lit</dt><dd data-moon-lit>{Math.round(tonight.illumination * 100)}%</dd></div>
+        <div><dt>Lit</dt><dd data-moon-lit>{litText(tonight.illumination)}</dd></div>
         <div><dt>Age</dt><dd data-moon-age>{tonight.age.toFixed(1)} days</dd></div>
         <div><dt>Next full moon</dt><dd><span data-moon-full>{day(nextPhase(0.5))}</span><span class="tonight__fname" data-moon-fullname>{fullMoonName(nextPhase(0.5))}</span></dd></div>
         <div><dt>Next new moon</dt><dd data-moon-new>{day(nextPhase(0))}</dd></div>
@@ -69,7 +69,7 @@ const sheetNav = [{ id: "home", href: "/", label: "Home" }, ...nav];
     <Moon live size={56} label="" />
     <div>
       <p class="sheet__k">Tonight</p>
-      <p class="sheet__phase"><span data-moon-name>{tonight.name}</span>, <span data-moon-lit>{Math.round(tonight.illumination * 100)}%</span> lit</p>
+      <p class="sheet__phase"><span data-moon-name>{tonight.name}</span>, <span data-moon-lit>{litText(tonight.illumination)}</span> lit</p>
       <p class="sheet__next">Next full moon <span data-moon-full>{day(nextPhase(0.5))}</span>, the <span data-moon-fullname>{fullMoonName(nextPhase(0.5))}</span></p>
     </div>
   </div>

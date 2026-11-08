@@ -43,15 +43,24 @@ function solve(ms: number, deg: number): number {
   return ms;
 }
 
+/** "27%", or "<1%" for a sliver that would round to a misleading 0 (or 100). */
+export const litText = (illumination: number) => {
+  const n = Math.round(illumination * 100);
+  return n === 0 && illumination > 0.0005 ? "<1%" : n === 100 && illumination < 0.9995 ? ">99%" : `${n}%`;
+};
+
 export interface Phase { phase: number; illumination: number; name: string; age: number; at: number }
 
-// The four principal phases are instants; a day either side of each is named for it,
-// the stretches between are crescents and gibbous moons.
-const PRINCIPAL_DEG = 12.2;   // one day of elongation
+// The four principal phases are instants. As in calendars and almanacs, a day is named
+// for one when that instant falls on it, in the visitor's own timezone; the days between
+// are crescents and gibbous moons.
 const NAMES = ["new moon", "waxing crescent", "first quarter", "waxing gibbous", "full moon", "waning gibbous", "last quarter", "waning crescent"];
-function nameFor(deg: number): string {
+const sameLocalDay = (a: number, b: number) => new Date(a).toDateString() === new Date(b).toDateString();
+/** The instant of the principal phase `target` (degrees) nearest to `ms`. */
+const nearest = (ms: number, deg: number, target: number) => solve(ms + ((((target - deg) % 360) + 540) % 360 - 180) / RATE * DAY, target);
+function nameFor(deg: number, t: number): string {
   const q = Math.round(deg / 90) % 4;
-  if (Math.abs(((deg - q * 90 + 540) % 360) - 180) <= PRINCIPAL_DEG) return NAMES[q * 2];
+  if (sameLocalDay(nearest(t, deg, q * 90), t)) return NAMES[q * 2];
   return NAMES[(Math.floor(deg / 90) * 2 + 1) % 8];
 }
 
@@ -62,7 +71,7 @@ export function moonPhase(date: Date = new Date()): Phase {
     phase: deg / 360,
     age: (t - (lastNew > t ? solve(lastNew - 29.53 * DAY, 0) : lastNew)) / DAY,
     illumination: (1 - Math.cos(rad(deg))) / 2,
-    name: nameFor(deg),
+    name: nameFor(deg, t),
     at: t,
   };
 }
@@ -102,14 +111,13 @@ export function phaseInstants(from: Date, to: Date): { kind: "new" | "full"; at:
   return out;
 }
 
-/** Within ~18 hours of the exact full or new moon those nights get dressed up.
- *  The no-flash script in layouts/Base.astro gets these windows precomputed at build. */
-export const SPECIAL_DAYS = 0.75;
+/** The day of a full or new moon gets dressed up: the day, in the visitor's timezone, on
+ *  which the true instant falls (as calendars mark it). The no-flash script in
+ *  layouts/Base.astro applies the same rule to instants precomputed at build. */
 export function special(p: Phase): "full" | "new" | null {
-  // measured in hours, not degrees: the Moon's speed varies along its orbit
-  const deg = p.phase * 360, near = (target: number) => Math.abs(solve(p.at + ((((target - deg) % 360) + 540) % 360 - 180) / RATE * DAY, target) - p.at) < SPECIAL_DAYS * DAY;
-  if (deg > 120 && deg < 240 && near(180)) return "full";
-  if ((deg < 60 || deg > 300) && near(0)) return "new";
+  const deg = p.phase * 360;
+  if (deg > 120 && deg < 240 && sameLocalDay(nearest(p.at, deg, 180), p.at)) return "full";
+  if ((deg < 60 || deg > 300) && sameLocalDay(nearest(p.at, deg, 0), p.at)) return "new";
   return null;
 }
 
@@ -118,7 +126,7 @@ export function tonightLine(p: Phase): string {
   const s = special(p);
   if (s === "full") return `Full moon tonight: the ${fullMoonName(new Date())}`;
   if (s === "new") return "New moon tonight, the darkest sky of the month";
-  return `Tonight, ${p.name}, ${Math.round(p.illumination * 100)}% lit`;
+  return `Tonight, ${p.name}, ${litText(p.illumination)} lit`;
 }
 
 const MONTH_MOONS = ["Wolf", "Snow", "Worm", "Pink", "Flower", "Strawberry", "Buck", "Sturgeon", "Corn", "Hunter's", "Beaver", "Cold"];
