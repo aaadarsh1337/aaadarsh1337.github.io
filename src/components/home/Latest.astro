@@ -9,13 +9,13 @@ const { items, size = "small" } = Astro.props;
   {items.map((it) => (
     <li>
       <a href={it.url}>
-        <time datetime={iso(it.date)}>{day(it.date)}</time>
         <span class="latest__t">{it.title}</span>
         <span class="latest__m">
           <span class:list={["latest__k", `latest__k--${it.kind}`]}>{it.kind === "blog" ? "Blog" : it.where}</span>
           {it.tier && <Tier tier={it.tier} label={it.difficulty} />}
           {it.tags.map((t) => <span class="tag" data-tag={t}>{t}</span>)}
         </span>
+        <time datetime={iso(it.date)}>{day(it.date)}</time>
         <span class="cue" aria-hidden="true">→</span>
       </a>
     </li>
@@ -23,24 +23,25 @@ const { items, size = "small" } = Astro.props;
 </ol>
 <style>
   .latest { list-style: none; display: grid; gap: var(--s2); }
-  .latest a { position: relative; display: grid; grid-template-columns: 7.5rem minmax(0, 1fr) auto 1rem; gap: var(--s5); align-items: baseline; padding: var(--s4) var(--s5); border-radius: 8px; overflow: hidden; background: var(--bg-1); transition: background-color .2s var(--ease); }
+  /* the same order as the writeup cards: title, then platform, difficulty and tags, then the date */
+  .latest a { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) 1.25rem; grid-template-areas: "title cue" "meta cue" "date cue"; gap: var(--s2) var(--s5); align-items: center; padding: var(--s4) var(--s5); border-radius: 8px; overflow: hidden; background: var(--bg-1); transition: background-color .2s var(--ease); }
   .latest a::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: var(--blue); opacity: 0; transition: opacity .2s; }
   @media (hover: hover) {   /* on touch, the first tap goes straight to the link */
     .latest a:hover { background: var(--bg-2); }
     .latest a:hover::before { opacity: 1; }
   }
   .latest a:active { background: var(--bg-3); }
-  .latest time { font-size: var(--t-small); color: var(--muted); font-variant-numeric: tabular-nums; }
+  .latest__t { grid-area: title; }
+  .latest__m { grid-area: meta; }
+  .latest time { grid-area: date; font-size: var(--t-small); color: var(--muted); font-variant-numeric: tabular-nums; }
   .latest__t { font-size: var(--t-body); color: var(--fg); transition: color .2s; }
   .latest--large .latest__t { font-size: clamp(1.25rem, 1rem + 1vw, 1.75rem); letter-spacing: -.02em; }
   .latest a:hover .latest__t { color: var(--bone); }
-  .latest__m { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: .3rem .9rem; font-size: var(--t-small); }
+  .latest__m { display: flex; flex-wrap: wrap; justify-content: flex-start; align-items: center; gap: .3rem .9rem; font-size: var(--t-small); }
   .latest__k { color: var(--fg-2); }
   .latest__k--blog { color: var(--lantern); }
+  .latest .cue { grid-area: cue; font-size: 1.25rem; }
   @media (max-width: 640px) {
-    .latest a { grid-template-columns: minmax(0, 1fr); gap: var(--s1); padding: var(--s4) var(--s7) var(--s4) var(--s4); }
-    .latest .cue { position: absolute; right: var(--s4); top: 50%; translate: 0 -50%; }
-    .latest a:hover .cue { translate: 3px -50%; }
-    .latest__m { justify-content: flex-start; margin-top: var(--s1); }
+    .latest a { gap: var(--s2) var(--s3); padding: var(--s4); }
   }
 </style>
