@@ -143,6 +143,7 @@ The look is "Lunar": a night field, moonlit type, one blue accent.
 - **About:** skills appear once, as "What I work with" (`src/components/Toolbox.astro`); skills that have writeups link to the filtered list. Each CTF result carries its own proof and certificate links; Certificates lists only the rest.
 - **Moon:**
   - The textured moon in the top bar is tonight's real phase, computed in the visitor's browser, with its name written beside it.
+  - Moons 24px and larger use a real photo of the Moon (`public/assets/moon-128.webp`, `moon-256.webp`), made from NASA's Lunar Reconnaissance Orbiter colour map in the CGI Moon Kit. Credit: NASA's Scientific Visualization Studio. Smaller moons stay flat drawings.
   - Clicking it opens a "Tonight" card: phase, how much is lit, the moon's age, and the next full and new moon.
   - Difficulty is drawn as moon phases: crescent, half, full.
 - **Writeups:** each one has a file listing beside the article. The contents rail is gone.

@@ -148,3 +148,7 @@ export function fullMoonName(full: Date): string {
   if (prev.getMonth() === at.getMonth() && prev.getFullYear() === at.getFullYear()) return "Blue Moon";
   return `${MONTH_MOONS[at.getMonth()]} Moon`;
 }
+
+/** Ids for the masks inside each photo moon: unique per page, and the same on every build. */
+let moonIds = 0;
+export const nextMoonId = () => `moon${++moonIds}`;

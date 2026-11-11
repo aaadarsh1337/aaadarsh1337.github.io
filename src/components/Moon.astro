@@ -2,7 +2,7 @@
 // One moon component for the whole site.
 //   <Moon live />            tonight's phase, recomputed in the visitor's browser
 //   <Moon phase={0.25} />    fixed phase (difficulty marks, decoration)
-import { litPath, moonPhase, litText } from "../lib/moon";
+import { litPath, moonPhase, litText, nextMoonId } from "../lib/moon";
 
 interface Props {
   phase?: number;
@@ -16,6 +16,12 @@ const { live = false, size = 24, halo = false, class: cls, label } = Astro.props
 const now = moonPhase(new Date());
 const phase = Astro.props.phase ?? now.phase;
 const title = label === "" ? undefined : label ?? (live ? `${now.name} · ${litText(now.illumination)} lit` : undefined);
+// 24px and up the moon is the real one: NASA's LRO near-side mosaic (public domain, NASA SVS
+// CGI Moon Kit), lit by the phase through a soft-edged mask, with faint earthshine on the
+// dark side. Smaller moons stay flat: they carry difficulty colours a photo can't.
+const photo = size >= 24;
+const id = nextMoonId();
+const src = size > 64 ? "/assets/moon-256.webp" : "/assets/moon-128.webp";
 ---
 <svg
   class:list={["moon", cls, { "moon--halo": halo }]}
@@ -29,8 +35,25 @@ const title = label === "" ? undefined : label ?? (live ? `${now.name} · ${litT
 >
   {title && <title>{title}</title>}
   {halo && <circle class="moon__halo" cx="12" cy="12" r="11.6" />}
-  <circle class="moon__dark" cx="12" cy="12" r="10" />
-  <path class="moon__lit" d={litPath(phase)} />
+  {photo ? (
+    <>
+      <defs>
+        <filter id={`${id}-soft`} x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation=".35" /></filter>
+        <mask id={`${id}-lit`} maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24"><path class="moon__lit moon__litmask" d={litPath(phase)} filter={`url(#${id}-soft)`} /></mask>
+        <clipPath id={`${id}-disc`}><circle cx="12" cy="12" r="10" /></clipPath>
+      </defs>
+      <circle class="moon__dark moon__dark--photo" cx="12" cy="12" r="10" />
+      <g clip-path={`url(#${id}-disc)`}>
+        <image class="moon__earthshine" href={src} x="2" y="2" width="20" height="20" />
+        <image class="moon__photo" href={src} x="2" y="2" width="20" height="20" mask={`url(#${id}-lit)`} />
+      </g>
+    </>
+  ) : (
+    <>
+      <circle class="moon__dark" cx="12" cy="12" r="10" />
+      <path class="moon__lit" d={litPath(phase)} />
+    </>
+  )}
 
 </svg>
 
@@ -39,6 +62,11 @@ const title = label === "" ? undefined : label ?? (live ? `${now.name} · ${litT
   .moon__dark { fill: var(--moon-dark, var(--moon-shade)); stroke: var(--moon-edge); stroke-width: .6; }
   .moon__lit { fill: var(--moon-lit, var(--moon)); transition: d .6s var(--ease); }
   .moon__halo { fill: none; stroke: var(--moon-lit, var(--moon)); stroke-opacity: .14; stroke-width: .5; }
+  .moon__dark--photo { fill: #0d0f12; stroke: var(--moon-edge); stroke-width: .35; }
+  .moon__litmask { fill: #fff; transition: d .6s var(--ease); }
+  .moon__earthshine { opacity: .085; }
+  :global(:root[data-theme="dawn"]) .moon__earthshine { opacity: .16; }
+  :global(:root.blood) .moon__photo { filter: sepia(.85) saturate(2.4) hue-rotate(-28deg) brightness(.82); }
   .moon--halo { filter: drop-shadow(0 0 6px color-mix(in srgb, var(--moon-lit, var(--moon)) 18%, transparent)); }
 </style>
 
