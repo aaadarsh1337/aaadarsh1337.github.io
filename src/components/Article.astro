@@ -186,18 +186,19 @@ const dirs = [...new Set(attachments.map((a) => a.dir))];
   }
 
   // reading progress moon
-  import { litPath } from "../lib/moon";
+  import { decorPath } from "../lib/moon";
   const rm = document.querySelector<HTMLButtonElement>("[data-readmoon]");
   const prose = document.querySelector<HTMLElement>(".article .body");
   if (rm && prose) {
-    const lit = rm.querySelector(".moon__lit")!;
+    const lit = rm.querySelectorAll(".moon__lit");
     const pct = rm.querySelector<HTMLElement>("[data-readmoon-pct]")!;
     let raf = 0;
     const draw = () => {
       raf = 0;
       const r = prose.getBoundingClientRect();
       const p = Math.min(1, Math.max(0, (innerHeight * 0.6 - r.top) / r.height));
-      lit.setAttribute("d", litPath(p * 0.5));
+      const d = decorPath(p * 0.5);
+      lit.forEach((el) => el.setAttribute("d", d));
       const n = Math.round(p * 100);
       pct.textContent = `${n}%`;
       rm.setAttribute("aria-label", `${n}% read. Back to top`);

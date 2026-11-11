@@ -143,7 +143,9 @@ The look is "Lunar": a night field, moonlit type, one blue accent.
 - **About:** skills appear once, as "What I work with" (`src/components/Toolbox.astro`); skills that have writeups link to the filtered list. Each CTF result carries its own proof and certificate links; Certificates lists only the rest.
 - **Moon:**
   - The textured moon in the top bar is tonight's real phase, computed in the visitor's browser, with its name written beside it.
-  - Moons 24px and larger use a real photo of the Moon (`public/assets/moon-128.webp`, `moon-256.webp`), made from NASA's Lunar Reconnaissance Orbiter colour map in the CGI Moon Kit. Credit: NASA's Scientific Visualization Studio. Smaller moons stay flat drawings.
+  - Moons 24px and larger are painted to match the moon in the avatar: near-white highlands, pale-blue seas and an icy glow (`public/assets/moon-128.webp`, `moon-256.webp`). The seas sit where the real ones are, traced from NASA's Lunar Reconnaissance Orbiter colour map in the CGI Moon Kit. Credit: NASA's Scientific Visualization Studio. Smaller moons stay flat drawings.
+  - The Tonight card shows tonight's moon: after dark it is the moon right now, and by day it is the moon at 9 pm local time.
+  - The live moons lean 30° the way the real one does from the northern hemisphere: lit down-right while waxing, down-left while waning. Decorative moons (difficulty, results, headings, reading progress) are lit from the bottom left by choice.
   - Clicking it opens a "Tonight" card: phase, how much is lit, the moon's age, and the next full and new moon.
   - Difficulty is drawn as moon phases: crescent, half, full.
 - **Writeups:** each one has a file listing beside the article. The contents rail is gone.

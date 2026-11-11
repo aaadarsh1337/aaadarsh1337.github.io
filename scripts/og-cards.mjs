@@ -20,11 +20,12 @@ const chrome = [process.env.CHROME, "google-chrome", "google-chrome-stable", "ch
   .filter(Boolean).find((c) => spawnSync(c, ["--version"], { stdio: "ignore" }).status === 0);
 
 // the same moon the site draws (src/lib/moon.ts litPath), at r=10 in a 24 box
-function lit(phase) {
-  const c = 12, r = 10, p = ((phase % 1) + 1) % 1, rx = Math.abs(Math.cos(2 * Math.PI * p)) * r;
-  const top = `${c} ${c - r}`, bottom = `${c} ${c + r}`;
-  return p < 0.5 ? `M${top}A${r} ${r} 0 0 1 ${bottom}A${rx.toFixed(3)} ${r} 0 0 ${p > 0.25 ? 1 : 0} ${top}Z`
-    : `M${top}A${r} ${r} 0 0 0 ${bottom}A${rx.toFixed(3)} ${r} 0 0 ${p < 0.75 ? 0 : 1} ${top}Z`;
+function lit(phase, tilt = 30) {   // decorative, like the site's decorPath: lit from the bottom left
+  const c = 12, r = 10, p = (((1 - phase) % 1) + 1) % 1, rx = Math.abs(Math.cos(2 * Math.PI * p)) * r;
+  const a = p < 0.5 ? tilt : -tilt, t = a * Math.PI / 180, f = (n) => n.toFixed(3);
+  const top = `${f(c + Math.sin(t) * r)} ${f(c - Math.cos(t) * r)}`, bottom = `${f(c - Math.sin(t) * r)} ${f(c + Math.cos(t) * r)}`;
+  return p < 0.5 ? `M${top}A${r} ${r} 0 0 1 ${bottom}A${f(rx)} ${r} ${f(a)} 0 ${p > 0.25 ? 1 : 0} ${top}Z`
+    : `M${top}A${r} ${r} 0 0 0 ${bottom}A${f(rx)} ${r} ${f(a)} 0 ${p < 0.75 ? 0 : 1} ${top}Z`;
 }
 const TIER = { easy: { phase: 0.17, c: "#a8b893" }, medium: { phase: 0.25, c: "#d2b177" }, hard: { phase: 0.5, c: "#cf7c71" } };
 const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;");

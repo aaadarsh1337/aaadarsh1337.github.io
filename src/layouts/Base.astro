@@ -123,11 +123,11 @@ const csp = [
   <script>
     // heading moons wax down the page: a thin crescent at the first, nearly full at the last
     // (always a sliver of shadow, so even the last one reads as a moon, not a dot)
-    import { litPath } from "../lib/moon";
+    import { decorPath } from "../lib/moon";
     const hs = [...document.querySelectorAll<HTMLElement>(":is(.b-h, .label, .tb__h, .month__h, .prose h2)")].filter((h) => h.offsetParent);
     hs.forEach((h, i) => {
       const phase = hs.length > 1 ? 0.09 + 0.28 * (i / (hs.length - 1)) : 0.25;
-      const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><circle cx='12' cy='12' r='11' fill-opacity='.26'/><path d='${litPath(phase, 12, 11)}'/></svg>`;
+      const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><circle cx='12' cy='12' r='11' fill-opacity='.26'/><path d='${decorPath(phase, 12, 11)}'/></svg>`;
       h.style.setProperty("--moon-mask", `url("data:image/svg+xml,${encodeURIComponent(svg)}")`);
     });
 

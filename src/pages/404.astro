@@ -1,9 +1,9 @@
 ---
 import Base from "../layouts/Base.astro";
 import Moon from "../components/Moon.astro";
-import { moonPhase } from "../lib/moon";
+import { moonPhase, tonightAt } from "../lib/moon";
 import { lily, bud, mulberry32 } from "../lib/lilies";
-const tonight = moonPhase(new Date());
+const tonight = moonPhase(tonightAt());
 
 // Higanbana, the flower of the other shore: a dark clump under the empty sky at the right,
 // a few strays drifting left into the dark. Build-time SVG on a 1440-wide, 230-high field.

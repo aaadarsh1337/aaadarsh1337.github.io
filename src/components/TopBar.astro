@@ -2,11 +2,11 @@
 // Plain bar: wordmark (with tonight's moon) and a few links on the left, the one action on the right.
 import Moon from "./Moon.astro";
 import { site } from "../config";
-import { moonPhase, nextPhase, fullMoonName, litText } from "../lib/moon";
+import { moonPhase, nextPhase, fullMoonName, litText, tonightAt } from "../lib/moon";
 import { day } from "../lib/format";
 import { getWriteups } from "../lib/writeups";
 import { getPosts } from "../lib/blog";
-const tonight = moonPhase(new Date());
+const tonight = moonPhase(tonightAt());
 const [writeups, posts] = await Promise.all([getWriteups(), getPosts()]);
 
 interface Props { section: string }

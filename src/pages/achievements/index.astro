@@ -124,6 +124,7 @@ const profiles = site.links.filter((l) => ["TryHackMe", "CTFtime", "pwn.college"
     font: 600 4.75rem/1 var(--display); letter-spacing: -.03em;
     color: color-mix(in srgb, var(--moon) 30%, #1a1512);   /* carved: dark ink in the moon's own tone */
   }
+  :global(:root.blood) .best__rank { color: #2a0d09; }   /* stays readable on the red moon */
   .best__k { font: 400 var(--t-small)/1.4 var(--sans); letter-spacing: .02em; color: var(--blue); }
   .best__t { margin-top: var(--s3); font: 500 clamp(1.75rem, 1.2rem + 1.8vw, 2.5rem)/1.15 var(--display); letter-spacing: -.015em; color: var(--bone); text-wrap: balance; }
   .best__d { margin-top: var(--s2); font-size: var(--t-body); color: var(--fg-2); }

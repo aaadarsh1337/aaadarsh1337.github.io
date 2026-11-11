@@ -2,7 +2,7 @@
 // One moon component for the whole site.
 //   <Moon live />            tonight's phase, recomputed in the visitor's browser
 //   <Moon phase={0.25} />    fixed phase (difficulty marks, decoration)
-import { litPath, moonPhase, litText, nextMoonId } from "../lib/moon";
+import { litPath, moonPhase, litText, nextMoonId, tonightAt, decorPath } from "../lib/moon";
 
 interface Props {
   phase?: number;
@@ -13,13 +13,14 @@ interface Props {
   label?: string;
 }
 const { live = false, size = 24, halo = false, class: cls, label } = Astro.props;
-const now = moonPhase(new Date());
+const now = moonPhase(tonightAt());
 const phase = Astro.props.phase ?? now.phase;
 const title = label === "" ? undefined : label ?? (live ? `${now.name} · ${litText(now.illumination)} lit` : undefined);
-// 24px and up the moon is the real one: NASA's LRO near-side mosaic (public domain, NASA SVS
-// CGI Moon Kit), lit by the phase through a soft-edged mask, with faint earthshine on the
-// dark side. Smaller moons stay flat: they carry difficulty colours a photo can't.
+// 24px and up the moon is painted like the one in the avatar: NASA's LRO near-side mosaic
+// (NASA SVS CGI Moon Kit) smoothed into white highlands and pale-blue seas, lit by the phase
+// through a soft-edged mask, with an icy glow and faint earthshine on the dark side. Smaller moons stay flat: they carry difficulty colours a photo can't.
 const photo = size >= 24;
+const lit = live ? litPath(phase) : decorPath(phase);   // live: the real sky; the rest: lit from the bottom left
 const id = nextMoonId();
 const src = size > 64 ? "/assets/moon-256.webp" : "/assets/moon-128.webp";
 ---
@@ -38,20 +39,28 @@ const src = size > 64 ? "/assets/moon-256.webp" : "/assets/moon-128.webp";
   {photo ? (
     <>
       <defs>
-        <filter id={`${id}-soft`} x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation=".35" /></filter>
-        <mask id={`${id}-lit`} maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24"><path class="moon__lit moon__litmask" d={litPath(phase)} filter={`url(#${id}-soft)`} /></mask>
+        <filter id={`${id}-soft`} x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation=".1" /></filter>
+        <mask id={`${id}-lit`} maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24"><path class="moon__lit moon__litmask" d={lit} filter={`url(#${id}-soft)`} /></mask>
         <clipPath id={`${id}-disc`}><circle cx="12" cy="12" r="10" /></clipPath>
+        {/* the glow may shine past the limb and over the lit part, never onto the dark side */}
+        <mask id={`${id}-shade`} maskUnits="userSpaceOnUse" x="-6" y="-6" width="36" height="36">
+          <rect x="-6" y="-6" width="36" height="36" fill="#fff" /><circle cx="12" cy="12" r="10" fill="#000" />
+          <path class="moon__lit moon__litmask" d={lit} />
+        </mask>
       </defs>
       <circle class="moon__dark moon__dark--photo" cx="12" cy="12" r="10" />
-      <g clip-path={`url(#${id}-disc)`}>
-        <image class="moon__earthshine" href={src} x="2" y="2" width="20" height="20" />
-        <image class="moon__photo" href={src} x="2" y="2" width="20" height="20" mask={`url(#${id}-lit)`} />
+      <image class="moon__earthshine" href={src} x="2" y="2" width="20" height="20" clip-path={`url(#${id}-disc)`} />
+      <g mask={`url(#${id}-shade)`}>
+        <g class="moon__glow">
+          <image class="moon__photo" href={src} x="2" y="2" width="20" height="20" mask={`url(#${id}-lit)`} />
+          <rect class="moon__blood" x="2" y="2" width="20" height="20" mask={`url(#${id}-lit)`} />
+        </g>
       </g>
     </>
   ) : (
     <>
       <circle class="moon__dark" cx="12" cy="12" r="10" />
-      <path class="moon__lit" d={litPath(phase)} />
+      <path class="moon__lit" d={lit} />
     </>
   )}
 
@@ -62,22 +71,31 @@ const src = size > 64 ? "/assets/moon-256.webp" : "/assets/moon-128.webp";
   .moon__dark { fill: var(--moon-dark, var(--moon-shade)); stroke: var(--moon-edge); stroke-width: .6; }
   .moon__lit { fill: var(--moon-lit, var(--moon)); transition: d .6s var(--ease); }
   .moon__halo { fill: none; stroke: var(--moon-lit, var(--moon)); stroke-opacity: .14; stroke-width: .5; }
-  .moon__dark--photo { fill: #0d0f12; stroke: var(--moon-edge); stroke-width: .35; }
+  .moon__dark--photo { fill: #0e131c; stroke: var(--moon-edge); stroke-width: .35; }
+  /* the avatar's moon: an icy white glow hugging the lit part only */
+  .moon__glow { filter: drop-shadow(0 0 .5px rgb(236 249 255 / .85)) drop-shadow(0 0 1.6px rgb(168 214 255 / .5)); }
+  :global(:root[data-theme="dawn"]) .moon__glow { filter: drop-shadow(0 0 .6px rgb(120 160 200 / .45)); }
+  :global(:root.blood) .moon__glow { filter: drop-shadow(0 0 1.4px rgb(220 70 50 / .5)); }
   .moon__litmask { fill: #fff; transition: d .6s var(--ease); }
   .moon__earthshine { opacity: .085; }
   :global(:root[data-theme="dawn"]) .moon__earthshine { opacity: .16; }
-  :global(:root.blood) .moon__photo { filter: sepia(.85) saturate(2.4) hue-rotate(-28deg) brightness(.82); }
+  /* blood moon: a red wash multiplied over the white, so the pale seas turn a deeper red */
+  .moon__blood { display: none; fill: #d4553c; mix-blend-mode: multiply; }
+  :global(:root.blood) .moon__blood { display: inline; }
+  :global(:root.blood) .moon__glow { isolation: isolate; }
+  :global(:root.blood) .moon__dark--photo { fill: #170d0c; }
   .moon--halo { filter: drop-shadow(0 0 6px color-mix(in srgb, var(--moon-lit, var(--moon)) 18%, transparent)); }
 </style>
 
 <script>
-  import { litPath, moonPhase, nextPhase, special, tonightLine, fullMoonName, litText } from "../lib/moon";
+  import { litPath, moonPhase, nextPhase, special, tonightLine, fullMoonName, litText, tonightAt } from "../lib/moon";
   // The build renders the phase of build day; correct it to the visitor's now.
   function update() {
-    const p = moonPhase(new Date());
+    const p = moonPhase(tonightAt());   // tonight's moon; the next full/new dates still count from now
     const text = `${p.name} · ${litText(p.illumination)} lit`;
     for (const svg of document.querySelectorAll<SVGSVGElement>("svg[data-moon-live]")) {
-      svg.querySelector(".moon__lit")?.setAttribute("d", litPath(p.phase));
+      const path = litPath(p.phase);
+      for (const el of svg.querySelectorAll(".moon__lit")) el.setAttribute("d", path);
       if (svg.getAttribute("role") === "img") svg.setAttribute("aria-label", text);
       const t = svg.querySelector("title");
       if (t) t.textContent = text;

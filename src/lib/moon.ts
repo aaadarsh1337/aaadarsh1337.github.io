@@ -76,19 +76,29 @@ export function moonPhase(date: Date = new Date()): Phase {
   };
 }
 
+/** How far the lit side leans from upright, in degrees. */
+export const TILT = 30;
+
 /** SVG path of the lit part of a disc of radius r centred at (c, c).
  *  Northern-hemisphere view: waxing light grows from the right. */
-export function litPath(phase: number, c = 12, r = 10): string {
+export function litPath(phase: number, c = 12, r = 10, tilt = TILT): string {
   const p = ((phase % 1) + 1) % 1;
   const rx = Math.abs(Math.cos(2 * Math.PI * p)) * r;
-  const top = `${c} ${c - r}`, bottom = `${c} ${c + r}`;
+  // the lit limb leans toward the sun below the horizon: down-right while waxing (evening),
+  // down-left while waning (morning). Rotating the poles rotates the whole shape.
+  const t = (p < 0.5 ? tilt : -tilt) * Math.PI / 180, sx = Math.sin(t) * r, cy = Math.cos(t) * r;
   const f = (n: number) => n.toFixed(3);
+  const top = `${f(c + sx)} ${f(c - cy)}`, bottom = `${f(c - sx)} ${f(c + cy)}`, rot = f(p < 0.5 ? tilt : -tilt);
   if (p < 0.5) {
     // limb on the right; terminator bulges left once past first quarter
-    return `M${top}A${r} ${r} 0 0 1 ${bottom}A${f(rx)} ${r} 0 0 ${p > 0.25 ? 1 : 0} ${top}Z`;
+    return `M${top}A${r} ${r} 0 0 1 ${bottom}A${f(rx)} ${r} ${rot} 0 ${p > 0.25 ? 1 : 0} ${top}Z`;
   }
-  return `M${top}A${r} ${r} 0 0 0 ${bottom}A${f(rx)} ${r} 0 0 ${p < 0.75 ? 0 : 1} ${top}Z`;
+  return `M${top}A${r} ${r} 0 0 0 ${bottom}A${f(rx)} ${r} ${rot} 0 ${p < 0.75 ? 0 : 1} ${top}Z`;
 }
+
+/** The lit part of a decorative moon (difficulty, results, headings): not the sky, so it is
+ *  drawn by choice with the light growing from the bottom left. Live moons use litPath. */
+export const decorPath = (phase: number, c = 12, r = 10) => litPath(1 - phase, c, r, TILT);
 
 /** When the moon next reaches a phase (0 = new, 0.5 = full), after `date`. */
 export function nextPhase(target: 0 | 0.5, date: Date = new Date()): Date {
@@ -152,3 +162,13 @@ export function fullMoonName(full: Date): string {
 /** Ids for the masks inside each photo moon: unique per page, and the same on every build. */
 let moonIds = 0;
 export const nextMoonId = () => `moon${++moonIds}`;
+
+/** The instant the "Tonight" moon is drawn for: after dark (9 pm to 5 am) it is right now;
+ *  by day it is 9 pm tonight, local time, so a midday visit shows tonight's moon, not noon's. */
+export function tonightAt(now: Date = new Date()): Date {
+  const h = now.getHours();
+  if (h >= 21 || h < 5) return now;
+  const t = new Date(now);
+  t.setHours(21, 0, 0, 0);
+  return t;
+}
