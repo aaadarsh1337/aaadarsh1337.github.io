@@ -17,5 +17,6 @@ User-agent: CCBot
 Allow: /
 
 Sitemap: https://aaadarsh1337.github.io/sitemap.xml
+Sitemap: https://aaadarsh1337.github.io/sitemap.txt
 
 # For AI agents: a summary at /llms.txt and the full text of every writeup at /llms-full.txt

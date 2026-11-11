@@ -159,7 +159,7 @@ All URLs from the previous version of the site still work, including `/writeups/
 
 Everything below is generated on every build, from `src/config.ts` and the content repos, so it is never out of date:
 
-- **`/sitemap.xml`** (`src/pages/sitemap.xml.ts`): every page with the date its content last changed. Submitted once in Google Search Console and Bing Webmaster Tools.
+- **`/sitemap.xml` and `/sitemap.txt`** (`src/lib/sitemap.ts`, shared by both): every page with the date its content last changed. Submitted once in Google Search Console and Bing Webmaster Tools.
 - **`/robots.txt`** (`public/robots.txt`): allows every crawler, names the AI ones, points to the sitemap.
 - **Structured data** (`src/lib/seo.ts`, merged into one JSON-LD `@graph` in `Base.astro`): a Person with every handle and profile on the home and About pages, breadcrumbs everywhere, and TechArticle/BlogPosting data on writeups and posts.
 - **Threat Harbour indicators** (`src/lib/ioc.ts`, `src/pages/intel/iocs.*.ts`): `/intel/iocs.txt`, `.csv` and `.json`, rebuilt from the same metrics. Commands on the page are shown in full but defanged (URLs `hxxp://host[.]tld`, IPs `1.2.3[.]4`).
