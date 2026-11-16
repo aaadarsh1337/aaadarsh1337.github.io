@@ -5,13 +5,14 @@ import Toolbox from "../../components/Toolbox.astro";
 import { site } from "../../config";
 import { getRepos } from "../../lib/repos";
 import { day } from "../../lib/format";
+import { bioHtml } from "../../lib/bio";
 
 const p = site.profile;
 const repos = getRepos();
 const identity = [
   ["name", p.name], ["handles", [p.handle, ...p.aliases].join(", ")], ["based in", p.location],
-  ["work", `${p.company.role} at ${p.company.name}`], ["team", `${p.team} · ${p.teamRole}`],
-  ["previously", `${p.formerTeam.name} · former ${p.formerTeam.role}`],
+  ["group", `${p.group.name} · ${p.group.role.toLowerCase()}`, p.group.page], ["team", `${p.team} · ${p.teamRole}`, `${p.group.page}#h3ap`],
+  ["previously", `${p.formerTeam.name} · former ${p.formerTeam.role}`, `${p.group.page}#h3ap`],
 ];
 ---
 <Base title="About" description={`About ${p.name}: background, the tools I work with, repositories and contact.`} section="about">
@@ -25,7 +26,7 @@ const identity = [
       </picture>
     </figure>
     <dl class="spec">
-      {identity.map(([k, v]) => <div><dt>{k}</dt><dd>{v}</dd></div>)}
+      {identity.map(([k, v, href]) => <div><dt>{k}</dt><dd>{href ? <a class="link" href={href}>{v}</a> : v}</dd></div>)}
     </dl>
     <p class="who__links">
       <a class="btn btn--primary" href={p.resume}>Résumé (PDF) <span class="arr">↗</span></a>
@@ -36,7 +37,7 @@ const identity = [
 
   <section class="sec story" aria-labelledby="h-story">
     <h2 class="label" id="h-story">More about me</h2>
-    <div class="story__text">{p.bio.slice(1).map((para) => <p>{para}</p>)}</div>
+    <div class="story__text">{bioHtml(p.bio.slice(1)).map((para) => <p set:html={para} />)}</div>
   </section>
 
   <div class="sec"><Toolbox /></div>

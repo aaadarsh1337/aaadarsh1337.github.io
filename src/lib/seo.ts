@@ -6,6 +6,26 @@ import { site } from "../config";
 export const abs = (path: string) => new URL(path, site.url).href;
 export const PERSON_ID = `${site.url}/#person`;
 export const WEBSITE_ID = `${site.url}/#website`;
+export const GROUP_ID = `${site.url}/heap0verflow/#group`;
+export const TEAM_ID = `${site.url}/heap0verflow/#h3ap`;
+
+/** Heap0verflow and its CTF team, for search engines: what the /heap0verflow/ page says. */
+export function group() {
+  const p = site.profile, g = p.group;
+  return [
+    {
+      "@type": "Organization", "@id": GROUP_ID, name: g.name, url: g.website || abs(g.page),
+      description: `${g.name} is a small, ${g.kind}. Its members compete in CTFs as ${p.team} and collaborate on security research and bug bounty hunting. It is not a company and offers no services.`,
+      foundingDate: "2026-11", sameAs: [g.linkedin, ...(g.website ? [g.website] : [])],
+      subOrganization: { "@id": TEAM_ID }, member: { "@id": PERSON_ID },
+    },
+    {
+      "@type": "SportsTeam", "@id": TEAM_ID, name: p.team, alternateName: p.formerTeam.name, sport: "Capture the flag (CTF)",
+      url: p.ctftimeTeam, parentOrganization: { "@id": GROUP_ID },
+      description: `${g.name}’s CTF team, for members only. Known as ${p.formerTeam.name} until ${g.formed}.`,
+    },
+  ];
+}
 
 /** Titles from content may carry an em or en dash ("Honeypot Worm \u2014 bendi.py");
  *  everywhere the site writes a title it reads "Honeypot Worm: bendi.py" instead. */
@@ -39,11 +59,13 @@ export function person() {
     alternateName: [p.handle, ...p.aliases],
     url: site.url,
     image: abs(p.avatarFallback),
-    description: `${p.company.role} at ${p.company.name}, and a cybersecurity student. Plays CTFs for ${p.team}; former ${p.formerTeam.role} of ${p.formerTeam.name}. Malware analysis and the Threat Harbour SSH honeypot.`,
-    jobTitle: p.company.role,
-    worksFor: { "@type": "Organization", name: p.company.name, url: p.company.url },
+    description: `${p.group.role} with ${p.group.name}, an ${p.group.kind}, and a cybersecurity student. Plays CTFs for ${p.team}; former ${p.formerTeam.role} of ${p.formerTeam.name}. Malware analysis and the Threat Harbour SSH honeypot.`,
     knowsAbout: ["Reverse engineering", "Binary exploitation", "Malware analysis", "Capture the flag (CTF)", "Threat intelligence", "Honeypots", "OSINT", "Web exploitation"],
-    memberOf: { "@type": "Organization", name: p.team, alternateName: p.formerTeam.name, url: p.ctftimeTeam, description: `${p.company.name}’s CTF team, formerly ${p.formerTeam.name}` },
+    // a member, not an employee: Heap0verflow is a group, not a company
+    memberOf: [
+      { "@type": "Organization", "@id": GROUP_ID, name: p.group.name, url: p.group.website || abs(p.group.page) },
+      { "@type": "SportsTeam", "@id": TEAM_ID, name: p.team, alternateName: p.formerTeam.name, url: p.ctftimeTeam },
+    ],
     homeLocation: { "@type": "Country", name: p.location },
     award: awards(),
     sameAs: site.links.map((l) => l.url),

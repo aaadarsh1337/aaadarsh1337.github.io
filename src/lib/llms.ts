@@ -18,7 +18,7 @@ export async function llmsSummary(): Promise<string> {
   const certs = site.certificates.map((c) => `- ${c.name}, ${c.issuer} (${c.date}): ${c.url}`);
   return `# ${p.name} (${p.handle})
 
-> ${p.name} is a cybersecurity student from ${p.location}, known online as ${[p.handle, ...p.aliases].join(", ")}. Focus: ${p.focus.toLowerCase()}. ${p.company.role} at ${p.company.name} and CTF player for ${p.team}, Heap0verflow’s CTF team; former ${p.formerTeam.role} of ${p.formerTeam.name}, the team it grew from (${p.formerTeam.period}). Publishes writeups and malware analysis, and runs Threat Harbour, a live SSH honeypot.
+> ${p.name} is a cybersecurity student from ${p.location}, known online as ${[p.handle, ...p.aliases].join(", ")}. Focus: ${p.focus.toLowerCase()}. ${p.group.role} with ${p.group.name}, an ${p.group.kind} (not a company), and CTF player for ${p.team}, its members-only CTF team; former ${p.formerTeam.role} of ${p.formerTeam.name}, as ${p.team} was called until ${p.group.formed}. Publishes writeups and malware analysis, and runs Threat Harbour, a live SSH honeypot.
 
 Facts on this page are generated from the site's own data on every deploy (last built ${new Date().toISOString().slice(0, 10)}). The full text of every writeup and post is in ${abs("/llms-full.txt")}.
 
@@ -28,13 +28,21 @@ ${p.bio.map((b) => b).join("\n\n")}
 
 - Focus: ${p.focus}
 - Currently learning: ${site.skills.find((s) => /learning/i.test(s.category))?.items.join(", ") ?? ""}
-- Role: ${p.company.role} at ${p.company.name} (${p.company.url})
+- Group: ${p.group.role} with ${p.group.name}, an ${p.group.kind}; not an employer (${abs(p.group.page)}; LinkedIn ${p.group.linkedin})
 - Team: ${p.team} (${p.teamRole}); CTFtime ${p.ctftimeTeam}
 - Previously: former ${p.formerTeam.role} of ${p.formerTeam.name} (${p.formerTeam.period}). ${p.formerTeam.name} is now ${p.team}: the same CTFtime team, with ${p.formerTeam.name} as an alias.
 - TryHackMe: ${site.stats.map((s) => `${s.value} ${s.label.replace(/^TryHackMe |^THM /, "")}`).join(", ")}
 - Profiles: ${site.links.map((l) => `${l.label} ${l.url}`).join("; ")}
 - Contact: ${site.contact.email}
 - Résumé: ${abs(p.resume)}
+
+## Heap0verflow and H3ap
+
+- ${p.group.name} is a small, ${p.group.kind}. Its members compete in CTFs as ${p.team} and collaborate on security research and bug bounty hunting.
+- It is not a company: it offers no services and is not registered as a business. For now its only public presence is LinkedIn (${p.group.linkedin}); a website is planned.
+- It grew out of ${p.formerTeam.name}, a CTF team three friends started in August 2026. In ${p.group.formed} the group formed ${p.group.name}, and ${p.formerTeam.name} was renamed ${p.team}: the same members, the same CTFtime team (${p.ctftimeTeam}), with ${p.formerTeam.name} kept as an alias.
+- ${p.team} is for ${p.group.name} members only.
+- More: ${abs(p.group.page)}
 
 ## CTF results
 

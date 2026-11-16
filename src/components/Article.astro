@@ -21,8 +21,11 @@ interface Props {
   series?: string;
   /** One plain sentence under the title saying what this is. */
   standfirst?: string;
+  /** advisories: every fact in the bar under the title, one column of text, a smaller title */
+  bar?: boolean;
 }
-const { crumbs, title, kicker, specs, body, attachments = [], prev, next, series, standfirst } = Astro.props;
+const { crumbs, title, kicker, specs, body, attachments = [], prev, next, series, standfirst, bar = false } = Astro.props;
+const rail = attachments.length > 0 || !bar;
 
 const dirs = [...new Set(attachments.map((a) => a.dir))];
 // the info bar: facts in a row, and the links that leave the site as small buttons beside them
@@ -37,9 +40,9 @@ const cap = (k: string) => k[0].toUpperCase() + k.slice(1);
       {crumbs.map((c) => <><span class="crumbs__sep">/</span>{c.href ? <a href={c.href}>{c.label.toLowerCase()}</a> : <span aria-current="page">{c.label.toLowerCase()}</span>}</>)}
     </nav>
     {kicker && <p class="head__kicker meta">{kicker}</p>}
-    <h1 class="head__title page-title" data-pagefind-meta="title">{title}</h1>
+    <h1 class:list={["head__title page-title", { "head__title--compact": bar }]} data-pagefind-meta="title">{title}</h1>
     {standfirst && <p class="head__stand">{standfirst}</p>}
-    <div class:list={["specs", { "specs--rail": attachments.length === 0 }]}>
+    <div class:list={["specs", { "specs--rail": attachments.length === 0 && !bar }]}>
       <dl class="specs__facts">
         {facts.map((s) => (
           <div class="spec" style={s.accent ? `--c: var(--${s.accent})` : undefined}>
@@ -56,10 +59,10 @@ const cap = (k: string) => k[0].toUpperCase() + k.slice(1);
     </div>
   </header>
 
-  <div class="layout">
-    <div class="prose body" data-pagefind-body data-pagefind-meta={`kind:${crumbs[0]?.label.toLowerCase() === "blog" ? "post" : "writeup"}`} set:html={body.html} />
+  <div class:list={["layout", { "layout--solo": !rail }]}>
+    <div class="prose body" data-pagefind-body data-pagefind-meta={`kind:${({ blog: "post", advisory: "advisory" } as Record<string, string>)[crumbs[0]?.label.toLowerCase() ?? ""] ?? "writeup"}`} set:html={body.html} />
 
-    <aside class="rail" aria-label={attachments.length ? "Files in this challenge" : "About this post"}>
+    {rail && <aside class="rail" aria-label={attachments.length ? "Files in this challenge" : "About this post"}>
       <div class="rail__inner">
 
 
@@ -90,7 +93,7 @@ const cap = (k: string) => k[0].toUpperCase() + k.slice(1);
           </dl>
         )}
       </div>
-    </aside>
+    </aside>}
   </div>
 
   {(prev || next) && (
@@ -133,9 +136,10 @@ const cap = (k: string) => k[0].toUpperCase() + k.slice(1);
   .head__title { margin-top: var(--s5); overflow-wrap: anywhere; }
   .head__stand { margin-top: var(--s5); max-width: 38rem; font-size: var(--t-lede); line-height: 1.45; color: var(--fg); }
   .specs { margin: var(--s6) 0 0; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--s5); padding: var(--s5) 0; border-block: 1px solid var(--rule); }
-  .specs__facts { margin: 0; display: flex; flex-wrap: wrap; gap: var(--s4) 0; min-width: 0; }
-  .spec { display: grid; gap: 7px; min-width: 0; padding: 0 var(--s5); border-left: 1px solid var(--rule); }
-  .spec:first-child { padding-left: 0; border-left: 0; }
+  /* every fact has a divider on its left; the one starting each row sits past the clip edge, so a
+     wrapped row never opens with a stray line */
+  .specs__facts { margin: 0 0 0 calc(-1 * var(--s5)); padding-block: 3px; display: flex; flex-wrap: wrap; gap: var(--s4) 0; min-width: 0; overflow: hidden; }
+  .spec { display: grid; align-content: start; gap: 7px; min-width: 0; margin-left: -1px; padding: 0 var(--s5); border-left: 1px solid var(--rule); }
   .specs__links { margin: 0; display: flex; flex-wrap: wrap; gap: var(--s2); }
   .specs__btn {
     display: inline-flex; align-items: center; gap: .45em; min-height: 2.5rem; padding: 0 var(--s4);
@@ -154,6 +158,8 @@ const cap = (k: string) => k[0].toUpperCase() + k.slice(1);
   .spec dd :global(.tag) { font-size: var(--t-body); }
   .spec dd :global(.tier) { font-size: var(--t-body); line-height: 1.3; }
 
+  .head__title--compact { font-size: var(--t-title); line-height: 1.1; text-wrap: balance; }
+  .layout--solo { grid-template-columns: minmax(0, 1fr) !important; }
   .layout {
     margin-top: var(--s7);
     display: grid;
@@ -196,7 +202,8 @@ const cap = (k: string) => k[0].toUpperCase() + k.slice(1);
     .body { font-size: 1.0625rem; }
     .specs { gap: var(--s5); }
     .specs__facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s5) var(--s5); width: 100%; }
-    .spec { padding: 0; border: 0; }
+    .specs__facts { margin-left: 0; overflow: visible; }
+    .spec { margin-left: 0; padding: 0; border: 0; }
     .specs__links { width: 100%; }
     .specs__btn { flex: 1; justify-content: center; }
     .pager { grid-template-columns: 1fr; gap: 0; }

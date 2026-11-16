@@ -28,10 +28,16 @@ export const site = {
     location: "India",
     timezone: "Asia/Kolkata",
     focus: "Reverse Engineering",
-    // Now: reverse engineer at Heap0verflow, CTF player for its team H3ap.
+    // Now: a member of Heap0verflow, an independent security group (not an employer: no company,
+    // no services), working mainly on reverse engineering; CTF player for its team H3ap.
+    // /heap0verflow/ explains the group. When it gets its own website, set `website`.
     team: "H3ap",
     teamRole: "CTF player",
-    company: { name: "Heap0verflow", role: "Reverse engineer", url: "https://www.linkedin.com/company/heap0verflow" },
+    group: {
+      name: "Heap0verflow", kind: "independent security group", role: "Reverse engineer",
+      page: "/heap0verflow/", linkedin: "https://www.linkedin.com/company/heap0verflow", website: "",
+      formed: "November 2026",
+    },
     // Before: 404squad, the CTF team that became H3ap (same CTFtime team, 404squad is its alias).
     // Results from then are always shown "with 404squad"; the co-founder role is always "former".
     formerTeam: { name: "404squad", role: "co-founder", period: "August to October 2026" },
@@ -41,14 +47,14 @@ export const site = {
     resume: "/assets/resume.pdf",
     // Shown verbatim on the home page. The first paragraph is set as a lede.
     bio: [
-      "I’m Adarsh Pillai, known online as aaadarsh1337, jackthereaper1337, or Hasher2009. I work as a reverse engineer at Heap0verflow, and I’m a cybersecurity student with a longstanding interest in offensive security. What started as curiosity about computers became something I spend much of my free time on: solving challenges, experimenting with tools, and understanding the details behind how things work.",
+      "I’m Adarsh Pillai, known online as aaadarsh1337, jackthereaper1337, or Hasher2009. I’m a reverse engineer with Heap0verflow, an independent security group, and a cybersecurity student with a longstanding interest in offensive security. What started as curiosity about computers became something I spend much of my free time on: solving challenges, experimenting with tools, and understanding the details behind how things work.",
       "I play CTFs for H3ap, Heap0verflow’s CTF team, where I work on rev challenges. I’m a former co-founder of 404squad, the CTF team we ran from August to October 2026, where I organized our near-weekly CTF participation, before we went on to start Heap0verflow. Building a team that consistently shows up, learns together, and enjoys the process matters to me as much as the competition itself.",
       "Outside CTFs, I’m usually digging further into reverse engineering or working on security projects of my own. I enjoy having something unfamiliar to figure out, whether that means tracing a binary, testing an approach, or writing a tool to make progress. This site collects that work, along with the notes and writeups I produce along the way.",
     ],
     // Phrases in the bio that become links (first occurrence only, text unchanged).
     bioLinks: [
       { text: "404squad", href: "/achievements/" },
-      { text: "Heap0verflow", href: "https://www.linkedin.com/company/heap0verflow" },
+      { text: "Heap0verflow", href: "/heap0verflow/" },
       { text: "security projects of my own", href: "/intel/" },
       { text: "writeups", href: "/writeups/" },
     ],

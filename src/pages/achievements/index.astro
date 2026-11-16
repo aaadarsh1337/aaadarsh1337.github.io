@@ -54,7 +54,7 @@ const profiles = site.links.filter((l) => ["TryHackMe", "CTFtime", "pwn.college"
 
   <section class="sec" id="results" aria-labelledby="h-results">
     <h2 class="label" id="h-results">CTF results</h2>
-    <p class="hint hint--team">Results from {p.formerTeam.period} were earned with {p.formerTeam.name}, the team that now plays as {p.team}, Heap0verflow’s CTF team. <a class="link" href={p.ctftimeTeam} rel="external">Same team on CTFtime</a>, with {p.formerTeam.name} as its alias.</p>
+    <p class="hint hint--team">Results from {p.formerTeam.period} were earned with {p.formerTeam.name}, the team that now plays as <a class="link" href={`${p.group.page}#h3ap`}>{p.team}, {p.group.name}’s CTF team</a>. <a class="link" href={p.ctftimeTeam} rel="external">Same team on CTFtime</a>, with {p.formerTeam.name} as its alias.</p>
     <p class="hint"><Moon phase={0.5} size={14} label="" /><Moon phase={0.25} size={14} label="" /><Moon phase={0.08} size={14} label="" /> The fuller the moon, the higher the finish.</p>
     <ol class="res">
       {results.map((r) => (

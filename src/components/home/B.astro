@@ -44,6 +44,7 @@ while (stars.length < 16) {
   stars.push({ x, y, s: 1.6 + rnd() * 1.8, o: 0.25 + rnd() * 0.4, tw: stars.length % 3 === 0, d: rnd() * 6 });
 }
 const rest = (detail: string) => detail.replace(/^[^#]*#\d+\s*/, "").replace(/^Overall$/, "overall");
+import { bioHtml } from "../../lib/bio";
 ---
 <section class="b-hero">
   <div class="b-stars" aria-hidden="true">
@@ -53,7 +54,7 @@ const rest = (detail: string) => detail.replace(/^[^#]*#\d+\s*/, "").replace(/^O
     <p class="b-tonight" data-moon-line>{tonightLine(tonight)}</p>
     <h1 class="b-name">{p.name}</h1>
     <p class="b-tag">{p.tagline.map((t, i) => <>{i > 0 && <span class="b-tagdot" aria-hidden="true">·</span>}<span class="b-tagi">{t}</span></>)}</p>
-    <p class="b-lede">{p.bio[0]}</p>
+    <p class="b-lede" set:html={bioHtml([p.bio[0]])[0]} />
     <p class="b-act">
       <a class="btn btn--primary" href="/writeups/">Read the writeups <span class="arr">→</span></a>
       <a class="btn" href="/blog/">Blog</a>
@@ -111,7 +112,7 @@ const rest = (detail: string) => detail.replace(/^[^#]*#\d+\s*/, "").replace(/^O
 
 <section class="b-sec" aria-labelledby="res-h">
   <h2 id="res-h" class="b-h">CTF results, 2026</h2>
-  <p class="res__note">With {p.formerTeam.name}, the team that now plays as {p.team}.</p>
+  <p class="res__note">With {p.formerTeam.name}, the team that now plays as <a class="link" href={`${p.group.page}#h3ap`}>{p.team}</a>.</p>
   <ol class="res">
     {d.ranked.slice(0, 6).map((r) => (   /* the best six fill the grid; all of them are on /achievements/ */
       <li><a href={r.url} rel="external"><span class="res__n">#{r.rank}</span><span class="res__t">{r.title}</span><span class="res__d">{rest(r.detail)}, with {r.team}</span><span class="cue cue--corner" aria-hidden="true">↗</span></a></li>

@@ -1,0 +1,139 @@
+---
+// What Heap0verflow, H3ap and 404squad are, in one place: the bio, About and Achievements
+// mention them briefly and link here. Words are the owner's account of the group.
+// Laid out like About: the facts at a glance, then the story in plain sections, and H3ap
+// stamped as a hanko, inked like the footer's seal.
+import Base from "../../layouts/Base.astro";
+import PageHead from "../../components/PageHead.astro";
+import { site } from "../../config";
+import { group } from "../../lib/seo";
+
+const p = site.profile, g = p.group;
+const links = [
+  ...(g.website ? [{ label: "Website", href: g.website }] : []),
+  { label: "LinkedIn", href: g.linkedin },
+  { label: `${p.team} on CTFtime`, href: p.ctftimeTeam },
+];
+const facts: [string, string, string?][] = [
+  ["what", "An independent security group"],
+  ["formed", `${g.formed}, out of ${p.formerTeam.name}`],
+  ["CTF team", `${p.team}, members only (formerly ${p.formerTeam.name})`, "#h3ap"],
+  ["works on", "CTFs, security research, bug bounty"],
+  ["is not", "A company, and it offers no services"],
+  ["my part", "Reverse engineering"],
+];
+---
+<Base title={g.name} description={`What ${g.name} is: a small, ${g.kind} whose members play CTFs as ${p.team} (formerly ${p.formerTeam.name}) and work together on security research and bug bounty. Not a company.`} section="about" jsonld={group()}
+  crumbs={[{ name: "About", url: "/about/" }]}>
+  <PageHead crumbs={[{ label: "about", href: "/about/" }, { label: "heap0verflow" }]} title={g.name}
+    lede={`${g.name} is a small, independent security group. We started out as a CTF team and outgrew it: now we compete as ${p.team}, and research and hunt bugs together.`} />
+
+  <section class="who" aria-label="At a glance">
+    <dl class="spec">
+      {facts.map(([k, v, href]) => <div><dt>{k}</dt><dd>{href ? <a class="link" href={href}>{v}</a> : v}</dd></div>)}
+    </dl>
+    <p class="who__links">
+      {links.map((l, i) => <a class:list={["btn", { "btn--primary": i === 0 }]} href={l.href} rel="external">{l.label} <span class="arr arr--out">↗</span></a>)}
+    </p>
+  </section>
+
+  <section class="sec split" aria-labelledby="h-origins">
+    <h2 class="h0h" id="h-origins">Origins</h2>
+    <div class="split__body">
+      <p>{g.name} grew out of {p.formerTeam.name}, a CTF team started by three friends, myself included, in August 2026. Over the following months the team grew as more people with the same interests joined, and it became clear the group could do more than compete. In {g.formed}, we decided together to form {g.name}.</p>
+      <ol class="time" aria-label="Timeline">
+        <li><span class="time__when">August 2026</span><span>{p.formerTeam.name} is formed</span></li>
+        <li><span class="time__when">{g.formed}</span><span>{g.name} is formed, and {p.formerTeam.name} becomes {p.team}</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="sec split" aria-labelledby="h-does">
+    <h2 class="h0h" id="h-does">What {g.name} does</h2>
+    <div class="split__body does">
+      <div>
+        <h3 class="does__h">CTFs, as {p.team}</h3>
+        <p>Competes in CTFs as {p.team}, a team open to {g.name} members only.</p>
+      </div>
+      <div>
+        <h3 class="does__h">Research and bug bounty</h3>
+        <p>Works together on security research and bug bounty programs. Most members were already active in both on their own; {g.name} brings that work together.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec split" aria-labelledby="h-not">
+    <h2 class="h0h" id="h-not">What it is not</h2>
+    <div class="split__body">
+      <p>{g.name} is not a company. It offers no services and is not registered as a business; for now, its only public presence is its LinkedIn page. A website is planned.</p>
+    </div>
+  </section>
+
+  <section class="sec split" aria-labelledby="h-role">
+    <h2 class="h0h" id="h-role">My role</h2>
+    <div class="split__body">
+      <p>My contributions are mainly in reverse engineering, both in CTF challenges and in research.</p>
+    </div>
+  </section>
+
+  <section class="sec split" id="h3ap" aria-labelledby="h-team">
+    <h2 class="h0h" id="h-team">{p.formerTeam.name} and {p.team}</h2>
+    <div class="split__body same">
+      <p>{p.formerTeam.name} and {p.team} are the same team. When {g.name} was formed, {p.formerTeam.name} was renamed {p.team}. The members stayed the same, so the team kept its CTFtime profile and results, with {p.formerTeam.name} listed as an alias. Results from before the change appear on this site as <a class="link" href="/achievements/#results">earned with {p.formerTeam.name}</a>.</p>
+      <!-- the team's name, stamped like the footer's hanko: carved out of red ink -->
+      <svg class="hanko" viewBox="0 0 120 120" role="img" aria-label={`Seal: ${p.team}`}>
+        <defs>
+          <filter id="hanko-ink" x="-6%" y="-6%" width="112%" height="112%">
+            <feTurbulence type="fractalNoise" baseFrequency=".55" numOctaves="2" seed="3" result="n" />
+            <feDisplacementMap in="SourceGraphic" in2="n" scale="3" />
+          </filter>
+          <mask id="hanko-carve" maskUnits="userSpaceOnUse" x="0" y="0" width="120" height="120">
+            <rect width="120" height="120" fill="#fff" />
+            <text x="60" y="58" text-anchor="middle" class="hanko__t">H3</text>
+            <text x="60" y="100" text-anchor="middle" class="hanko__t">AP</text>
+          </mask>
+        </defs>
+        <g filter="url(#hanko-ink)"><rect x="4" y="4" width="112" height="112" rx="7" fill="currentColor" mask="url(#hanko-carve)" /></g>
+      </svg>
+    </div>
+  </section>
+</Base>
+
+<style>
+  /* at a glance: the facts right under the lede, on its left edge and measure */
+  .who { margin-top: var(--s7); display: grid; row-gap: var(--s5); max-width: 46rem; }
+  .spec { margin: 0; display: grid; padding: var(--s3) var(--s5); background: var(--bg-1); }
+  .spec div { display: grid; grid-template-columns: 7rem minmax(0, 1fr); gap: var(--s4); align-items: baseline; padding: .7rem 0; }
+  .spec dt { font-size: var(--t-small); color: var(--fg-2); }
+  .spec dd { margin: 0; font-size: var(--t-body); color: var(--bone); }
+  .who__links { margin: 0; display: flex; flex-wrap: wrap; gap: var(--s3); }
+
+  /* the story: heading on the left, text on the right, the same rhythm all the way down */
+  .sec { margin-top: var(--gap); scroll-margin-top: 6rem; }
+  .split { display: grid; grid-template-columns: minmax(0, 15rem) minmax(0, 1fr); column-gap: var(--s7); align-items: start; }
+  .h0h { margin: 0; font: 500 var(--t-lede)/1.3 var(--sans); letter-spacing: -.01em; color: var(--bone); text-wrap: balance; }
+  .split__body { max-width: 44rem; display: grid; gap: var(--s5); }
+  .split__body p { margin: 0; font-size: 1.25rem; line-height: 1.65; color: var(--fg); text-wrap: pretty; }
+
+  .time { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s3); }
+  .time li { display: grid; grid-template-columns: 8.5rem minmax(0, 1fr); gap: var(--s4); align-items: baseline; font-size: var(--t-body); color: var(--bone); }
+  .time__when { font-size: var(--t-small); color: var(--fg-2); font-variant-numeric: tabular-nums; }
+
+  .does { gap: var(--s6); }
+  .does__h { font: 500 var(--t-body)/1.35 var(--sans); color: var(--bone); }
+  .does__h + p { margin-top: var(--s2); }
+
+  .same { grid-template-columns: minmax(0, 1fr) auto; align-items: start; column-gap: var(--s6); }
+  .hanko { width: 5.5rem; height: auto; color: var(--lily); rotate: -6deg; opacity: .92; transition: rotate .5s var(--ease), scale .5s var(--ease); }
+  .hanko:hover { rotate: 0deg; scale: 1.05; }
+  .hanko__t { font: 700 44px/1 var(--display); letter-spacing: .02em; fill: #000; }
+
+  @media (max-width: 760px) {
+    .spec { padding: var(--s2) var(--s4); }
+    .spec div { grid-template-columns: 6rem minmax(0, 1fr); }
+    .split { grid-template-columns: minmax(0, 1fr); row-gap: var(--s5); }
+    .split__body p { font-size: 1.125rem; }
+    .time li { grid-template-columns: 1fr; gap: 2px; }
+    .same { grid-template-columns: 1fr; }
+  }
+</style>

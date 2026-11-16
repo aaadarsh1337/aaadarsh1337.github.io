@@ -27,5 +27,6 @@ export async function sitemapPages(): Promise<{ loc: string; lastmod: string }[]
     { url: "/intel/", lastmod: day(intel) },
     { url: "/achievements/", lastmod: day(null) },
     { url: "/about/", lastmod: day(null) },
+    { url: "/heap0verflow/", lastmod: day(null) },
   ].map((p) => ({ loc: abs(p.url), lastmod: p.lastmod }));
 }
