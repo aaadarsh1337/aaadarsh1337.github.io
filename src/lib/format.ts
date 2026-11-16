@@ -10,3 +10,7 @@ export const num = (n: number) => n.toLocaleString("en-US");
 export const size = (b: number) =>
   b < 1024 ? `${b}B` : b < 1024 ** 2 ? `${(b / 1024).toFixed(1)}K` : `${(b / 1024 ** 2).toFixed(1)}M`;
 export const minutes = (words: number, codeLines = 0) => Math.max(1, Math.round(words / 200 + codeLines / 30));
+/** Reading time for a rendered writeup or post: prose at 200 words a minute, code at 30 lines.
+ *  Every page and list uses this one, so a post's time is the same everywhere it is shown. */
+export const readTime = (body: { words: number; listings: { lines: number }[] }) =>
+  minutes(body.words, body.listings.reduce((s, l) => s + l.lines, 0));

@@ -2,7 +2,7 @@
 import Base from "../../../layouts/Base.astro";
 import Article from "../../../components/Article.astro";
 import { getPosts, type Post } from "../../../lib/blog";
-import { day, iso, minutes } from "../../../lib/format";
+import { day, iso, readTime } from "../../../lib/format";
 import { site } from "../../../config";
 import { abs, personRef, cardFor } from "../../../lib/seo";
 
@@ -17,7 +17,7 @@ const { p, newer, older } = Astro.props as { p: Post; newer?: Post; older?: Post
 const specs = [
   { k: "category", v: p.categoryLabel, href: `/blog/${p.category}/` },
   { k: "published", v: `<time datetime="${iso(p.date)}">${day(p.date)}</time>` },
-  { k: "reading", v: `${minutes(p.body.words)} min read` },
+  { k: "reading", v: `${readTime(p.body)} min read` },
   ...(p.tags.length ? [{ k: "tags", v: p.tags.map((t) => `<span class="tag">${t}</span>`).join(" ") }] : []),
   { k: "source", v: "security-blog ↗", href: p.source },
 ];

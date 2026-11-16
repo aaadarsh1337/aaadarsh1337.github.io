@@ -1,13 +1,12 @@
 ---
 // Blog posts as quiet cards: the title on the left, the summary and a way in on the right.
 import type { Post } from "../lib/blog";
-import { day, iso, minutes } from "../lib/format";
+import { day, iso, readTime } from "../lib/format";
 interface Props { posts: Post[] }
 const { posts } = Astro.props;
 ---
 <ol class="posts">
   {posts.map((p) => {
-    const lines = p.body.listings.reduce((s, l) => s + l.lines, 0);
     return (
       <li class="post">
         <div class="post__head">
@@ -20,7 +19,7 @@ const { posts } = Astro.props;
         <div class="post__side">
           <p class="post__sum">{p.summary.replace(/([^.!?])$/, "$1.")}</p>
           <p class="post__foot">
-            <span class="post__meta"><time datetime={iso(p.date)}>{day(p.date)}</time> · {minutes(p.body.words, lines)} min read</span>
+            <span class="post__meta"><time datetime={iso(p.date)}>{day(p.date)}</time> · {readTime(p.body)} min read</span>
             <span class="post__go">Read the post <span class="cue" aria-hidden="true">→</span></span>
           </p>
         </div>

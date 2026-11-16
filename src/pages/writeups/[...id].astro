@@ -2,7 +2,7 @@
 import Base from "../../layouts/Base.astro";
 import Article from "../../components/Article.astro";
 import { getWriteups, type Writeup } from "../../lib/writeups";
-import { day, iso, minutes } from "../../lib/format";
+import { day, iso, readTime } from "../../lib/format";
 import { site } from "../../config";
 import { abs, personRef, TOPICS, cardFor } from "../../lib/seo";
 
@@ -18,7 +18,7 @@ const specs = [
   ...(w.difficulty ? [{ k: "difficulty", v: tierHtml }] : []),
   { k: "category", v: w.tags.map((t) => `<span class="tag" data-tag="${t}">${t}</span>`).join(" ") },
   { k: "published", v: `<time datetime="${iso(w.date)}">${day(w.date)}</time>` },
-  { k: "reading", v: `${minutes(w.body.words, w.body.listings.reduce((s, l) => s + l.lines, 0))} min read` },
+  { k: "reading", v: `${readTime(w.body)} min read` },
   ...(w.body.challenge ? [{ k: w.body.challenge.label.toLowerCase(), v: new URL(w.body.challenge.url).host + new URL(w.body.challenge.url).pathname.replace(/\/$/, ""), href: w.body.challenge.url }] : []),
   { k: "source", v: "ctf-writeups ↗", href: w.source },
 ];
