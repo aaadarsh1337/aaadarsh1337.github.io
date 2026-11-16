@@ -25,6 +25,10 @@ interface Props {
 const { crumbs, title, kicker, specs, body, attachments = [], prev, next, series, standfirst } = Astro.props;
 
 const dirs = [...new Set(attachments.map((a) => a.dir))];
+// the info bar: facts in a row, and the links that leave the site as small buttons beside them
+const ext = (s: Spec) => !!s.href && /^https?:/.test(s.href);
+const facts = specs.filter((s) => !ext(s)), outs = specs.filter(ext);
+const cap = (k: string) => k[0].toUpperCase() + k.slice(1);
 ---
 <article class="article">
   <header class="head rise">
@@ -35,14 +39,21 @@ const dirs = [...new Set(attachments.map((a) => a.dir))];
     {kicker && <p class="head__kicker meta">{kicker}</p>}
     <h1 class="head__title page-title" data-pagefind-meta="title">{title}</h1>
     {standfirst && <p class="head__stand">{standfirst}</p>}
-    <dl class:list={["specs", { "specs--rail": attachments.length === 0 }]}>
-      {specs.map((s) => (
-        <div class="spec" style={s.accent ? `--c: var(--${s.accent})` : undefined}>
-          <dt>{s.k}</dt>
-          <dd>{s.href ? <a class="link" href={s.href} rel={/^https?:/.test(s.href) ? "external" : undefined}>{s.v}</a> : <span set:html={s.v} />}</dd>
-        </div>
-      ))}
-    </dl>
+    <div class:list={["specs", { "specs--rail": attachments.length === 0 }]}>
+      <dl class="specs__facts">
+        {facts.map((s) => (
+          <div class="spec" style={s.accent ? `--c: var(--${s.accent})` : undefined}>
+            <dt>{s.k}</dt>
+            <dd>{s.href ? <a class="link" href={s.href}>{s.v}</a> : <span set:html={s.v} />}</dd>
+          </div>
+        ))}
+      </dl>
+      {outs.length > 0 && (
+        <p class="specs__links">
+          {outs.map((s) => <a class="specs__btn" href={s.href} rel="external" title={s.href}>{cap(s.k)} <span class="arr arr--out" aria-hidden="true">↗</span></a>)}
+        </p>
+      )}
+    </div>
   </header>
 
   <div class="layout">
@@ -121,16 +132,27 @@ const dirs = [...new Set(attachments.map((a) => a.dir))];
   .head__kicker { margin-top: var(--s5); }
   .head__title { margin-top: var(--s5); overflow-wrap: anywhere; }
   .head__stand { margin-top: var(--s5); max-width: 38rem; font-size: var(--t-lede); line-height: 1.45; color: var(--fg); }
-  .specs { margin: var(--s6) 0 0; display: flex; flex-wrap: wrap; gap: var(--s5) var(--s6); padding: var(--s5); background: var(--bg-1); }
-  .spec { display: grid; gap: 5px; min-width: 0; }
+  .specs { margin: var(--s6) 0 0; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--s5); padding: var(--s5) 0; border-block: 1px solid var(--rule); }
+  .specs__facts { margin: 0; display: flex; flex-wrap: wrap; gap: var(--s4) 0; min-width: 0; }
+  .spec { display: grid; gap: 7px; min-width: 0; padding: 0 var(--s5); border-left: 1px solid var(--rule); }
+  .spec:first-child { padding-left: 0; border-left: 0; }
+  .specs__links { margin: 0; display: flex; flex-wrap: wrap; gap: var(--s2); }
+  .specs__btn {
+    display: inline-flex; align-items: center; gap: .45em; min-height: 2.5rem; padding: 0 var(--s4);
+    border-radius: 999px; background: var(--bg-2); color: var(--blue); font-size: var(--t-small); text-decoration: none;
+    transition: background-color .2s var(--ease);
+  }
+  .specs__btn:hover { background: var(--bg-3); }
+  .specs__btn:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
   .specs--rail { display: none; }
   .railspecs { margin: 0; display: grid; gap: var(--s4); padding: var(--s5); background: var(--bg-1); }
   .railspecs dt { font-size: var(--t-small); color: var(--fg-2); }
   .railspecs dd { margin: 2px 0 0; font-size: var(--t-body); color: var(--bone); }
   .railspecs :global(.tag) { display: inline-block; margin-right: .6em; font-size: var(--t-body); }
   .spec dt { font: 400 var(--t-small)/1 var(--sans); color: var(--muted); }
-  .spec dd { margin: 0; font: 400 var(--t-small)/1.35 var(--sans); color: var(--c, var(--fg)); overflow-wrap: anywhere; }
-  .spec dd :global(.tag) { font-size: var(--t-small); }
+  .spec dd { margin: 0; font: 400 var(--t-body)/1.3 var(--sans); color: var(--c, var(--bone)); overflow-wrap: anywhere; }
+  .spec dd :global(.tag) { font-size: var(--t-body); }
+  .spec dd :global(.tier) { font-size: var(--t-body); line-height: 1.3; }
 
   .layout {
     margin-top: var(--s7);
@@ -172,7 +194,11 @@ const dirs = [...new Set(attachments.map((a) => a.dir))];
   }
   @media (max-width: 640px) {
     .body { font-size: 1.0625rem; }
-    .specs { gap: var(--s4) var(--s5); }
+    .specs { gap: var(--s5); }
+    .specs__facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s5) var(--s5); width: 100%; }
+    .spec { padding: 0; border: 0; }
+    .specs__links { width: 100%; }
+    .specs__btn { flex: 1; justify-content: center; }
     .pager { grid-template-columns: 1fr; gap: 0; }
     .pager__a--next { text-align: left; }
   }

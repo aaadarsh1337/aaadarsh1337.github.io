@@ -13,7 +13,7 @@ const d = await homeData();
 const p = site.profile;
 const m = d.metrics;
 const tonight = moonPhase(new Date());
-const stats = [...site.stats, { value: String(d.writeups.length), label: "CTF writeups" }, { value: `#${d.ranked[0].rank}`, label: "best CTF finish" }];
+const stats = [...site.stats, { value: String(d.writeups.length), label: "writeups" }, { value: `#${d.ranked[0].rank}`, label: "best CTF finish" }];
 
 const series = days(m).slice(-60);
 const cut = cutoff(m);

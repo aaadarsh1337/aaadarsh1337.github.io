@@ -35,6 +35,7 @@ title: Steganography          # shown exactly as written
 difficulty: Hard              # platform's own label: Easy / Medium / Hard, Toddler's Bottle, Rookiss, Intermediate…
 date: 2026-10-08
 tags: [rev]                   # optional; if left out, categories are inferred from the text
+description: …                # optional; the preview text in search results and link previews. Left out, there is none, and Google picks its own snippet from the writeup
 ---
 
 # Steganography

@@ -2,7 +2,6 @@
 // search-friendly descriptions, and plain titles. All facts come from config.ts and
 // the content repos, so the sitemap, structured data and llms.txt can't drift apart.
 import { site } from "../config";
-import type { Writeup } from "./writeups";
 
 export const abs = (path: string) => new URL(path, site.url).href;
 export const PERSON_ID = `${site.url}/#person`;
@@ -62,21 +61,4 @@ export function website() {
     inLanguage: "en",
     author: personRef(),
   };
-}
-
-const an = (word: string) => (/^[aeiou]/i.test(word) ? "an" : "a");
-const strip = (html: string) => html.replace(/<[^>]+>/g, " ").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/\s+/g, " ").trim();
-
-/** "Ransim 1: a Medium reverse engineering and cryptography challenge on ReRange,
- *  solved step by step. The task: “Reverse this ransomware sim…”" */
-export function writeupDescription(w: Writeup): string {
-  const topics = w.tags.map((t) => TOPICS[t] ?? t);
-  const what = topics.length > 1 ? `${topics.slice(0, -1).join(", ")} and ${topics.at(-1)}` : topics[0] ?? "security";
-  const kind = w.difficulty ? `${w.difficulty} ${what}` : what;
-  let text = `${w.title}: ${an(kind)} ${kind} challenge on ${w.platform}, solved step by step.`;
-  // the challenge's own prompt, when the writeup quotes it, says what it's actually about
-  const quote = w.body.html.match(/<blockquote[^>]*>([\s\S]*?)<\/blockquote>/)?.[1];
-  const task = quote ? strip(quote) : "";
-  if (task && !/flag\{|ReRange\{|picoCTF\{/i.test(task) && task.length <= 150) text += ` The task: “${task}”`;
-  return text;
 }

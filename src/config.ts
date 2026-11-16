@@ -24,7 +24,7 @@ export const site = {
     name: "Adarsh Pillai",
     handle: "aaadarsh1337",
     aliases: ["jackthereaper1337", "Hasher2009"],
-    tagline: ["Offensive security", "Reverse Engineering", "CTF"],
+    tagline: ["Reverse Engineering", "Offensive Security", "CTFs"],
     location: "India",
     timezone: "Asia/Kolkata",
     focus: "Reverse Engineering",

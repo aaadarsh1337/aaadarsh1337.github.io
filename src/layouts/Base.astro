@@ -13,7 +13,8 @@ import { person, website, abs, plainTitle } from "../lib/seo";
 
 interface Props {
   title?: string;
-  description?: string;
+  /** false: no description tags at all, so search engines take their snippet from the page */
+  description?: string | false;
   /** Current section for nav state: "home" | "writeups" | "blog" | "intel" | "about" */
   section?: string;
   image?: string;
@@ -77,14 +78,14 @@ const csp = [
   <meta name="referrer" content="strict-origin-when-cross-origin" />
   <script is:inline set:html={themeScript}></script>
   <title>{fullTitle}</title>
-  <meta name="description" content={description} />
+  {description && <meta name="description" content={description} />}
   <link rel="canonical" href={canonical} />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   <meta name="theme-color" content="#0b0e13" />
   <meta name="color-scheme" content="dark light" />
   <meta property="og:type" content={type} />
   <meta property="og:title" content={title ?? site.profile.name} />
-  <meta property="og:description" content={description} />
+  {description && <meta property="og:description" content={description} />}
   <meta property="og:url" content={canonical} />
   <meta property="og:image" content={new URL(image, site.url).href} />
   <meta property="og:image:width" content="1200" />

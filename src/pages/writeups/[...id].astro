@@ -4,7 +4,7 @@ import Article from "../../components/Article.astro";
 import { getWriteups, type Writeup } from "../../lib/writeups";
 import { day, iso, minutes } from "../../lib/format";
 import { site } from "../../config";
-import { abs, personRef, writeupDescription, TOPICS, cardFor } from "../../lib/seo";
+import { abs, personRef, TOPICS, cardFor } from "../../lib/seo";
 
 export async function getStaticPaths() {
   return (await getWriteups()).map((w) => ({ params: { id: w.id }, props: { w } }));
@@ -18,11 +18,12 @@ const specs = [
   ...(w.difficulty ? [{ k: "difficulty", v: tierHtml }] : []),
   { k: "category", v: w.tags.map((t) => `<span class="tag" data-tag="${t}">${t}</span>`).join(" ") },
   { k: "published", v: `<time datetime="${iso(w.date)}">${day(w.date)}</time>` },
-  { k: "reading", v: `${minutes(w.body.words, w.body.listings.reduce((s, l) => s + l.lines, 0))} min · ${w.body.listings.length} listings` },
+  { k: "reading", v: `${minutes(w.body.words, w.body.listings.reduce((s, l) => s + l.lines, 0))} min read` },
   ...(w.body.challenge ? [{ k: w.body.challenge.label.toLowerCase(), v: new URL(w.body.challenge.url).host + new URL(w.body.challenge.url).pathname.replace(/\/$/, ""), href: w.body.challenge.url }] : []),
   { k: "source", v: "ctf-writeups ↗", href: w.source },
 ];
-const description = writeupDescription(w);
+// no generated summary: the writeup's own frontmatter `description:` if it has one, else none
+const description = w.description;
 const jsonld = {
   "@type": "TechArticle",
   headline: `${w.title}: ${w.platform} writeup`,
@@ -41,8 +42,8 @@ const jsonld = {
   keywords: [w.title, w.platform, `${w.platform} writeup`, ...w.tags.map((t) => TOPICS[t] ?? t), w.difficulty, "CTF writeup"].filter(Boolean).join(", "),
 };
 ---
-<Base title={`${w.title} · ${w.platform} writeup`} description={description} section="writeups" type="article" published={w.date} jsonld={jsonld} image={cardFor.writeup(w.id)}
-  crumbs={[{ name: "CTF writeups", url: "/writeups/" }, { name: w.platform, url: `/writeups/?platform=${encodeURIComponent(w.platform)}` }]}>
+<Base title={`${w.title} · ${w.platform} writeup`} description={description ?? false} section="writeups" type="article" published={w.date} jsonld={jsonld} image={cardFor.writeup(w.id)}
+  crumbs={[{ name: "Writeups", url: "/writeups/" }, { name: w.platform, url: `/writeups/?platform=${encodeURIComponent(w.platform)}` }]}>
   <Article
     crumbs={[{ label: "writeups", href: "/writeups/" }, { label: w.platform, href: `/writeups/?platform=${encodeURIComponent(w.platform)}` }, { label: w.id.split("/").slice(1).join("/") }]}
     title={w.title}
@@ -52,6 +53,5 @@ const jsonld = {
     prev={w.prev}
     next={w.next}
     series={w.platform}
-    standfirst={`A ${w.difficulty ? `${w.difficulty} ` : ""}${w.tags.join(" and ")} challenge from ${w.platform}, ${minutes(w.body.words, w.body.listings.reduce((s, l) => s + l.lines, 0))} minutes to read.`}
   />
 </Base>

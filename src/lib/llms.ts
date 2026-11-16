@@ -18,7 +18,7 @@ export async function llmsSummary(): Promise<string> {
   const certs = site.certificates.map((c) => `- ${c.name}, ${c.issuer} (${c.date}): ${c.url}`);
   return `# ${p.name} (${p.handle})
 
-> ${p.name} is a cybersecurity student from ${p.location}, known online as ${[p.handle, ...p.aliases].join(", ")}. Focus: ${p.focus.toLowerCase()}. ${p.company.role} at ${p.company.name} and CTF player for ${p.team}, Heap0verflow’s CTF team; former ${p.formerTeam.role} of ${p.formerTeam.name}, the team it grew from (${p.formerTeam.period}). Writes CTF writeups and malware analysis, and runs Threat Harbour, a live SSH honeypot.
+> ${p.name} is a cybersecurity student from ${p.location}, known online as ${[p.handle, ...p.aliases].join(", ")}. Focus: ${p.focus.toLowerCase()}. ${p.company.role} at ${p.company.name} and CTF player for ${p.team}, Heap0verflow’s CTF team; former ${p.formerTeam.role} of ${p.formerTeam.name}, the team it grew from (${p.formerTeam.period}). Publishes writeups and malware analysis, and runs Threat Harbour, a live SSH honeypot.
 
 Facts on this page are generated from the site's own data on every deploy (last built ${new Date().toISOString().slice(0, 10)}). The full text of every writeup and post is in ${abs("/llms-full.txt")}.
 
@@ -46,7 +46,7 @@ ${awards().map((a, i) => `- ${a}. Proof: ${site.achievements[i].url}`).join("\n"
 
 ${certs.join("\n")}
 
-## CTF writeups (${writeups.length}, newest first)
+## Writeups (${writeups.length}, newest first)
 
 ${writeups.map((w) => `- [${w.title}](${abs(w.url)}): ${w.platform}${w.difficulty ? `, ${w.difficulty}` : ""}, ${w.tags.map((t) => TOPICS[t] ?? t).join(" and ")}, ${day(w.date)}`).join("\n")}
 
@@ -86,7 +86,7 @@ ${m.sources.top_source_net16_by_event_volume.map((x) => `- ${x.cidr}: ${n(x.even
 ## Pages
 
 - [Home](${abs("/")})
-- [CTF writeups](${abs("/writeups/")})
+- [Writeups](${abs("/writeups/")})
 - [Security blog](${abs("/blog/")})
 - [Threat Harbour](${abs("/intel/")})
 - [Achievements](${abs("/achievements/")})

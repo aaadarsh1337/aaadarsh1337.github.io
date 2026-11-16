@@ -13,11 +13,11 @@ const tiers = [...count(writeups.map((w) => w.tier).filter(Boolean))].sort((a, b
 const groups = [...writeups.reduce((m, w) => m.set(month(w.date), [...(m.get(month(w.date)) ?? []), w]), new Map<string, typeof writeups>())];
 const moonFor = { easy: 0.17, medium: 0.25, hard: 0.5 } as const;
 ---
-<Base title="CTF writeups" description={`${writeups.length} CTF writeups by Adarsh Pillai (aaadarsh1337) across ${platforms.map(([p]) => p).join(", ")}: reverse engineering, binary exploitation and crypto, step by step.`} section="writeups">
+<Base title="Writeups" description={`${writeups.length} writeups by Adarsh Pillai (aaadarsh1337) across ${platforms.map(([p]) => p).join(", ")}: reverse engineering, binary exploitation and crypto, step by step.`} section="writeups">
   <header class="top rise">
     <nav class="crumbs meta" aria-label="Breadcrumb"><a href="/">~</a><span class="sep">/</span><span aria-current="page">writeups</span></nav>
     <h1 class="title page-title">Writeups<sup aria-label={`${writeups.length} in total`}>{writeups.length}</sup></h1>
-    <p class="lede">Detailed walkthroughs of challenges I solved, including concept explanation and ideology. {writeups.length} so far, across {platforms.length} platforms.</p>
+    <p class="lede">Detailed walkthroughs of challenges I solved, including concept explanation and ideology.</p>
   </header>
 
   <form class="filters" role="search" aria-label="Filter writeups" data-filters hidden>

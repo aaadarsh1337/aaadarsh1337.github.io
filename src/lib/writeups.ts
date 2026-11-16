@@ -27,6 +27,8 @@ export interface Writeup {
   id: string;              // "ReRange/Steganography": also the URL path
   url: string;             // "/writeups/ReRange/Steganography/"
   title: string;           // frontmatter title, verbatim
+  /** frontmatter `description:`, only when the writeup sets one: never generated */
+  description?: string;
   platform: string;        // display label
   platformId: string;      // folder name
   date: Date | null;
@@ -180,6 +182,7 @@ async function load(): Promise<Writeup[]> {
       id,
       url: `/writeups/${id}/`,
       title,
+      description: typeof data.description === "string" && data.description.trim() ? data.description.trim() : undefined,
       platform: PLATFORM_LABELS[platformId.toLowerCase()] ?? platformId.replace(/[_-]/g, " "),
       platformId,
       date: parseDate(data.date),
